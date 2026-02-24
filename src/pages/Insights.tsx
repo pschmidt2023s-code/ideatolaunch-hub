@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { useBrandHealth } from "@/hooks/useBrandHealth";
 import { useSubscription } from "@/hooks/useSubscription";
@@ -11,11 +12,14 @@ import {
   Info,
   AlertCircle,
 } from "lucide-react";
+import { trackEvent } from "@/lib/analytics";
 
 export default function InsightsPage() {
   const { health } = useBrandHealth();
   const { isFree } = useSubscription();
   const { t } = useTranslation();
+
+  useEffect(() => { trackEvent("viewed_insights"); }, []);
 
   if (!health) {
     return (

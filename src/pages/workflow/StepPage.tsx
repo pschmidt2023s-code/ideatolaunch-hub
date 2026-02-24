@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { StepIdeaFoundation } from "@/components/workflow/StepIdeaFoundation";
@@ -10,6 +11,7 @@ import { StepLaunchRoadmap } from "@/components/workflow/StepLaunchRoadmap";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { trackEvent } from "@/lib/analytics";
 
 const stepComponents = [
   StepIdeaFoundation,
@@ -27,6 +29,13 @@ export default function StepPage() {
   const { t } = useTranslation();
   const step = parseInt(stepNumber || "1", 10);
   const StepComponent = stepComponents[step - 1];
+
+  useEffect(() => {
+    if (step >= 1 && step <= 7) {
+      trackEvent("step_completed", { step });
+      if (step === 3) trackEvent("entered_business_calculator");
+    }
+  }, [step]);
 
   const stepTitleKeys = ["s1", "s2", "s3", "s4", "s5", "s6", "s7"];
 

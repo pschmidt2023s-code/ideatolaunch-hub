@@ -2,6 +2,7 @@ import { Rocket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { trackEvent } from "@/lib/analytics";
 
 export function UpgradeBanner() {
   const { t } = useTranslation();
@@ -21,7 +22,7 @@ export function UpgradeBanner() {
       <Button
         size="sm"
         className="gap-2 bg-accent text-accent-foreground hover:bg-accent/90"
-        onClick={() => navigate("/pricing")}
+        onClick={() => { trackEvent("clicked_upgrade", { source: "banner" }); navigate("/pricing"); }}
       >
         {t("upgrade.cta")}
       </Button>

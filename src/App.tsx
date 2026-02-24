@@ -14,6 +14,7 @@ import InsightsPage from "./pages/Insights";
 import StepPage from "./pages/workflow/StepPage";
 import NotFound from "./pages/NotFound";
 import Pricing from "./pages/Pricing";
+import InternalAnalytics from "./pages/internal/Analytics";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +51,14 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <StepPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/internal/analytics"
+                element={
+                  <ProtectedRoute>
+                    <InternalAnalytics />
                   </ProtectedRoute>
                 }
               />
