@@ -53,11 +53,11 @@ export default function StepPage() {
         <div className="mt-10 flex items-center justify-between border-t pt-6">
           <Button
             variant="outline"
-            onClick={() => step > 1 ? navigate(`/dashboard/step/${step - 1}`) : navigate("/dashboard")}
+            onClick={() => navigate("/dashboard")}
             className="gap-2"
           >
             <ArrowLeft className="h-4 w-4" />
-            {step > 1 ? t("steps.back") : t("steps.dashboard")}
+            {t("steps.dashboard")}
           </Button>
           {step < 7 && (
             <Button
