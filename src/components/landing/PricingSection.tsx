@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 import { toast } from "sonner";
+import { trackEvent } from "@/lib/analytics";
 
 export function PricingSection() {
   const navigate = useNavigate();
@@ -20,12 +21,14 @@ export function PricingSection() {
     }
 
     setLoading(true);
+    trackEvent("clicked_upgrade", { source: "pricing_section" });
     try {
       const { data, error } = await supabase.functions.invoke("stripe-checkout", {
         body: { return_url: window.location.origin },
       });
       if (error) throw error;
       if (data?.url) {
+        trackEvent("checkout_started");
         window.location.href = data.url;
       }
     } catch (err: any) {
