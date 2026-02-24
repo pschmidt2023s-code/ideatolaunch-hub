@@ -1,16 +1,19 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { TrendingUp, DollarSign, Target, BarChart3, AlertTriangle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { TrendingUp, DollarSign, Target, BarChart3, AlertTriangle, Save, Loader2 } from "lucide-react";
 import { useBrand } from "@/hooks/useBrand";
 import { suggestPriceRange, calculateSensitivity } from "@/lib/brand-health-engine";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 
 export function StepBusinessCalculator() {
   const { activeBrand } = useBrand();
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
   const brandId = activeBrand?.id;
 
   const { data: profile } = useQuery({
@@ -22,12 +25,34 @@ export function StepBusinessCalculator() {
     enabled: !!brandId,
   });
 
+  const { data: savedFinancial } = useQuery({
+    queryKey: ["financial_model", brandId],
+    queryFn: async () => {
+      const { data } = await supabase.from("financial_models").select("*").eq("brand_id", brandId!).maybeSingle();
+      return data;
+    },
+    enabled: !!brandId,
+  });
+
   const [costs, setCosts] = useState({
     production: 0,
     packaging: 0,
     shipping: 0,
     marketing: 0,
   });
+  const [saving, setSaving] = useState(false);
+
+  // Hydrate from saved data
+  useEffect(() => {
+    if (savedFinancial) {
+      setCosts({
+        production: savedFinancial.production_cost ?? 0,
+        packaging: savedFinancial.packaging_cost ?? 0,
+        shipping: savedFinancial.shipping_cost ?? 0,
+        marketing: savedFinancial.marketing_budget ?? 0,
+      });
+    }
+  }, [savedFinancial]);
 
   const update = (key: string, value: string) => {
     setCosts((p) => ({ ...p, [key]: parseFloat(value) || 0 }));
@@ -35,7 +60,6 @@ export function StepBusinessCalculator() {
 
   const total = costs.production + costs.packaging + costs.shipping;
 
-  // Price range instead of single price
   const priceRange = useMemo(
     () => suggestPriceRange(total, profile?.price_level),
     [total, profile?.price_level]
@@ -51,19 +75,16 @@ export function StepBusinessCalculator() {
     [costs.marketing, priceRange.sweet, total]
   );
 
-  // Sensitivity analysis
   const sensitivity = useMemo(
     () => calculateSensitivity(total, costs.marketing),
     [total, costs.marketing]
   );
 
-  // Margin warning
   const marginWarning = margin > 0 && margin < 30;
 
   const formatCurrency = (n: number) =>
     new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(n);
 
-  // Break-even viz data
   const maxUnits = Math.max(breakEven * 2, 100);
   const breakEvenPoints = useMemo(() => {
     if (total <= 0 || priceRange.sweet <= total) return [];
@@ -79,11 +100,50 @@ export function StepBusinessCalculator() {
     });
   }, [total, priceRange.sweet, costs.marketing, maxUnits]);
 
+  const handleSave = useCallback(async () => {
+    if (!brandId) return;
+    setSaving(true);
+    const payload = {
+      brand_id: brandId,
+      production_cost: costs.production,
+      packaging_cost: costs.packaging,
+      shipping_cost: costs.shipping,
+      marketing_budget: costs.marketing,
+      recommended_price: priceRange.sweet,
+      margin,
+      break_even_units: breakEven,
+    };
+
+    const { data: existing } = await supabase
+      .from("financial_models")
+      .select("id")
+      .eq("brand_id", brandId)
+      .maybeSingle();
+
+    const { error } = existing
+      ? await supabase.from("financial_models").update(payload).eq("id", existing.id)
+      : await supabase.from("financial_models").insert(payload);
+
+    setSaving(false);
+    if (error) {
+      toast.error(t("steps.saveError"));
+    } else {
+      toast.success(t("steps.saved"));
+      queryClient.invalidateQueries({ queryKey: ["financial_model", brandId] });
+    }
+  }, [brandId, costs, priceRange.sweet, margin, breakEven, queryClient, t]);
+
   return (
     <div className="space-y-8">
       {/* Input */}
       <div className="rounded-xl border bg-card p-6 shadow-card">
-        <h2 className="mb-6 text-lg font-semibold">{t("step3.inputTitle")}</h2>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-lg font-semibold">{t("step3.inputTitle")}</h2>
+          <Button onClick={handleSave} disabled={saving || total === 0} className="gap-2">
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            {t("steps.save")}
+          </Button>
+        </div>
         <div className="grid gap-5 sm:grid-cols-2">
           {[
             { key: "production", label: t("step3.production") },
