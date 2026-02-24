@@ -153,21 +153,30 @@
     "taglinePh": "Dein Slogan..."
   },
   "step3": {
+    "inputTitle": "Kosten eingeben",
     "production": "Produktionskosten / Stück",
     "packaging": "Verpackungskosten / Stück",
     "shipping": "Versandkosten / Stück",
     "marketing": "Marketing-Budget gesamt",
+    "priceRange": "Preisempfehlung",
     "recommendedPrice": "Empf. Preis",
     "margin": "Marge",
     "breakEven": "Break-even",
     "unitCost": "Stückkosten",
     "pieces": "Stück",
+    "price": "Preis",
+    "costs": "Kosten",
     "scenarioLow": "Niedrig",
     "scenarioMid": "Mittel",
     "scenarioHigh": "Skaliert",
     "units": "Stück",
     "revenue": "Umsatz",
-    "profit": "Gewinn"
+    "profit": "Gewinn",
+    "breakEvenViz": "Break-Even Visualisierung",
+    "sensitivity": "Profit-Sensitivitätsanalyse",
+    "sensitivityDesc": "Wie verändert sich dein Profit bei unterschiedlichen Preispunkten? ★ = empfohlener Sweet Spot.",
+    "marginWarning": "Marge unter 30% — kritisch!",
+    "marginWarningDesc": "Bei dieser Marge wird bezahltes Marketing nicht nachhaltig finanzierbar. Prüfe deine Kostenstruktur oder repositioniere in ein höheres Preissegment."
   },
   "step4": {
     "title": "Produktionsdetails",
@@ -220,6 +229,24 @@
     "w3t": "Launch",
     "w4": "Woche 4",
     "w4t": "Post-Launch"
+  },
+  "health": {
+    "title": "Brand Health Score",
+    "biggestRisk": "Größtes Risiko",
+    "nextAction": "Nächster Schritt",
+    "warnings": "Aktuelle Warnungen"
+  },
+  "insights": {
+    "title": "Insights",
+    "subtitle": "Dein smarter Markenberater — Risiken, Optimierungen und strategische Empfehlungen.",
+    "strategy": "Strategische Empfehlung",
+    "risks": "Zentrale Risiken",
+    "optimizations": "Optimierungspotenzial",
+    "allWarnings": "Alle Warnungen",
+    "noRisks": "Keine kritischen Risiken erkannt.",
+    "noOptimizations": "Keine Optimierungen verfügbar. Fülle mehr Schritte aus.",
+    "noData": "Noch keine Daten",
+    "noDataDesc": "Fülle die ersten Schritte aus, um personalisierte Insights und eine Risikoanalyse zu erhalten."
   },
   "pdf": {
     "brandReport": "Brand Report",

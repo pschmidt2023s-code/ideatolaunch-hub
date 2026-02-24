@@ -4,6 +4,7 @@ import { useBrand } from "@/hooks/useBrand";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { BrandHealthCard } from "@/components/dashboard/BrandHealthCard";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -79,6 +80,9 @@ export default function Dashboard() {
           </div>
         ) : (
           <div className="space-y-6">
+            {/* Brand Health Score */}
+            {currentBrand && <BrandHealthCard />}
+
             {currentBrand && (
               <div className="rounded-xl border bg-card p-6 shadow-card">
                 <div className="mb-4 flex items-center justify-between">
@@ -104,11 +108,11 @@ export default function Dashboard() {
                           isCurrent
                             ? "border-accent bg-accent/5 ring-1 ring-accent/20"
                             : isCompleted
-                            ? "border-success/30 bg-success/5"
+                            ? "border-green-500/30 bg-green-500/5"
                             : "opacity-60"
                         }`}
                       >
-                        <Icon className={`h-5 w-5 ${isCurrent ? "text-accent" : isCompleted ? "text-success" : "text-muted-foreground"}`} />
+                        <Icon className={`h-5 w-5 ${isCurrent ? "text-accent" : isCompleted ? "text-green-600 dark:text-green-400" : "text-muted-foreground"}`} />
                         <span className="text-xs font-medium leading-tight">{t(`steps.${key}`)}</span>
                       </button>
                     );

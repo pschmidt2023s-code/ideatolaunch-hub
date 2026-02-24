@@ -153,21 +153,30 @@
     "taglinePh": "Your slogan..."
   },
   "step3": {
+    "inputTitle": "Enter Costs",
     "production": "Production cost / unit",
     "packaging": "Packaging cost / unit",
     "shipping": "Shipping cost / unit",
     "marketing": "Total marketing budget",
+    "priceRange": "Price Recommendation",
     "recommendedPrice": "Rec. Price",
     "margin": "Margin",
     "breakEven": "Break-even",
     "unitCost": "Unit Cost",
     "pieces": "units",
+    "price": "Price",
+    "costs": "Costs",
     "scenarioLow": "Low",
     "scenarioMid": "Medium",
     "scenarioHigh": "Scaled",
     "units": "units",
     "revenue": "Revenue",
-    "profit": "Profit"
+    "profit": "Profit",
+    "breakEvenViz": "Break-Even Visualization",
+    "sensitivity": "Profit Sensitivity Analysis",
+    "sensitivityDesc": "How does your profit change at different price points? ★ = recommended sweet spot.",
+    "marginWarning": "Margin below 30% — critical!",
+    "marginWarningDesc": "At this margin, paid marketing is not sustainably fundable. Review your cost structure or reposition to a higher price segment."
   },
   "step4": {
     "title": "Production Details",
@@ -220,6 +229,24 @@
     "w3t": "Launch",
     "w4": "Week 4",
     "w4t": "Post-Launch"
+  },
+  "health": {
+    "title": "Brand Health Score",
+    "biggestRisk": "Biggest Risk",
+    "nextAction": "Next Step",
+    "warnings": "Current Warnings"
+  },
+  "insights": {
+    "title": "Insights",
+    "subtitle": "Your smart brand advisor — risks, optimizations, and strategic recommendations.",
+    "strategy": "Strategic Recommendation",
+    "risks": "Key Risks",
+    "optimizations": "Optimization Potential",
+    "allWarnings": "All Warnings",
+    "noRisks": "No critical risks detected.",
+    "noOptimizations": "No optimizations available. Complete more steps first.",
+    "noData": "No data yet",
+    "noDataDesc": "Complete the first steps to receive personalized insights and risk analysis."
   },
   "pdf": {
     "brandReport": "Brand Report",
