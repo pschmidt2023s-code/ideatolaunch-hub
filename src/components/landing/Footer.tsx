@@ -1,4 +1,8 @@
+import { useTranslation } from "react-i18next";
+
 export function Footer() {
+  const { t } = useTranslation();
+
   return (
     <footer className="border-t px-4 py-12">
       <div className="container mx-auto max-w-5xl flex flex-col items-center justify-between gap-4 sm:flex-row">
@@ -9,7 +13,7 @@ export function Footer() {
           <span className="font-semibold">BuildYourBrand</span>
         </div>
         <p className="text-sm text-muted-foreground">
-          © {new Date().getFullYear()} BuildYourBrand. Alle Rechte vorbehalten.
+          © {new Date().getFullYear()} BuildYourBrand. {t("footer.rights")}
         </p>
       </div>
     </footer>

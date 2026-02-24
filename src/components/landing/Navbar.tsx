@@ -1,8 +1,17 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { Globe } from "lucide-react";
 
 export function Navbar() {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
+
+  const toggleLang = () => {
+    const next = i18n.language === "de" ? "en" : "de";
+    i18n.changeLanguage(next);
+    localStorage.setItem("lang", next);
+  };
 
   return (
     <header className="fixed top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md">
@@ -16,23 +25,30 @@ export function Navbar() {
 
         <nav className="hidden items-center gap-6 md:flex">
           <a href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            Funktionen
+            {t("nav.features")}
           </a>
           <a href="#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            Preise
+            {t("nav.pricing")}
           </a>
         </nav>
 
         <div className="flex items-center gap-3">
+          <button
+            onClick={toggleLang}
+            className="flex items-center gap-1.5 rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <Globe className="h-4 w-4" />
+            {i18n.language === "de" ? "EN" : "DE"}
+          </button>
           <Button variant="ghost" size="sm" onClick={() => navigate("/auth")}>
-            Anmelden
+            {t("nav.login")}
           </Button>
           <Button
             size="sm"
             className="bg-accent text-accent-foreground hover:bg-accent/90"
             onClick={() => navigate("/auth?tab=signup")}
           >
-            Registrieren
+            {t("nav.signup")}
           </Button>
         </div>
       </div>
