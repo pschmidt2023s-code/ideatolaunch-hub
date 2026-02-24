@@ -1,0 +1,614 @@
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
+export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "14.1"
+  }
+  public: {
+    Tables: {
+      brand_identities: {
+        Row: {
+          brand_id: string
+          brand_name: string | null
+          created_at: string
+          id: string
+          tagline: string | null
+          tone: string | null
+          updated_at: string
+          visual_direction: string | null
+        }
+        Insert: {
+          brand_id: string
+          brand_name?: string | null
+          created_at?: string
+          id?: string
+          tagline?: string | null
+          tone?: string | null
+          updated_at?: string
+          visual_direction?: string | null
+        }
+        Update: {
+          brand_id?: string
+          brand_name?: string | null
+          created_at?: string
+          id?: string
+          tagline?: string | null
+          tone?: string | null
+          updated_at?: string
+          visual_direction?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brand_identities_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: true
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      brand_profiles: {
+        Row: {
+          brand_id: string
+          brand_values: string | null
+          budget: string | null
+          country: string | null
+          created_at: string
+          differentiation: string | null
+          id: string
+          market_angle: string | null
+          positioning_statement: string | null
+          price_level: string | null
+          product_description: string | null
+          target_audience: string | null
+          timeline: string | null
+          updated_at: string
+        }
+        Insert: {
+          brand_id: string
+          brand_values?: string | null
+          budget?: string | null
+          country?: string | null
+          created_at?: string
+          differentiation?: string | null
+          id?: string
+          market_angle?: string | null
+          positioning_statement?: string | null
+          price_level?: string | null
+          product_description?: string | null
+          target_audience?: string | null
+          timeline?: string | null
+          updated_at?: string
+        }
+        Update: {
+          brand_id?: string
+          brand_values?: string | null
+          budget?: string | null
+          country?: string | null
+          created_at?: string
+          differentiation?: string | null
+          id?: string
+          market_angle?: string | null
+          positioning_statement?: string | null
+          price_level?: string | null
+          product_description?: string | null
+          target_audience?: string | null
+          timeline?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brand_profiles_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: true
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      brand_tasks: {
+        Row: {
+          brand_id: string
+          completed: boolean
+          created_at: string
+          description: string | null
+          due_date: string | null
+          id: string
+          step_number: number | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          brand_id: string
+          completed?: boolean
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          step_number?: number | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          brand_id?: string
+          completed?: boolean
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          step_number?: number | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brand_tasks_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      brands: {
+        Row: {
+          created_at: string
+          current_step: number
+          id: string
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_step?: number
+          id?: string
+          name?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_step?: number
+          id?: string
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      compliance_plans: {
+        Row: {
+          barcode_guide: string | null
+          brand_id: string
+          created_at: string
+          id: string
+          label_checklist: Json | null
+          legal_summary: string | null
+          packaging_info: Json | null
+          updated_at: string
+        }
+        Insert: {
+          barcode_guide?: string | null
+          brand_id: string
+          created_at?: string
+          id?: string
+          label_checklist?: Json | null
+          legal_summary?: string | null
+          packaging_info?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          barcode_guide?: string | null
+          brand_id?: string
+          created_at?: string
+          id?: string
+          label_checklist?: Json | null
+          legal_summary?: string | null
+          packaging_info?: Json | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "compliance_plans_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: true
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      documents: {
+        Row: {
+          brand_id: string
+          created_at: string
+          document_type: string | null
+          file_name: string
+          file_type: string | null
+          file_url: string | null
+          id: string
+        }
+        Insert: {
+          brand_id: string
+          created_at?: string
+          document_type?: string | null
+          file_name: string
+          file_type?: string | null
+          file_url?: string | null
+          id?: string
+        }
+        Update: {
+          brand_id?: string
+          created_at?: string
+          document_type?: string | null
+          file_name?: string
+          file_type?: string | null
+          file_url?: string | null
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documents_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      financial_models: {
+        Row: {
+          brand_id: string
+          break_even_units: number | null
+          created_at: string
+          id: string
+          margin: number | null
+          marketing_budget: number | null
+          packaging_cost: number | null
+          production_cost: number | null
+          recommended_price: number | null
+          shipping_cost: number | null
+          updated_at: string
+        }
+        Insert: {
+          brand_id: string
+          break_even_units?: number | null
+          created_at?: string
+          id?: string
+          margin?: number | null
+          marketing_budget?: number | null
+          packaging_cost?: number | null
+          production_cost?: number | null
+          recommended_price?: number | null
+          shipping_cost?: number | null
+          updated_at?: string
+        }
+        Update: {
+          brand_id?: string
+          break_even_units?: number | null
+          created_at?: string
+          id?: string
+          margin?: number | null
+          marketing_budget?: number | null
+          packaging_cost?: number | null
+          production_cost?: number | null
+          recommended_price?: number | null
+          shipping_cost?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "financial_models_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: true
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      launch_plans: {
+        Row: {
+          brand_id: string
+          created_at: string
+          fulfillment_model: string | null
+          id: string
+          launch_quantity: number | null
+          launch_readiness_score: number | null
+          logistics_steps: Json | null
+          operational_checklist: Json | null
+          roadmap: Json | null
+          sales_channel: string | null
+          updated_at: string
+        }
+        Insert: {
+          brand_id: string
+          created_at?: string
+          fulfillment_model?: string | null
+          id?: string
+          launch_quantity?: number | null
+          launch_readiness_score?: number | null
+          logistics_steps?: Json | null
+          operational_checklist?: Json | null
+          roadmap?: Json | null
+          sales_channel?: string | null
+          updated_at?: string
+        }
+        Update: {
+          brand_id?: string
+          created_at?: string
+          fulfillment_model?: string | null
+          id?: string
+          launch_quantity?: number | null
+          launch_readiness_score?: number | null
+          logistics_steps?: Json | null
+          operational_checklist?: Json | null
+          roadmap?: Json | null
+          sales_channel?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "launch_plans_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: true
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      production_plans: {
+        Row: {
+          brand_id: string
+          checklist: Json | null
+          created_at: string
+          id: string
+          moq_expectation: string | null
+          product_category: string | null
+          production_region: string | null
+          risk_warnings: Json | null
+          supplier_questions: Json | null
+          updated_at: string
+        }
+        Insert: {
+          brand_id: string
+          checklist?: Json | null
+          created_at?: string
+          id?: string
+          moq_expectation?: string | null
+          product_category?: string | null
+          production_region?: string | null
+          risk_warnings?: Json | null
+          supplier_questions?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          brand_id?: string
+          checklist?: Json | null
+          created_at?: string
+          id?: string
+          moq_expectation?: string | null
+          product_category?: string | null
+          production_region?: string | null
+          risk_warnings?: Json | null
+          supplier_questions?: Json | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "production_plans_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: true
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          company_name: string | null
+          created_at: string
+          first_name: string | null
+          id: string
+          last_name: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          company_name?: string | null
+          created_at?: string
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          company_name?: string | null
+          created_at?: string
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          created_at: string
+          current_period_end: string | null
+          id: string
+          status: string
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_period_end?: string | null
+          id?: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_period_end?: string | null
+          id?: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      owns_brand: { Args: { _brand_id: string }; Returns: boolean }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+}
+
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
+
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
+
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
+
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
+
+export const Constants = {
+  public: {
+    Enums: {},
+  },
+} as const
