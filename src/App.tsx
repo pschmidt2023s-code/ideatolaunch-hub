@@ -13,6 +13,7 @@ import Dashboard from "./pages/Dashboard";
 import InsightsPage from "./pages/Insights";
 import StepPage from "./pages/workflow/StepPage";
 import NotFound from "./pages/NotFound";
+import Pricing from "./pages/Pricing";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/pricing" element={<Pricing />} />
               <Route
                 path="/dashboard"
                 element={

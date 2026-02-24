@@ -49,7 +49,7 @@
     "freeF3": "Grundlegende Checklisten",
     "freeF4": "Community-Zugang",
     "freeCta": "Kostenlos starten",
-    "pro": "Pro",
+    "pro": "Builder",
     "proPrice": "29 €",
     "proPeriod": "/ Monat",
     "proF1": "Unbegrenzte Marken",
@@ -58,7 +58,7 @@
     "proF4": "PDF-Exporte",
     "proF5": "30-Tage Launch-Roadmap",
     "proF6": "Compliance-Vorlagen",
-    "proCta": "Pro starten",
+    "proCta": "Builder starten",
     "popular": "Beliebt"
   },
   "footer": {
@@ -255,6 +255,16 @@
   "pdf": {
     "brandReport": "Brand Report",
     "exportSuccess": "PDF erfolgreich erstellt!"
+  },
+  "upgrade": {
+    "bannerTitle": "Du nutzt den Free-Plan",
+    "bannerDesc": "Upgrade auf Builder für unbegrenzte Marken, volle Insights und PDF-Exporte.",
+    "cta": "Upgrade auf Builder",
+    "locked": "Builder-Feature",
+    "lockedDesc": "Upgrade um diese Funktion freizuschalten.",
+    "pdfLocked": "PDF-Export ist im Builder-Plan enthalten.",
+    "brandLimit": "Im Free-Plan ist nur 1 Marke möglich.",
+    "processing": "Weiterleitung zu Stripe..."
   },
   "lang": {
     "de": "Deutsch",

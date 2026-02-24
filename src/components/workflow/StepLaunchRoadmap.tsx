@@ -4,10 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Save, Loader2, FileText } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useBrand } from "@/hooks/useBrand";
+import { useSubscription } from "@/hooks/useSubscription";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { generateBrandReport } from "@/lib/pdf-export";
+import { useNavigate } from "react-router-dom";
 
 const weeks = [
   {
@@ -59,6 +61,8 @@ const weeks = [
 export function StepLaunchRoadmap() {
   const { t } = useTranslation();
   const { activeBrand } = useBrand();
+  const { isFree } = useSubscription();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const brandId = activeBrand?.id;
 
@@ -111,6 +115,11 @@ export function StepLaunchRoadmap() {
   };
 
   const handleExportPdf = () => {
+    if (isFree) {
+      toast.error(t("upgrade.pdfLocked"));
+      navigate("/pricing");
+      return;
+    }
     generateBrandReport({
       brandName: activeBrand?.name || "Brand",
     });

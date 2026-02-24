@@ -2,10 +2,12 @@ import { useState } from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { useAuth } from "@/hooks/useAuth";
 import { useBrand } from "@/hooks/useBrand";
+import { useSubscription } from "@/hooks/useSubscription";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { BrandHealthCard } from "@/components/dashboard/BrandHealthCard";
+import { UpgradeBanner } from "@/components/UpgradeBanner";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -53,6 +55,7 @@ const stepIcons = [Lightbulb, Palette, Calculator, Factory, Shield, ShoppingBag,
 export default function Dashboard() {
   const { user } = useAuth();
   const { brands, activeBrand, setActiveBrandId, refetchBrands } = useBrand();
+  const { isFree } = useSubscription();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -64,6 +67,10 @@ export default function Dashboard() {
   const stepKeys = ["s1", "s2", "s3", "s4", "s5", "s6", "s7"];
 
   const createBrand = async () => {
+    if (isFree && brands.length >= 1) {
+      toast.error(t("upgrade.brandLimit"));
+      return;
+    }
     const { error } = await supabase.from("brands").insert({
       user_id: user!.id,
       name: "Neue Marke",
@@ -121,6 +128,7 @@ export default function Dashboard() {
   return (
     <DashboardLayout>
       <div className="animate-fade-in">
+        {isFree && <UpgradeBanner />}
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold">{t("dashboard.title")}</h1>
