@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Sparkles, Save, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { withPerfTracking, logError } from "@/lib/analytics";
 import { useTranslation } from "react-i18next";
 import { useBrand } from "@/hooks/useBrand";
 import { supabase } from "@/integrations/supabase/client";
@@ -108,10 +109,13 @@ export function StepIdeaFoundation() {
     }
     setAiLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke("ai-analyze", {
-        body: form,
-      });
-      if (error) throw error;
+      const data = await withPerfTracking("ai_analyze", async () => {
+        const { data, error } = await supabase.functions.invoke("ai-analyze", {
+          body: form,
+        });
+        if (error) throw error;
+        return data;
+      }, 1500);
       setGenerated({
         positioning: data.positioning || "",
         values: data.values || "",
@@ -119,9 +123,10 @@ export function StepIdeaFoundation() {
         differentiation: data.differentiation || "",
       });
       toast.success("KI-Analyse abgeschlossen!");
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       toast.error("KI-Analyse fehlgeschlagen.");
+      logError(err.message || "AI analyze failed", { errorType: "api", metadata: { form } });
     } finally {
       setAiLoading(false);
     }

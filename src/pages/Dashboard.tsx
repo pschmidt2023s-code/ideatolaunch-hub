@@ -11,7 +11,7 @@ import { UpgradeBanner } from "@/components/UpgradeBanner";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { trackEvent } from "@/lib/analytics";
+import { trackEvent, logError } from "@/lib/analytics";
 import { Input } from "@/components/ui/input";
 import {
   Dialog,
@@ -78,10 +78,11 @@ export default function Dashboard() {
     });
     if (error) {
       toast.error(t("steps.saveError"));
+      logError(error.message, { errorType: "api", metadata: { action: "createBrand" } });
       return;
     }
     toast.success(t("steps.saved"));
-    trackEvent("brand_created", { brandName: "Neue Marke" });
+    trackEvent(brands.length === 0 ? "first_brand_created" : "brand_created", { brandName: "Neue Marke" });
     refetchBrands();
   };
 

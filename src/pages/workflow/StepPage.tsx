@@ -11,7 +11,7 @@ import { StepLaunchRoadmap } from "@/components/workflow/StepLaunchRoadmap";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { trackEvent } from "@/lib/analytics";
+import { trackEvent, startStepTimer, clearStepTimer } from "@/lib/analytics";
 
 const stepComponents = [
   StepIdeaFoundation,
@@ -23,6 +23,12 @@ const stepComponents = [
   StepLaunchRoadmap,
 ];
 
+const stepEventMap: Record<number, Parameters<typeof trackEvent>[0]> = {
+  1: "idea_completed",
+  3: "calculator_completed",
+  4: "production_completed",
+};
+
 export default function StepPage() {
   const { stepNumber } = useParams();
   const navigate = useNavigate();
@@ -30,14 +36,18 @@ export default function StepPage() {
   const step = parseInt(stepNumber || "1", 10);
   const StepComponent = stepComponents[step - 1];
 
+  const stepTitleKeys = ["s1", "s2", "s3", "s4", "s5", "s6", "s7"];
+
   useEffect(() => {
     if (step >= 1 && step <= 7) {
       trackEvent("step_completed", { step });
       if (step === 3) trackEvent("entered_business_calculator");
+      const funnelEvent = stepEventMap[step];
+      if (funnelEvent) trackEvent(funnelEvent, { step });
+      startStepTimer(step);
     }
+    return () => clearStepTimer();
   }, [step]);
-
-  const stepTitleKeys = ["s1", "s2", "s3", "s4", "s5", "s6", "s7"];
 
   if (!StepComponent || step < 1 || step > 7) {
     navigate("/dashboard");

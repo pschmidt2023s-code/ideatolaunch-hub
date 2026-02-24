@@ -9,6 +9,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { trackEvent, withPerfTracking, logError } from "@/lib/analytics";
 
 export function StepBusinessCalculator() {
   const { activeBrand } = useBrand();
@@ -55,7 +56,10 @@ export function StepBusinessCalculator() {
   }, [savedFinancial]);
 
   const update = (key: string, value: string) => {
-    setCosts((p) => ({ ...p, [key]: parseFloat(value) || 0 }));
+    const num = parseFloat(value);
+    // Prevent negative values client-side
+    if (!isNaN(num) && num < 0) return;
+    setCosts((p) => ({ ...p, [key]: num || 0 }));
   };
 
   const total = costs.production + costs.packaging + costs.shipping;
@@ -102,6 +106,14 @@ export function StepBusinessCalculator() {
 
   const handleSave = useCallback(async () => {
     if (!brandId) return;
+
+    // Validate inputs
+    if (costs.production < 0 || costs.packaging < 0 || costs.shipping < 0 || costs.marketing < 0) {
+      toast.error("Kosten dürfen nicht negativ sein.");
+      logError("Negative cost values attempted", { errorType: "validation", metadata: { costs } });
+      return;
+    }
+
     setSaving(true);
     const payload = {
       brand_id: brandId,
@@ -114,22 +126,32 @@ export function StepBusinessCalculator() {
       break_even_units: breakEven,
     };
 
-    const { data: existing } = await supabase
-      .from("financial_models")
-      .select("id")
-      .eq("brand_id", brandId)
-      .maybeSingle();
+    try {
+      await withPerfTracking("save_financial_model", async () => {
+        const { data: existing } = await supabase
+          .from("financial_models")
+          .select("id")
+          .eq("brand_id", brandId)
+          .maybeSingle();
 
-    const { error } = existing
-      ? await supabase.from("financial_models").update(payload).eq("id", existing.id)
-      : await supabase.from("financial_models").insert(payload);
+        const { error } = existing
+          ? await supabase.from("financial_models").update(payload).eq("id", existing.id)
+          : await supabase.from("financial_models").insert(payload);
 
-    setSaving(false);
-    if (error) {
-      toast.error(t("steps.saveError"));
-    } else {
+        if (error) throw error;
+      });
+
       toast.success(t("steps.saved"));
+      trackEvent("calculated_price", { margin, breakEven, sweetSpot: priceRange.sweet });
       queryClient.invalidateQueries({ queryKey: ["financial_model", brandId] });
+    } catch (err: any) {
+      toast.error(t("steps.saveError"));
+      logError(err.message || "Financial model save failed", {
+        errorType: "api",
+        metadata: { brandId },
+      });
+    } finally {
+      setSaving(false);
     }
   }, [brandId, costs, priceRange.sweet, margin, breakEven, queryClient, t]);
 
