@@ -2,10 +2,38 @@ import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export function PricingSection() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(false);
+
+  const handleBuilderClick = async () => {
+    if (!user) {
+      navigate("/auth?tab=signup");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("stripe-checkout", {
+        body: { return_url: window.location.origin },
+      });
+      if (error) throw error;
+      if (data?.url) {
+        window.location.href = data.url;
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Fehler beim Starten des Checkouts");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const plans = [
     {
@@ -15,14 +43,16 @@ export function PricingSection() {
       features: [t("pricing.freeF1"), t("pricing.freeF2"), t("pricing.freeF3"), t("pricing.freeF4")],
       cta: t("pricing.freeCta"),
       highlighted: false,
+      onClick: () => navigate("/auth"),
     },
     {
       name: t("pricing.pro"),
       price: t("pricing.proPrice"),
       period: t("pricing.proPeriod"),
       features: [t("pricing.proF1"), t("pricing.proF2"), t("pricing.proF3"), t("pricing.proF4"), t("pricing.proF5"), t("pricing.proF6")],
-      cta: t("pricing.proCta"),
+      cta: loading ? t("upgrade.processing") : t("pricing.proCta"),
       highlighted: true,
+      onClick: handleBuilderClick,
     },
   ];
 
@@ -69,7 +99,8 @@ export function PricingSection() {
                     : ""
                 }`}
                 variant={plan.highlighted ? "default" : "outline"}
-                onClick={() => navigate("/auth")}
+                onClick={plan.onClick}
+                disabled={plan.highlighted && loading}
               >
                 {plan.cta}
               </Button>
