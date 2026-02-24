@@ -5,7 +5,7 @@ import { useBrand } from "@/hooks/useBrand";
 import { analyzeBrandHealth, type BrandHealthResult } from "@/lib/brand-health-engine";
 
 export function useBrandHealth(): { health: BrandHealthResult | null; loading: boolean } {
-  const { activeBrand } = useBrand();
+  const { activeBrand, loading: brandLoading } = useBrand();
   const brandId = activeBrand?.id;
 
   const { data: profile } = useQuery({
@@ -75,5 +75,5 @@ export function useBrandHealth(): { health: BrandHealthResult | null; loading: b
     });
   }, [brandId, activeBrand, profile, identity, financial, production, compliance, launch]);
 
-  return { health, loading: !brandId };
+  return { health, loading: brandLoading || !brandId };
 }
