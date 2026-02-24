@@ -1,8 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
+import { Save, Loader2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { useBrand } from "@/hooks/useBrand";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 const checklist = [
   "Produktspezifikationen definiert",
@@ -22,40 +29,102 @@ const supplierQuestions = [
 ];
 
 export function StepProduction() {
+  const { t } = useTranslation();
+  const { activeBrand } = useBrand();
+  const queryClient = useQueryClient();
+  const brandId = activeBrand?.id;
+
   const [region, setRegion] = useState("");
   const [moq, setMoq] = useState("");
   const [category, setCategory] = useState("");
   const [checked, setChecked] = useState<Record<string, boolean>>({});
+  const [saving, setSaving] = useState(false);
+
+  const { data: plan } = useQuery({
+    queryKey: ["production_plan", brandId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("production_plans")
+        .select("*")
+        .eq("brand_id", brandId!)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!brandId,
+  });
+
+  useEffect(() => {
+    if (plan) {
+      setRegion(plan.production_region || "");
+      setMoq(plan.moq_expectation || "");
+      setCategory(plan.product_category || "");
+      if (Array.isArray(plan.checklist)) {
+        const c: Record<string, boolean> = {};
+        (plan.checklist as string[]).forEach((item) => { c[item] = true; });
+        setChecked(c);
+      }
+    }
+  }, [plan]);
+
+  const handleSave = async () => {
+    if (!brandId) return;
+    setSaving(true);
+    const payload = {
+      brand_id: brandId,
+      production_region: region,
+      moq_expectation: moq,
+      product_category: category,
+      checklist: Object.entries(checked).filter(([, v]) => v).map(([k]) => k),
+    };
+
+    const { error } = plan
+      ? await supabase.from("production_plans").update(payload).eq("id", plan.id)
+      : await supabase.from("production_plans").insert(payload);
+
+    setSaving(false);
+    if (error) {
+      toast.error(t("steps.saveError"));
+    } else {
+      toast.success(t("steps.saved"));
+      queryClient.invalidateQueries({ queryKey: ["production_plan", brandId] });
+    }
+  };
 
   return (
     <div className="space-y-8">
       <div className="rounded-xl border bg-card p-6 shadow-card">
-        <h2 className="mb-6 text-lg font-semibold">Produktionsdetails</h2>
+        <div className="mb-6 flex items-center justify-between">
+          <h2 className="text-lg font-semibold">{t("step4.title")}</h2>
+          <Button variant="outline" size="sm" className="gap-2" onClick={handleSave} disabled={saving}>
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            {t("steps.save")}
+          </Button>
+        </div>
         <div className="grid gap-5 sm:grid-cols-3">
           <div className="space-y-2">
-            <Label>Produktionsregion</Label>
+            <Label>{t("step4.region")}</Label>
             <Select value={region} onValueChange={setRegion}>
-              <SelectTrigger><SelectValue placeholder="Wählen..." /></SelectTrigger>
+              <SelectTrigger><SelectValue placeholder={t("step1.choose")} /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="eu">EU</SelectItem>
-                <SelectItem value="asia">Asien</SelectItem>
-                <SelectItem value="flexible">Flexibel</SelectItem>
+                <SelectItem value="eu">{t("step4.eu")}</SelectItem>
+                <SelectItem value="asia">{t("step4.asia")}</SelectItem>
+                <SelectItem value="flexible">{t("step4.flexible")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div className="space-y-2">
-            <Label>MOQ-Erwartung</Label>
-            <Input placeholder="z.B. 100 Stück" value={moq} onChange={(e) => setMoq(e.target.value)} />
+            <Label>{t("step4.moq")}</Label>
+            <Input placeholder={t("step4.moqPh")} value={moq} onChange={(e) => setMoq(e.target.value)} />
           </div>
           <div className="space-y-2">
-            <Label>Produktkategorie</Label>
-            <Input placeholder="z.B. Kosmetik" value={category} onChange={(e) => setCategory(e.target.value)} />
+            <Label>{t("step4.category")}</Label>
+            <Input placeholder={t("step4.categoryPh")} value={category} onChange={(e) => setCategory(e.target.value)} />
           </div>
         </div>
       </div>
 
       <div className="rounded-xl border bg-card p-6 shadow-card">
-        <h2 className="mb-4 text-lg font-semibold">Produktions-Checkliste</h2>
+        <h2 className="mb-4 text-lg font-semibold">{t("step4.checklist")}</h2>
         <div className="space-y-3">
           {checklist.map((item) => (
             <label key={item} className="flex items-center gap-3 cursor-pointer">
@@ -70,7 +139,7 @@ export function StepProduction() {
       </div>
 
       <div className="rounded-xl border bg-card p-6 shadow-card">
-        <h2 className="mb-4 text-lg font-semibold">Fragen an Lieferanten</h2>
+        <h2 className="mb-4 text-lg font-semibold">{t("step4.supplierQuestions")}</h2>
         <ul className="space-y-2">
           {supplierQuestions.map((q) => (
             <li key={q} className="flex items-start gap-2 text-sm">

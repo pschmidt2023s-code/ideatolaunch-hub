@@ -1,5 +1,7 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useTranslation } from "react-i18next";
+import { Globe } from "lucide-react";
 import {
   LayoutDashboard,
   Lightbulb,
@@ -13,21 +15,28 @@ import {
   Settings,
 } from "lucide-react";
 
-const navItems = [
-  { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
-  { icon: Lightbulb, label: "Ideen-Fundament", path: "/dashboard/step/1" },
-  { icon: Palette, label: "Markenstruktur", path: "/dashboard/step/2" },
-  { icon: Calculator, label: "Business-Kalkulator", path: "/dashboard/step/3" },
-  { icon: Factory, label: "Produktion", path: "/dashboard/step/4" },
-  { icon: Shield, label: "Compliance", path: "/dashboard/step/5" },
-  { icon: ShoppingBag, label: "Vertrieb", path: "/dashboard/step/6" },
-  { icon: Rocket, label: "Launch-Roadmap", path: "/dashboard/step/7" },
-];
-
 export function DashboardSidebar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { signOut } = useAuth();
+  const { t, i18n } = useTranslation();
+
+  const toggleLang = () => {
+    const next = i18n.language === "de" ? "en" : "de";
+    i18n.changeLanguage(next);
+    localStorage.setItem("lang", next);
+  };
+
+  const navItems = [
+    { icon: LayoutDashboard, label: t("dashboard.title"), path: "/dashboard" },
+    { icon: Lightbulb, label: t("steps.s1"), path: "/dashboard/step/1" },
+    { icon: Palette, label: t("steps.s2"), path: "/dashboard/step/2" },
+    { icon: Calculator, label: t("steps.s3"), path: "/dashboard/step/3" },
+    { icon: Factory, label: t("steps.s4"), path: "/dashboard/step/4" },
+    { icon: Shield, label: t("steps.s5"), path: "/dashboard/step/5" },
+    { icon: ShoppingBag, label: t("steps.s6"), path: "/dashboard/step/6" },
+    { icon: Rocket, label: t("steps.s7"), path: "/dashboard/step/7" },
+  ];
 
   return (
     <aside className="flex h-screen w-64 flex-col bg-sidebar text-sidebar-foreground border-r border-sidebar-border">
@@ -60,18 +69,25 @@ export function DashboardSidebar() {
 
       <div className="border-t border-sidebar-border p-3 space-y-1">
         <button
+          onClick={toggleLang}
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors"
+        >
+          <Globe className="h-4 w-4" />
+          {i18n.language === "de" ? "English" : "Deutsch"}
+        </button>
+        <button
           onClick={() => navigate("/dashboard/settings")}
           className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors"
         >
           <Settings className="h-4 w-4" />
-          Einstellungen
+          {t("dashboard.settings")}
         </button>
         <button
           onClick={signOut}
           className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors"
         >
           <LogOut className="h-4 w-4" />
-          Abmelden
+          {t("dashboard.logout")}
         </button>
       </div>
     </aside>

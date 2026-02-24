@@ -1,9 +1,11 @@
 import { ArrowRight, Layers, Target, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export function HeroSection() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <section className="relative overflow-hidden px-4 pt-32 pb-20 md:pt-40 md:pb-32">
@@ -11,19 +13,17 @@ export function HeroSection() {
       <div className="container relative mx-auto max-w-5xl text-center">
         <div className="mb-6 inline-flex items-center gap-2 rounded-full border bg-card px-4 py-1.5 text-sm text-muted-foreground shadow-card">
           <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-          Von der Idee zur fertigen Marke
+          {t("hero.badge")}
         </div>
 
         <h1 className="mx-auto max-w-4xl text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl">
-          Deine Marke.{" "}
-          <span className="text-gradient">Strukturiert</span>{" "}
-          aufgebaut.
+          {t("hero.title1")}{" "}
+          <span className="text-gradient">{t("hero.title2")}</span>{" "}
+          {t("hero.title3")}
         </h1>
 
         <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground md:text-xl">
-          BuildYourBrand führt dich Schritt für Schritt von der Geschäftsidee zur
-          startbereiten Marke — mit strukturierten Workflows, Kalkulationen und
-          KI-Unterstützung.
+          {t("hero.subtitle")}
         </p>
 
         <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
@@ -32,7 +32,7 @@ export function HeroSection() {
             className="gap-2 bg-accent text-accent-foreground hover:bg-accent/90 shadow-md px-8"
             onClick={() => navigate("/auth")}
           >
-            Kostenlos starten
+            {t("hero.cta")}
             <ArrowRight className="h-4 w-4" />
           </Button>
           <Button
@@ -41,15 +41,15 @@ export function HeroSection() {
             className="gap-2 px-8"
             onClick={() => document.getElementById("features")?.scrollIntoView({ behavior: "smooth" })}
           >
-            Mehr erfahren
+            {t("hero.learn")}
           </Button>
         </div>
 
         <div className="mx-auto mt-20 grid max-w-3xl grid-cols-1 gap-6 sm:grid-cols-3">
           {[
-            { icon: Target, label: "7 Schritte", desc: "Vom Konzept zum Launch" },
-            { icon: Layers, label: "Alles strukturiert", desc: "Nie wieder Chaos" },
-            { icon: TrendingUp, label: "Datengetrieben", desc: "Kalkulation & Analyse" },
+            { icon: Target, label: t("hero.steps"), desc: t("hero.stepsDesc") },
+            { icon: Layers, label: t("hero.structured"), desc: t("hero.structuredDesc") },
+            { icon: TrendingUp, label: t("hero.data"), desc: t("hero.dataDesc") },
           ].map(({ icon: Icon, label, desc }) => (
             <div key={label} className="flex flex-col items-center gap-2 rounded-lg border bg-card p-6 shadow-card animate-fade-in">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10">
