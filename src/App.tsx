@@ -10,6 +10,7 @@ import "@/i18n";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
+import InsightsPage from "./pages/Insights";
 import StepPage from "./pages/workflow/StepPage";
 import NotFound from "./pages/NotFound";
 
@@ -31,6 +32,14 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/dashboard/insights"
+                element={
+                  <ProtectedRoute>
+                    <InsightsPage />
                   </ProtectedRoute>
                 }
               />

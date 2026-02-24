@@ -13,6 +13,7 @@ import {
   Rocket,
   LogOut,
   Settings,
+  Brain,
 } from "lucide-react";
 
 interface DashboardSidebarProps {
@@ -38,6 +39,7 @@ export function DashboardSidebar({ onNavigate }: DashboardSidebarProps) {
 
   const navItems = [
     { icon: LayoutDashboard, label: t("dashboard.title"), path: "/dashboard" },
+    { icon: Brain, label: t("insights.title"), path: "/dashboard/insights" },
     { icon: Lightbulb, label: t("steps.s1"), path: "/dashboard/step/1" },
     { icon: Palette, label: t("steps.s2"), path: "/dashboard/step/2" },
     { icon: Calculator, label: t("steps.s3"), path: "/dashboard/step/3" },
@@ -57,7 +59,7 @@ export function DashboardSidebar({ onNavigate }: DashboardSidebarProps) {
       </div>
 
       <nav className="flex-1 space-y-1 px-3 py-4 overflow-y-auto">
-        {navItems.map(({ icon: Icon, label, path }) => {
+        {navItems.map(({ icon: Icon, label, path }, i) => {
           const isActive = location.pathname === path;
           return (
             <button
@@ -67,7 +69,7 @@ export function DashboardSidebar({ onNavigate }: DashboardSidebarProps) {
                 isActive
                   ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
                   : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
-              }`}
+              } ${i === 1 ? "mb-2" : ""}`}
             >
               <Icon className="h-4 w-4 shrink-0" />
               <span className="truncate">{label}</span>
