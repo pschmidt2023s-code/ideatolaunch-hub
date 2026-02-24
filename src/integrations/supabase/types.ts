@@ -20,6 +20,7 @@ export type Database = {
           event_name: string
           id: string
           metadata: Json | null
+          session_id: string | null
           user_id: string | null
         }
         Insert: {
@@ -27,6 +28,7 @@ export type Database = {
           event_name: string
           id?: string
           metadata?: Json | null
+          session_id?: string | null
           user_id?: string | null
         }
         Update: {
@@ -34,6 +36,7 @@ export type Database = {
           event_name?: string
           id?: string
           metadata?: Json | null
+          session_id?: string | null
           user_id?: string | null
         }
         Relationships: []
@@ -291,25 +294,34 @@ export type Database = {
       error_logs: {
         Row: {
           created_at: string
+          error_type: string
           id: string
           message: string
+          metadata: Json | null
           route: string | null
+          session_id: string | null
           stack: string | null
           user_id: string | null
         }
         Insert: {
           created_at?: string
+          error_type?: string
           id?: string
           message: string
+          metadata?: Json | null
           route?: string | null
+          session_id?: string | null
           stack?: string | null
           user_id?: string | null
         }
         Update: {
           created_at?: string
+          error_type?: string
           id?: string
           message?: string
+          metadata?: Json | null
           route?: string | null
+          session_id?: string | null
           stack?: string | null
           user_id?: string | null
         }

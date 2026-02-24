@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { BrandProvider } from "@/hooks/useBrand";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import "@/i18n";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -19,56 +20,58 @@ import InternalAnalytics from "./pages/internal/Analytics";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <BrandProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/pricing" element={<Pricing />} />
-              <Route
-                path="/dashboard"
-                element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/dashboard/insights"
-                element={
-                  <ProtectedRoute>
-                    <InsightsPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/dashboard/step/:stepNumber"
-                element={
-                  <ProtectedRoute>
-                    <StepPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/internal/analytics"
-                element={
-                  <ProtectedRoute>
-                    <InternalAnalytics />
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
-      </BrandProvider>
-    </AuthProvider>
-  </QueryClientProvider>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <BrandProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/pricing" element={<Pricing />} />
+                <Route
+                  path="/dashboard"
+                  element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/dashboard/insights"
+                  element={
+                    <ProtectedRoute>
+                      <InsightsPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/dashboard/step/:stepNumber"
+                  element={
+                    <ProtectedRoute>
+                      <StepPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/internal/analytics"
+                  element={
+                    <ProtectedRoute>
+                      <InternalAnalytics />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </TooltipProvider>
+        </BrandProvider>
+      </AuthProvider>
+    </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;

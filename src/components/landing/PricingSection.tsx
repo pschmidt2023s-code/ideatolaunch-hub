@@ -6,7 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 import { toast } from "sonner";
-import { trackEvent } from "@/lib/analytics";
+import { trackEvent, withPerfTracking, logError } from "@/lib/analytics";
 
 export function PricingSection() {
   const navigate = useNavigate();
@@ -23,16 +23,20 @@ export function PricingSection() {
     setLoading(true);
     trackEvent("clicked_upgrade", { source: "pricing_section" });
     try {
-      const { data, error } = await supabase.functions.invoke("stripe-checkout", {
-        body: { return_url: window.location.origin },
-      });
-      if (error) throw error;
+      const data = await withPerfTracking("stripe_checkout", async () => {
+        const { data, error } = await supabase.functions.invoke("stripe-checkout", {
+          body: { return_url: window.location.origin },
+        });
+        if (error) throw error;
+        return data;
+      }, 1500);
       if (data?.url) {
         trackEvent("checkout_started");
         window.location.href = data.url;
       }
     } catch (err: any) {
       toast.error(err.message || "Fehler beim Starten des Checkouts");
+      logError(err.message || "Checkout failed", { errorType: "api" });
     } finally {
       setLoading(false);
     }

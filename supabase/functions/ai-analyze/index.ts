@@ -1,11 +1,18 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
-const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY")!;
+const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
+
+function jsonResponse(body: Record<string, unknown>, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -13,23 +20,47 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { productDescription, targetAudience, priceLevel, country, budget, timeline } = await req.json();
-
-    if (!productDescription) {
-      return new Response(JSON.stringify({ error: "productDescription is required" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    if (!LOVABLE_API_KEY) {
+      console.error("LOVABLE_API_KEY not configured");
+      return jsonResponse({ error: "AI service not configured" }, 500);
     }
+
+    // Validate input
+    let input: Record<string, unknown>;
+    try {
+      input = await req.json();
+    } catch {
+      return jsonResponse({ error: "Invalid JSON body" }, 400);
+    }
+
+    const productDescription = typeof input.productDescription === "string" ? input.productDescription.trim() : "";
+    if (!productDescription) {
+      return jsonResponse({ error: "productDescription is required" }, 400);
+    }
+    if (productDescription.length > 5000) {
+      return jsonResponse({ error: "productDescription too long (max 5000 chars)" }, 400);
+    }
+
+    const sanitize = (v: unknown, max = 500): string => {
+      if (typeof v !== "string") return "Nicht angegeben";
+      const s = v.trim();
+      return s.length > max ? s.slice(0, max) : s || "Nicht angegeben";
+    };
+
+    const targetAudience = sanitize(input.targetAudience);
+    const priceLevel = sanitize(input.priceLevel, 50);
+    const country = sanitize(input.country, 100);
+    const budget = sanitize(input.budget, 100);
+    const timeline = sanitize(input.timeline, 50);
 
     const prompt = `Du bist ein erfahrener Markenberater. Analysiere die folgende Geschäftsidee und generiere strukturierte Ergebnisse auf Deutsch.
 
 Geschäftsidee: ${productDescription}
-Zielgruppe: ${targetAudience || "Nicht angegeben"}
-Preissegment: ${priceLevel || "Nicht angegeben"}
-Verkaufsland: ${country || "Nicht angegeben"}
-Budget: ${budget || "Nicht angegeben"}
-Zeitrahmen: ${timeline || "Nicht angegeben"}
+Zielgruppe: ${targetAudience}
+Preissegment: ${priceLevel}
+Verkaufsland: ${country}
+Budget: ${budget}
+Zeitrahmen: ${timeline}
 
 Antworte NUR mit einem JSON-Objekt (kein Markdown, kein Code-Block) mit genau diesen Feldern:
 {
@@ -56,21 +87,12 @@ Antworte NUR mit einem JSON-Objekt (kein Markdown, kein Code-Block) mit genau di
       const errorText = await response.text();
       console.error("AI Gateway error:", response.status, errorText);
       if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "Rate limit erreicht. Bitte versuche es später erneut." }), {
-          status: 429,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        return jsonResponse({ error: "Rate limit erreicht. Bitte versuche es später erneut." }, 429);
       }
       if (response.status === 402) {
-        return new Response(JSON.stringify({ error: "Guthaben aufgebraucht. Bitte lade dein Konto auf." }), {
-          status: 402,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        return jsonResponse({ error: "Guthaben aufgebraucht. Bitte lade dein Konto auf." }, 402);
       }
-      return new Response(JSON.stringify({ error: "AI analysis failed" }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonResponse({ error: "AI analysis failed" }, 500);
     }
 
     const data = await response.json();
@@ -89,14 +111,9 @@ Antworte NUR mit einem JSON-Objekt (kein Markdown, kein Code-Block) mit genau di
       };
     }
 
-    return new Response(JSON.stringify(result), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return jsonResponse(result);
   } catch (error) {
     console.error("Error:", error);
-    return new Response(JSON.stringify({ error: "Internal server error" }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return jsonResponse({ error: "Internal server error" }, 500);
   }
 });

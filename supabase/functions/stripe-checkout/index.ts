@@ -8,31 +8,46 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+function jsonResponse(body: Record<string, unknown>, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    // Auth
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_ANON_KEY") ?? "",
       { global: { headers: { Authorization: req.headers.get("Authorization")! } } }
     );
-
     const { data: { user } } = await supabaseClient.auth.getUser();
-    if (!user) {
-      return new Response(JSON.stringify({ error: "Not authenticated" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    if (!user) return jsonResponse({ error: "Not authenticated" }, 401);
+
+    // Input validation
+    let body: Record<string, unknown>;
+    try {
+      body = await req.json();
+    } catch {
+      return jsonResponse({ error: "Invalid JSON body" }, 400);
+    }
+    const return_url = typeof body.return_url === "string" ? body.return_url : req.headers.get("origin") || "http://localhost:3000";
+
+    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
+    if (!stripeKey) {
+      console.error("STRIPE_SECRET_KEY not configured");
+      return jsonResponse({ error: "Payment service not configured" }, 500);
     }
 
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") ?? "", {
-      apiVersion: "2023-10-16",
-    });
+    const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
 
-    // Check for existing Stripe customer
+    // Find or create customer
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
     let customerId: string;
     if (customers.data.length > 0) {
@@ -45,10 +60,7 @@ serve(async (req) => {
       customerId = customer.id;
     }
 
-    // Get or create a price for the BUILDER plan (29€/month)
-    const { return_url } = await req.json();
-
-    // Find existing product or create one
+    // Find or create product
     const products = await stripe.products.list({ active: true, limit: 100 });
     let product = products.data.find((p) => p.metadata?.plan === "builder");
     if (!product) {
@@ -59,7 +71,7 @@ serve(async (req) => {
       });
     }
 
-    // Find existing price or create one
+    // Find or create price
     const prices = await stripe.prices.list({ product: product.id, active: true, limit: 10 });
     let price = prices.data.find(
       (p) => p.unit_amount === 2900 && p.currency === "eur" && p.recurring?.interval === "month"
@@ -73,39 +85,31 @@ serve(async (req) => {
       });
     }
 
-    // Check if user already has an active subscription
+    // Check existing subscription
     const subscriptions = await stripe.subscriptions.list({
       customer: customerId,
       status: "active",
       limit: 1,
     });
     if (subscriptions.data.length > 0) {
-      // Return billing portal instead
       const portalSession = await stripe.billingPortal.sessions.create({
         customer: customerId,
-        return_url: return_url || req.headers.get("origin") || "http://localhost:3000",
+        return_url,
       });
-      return new Response(JSON.stringify({ url: portalSession.url }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonResponse({ url: portalSession.url });
     }
 
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       line_items: [{ price: price.id, quantity: 1 }],
       mode: "subscription",
-      success_url: `${return_url || req.headers.get("origin") || "http://localhost:3000"}/dashboard?upgraded=true`,
-      cancel_url: `${return_url || req.headers.get("origin") || "http://localhost:3000"}/dashboard`,
+      success_url: `${return_url}/dashboard?upgraded=true`,
+      cancel_url: `${return_url}/dashboard`,
     });
 
-    return new Response(JSON.stringify({ url: session.url }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return jsonResponse({ url: session.url });
   } catch (error) {
     console.error("Stripe checkout error:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return jsonResponse({ error: error.message || "Internal server error" }, 500);
   }
 });
