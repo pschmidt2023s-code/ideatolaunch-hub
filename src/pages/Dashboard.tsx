@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { useAuth } from "@/hooks/useAuth";
 import { useBrand } from "@/hooks/useBrand";
@@ -8,6 +9,30 @@ import { BrandHealthCard } from "@/components/dashboard/BrandHealthCard";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Plus,
   ArrowRight,
@@ -18,6 +43,9 @@ import {
   Shield,
   ShoppingBag,
   Rocket,
+  MoreVertical,
+  Pencil,
+  Trash2,
 } from "lucide-react";
 
 const stepIcons = [Lightbulb, Palette, Calculator, Factory, Shield, ShoppingBag, Rocket];
@@ -27,6 +55,11 @@ export default function Dashboard() {
   const { brands, activeBrand, setActiveBrandId, refetchBrands } = useBrand();
   const navigate = useNavigate();
   const { t } = useTranslation();
+
+  const [renameOpen, setRenameOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [editingBrand, setEditingBrand] = useState<{ id: string; name: string } | null>(null);
+  const [newName, setNewName] = useState("");
 
   const stepKeys = ["s1", "s2", "s3", "s4", "s5", "s6", "s7"];
 
@@ -41,6 +74,45 @@ export default function Dashboard() {
     }
     toast.success(t("steps.saved"));
     refetchBrands();
+  };
+
+  const handleRename = async () => {
+    if (!editingBrand || !newName.trim()) return;
+    const { error } = await supabase
+      .from("brands")
+      .update({ name: newName.trim() })
+      .eq("id", editingBrand.id);
+    if (error) {
+      toast.error(t("steps.saveError"));
+      return;
+    }
+    toast.success(t("steps.saved"));
+    setRenameOpen(false);
+    refetchBrands();
+  };
+
+  const handleDelete = async () => {
+    if (!editingBrand) return;
+    const { error } = await supabase.from("brands").delete().eq("id", editingBrand.id);
+    if (error) {
+      toast.error(t("steps.saveError"));
+      return;
+    }
+    toast.success(t("dashboard.brandDeleted"));
+    setDeleteOpen(false);
+    setEditingBrand(null);
+    refetchBrands();
+  };
+
+  const openRename = (brand: { id: string; name: string }) => {
+    setEditingBrand(brand);
+    setNewName(brand.name);
+    setRenameOpen(true);
+  };
+
+  const openDelete = (brand: { id: string; name: string }) => {
+    setEditingBrand(brand);
+    setDeleteOpen(true);
   };
 
   const currentBrand = activeBrand;
@@ -80,16 +152,37 @@ export default function Dashboard() {
           </div>
         ) : (
           <div className="space-y-6">
-            {/* Brand Health Score */}
             {currentBrand && <BrandHealthCard />}
 
             {currentBrand && (
               <div className="rounded-xl border bg-card p-6 shadow-card">
                 <div className="mb-4 flex items-center justify-between">
                   <h2 className="text-lg font-semibold">{currentBrand.name}</h2>
-                  <span className="rounded-full bg-accent/10 px-3 py-1 text-xs font-medium text-accent">
-                    {t("dashboard.stepOf", { step: currentBrand.current_step })}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="rounded-full bg-accent/10 px-3 py-1 text-xs font-medium text-accent">
+                      {t("dashboard.stepOf", { step: currentBrand.current_step })}
+                    </span>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => openRename(currentBrand)}>
+                          <Pencil className="mr-2 h-4 w-4" />
+                          {t("dashboard.renameBrand")}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          className="text-destructive focus:text-destructive"
+                          onClick={() => openDelete(currentBrand)}
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          {t("dashboard.deleteBrand")}
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </div>
                 <Progress value={progress} className="mb-6 h-2" />
 
@@ -136,19 +229,49 @@ export default function Dashboard() {
                   {brands.filter((b) => b.id !== currentBrand?.id).map((brand) => (
                     <div
                       key={brand.id}
-                      className="flex items-center justify-between rounded-lg border bg-card p-4 shadow-card cursor-pointer hover:shadow-md transition-shadow"
-                      onClick={() => {
-                        setActiveBrandId(brand.id);
-                        navigate(`/dashboard/step/${brand.current_step}`);
-                      }}
+                      className="flex items-center justify-between rounded-lg border bg-card p-4 shadow-card hover:shadow-md transition-shadow"
                     >
-                      <div>
+                      <div
+                        className="flex-1 cursor-pointer"
+                        onClick={() => {
+                          setActiveBrandId(brand.id);
+                          navigate(`/dashboard/step/${brand.current_step}`);
+                        }}
+                      >
                         <p className="font-medium">{brand.name}</p>
                         <p className="text-sm text-muted-foreground">
                           {t("dashboard.stepOf", { step: brand.current_step })}
                         </p>
                       </div>
-                      <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                      <div className="flex items-center gap-1">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => openRename(brand)}>
+                              <Pencil className="mr-2 h-4 w-4" />
+                              {t("dashboard.renameBrand")}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              className="text-destructive focus:text-destructive"
+                              onClick={() => openDelete(brand)}
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              {t("dashboard.deleteBrand")}
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                        <ArrowRight
+                          className="h-4 w-4 text-muted-foreground cursor-pointer"
+                          onClick={() => {
+                            setActiveBrandId(brand.id);
+                            navigate(`/dashboard/step/${brand.current_step}`);
+                          }}
+                        />
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -157,6 +280,50 @@ export default function Dashboard() {
           </div>
         )}
       </div>
+
+      {/* Rename Dialog */}
+      <Dialog open={renameOpen} onOpenChange={setRenameOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("dashboard.renameBrand")}</DialogTitle>
+          </DialogHeader>
+          <Input
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleRename()}
+            autoFocus
+          />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setRenameOpen(false)}>
+              {t("steps.back")}
+            </Button>
+            <Button onClick={handleRename} disabled={!newName.trim()}>
+              {t("steps.save")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation */}
+      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("dashboard.deleteBrand")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("dashboard.deleteConfirm", { name: editingBrand?.name })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("steps.back")}</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={handleDelete}
+            >
+              {t("dashboard.deleteBrand")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </DashboardLayout>
   );
 }

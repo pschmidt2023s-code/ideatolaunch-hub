@@ -90,6 +90,10 @@
     "continue": "Continue",
     "stepOf": "Step {{step}} of 7",
     "allBrands": "All Brands",
+    "renameBrand": "Rename Brand",
+    "deleteBrand": "Delete Brand",
+    "deleteConfirm": "Are you sure you want to permanently delete \"{{name}}\"? All data for this brand will be lost.",
+    "brandDeleted": "Brand deleted",
     "settings": "Settings",
     "logout": "Log out"
   },

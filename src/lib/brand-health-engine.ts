@@ -90,6 +90,28 @@ export function analyzeBrandHealth(data: BrandData): BrandHealthResult {
 
   const { profile, identity, financial, production, compliance, launch } = data;
 
+  // Track whether user has entered ANY data at all
+  const hasProfile = !!profile?.product_description || !!profile?.target_audience || !!profile?.differentiation;
+  const hasIdentity = !!identity?.brand_name || !!identity?.tagline;
+  const hasFinancial = !!(financial?.production_cost || financial?.packaging_cost || financial?.shipping_cost || financial?.recommended_price);
+  const hasProduction = !!production?.production_region || !!production?.moq_expectation;
+  const hasLaunch = !!launch?.sales_channel || !!launch?.launch_quantity;
+  const hasAnyData = hasProfile || hasIdentity || hasFinancial || hasProduction || hasLaunch;
+
+  // If user hasn't entered any data, return a neutral starting state
+  if (!hasAnyData) {
+    return {
+      score: 0,
+      color: "yellow",
+      label: "Keine Daten",
+      explanation: "Fülle die ersten Schritte aus, um deinen Brand Health Score zu berechnen.",
+      biggestRisk: "Noch keine Analyse möglich",
+      nextAction: "Beschreibe dein Produkt in Step 1.",
+      warnings: [],
+      insights: [],
+    };
+  }
+
   // ── Pricing vs Cost ────────────────────────────────────────
   const unitCost = (financial?.production_cost ?? 0) + (financial?.packaging_cost ?? 0) + (financial?.shipping_cost ?? 0);
   const price = financial?.recommended_price ?? 0;
@@ -188,8 +210,8 @@ export function analyzeBrandHealth(data: BrandData): BrandHealthResult {
     scoreDeductions += 5;
   }
 
-  // ── Missing Critical Steps ─────────────────────────────────
-  if (!profile?.product_description) {
+  // ── Missing Critical Steps (only warn if user has started the relevant area) ─
+  if (hasProfile && !profile?.product_description) {
     warnings.push({
       id: "no-product",
       severity: "critical",
@@ -200,7 +222,7 @@ export function analyzeBrandHealth(data: BrandData): BrandHealthResult {
     scoreDeductions += 20;
   }
 
-  if (!profile?.differentiation) {
+  if (hasProfile && !profile?.differentiation) {
     warnings.push({
       id: "no-differentiation",
       severity: "critical",
@@ -211,7 +233,7 @@ export function analyzeBrandHealth(data: BrandData): BrandHealthResult {
     scoreDeductions += 15;
   }
 
-  if (!identity?.brand_name) {
+  if (hasIdentity && !identity?.brand_name) {
     warnings.push({
       id: "no-brand-name",
       severity: "warning",
@@ -222,7 +244,7 @@ export function analyzeBrandHealth(data: BrandData): BrandHealthResult {
     scoreDeductions += 10;
   }
 
-  if (!profile?.target_audience) {
+  if (hasProfile && !profile?.target_audience) {
     warnings.push({
       id: "no-audience",
       severity: "warning",
@@ -233,7 +255,7 @@ export function analyzeBrandHealth(data: BrandData): BrandHealthResult {
     scoreDeductions += 10;
   }
 
-  if (unitCost === 0 && !financial?.production_cost) {
+  if (hasFinancial && unitCost === 0 && !financial?.production_cost) {
     scoreDeductions += 10;
   }
 

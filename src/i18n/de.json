@@ -90,6 +90,10 @@
     "continue": "Weiterarbeiten",
     "stepOf": "Schritt {{step}} von 7",
     "allBrands": "Alle Marken",
+    "renameBrand": "Marke umbenennen",
+    "deleteBrand": "Marke löschen",
+    "deleteConfirm": "Bist du sicher, dass du \"{{name}}\" unwiderruflich löschen möchtest? Alle Daten dieser Marke gehen verloren.",
+    "brandDeleted": "Marke gelöscht",
     "settings": "Einstellungen",
     "logout": "Abmelden"
   },
