@@ -1,17 +1,19 @@
 import { Checkbox } from "@/components/ui/checkbox";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { Save, Loader2, FileText, Check } from "lucide-react";
+import { Save, Loader2, FileText, Check, AlertTriangle, Info } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useBrand } from "@/hooks/useBrand";
 import { useSubscription } from "@/hooks/useSubscription";
+import { useBrandHealth } from "@/hooks/useBrandHealth";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { generateBrandReport } from "@/lib/pdf-export";
+import { generateSmartRoadmap, type SmartWeek } from "@/lib/roadmap-intelligence";
 import { useNavigate } from "react-router-dom";
 
-const weeks = [
+const staticWeeks = [
   {
     weekKey: "w1",
     titleKey: "w1t",
@@ -61,7 +63,8 @@ const weeks = [
 export function StepLaunchRoadmap() {
   const { t } = useTranslation();
   const { activeBrand } = useBrand();
-  const { isFree } = useSubscription();
+  const { isFree, isBuilder } = useSubscription();
+  const { health } = useBrandHealth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const brandId = activeBrand?.id;
@@ -71,8 +74,25 @@ export function StepLaunchRoadmap() {
   const [autoSaved, setAutoSaved] = useState(false);
   const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isDirty = useRef(false);
-  const allTasks = weeks.flatMap((w) => w.tasks);
-  const completedCount = allTasks.filter((t) => checked[t]).length;
+
+  // Generate smart roadmap for Builder users
+  const smartWeeks: SmartWeek[] | null = useMemo(() => {
+    if (!isBuilder || !health) return null;
+    return generateSmartRoadmap(health);
+  }, [isBuilder, health]);
+
+  // Compute all task IDs for counting
+  const allTaskIds = useMemo(() => {
+    if (smartWeeks) {
+      return smartWeeks.flatMap((w) => [
+        ...w.staticTasks,
+        ...w.dynamicTasks.map((d) => d.id),
+      ]);
+    }
+    return staticWeeks.flatMap((w) => w.tasks);
+  }, [smartWeeks]);
+
+  const completedCount = allTaskIds.filter((id) => checked[id]).length;
 
   const { data: plan } = useQuery({
     queryKey: ["launch_plan_roadmap", brandId],
@@ -121,7 +141,6 @@ export function StepLaunchRoadmap() {
     }
   }, [brandId, checked, plan, queryClient, t]);
 
-  // Auto-save on changes (debounced 2s) — only after user interaction
   useEffect(() => {
     if (!isDirty.current || !brandId) return;
     if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
@@ -145,17 +164,19 @@ export function StepLaunchRoadmap() {
     toast.success(t("pdf.exportSuccess"));
   };
 
+  const hasDynamicTasks = smartWeeks?.some((w) => w.dynamicTasks.length > 0) ?? false;
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm text-muted-foreground">
-            {t("step7.subtitle", { done: completedCount, total: allTasks.length })}
+            {t("step7.subtitle", { done: completedCount, total: allTaskIds.length })}
           </p>
         </div>
         <div className="flex items-center gap-3">
           <div className="rounded-full bg-accent/10 px-3 py-1 text-xs font-medium text-accent">
-            {Math.round((completedCount / allTasks.length) * 100)}%
+            {Math.round((completedCount / allTaskIds.length) * 100)}%
           </div>
           {autoSaved && (
             <span className="flex items-center gap-1 text-xs text-muted-foreground animate-fade-in">
@@ -173,16 +194,28 @@ export function StepLaunchRoadmap() {
         </div>
       </div>
 
-      {weeks.map(({ weekKey, titleKey, tasks }) => (
-        <div key={weekKey} className="rounded-xl border bg-card p-6 shadow-card">
+      {/* Builder: info banner about personalized tasks */}
+      {isBuilder && hasDynamicTasks && (
+        <div className="flex items-start gap-3 rounded-lg border border-accent/30 bg-accent/5 p-4">
+          <Info className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
+          <p className="text-sm text-muted-foreground">
+            {t("step7.smartInfo")}
+          </p>
+        </div>
+      )}
+
+      {(smartWeeks ?? staticWeeks.map((w) => ({ ...w, staticTasks: w.tasks, dynamicTasks: [] }))).map((week) => (
+        <div key={week.weekKey} className="rounded-xl border bg-card p-6 shadow-card">
           <div className="mb-4 flex items-center gap-3">
             <span className="rounded-md bg-primary px-2.5 py-1 text-xs font-mono font-medium text-primary-foreground">
-              {t(`step7.${weekKey}`)}
+              {t(`step7.${week.weekKey}`)}
             </span>
-            <h3 className="font-semibold">{t(`step7.${titleKey}`)}</h3>
+            <h3 className="font-semibold">{t(`step7.${week.titleKey}`)}</h3>
           </div>
+
+          {/* Static tasks */}
           <div className="space-y-3">
-            {tasks.map((task) => (
+            {week.staticTasks.map((task) => (
               <label key={task} className="flex items-center gap-3 cursor-pointer">
                 <Checkbox
                   checked={!!checked[task]}
@@ -194,6 +227,31 @@ export function StepLaunchRoadmap() {
               </label>
             ))}
           </div>
+
+          {/* Dynamic (Builder) tasks */}
+          {week.dynamicTasks.length > 0 && (
+            <div className="mt-4 space-y-3 border-t border-dashed pt-4">
+              {week.dynamicTasks.map((dt) => (
+                <div key={dt.id} className="space-y-1">
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <Checkbox
+                      checked={!!checked[dt.id]}
+                      onCheckedChange={(v) => { isDirty.current = true; setChecked((p) => ({ ...p, [dt.id]: !!v })); }}
+                    />
+                    <span className={`text-sm font-medium ${checked[dt.id] ? "line-through text-muted-foreground" : ""}`}>
+                      {dt.triggeredByRisk && (
+                        <AlertTriangle className="mr-1.5 inline h-3.5 w-3.5 text-destructive" />
+                      )}
+                      {dt.label}
+                    </span>
+                  </label>
+                  <p className="ml-9 text-xs text-muted-foreground italic">
+                    {t("step7.whyMatters")}: {dt.reason}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       ))}
     </div>

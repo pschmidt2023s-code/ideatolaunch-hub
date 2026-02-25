@@ -47,7 +47,7 @@
     "freeF1": "Create 1 brand",
     "freeF2": "Basic calculator",
     "freeF3": "Basic checklists",
-    "freeF4": "Community access",
+    "freeF4": "Static launch roadmap",
     "freeCta": "Start for free",
     "pro": "Builder",
     "proPrice": "€29",
@@ -232,7 +232,9 @@
     "w3": "Week 3",
     "w3t": "Launch",
     "w4": "Week 4",
-    "w4t": "Post-Launch"
+    "w4t": "Post-Launch",
+    "smartInfo": "Your roadmap has been automatically enhanced with personalized tasks based on your Brand Health analysis. Tasks marked with ⚠ were triggered by detected risks.",
+    "whyMatters": "Why this matters for your brand"
   },
   "health": {
     "title": "Brand Health Score",
