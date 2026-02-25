@@ -37,7 +37,7 @@ export default function Auth() {
     if (isSignUp) {
       toast.success(t("auth.signupSuccess"));
     } else {
-      navigate("/dashboard");
+      navigate("/onboarding");
     }
   };
 

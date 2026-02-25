@@ -477,6 +477,7 @@ export type Database = {
       profiles: {
         Row: {
           company_name: string | null
+          completed_starter_mode: boolean
           created_at: string
           first_name: string | null
           id: string
@@ -486,6 +487,7 @@ export type Database = {
         }
         Insert: {
           company_name?: string | null
+          completed_starter_mode?: boolean
           created_at?: string
           first_name?: string | null
           id?: string
@@ -495,6 +497,7 @@ export type Database = {
         }
         Update: {
           company_name?: string | null
+          completed_starter_mode?: boolean
           created_at?: string
           first_name?: string | null
           id?: string

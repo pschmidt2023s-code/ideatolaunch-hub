@@ -10,6 +10,8 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import "@/i18n";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import Onboarding from "./pages/Onboarding";
+import StarterMode from "./pages/StarterMode";
 import Dashboard from "./pages/Dashboard";
 import InsightsPage from "./pages/Insights";
 import StepPage from "./pages/workflow/StepPage";
@@ -33,6 +35,9 @@ const App = () => (
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/auth" element={<Auth />} />
+                <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
+                <Route path="/starter" element={<ProtectedRoute><StarterMode /></ProtectedRoute>} />
+                <Route path="/pricing" element={<Pricing />} />
                 <Route path="/pricing" element={<Pricing />} />
                 <Route
                   path="/dashboard"

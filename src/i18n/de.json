@@ -299,5 +299,40 @@
     "whyMatters": "Warum ist das wichtig?",
     "commonMistakes": "Häufige Fehler",
     "howToDecide": "So entscheidest du richtig"
+  },
+  "onboarding": {
+    "title": "Wie erfahren bist du?",
+    "subtitle": "Wir passen den Start an dein Erfahrungslevel an.",
+    "experienced": "Ich habe bereits eine Produktidee",
+    "experiencedDesc": "Direkt in den Workflow starten und deine Marke aufbauen.",
+    "beginner": "Ich bin neu und brauche Orientierung",
+    "beginnerDesc": "Lerne zuerst die Grundlagen, bevor du loslegst."
+  },
+  "starter": {
+    "title": "Founder Starter Mode",
+    "subtitle": "Schritt {{step}} von {{total}}",
+    "example": "Praxisbeispiel",
+    "whyMatters": "Warum das wichtig ist",
+    "finish": "Grundlagen verstanden – jetzt loslegen",
+    "s1Title": "Wie Produktgeschäfte Geld verdienen",
+    "s1Text": "Ein Produktgeschäft verdient Geld durch die Differenz zwischen Herstellungskosten und Verkaufspreis — die sogenannte Marge. Je größer die Marge, desto mehr bleibt für Marketing, Wachstum und Gewinn. Aber: Marge allein reicht nicht. Du brauchst genug Absatz, um deine Fixkosten zu decken. Erst dann bist du profitabel.",
+    "s1Example": "Du kaufst ein Produkt für 5 € ein und verkaufst es für 25 €. Deine Marge beträgt 80 %. Aber wenn du 2.000 € für Marketing ausgibst und nur 50 Stück verkaufst, machst du trotzdem Verlust.",
+    "s1Why": "Viele Gründer fokussieren sich nur auf den Verkaufspreis und vergessen Fixkosten, Retouren und Marketingausgaben. Wer seine Unit Economics kennt, trifft bessere Entscheidungen.",
+    "s2Title": "Was Marge, MOQ und Break-even bedeuten",
+    "s2Text": "Marge ist der Prozentsatz, der nach Abzug aller Kosten vom Verkaufspreis übrig bleibt. MOQ (Minimum Order Quantity) ist die Mindestbestellmenge eines Herstellers. Break-even ist der Punkt, an dem du deine Gesamtkosten durch Verkäufe gedeckt hast — ab hier machst du Gewinn.",
+    "s2Example": "Ein Hersteller verlangt eine MOQ von 500 Stück zu je 8 €. Deine Gesamtinvestition: 4.000 €. Bei einem VK von 29 € und einer Marge von 45 % erreichst du den Break-even nach ca. 310 verkauften Einheiten.",
+    "s2Why": "Ohne diese drei Kennzahlen kannst du nicht beurteilen, ob dein Geschäftsmodell tragfähig ist. Sie sind die Basis jeder seriösen Kalkulation.",
+    "s3Title": "Typische Anfängerfehler",
+    "s3Text": "Die häufigsten Fehler: Zu früh große Mengen bestellen, den Preis zu niedrig ansetzen, Marketing-Budget vergessen, keine Zielgruppe definieren und Verpackungskosten unterschätzen. Jeder dieser Fehler kann ein Startbudget auffressen, bevor der erste Kunde kauft.",
+    "s3Example": "Ein Gründer bestellt 2.000 Einheiten ohne vorherigen Markttest. Nach 6 Monaten sind 1.500 Stück im Lager. Das gebundene Kapital fehlt für Marketing — ein Teufelskreis.",
+    "s3Why": "Fehler in der Startphase sind teuer und schwer korrigierbar. Wer typische Fallen kennt, kann sie umgehen und sein Budget deutlich effizienter einsetzen.",
+    "s4Title": "Was du brauchst, bevor du mit Lieferanten sprichst",
+    "s4Text": "Bevor du Lieferanten kontaktierst, brauchst du: eine klare Produktbeschreibung, dein Zielpreissegment, eine realistische MOQ-Vorstellung, ein definiertes Budget und Qualitätsanforderungen. Ohne diese Vorbereitung wirst du keine seriösen Angebote erhalten.",
+    "s4Example": "Statt 'Ich suche jemanden, der Kosmetik herstellt' sagst du: 'Ich suche einen Lohnhersteller für eine vegane Gesichtscreme, 50ml, MOQ 300 Stück, Zielpreis unter 6 € pro Einheit, EU-Produktion.'",
+    "s4Why": "Lieferanten nehmen dich ernst, wenn du vorbereitet bist. Klare Anforderungen sparen Wochen an Hin-und-Her und schützen dich vor schlechten Deals.",
+    "s5Title": "Wann du bereit bist, deine Idee zu validieren",
+    "s5Text": "Du bist bereit, wenn du folgendes definiert hast: Produkt und Zielgruppe, eine realistische Preisvorstellung, ein kalkuliertes Budget, und eine grobe Vorstellung deiner Kostenstruktur. Perfektion ist nicht nötig — aber ein solides Fundament schon.",
+    "s5Example": "Du weißt: Mein Produkt kostet ca. 8 € in der Herstellung, ich will es für 29 € verkaufen, mein Startbudget ist 3.000 €, meine Zielgruppe sind Frauen 25-40. Das reicht, um den nächsten Schritt zu gehen.",
+    "s5Why": "Viele warten zu lange auf den perfekten Plan. Andere starten ohne jede Grundlage. Die Wahrheit liegt dazwischen: Ein klares Minimum an Vorbereitung gibt dir die Sicherheit, den nächsten Schritt zu wagen."
   }
 }
