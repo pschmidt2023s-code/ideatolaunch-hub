@@ -49,7 +49,9 @@ import {
   MoreVertical,
   Pencil,
   Trash2,
+  HelpCircle,
 } from "lucide-react";
+import { GuidedStarterDialog } from "@/components/GuidedStarterDialog";
 
 const stepIcons = [Lightbulb, Palette, Calculator, Factory, Shield, ShoppingBag, Rocket];
 
@@ -64,6 +66,7 @@ export default function Dashboard() {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [editingBrand, setEditingBrand] = useState<{ id: string; name: string } | null>(null);
   const [newName, setNewName] = useState("");
+  const [guidedOpen, setGuidedOpen] = useState(false);
 
   const stepKeys = ["s1", "s2", "s3", "s4", "s5", "s6", "s7"];
 
@@ -146,6 +149,16 @@ export default function Dashboard() {
           </Button>
         </div>
 
+        {currentBrand && (
+          <Button
+            variant="outline"
+            onClick={() => setGuidedOpen(true)}
+            className="mb-6 gap-2"
+          >
+            <HelpCircle className="h-4 w-4" />
+            {t("dashboard.guidedStarter", "Ich brauche Hilfe beim Start")}
+          </Button>
+        )}
         {!brands?.length ? (
           <div className="flex flex-col items-center justify-center rounded-xl border border-dashed bg-card p-16 text-center">
             <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-accent/10">
@@ -335,6 +348,7 @@ export default function Dashboard() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <GuidedStarterDialog open={guidedOpen} onOpenChange={setGuidedOpen} />
     </DashboardLayout>
   );
 }
