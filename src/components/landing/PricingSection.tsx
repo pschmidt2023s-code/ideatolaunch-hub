@@ -1,4 +1,4 @@
-import { Check } from "lucide-react";
+import { Check, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -8,12 +8,18 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { trackEvent, withPerfTracking, logError } from "@/lib/analytics";
 
+interface PlanFeature {
+  label: string;
+  desc: string;
+}
+
 export function PricingSection() {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { i18n } = useTranslation();
   const { user } = useAuth();
   const [loadingBuilder, setLoadingBuilder] = useState(false);
   const [loadingPro, setLoadingPro] = useState(false);
+  const isDE = i18n.language === "de";
 
   const handleCheckout = async (tier: "builder" | "pro", setLoading: (v: boolean) => void) => {
     if (!user) {
@@ -43,44 +49,95 @@ export function PricingSection() {
     }
   };
 
+  const freePlanFeatures: PlanFeature[] = isDE ? [
+    { label: "1 Marke", desc: "Erstelle und teste eine Marke komplett kostenlos" },
+    { label: "Einfacher Machbarkeits-Check", desc: "Status + Top-1-Risiko auf einen Blick" },
+    { label: "Statische Launch-Checkliste", desc: "Grundlegende Aufgaben für deinen Start" },
+    { label: "Statische Launch-Roadmap", desc: "Überblick über die wichtigsten Launch-Schritte" },
+    { label: "Reality Check (Zusammenfassung)", desc: "Schnelle Einschätzung deiner Geschäftsidee" },
+  ] : [
+    { label: "1 Brand", desc: "Create and test one brand completely free" },
+    { label: "Basic Feasibility Check", desc: "Status + top 1 risk at a glance" },
+    { label: "Static Launch Checklist", desc: "Essential tasks for your launch" },
+    { label: "Static Launch Roadmap", desc: "Overview of key launch steps" },
+    { label: "Reality Check (summary)", desc: "Quick assessment of your business idea" },
+  ];
+
+  const builderFeatures: PlanFeature[] = isDE ? [
+    { label: "Unbegrenzte Marken", desc: "Erstelle so viele Marken wie du brauchst" },
+    { label: "Voller Business-Kalkulator", desc: "Kosten, Preise, Margen und Break-even im Detail" },
+    { label: "Budget-Planer", desc: "Optimale Verteilung auf Produktion, Marketing und Reserve" },
+    { label: "Voller Reality Check", desc: "Alle Risiken mit Erklärungen und Lösungsvorschlägen" },
+    { label: "30-Tage Launch-Roadmap", desc: "Personalisierter Wochenplan für deinen Launch" },
+    { label: "Compliance-Vorlagen", desc: "Label-Checklisten und rechtliche Hinweise" },
+    { label: "PDF-Export", desc: "Professioneller Brand Report zum Teilen" },
+    { label: "Guided Mode", desc: "Schritt-für-Schritt-Erklärungen und Entscheidungshilfen" },
+  ] : [
+    { label: "Unlimited Brands", desc: "Create as many brands as you need" },
+    { label: "Full Business Calculator", desc: "Costs, prices, margins and break-even in detail" },
+    { label: "Budget Planner", desc: "Optimal allocation across production, marketing, and reserves" },
+    { label: "Full Reality Check", desc: "All risks with explanations and fix suggestions" },
+    { label: "30-Day Launch Roadmap", desc: "Personalized weekly plan for your launch" },
+    { label: "Compliance Templates", desc: "Label checklists and legal notes" },
+    { label: "PDF Export", desc: "Professional brand report to share" },
+    { label: "Guided Mode", desc: "Step-by-step explanations and decision helpers" },
+  ];
+
+  const proFeatures: PlanFeature[] = isDE ? [
+    { label: "Alles aus Builder", desc: "Vollständiger Zugang zu allen Builder-Features" },
+    { label: "Szenario-Simulator", desc: "Simuliere verschiedene Mengen- und Preisszenarien" },
+    { label: "Supplier Intelligence Engine", desc: "Lieferantenbewertung und Kostenoptimierung" },
+    { label: "Execution Readiness Score", desc: "Wie launch-bereit ist deine Marke wirklich?" },
+    { label: "Risk Priority Ranking", desc: "Risiken nach Impact priorisiert" },
+    { label: "Adaptive Launch-Roadmap", desc: "Dynamische Roadmap basierend auf deinen Daten" },
+    { label: "Guided Founder Mode (erweitert)", desc: "Proaktive Handlungsempfehlungen in Echtzeit" },
+    { label: "Alle zukünftigen Features inklusive", desc: "Automatischer Zugang zu neuen Pro-Features" },
+  ] : [
+    { label: "Everything in Builder", desc: "Full access to all Builder features" },
+    { label: "Scenario Simulator", desc: "Simulate different quantity and pricing scenarios" },
+    { label: "Supplier Intelligence Engine", desc: "Supplier evaluation and cost optimization" },
+    { label: "Execution Readiness Score", desc: "How launch-ready is your brand really?" },
+    { label: "Risk Priority Ranking", desc: "Risks prioritized by impact" },
+    { label: "Adaptive Launch Roadmap", desc: "Dynamic roadmap based on your data" },
+    { label: "Guided Founder Mode (advanced)", desc: "Proactive recommendations in real-time" },
+    { label: "All future features included", desc: "Automatic access to new Pro features" },
+  ];
+
   const plans = [
     {
-      name: t("pricing.free"),
-      price: t("pricing.freePrice"),
-      period: t("pricing.freePeriod"),
-      features: [t("pricing.freeF1"), t("pricing.freeF2"), t("pricing.freeF3"), t("pricing.freeF4")],
-      cta: t("pricing.freeCta"),
+      name: "Free",
+      price: isDE ? "0 €" : "€0",
+      period: isDE ? "für immer" : "forever",
+      features: freePlanFeatures,
+      cta: isDE ? "Kostenlos starten" : "Start for free",
       highlighted: false,
       badge: null,
       onClick: () => navigate("/auth"),
       loading: false,
     },
     {
-      name: t("pricing.pro"),
-      price: t("pricing.proPrice"),
-      period: t("pricing.proPeriod"),
-      features: [t("pricing.proF1"), t("pricing.proF2"), t("pricing.proF3"), t("pricing.proF4"), t("pricing.proF5"), t("pricing.proF6")],
-      cta: loadingBuilder ? t("upgrade.processing") : t("pricing.proCta"),
+      name: "Builder",
+      price: isDE ? "29 €" : "€29",
+      period: "/ " + (isDE ? "Monat" : "month"),
+      features: builderFeatures,
+      cta: loadingBuilder
+        ? (isDE ? "Weiterleitung zu Stripe..." : "Redirecting to Stripe...")
+        : (isDE ? "Builder starten" : "Start Builder"),
       highlighted: true,
-      badge: t("pricing.popular"),
+      badge: isDE ? "Beliebt" : "Popular",
       onClick: () => handleCheckout("builder", setLoadingBuilder),
       loading: loadingBuilder,
     },
     {
-      name: t("pricing.proTier"),
-      price: t("pricing.proTierPrice"),
-      period: t("pricing.proTierPeriod"),
-      features: [
-        t("pricing.proTierF1"),
-        t("pricing.proTierF2"),
-        t("pricing.proTierF3"),
-        t("pricing.proTierF4"),
-        t("pricing.proTierF5"),
-        t("pricing.proTierF6"),
-      ],
-      cta: loadingPro ? t("upgrade.processing") : t("pricing.proTierCta"),
+      name: "Pro",
+      price: isDE ? "79 €" : "€79",
+      period: "/ " + (isDE ? "Monat" : "month"),
+      features: proFeatures,
+      cta: loadingPro
+        ? (isDE ? "Weiterleitung zu Stripe..." : "Redirecting to Stripe...")
+        : (isDE ? "Pro starten" : "Start Pro"),
       highlighted: false,
-      badge: t("pricing.proTierBadge"),
+      badge: isDE ? "Für ambitionierte Gründer" : "Best for serious founders",
       onClick: () => handleCheckout("pro", setLoadingPro),
       loading: loadingPro,
     },
@@ -90,8 +147,12 @@ export function PricingSection() {
     <section id="pricing" className="border-t px-4 py-20 md:py-32">
       <div className="container mx-auto max-w-6xl">
         <div className="mb-16 text-center">
-          <h2 className="text-3xl font-bold md:text-4xl">{t("pricing.title")}</h2>
-          <p className="mt-4 text-lg text-muted-foreground">{t("pricing.subtitle")}</p>
+          <h2 className="text-3xl font-bold md:text-4xl">
+            {isDE ? "Einfache Preise" : "Simple pricing"}
+          </h2>
+          <p className="mt-4 text-lg text-muted-foreground">
+            {isDE ? "Starte kostenlos. Upgrade wenn du bereit bist." : "Start for free. Upgrade when you're ready."}
+          </p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-3">
@@ -105,11 +166,12 @@ export function PricingSection() {
               }`}
             >
               {plan.badge && (
-                <div className={`absolute -top-3 left-6 rounded-full px-3 py-0.5 text-xs font-semibold ${
+                <div className={`absolute -top-3 left-6 rounded-full px-3 py-0.5 text-xs font-semibold flex items-center gap-1 ${
                   plan.highlighted
                     ? "bg-accent text-accent-foreground"
                     : "bg-primary text-primary-foreground"
                 }`}>
+                  {plan.name === "Pro" && <Star className="h-3 w-3" />}
                   {plan.badge}
                 </div>
               )}
@@ -120,9 +182,12 @@ export function PricingSection() {
               </div>
               <ul className="mt-8 space-y-3">
                 {plan.features.map((f) => (
-                  <li key={f} className="flex items-center gap-3 text-sm">
-                    <Check className="h-4 w-4 text-success shrink-0" />
-                    {f}
+                  <li key={f.label} className="flex items-start gap-3 text-sm">
+                    <Check className="h-4 w-4 text-success shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-medium">{f.label}</span>
+                      <p className="text-xs text-muted-foreground mt-0.5">{f.desc}</p>
+                    </div>
                   </li>
                 ))}
               </ul>

@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { evaluateRealityCheck, type RealityCheckResult, type Risk } from "@/lib/reality-check-engine";
 import { Progress } from "@/components/ui/progress";
-import { Button } from "@/components/ui/button";
+import { getCapabilities } from "@/lib/feature-flags";
 import {
   ShieldCheck,
   ShieldAlert,
@@ -15,7 +15,6 @@ import {
   Wrench,
   Info,
   Lock,
-  Zap,
   Lightbulb,
 } from "lucide-react";
 
@@ -58,9 +57,10 @@ const severityColors = {
 export function RealityCheckCard() {
   const { i18n } = useTranslation();
   const { activeBrand } = useBrand();
-  const { isFree, isBuilder, isPro } = useSubscription();
+  const { plan } = useSubscription();
   const brandId = activeBrand?.id;
   const isDE = i18n.language === "de";
+  const caps = getCapabilities(plan);
 
   const { data: financial } = useQuery({
     queryKey: ["financial_model", brandId],
@@ -102,10 +102,10 @@ export function RealityCheckCard() {
   const criticalAndWarnings = result.risks.filter((r) => r.severity === "critical" || r.severity === "warning");
   const infoRisks = result.risks.filter((r) => r.severity === "info");
 
-  // FREE: top risk + 1 recommendation only
-  const showFullBreakdown = isBuilder;
-  const visibleActionRisks = isFree ? criticalAndWarnings.slice(0, 1) : criticalAndWarnings;
-  const hiddenCount = isFree ? Math.max(0, criticalAndWarnings.length - 1 + infoRisks.length) : 0;
+  // HARD GATING: Free sees only top risk + status
+  const showFullBreakdown = caps.canSeeFullRisks;
+  const visibleActionRisks = showFullBreakdown ? criticalAndWarnings : criticalAndWarnings.slice(0, 1);
+  const hiddenCount = showFullBreakdown ? 0 : Math.max(0, criticalAndWarnings.length - 1 + infoRisks.length);
 
   return (
     <div className="rounded-xl border bg-card p-6 shadow-card space-y-5">
@@ -155,7 +155,7 @@ export function RealityCheckCard() {
         <p>{result.whyItMatters}</p>
       </div>
 
-      {/* RISKY/CRITICAL: Fix these first */}
+      {/* FULL BREAKDOWN: Fix these first (Builder+) */}
       {showFullBreakdown && visibleActionRisks.length > 0 && (result.status === "risky" || result.status === "critical") && (
         <RiskList
           title={isDE ? "Behebe diese Punkte zuerst" : "Fix These First"}
@@ -163,7 +163,7 @@ export function RealityCheckCard() {
         />
       )}
 
-      {/* SAFE: Heads-up section */}
+      {/* FULL BREAKDOWN: Heads-up for safe (Builder+) */}
       {showFullBreakdown && result.status === "safe" && infoRisks.length > 0 && (
         <RiskList
           title={isDE ? "Gut zu wissen" : "Heads Up"}
@@ -171,7 +171,7 @@ export function RealityCheckCard() {
         />
       )}
 
-      {/* Builder: full breakdown for risky/critical also show info items */}
+      {/* FULL BREAKDOWN: Additional info risks for risky/critical (Builder+) */}
       {showFullBreakdown && (result.status === "risky" || result.status === "critical") && infoRisks.length > 0 && (
         <RiskList
           title={isDE ? "Weitere Hinweise" : "Additional Notes"}
@@ -179,26 +179,23 @@ export function RealityCheckCard() {
         />
       )}
 
-      {/* Free plan: locked hint */}
-      {isFree && hiddenCount > 0 && (
+      {/* Free plan: locked hint with contextual copy */}
+      {!showFullBreakdown && hiddenCount > 0 && (
         <div className="rounded-lg border border-dashed p-4 text-center">
           <div className="flex flex-col items-center gap-2 text-muted-foreground">
             <Lock className="h-5 w-5" />
-            <p className="text-sm">
+            <p className="text-sm font-medium">
               {isDE
-                ? `+${hiddenCount} weitere Hinweise – sichtbar ab Builder-Plan`
-                : `+${hiddenCount} more insights – visible with Builder plan`}
+                ? `+${hiddenCount} weitere Risiken und Lösungen`
+                : `+${hiddenCount} more risks and solutions`}
+            </p>
+            <p className="text-xs max-w-xs">
+              {isDE
+                ? "Erkenne alle Risiken und erhalte konkrete Lösungsvorschläge für jedes Problem."
+                : "Identify all risks and get concrete fix suggestions for each issue."}
             </p>
           </div>
         </div>
-      )}
-
-      {/* Pro: Scenario Simulation placeholder */}
-      {isPro && (
-        <Button variant="outline" disabled className="w-full gap-2 opacity-60">
-          <Zap className="h-4 w-4" />
-          {isDE ? "Szenario-Simulation (bald verfügbar)" : "Scenario Simulation (coming soon)"}
-        </Button>
       )}
 
       {/* Disclaimer */}

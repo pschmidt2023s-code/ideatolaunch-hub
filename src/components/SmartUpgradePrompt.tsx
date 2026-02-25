@@ -20,24 +20,24 @@ function getUpgradeCopy(ctx: TriggerContext, isDE: boolean): { title: string; de
     return {
       title: isDE ? "Dein MOQ frisst dein Budget" : "Your MOQ is eating your budget",
       desc: isDE
-        ? "Der Budget-Planer hilft dir, Produktion, Marketing und Reserve optimal aufzuteilen."
-        : "The Budget Planner helps you optimally split production, marketing, and reserves.",
+        ? "Wisse genau, wie du dein Budget auf Produktion, Marketing und Reserve verteilst — mit dem Budget-Planer."
+        : "Know exactly how to allocate your budget across production, marketing, and reserves — with the Budget Planner.",
     };
   }
   if (ctx.breakEvenHigh) {
     return {
       title: isDE ? "Langer Weg bis zum Break-Even" : "Long road to break-even",
       desc: isDE
-        ? "Mit dem Szenario-Simulator findest du die optimale Menge und Preisstrategie."
-        : "The Scenario Simulator helps you find the optimal quantity and pricing strategy.",
+        ? "Die meisten Gründer simulieren Szenarien, bevor sie Kapital binden. Finde die optimale Menge und Preisstrategie."
+        : "Most founders simulate scenarios before committing capital. Find the optimal quantity and pricing strategy.",
     };
   }
   if (ctx.warningCount >= 2) {
     return {
       title: isDE ? "Mehrere Risiken erkannt" : "Multiple risks detected",
       desc: isDE
-        ? "Schalte die volle Risikoanalyse und den Budget-Planer frei, um informiert zu starten."
-        : "Unlock full risk analysis and budget planning to launch informed.",
+        ? "Erkenne alle Risiken und erhalte konkrete Lösungsvorschläge — schalte die volle Risikoanalyse und den Budget-Planer frei."
+        : "Identify all risks and get concrete fix suggestions — unlock full risk analysis and budget planning.",
     };
   }
   return null;
@@ -110,6 +110,8 @@ export function SmartUpgradePrompt() {
     : Rocket;
   const Icon = icon;
 
+  const triggerType = trigger.moqPressure ? "moq" : trigger.breakEvenHigh ? "breakeven" : "warnings";
+
   return (
     <div className="rounded-xl border border-accent/30 bg-accent/5 p-5">
       <div className="flex items-start gap-4">
@@ -125,7 +127,7 @@ export function SmartUpgradePrompt() {
             onClick={() => {
               trackEvent("clicked_smart_upgrade", {
                 source: "reality_check",
-                trigger: trigger.moqPressure ? "moq" : trigger.breakEvenHigh ? "breakeven" : "warnings",
+                trigger: triggerType,
               });
               navigate("/dashboard/pricing");
             }}

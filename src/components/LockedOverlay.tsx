@@ -3,15 +3,35 @@ import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { ReactNode } from "react";
+import { getUpgradeMessage } from "@/lib/feature-flags";
+import { trackEvent } from "@/lib/analytics";
 
 interface LockedOverlayProps {
   children: ReactNode;
+  /** Feature key for contextual messaging (e.g. "scenarioSimulator", "budgetPlanner") */
+  feature?: string;
+  /** Override message (fallback if no feature key) */
   message?: string;
+  /** Which plan is required */
+  requiredPlan?: "builder" | "pro";
 }
 
-export function LockedOverlay({ children, message }: LockedOverlayProps) {
-  const { t } = useTranslation();
+export function LockedOverlay({ children, feature, message, requiredPlan = "builder" }: LockedOverlayProps) {
+  const { i18n } = useTranslation();
   const navigate = useNavigate();
+  const isDE = i18n.language === "de";
+
+  const upgradeMsg = feature ? getUpgradeMessage(feature) : null;
+  const title = upgradeMsg
+    ? (isDE ? upgradeMsg.title.de : upgradeMsg.title.en)
+    : (message || (isDE ? "Premium-Feature" : "Premium Feature"));
+  const desc = upgradeMsg
+    ? (isDE ? upgradeMsg.desc.de : upgradeMsg.desc.en)
+    : (isDE ? "Upgrade um diese Funktion freizuschalten." : "Upgrade to unlock this feature.");
+
+  const ctaLabel = requiredPlan === "pro"
+    ? (isDE ? "Upgrade auf Pro" : "Upgrade to Pro")
+    : (isDE ? "Upgrade auf Builder" : "Upgrade to Builder");
 
   return (
     <div className="relative">
@@ -22,14 +42,17 @@ export function LockedOverlay({ children, message }: LockedOverlayProps) {
         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 mb-3">
           <Lock className="h-6 w-6 text-accent" />
         </div>
-        <p className="text-sm font-semibold mb-1">{message || t("upgrade.locked")}</p>
-        <p className="text-xs text-muted-foreground mb-3">{t("upgrade.lockedDesc")}</p>
+        <p className="text-sm font-semibold mb-1">{title}</p>
+        <p className="text-xs text-muted-foreground mb-3 max-w-xs text-center">{desc}</p>
         <Button
           size="sm"
           className="gap-2 bg-accent text-accent-foreground hover:bg-accent/90"
-          onClick={() => navigate("/pricing")}
+          onClick={() => {
+            trackEvent("clicked_upgrade", { source: "locked_overlay", feature: feature || "unknown" });
+            navigate("/dashboard/pricing");
+          }}
         >
-          {t("upgrade.cta")}
+          {ctaLabel}
         </Button>
       </div>
     </div>
