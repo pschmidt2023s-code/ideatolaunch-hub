@@ -1,6 +1,6 @@
 import { Checkbox } from "@/components/ui/checkbox";
-import { useState, useEffect, useCallback, useRef } from "react";
-import { FileText, Save, Loader2, Check } from "lucide-react";
+import { useState, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
+import { FileText, Save, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 import { useBrand } from "@/hooks/useBrand";
@@ -10,6 +10,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { generateBrandReport } from "@/lib/pdf-export";
 import { useNavigate } from "react-router-dom";
+import type { StepHandle } from "./StepIdeaFoundation";
 
 const labelChecklist = [
   "Produktname & Beschreibung",
@@ -24,7 +25,7 @@ const labelChecklist = [
   "CE-Kennzeichnung (falls zutreffend)",
 ];
 
-export function StepCompliance() {
+export const StepCompliance = forwardRef<StepHandle>(function StepCompliance(_, ref) {
   const { t } = useTranslation();
   const { activeBrand } = useBrand();
   const { isFree } = useSubscription();
@@ -34,9 +35,6 @@ export function StepCompliance() {
 
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const [saving, setSaving] = useState(false);
-  const [autoSaved, setAutoSaved] = useState(false);
-  const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isDirty = useRef(false);
   const completedCount = Object.values(checked).filter(Boolean).length;
 
   const { data: plan } = useQuery({
@@ -77,25 +75,11 @@ export function StepCompliance() {
       if (showToast) toast.error(t("steps.saveError"));
     } else {
       if (showToast) toast.success(t("steps.saved"));
-      else {
-        setAutoSaved(true);
-        setTimeout(() => setAutoSaved(false), 2000);
-      }
       queryClient.invalidateQueries({ queryKey: ["compliance_plan", brandId] });
     }
   }, [brandId, checked, plan, queryClient, t]);
 
-  // Auto-save on changes (debounced 2s) — only after user interaction
-  useEffect(() => {
-    if (!isDirty.current || !brandId) return;
-    if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
-    autoSaveTimer.current = setTimeout(() => {
-      saveToDb(false);
-    }, 2000);
-    return () => {
-      if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
-    };
-  }, [checked, brandId]);
+  useImperativeHandle(ref, () => ({ save: () => saveToDb(false) }), [saveToDb]);
 
   const handleExportPdf = () => {
     if (isFree) {
@@ -119,11 +103,6 @@ export function StepCompliance() {
             <span className="rounded-full bg-accent/10 px-3 py-1 text-xs font-medium text-accent">
               {completedCount}/{labelChecklist.length} {t("step5.done")}
             </span>
-            {autoSaved && (
-              <span className="flex items-center gap-1 text-xs text-muted-foreground animate-fade-in">
-                <Check className="h-3 w-3" /> Auto-gespeichert
-              </span>
-            )}
             <Button variant="outline" size="sm" className="gap-2" onClick={() => saveToDb(true)} disabled={saving}>
               {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
               {t("steps.save")}
@@ -135,7 +114,7 @@ export function StepCompliance() {
             <label key={item} className="flex items-center gap-3 cursor-pointer">
               <Checkbox
                 checked={!!checked[item]}
-                onCheckedChange={(v) => { isDirty.current = true; setChecked((p) => ({ ...p, [item]: !!v })); }}
+                onCheckedChange={(v) => setChecked((p) => ({ ...p, [item]: !!v }))}
               />
               <span className={`text-sm ${checked[item] ? "line-through text-muted-foreground" : ""}`}>{item}</span>
             </label>
@@ -168,4 +147,4 @@ export function StepCompliance() {
       </div>
     </div>
   );
-}
+});

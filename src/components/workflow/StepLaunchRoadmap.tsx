@@ -1,7 +1,7 @@
 import { Checkbox } from "@/components/ui/checkbox";
-import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, forwardRef, useImperativeHandle } from "react";
 import { Button } from "@/components/ui/button";
-import { Save, Loader2, FileText, Check, AlertTriangle, Info } from "lucide-react";
+import { Save, Loader2, FileText, AlertTriangle, Info, CheckCircle2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useBrand } from "@/hooks/useBrand";
 import { useSubscription } from "@/hooks/useSubscription";
@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { generateBrandReport } from "@/lib/pdf-export";
 import { generateSmartRoadmap, type SmartWeek } from "@/lib/roadmap-intelligence";
 import { useNavigate } from "react-router-dom";
+import type { StepHandle } from "./StepIdeaFoundation";
 
 const staticWeeks = [
   {
@@ -60,7 +61,7 @@ const staticWeeks = [
   },
 ];
 
-export function StepLaunchRoadmap() {
+export const StepLaunchRoadmap = forwardRef<StepHandle>(function StepLaunchRoadmap(_, ref) {
   const { t } = useTranslation();
   const { activeBrand } = useBrand();
   const { isFree, isBuilder } = useSubscription();
@@ -71,17 +72,12 @@ export function StepLaunchRoadmap() {
 
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const [saving, setSaving] = useState(false);
-  const [autoSaved, setAutoSaved] = useState(false);
-  const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isDirty = useRef(false);
 
-  // Generate smart roadmap for Builder users
   const smartWeeks: SmartWeek[] | null = useMemo(() => {
     if (!isBuilder || !health) return null;
     return generateSmartRoadmap(health);
   }, [isBuilder, health]);
 
-  // Compute all task IDs for counting
   const allTaskIds = useMemo(() => {
     if (smartWeeks) {
       return smartWeeks.flatMap((w) => [
@@ -133,24 +129,11 @@ export function StepLaunchRoadmap() {
       if (showToast) toast.error(t("steps.saveError"));
     } else {
       if (showToast) toast.success(t("steps.saved"));
-      else {
-        setAutoSaved(true);
-        setTimeout(() => setAutoSaved(false), 2000);
-      }
       queryClient.invalidateQueries({ queryKey: ["launch_plan_roadmap", brandId] });
     }
   }, [brandId, checked, plan, queryClient, t]);
 
-  useEffect(() => {
-    if (!isDirty.current || !brandId) return;
-    if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
-    autoSaveTimer.current = setTimeout(() => {
-      saveToDb(false);
-    }, 2000);
-    return () => {
-      if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
-    };
-  }, [checked, brandId]);
+  useImperativeHandle(ref, () => ({ save: () => saveToDb(false) }), [saveToDb]);
 
   const handleExportPdf = () => {
     if (isFree) {
@@ -178,11 +161,6 @@ export function StepLaunchRoadmap() {
           <div className="rounded-full bg-accent/10 px-3 py-1 text-xs font-medium text-accent">
             {Math.round((completedCount / allTaskIds.length) * 100)}%
           </div>
-          {autoSaved && (
-            <span className="flex items-center gap-1 text-xs text-muted-foreground animate-fade-in">
-              <Check className="h-3 w-3" /> Auto-gespeichert
-            </span>
-          )}
           <Button variant="outline" size="sm" className="gap-2" onClick={() => saveToDb(true)} disabled={saving}>
             {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
             {t("steps.save")}
@@ -194,7 +172,6 @@ export function StepLaunchRoadmap() {
         </div>
       </div>
 
-      {/* Builder: info banner about personalized tasks */}
       {isBuilder && hasDynamicTasks && (
         <div className="flex items-start gap-3 rounded-lg border border-accent/30 bg-accent/5 p-4">
           <Info className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
@@ -213,13 +190,12 @@ export function StepLaunchRoadmap() {
             <h3 className="font-semibold">{t(`step7.${week.titleKey}`)}</h3>
           </div>
 
-          {/* Static tasks */}
           <div className="space-y-3">
             {week.staticTasks.map((task) => (
               <label key={task} className="flex items-center gap-3 cursor-pointer">
                 <Checkbox
                   checked={!!checked[task]}
-                  onCheckedChange={(v) => { isDirty.current = true; setChecked((p) => ({ ...p, [task]: !!v })); }}
+                  onCheckedChange={(v) => setChecked((p) => ({ ...p, [task]: !!v }))}
                 />
                 <span className={`text-sm ${checked[task] ? "line-through text-muted-foreground" : ""}`}>
                   {task}
@@ -228,7 +204,6 @@ export function StepLaunchRoadmap() {
             ))}
           </div>
 
-          {/* Dynamic (Builder) tasks */}
           {week.dynamicTasks.length > 0 && (
             <div className="mt-4 space-y-3 border-t border-dashed pt-4">
               {week.dynamicTasks.map((dt) => (
@@ -236,7 +211,7 @@ export function StepLaunchRoadmap() {
                   <label className="flex items-center gap-3 cursor-pointer">
                     <Checkbox
                       checked={!!checked[dt.id]}
-                      onCheckedChange={(v) => { isDirty.current = true; setChecked((p) => ({ ...p, [dt.id]: !!v })); }}
+                      onCheckedChange={(v) => setChecked((p) => ({ ...p, [dt.id]: !!v }))}
                     />
                     <span className={`text-sm font-medium ${checked[dt.id] ? "line-through text-muted-foreground" : ""}`}>
                       {dt.triggeredByRisk && (
@@ -256,4 +231,4 @@ export function StepLaunchRoadmap() {
       ))}
     </div>
   );
-}
+});

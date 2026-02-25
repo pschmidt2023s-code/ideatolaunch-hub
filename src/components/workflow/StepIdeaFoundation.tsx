@@ -1,10 +1,10 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Save, Loader2, Check } from "lucide-react";
+import { Sparkles, Save, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { withPerfTracking, logError } from "@/lib/analytics";
 import { useTranslation } from "react-i18next";
@@ -12,7 +12,11 @@ import { useBrand } from "@/hooks/useBrand";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
-export function StepIdeaFoundation() {
+export interface StepHandle {
+  save: () => Promise<void>;
+}
+
+export const StepIdeaFoundation = forwardRef<StepHandle>(function StepIdeaFoundation(_, ref) {
   const { t } = useTranslation();
   const { activeBrand } = useBrand();
   const queryClient = useQueryClient();
@@ -36,11 +40,7 @@ export function StepIdeaFoundation() {
 
   const [aiLoading, setAiLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [autoSaved, setAutoSaved] = useState(false);
-  const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isDirty = useRef(false);
 
-  // Load existing data
   const { data: profile } = useQuery({
     queryKey: ["brand_profile", brandId],
     queryFn: async () => {
@@ -74,7 +74,6 @@ export function StepIdeaFoundation() {
   }, [profile]);
 
   const update = (key: string, value: string) => {
-    isDirty.current = true;
     setForm((p) => ({ ...p, [key]: value }));
   };
 
@@ -104,25 +103,11 @@ export function StepIdeaFoundation() {
       if (showToast) toast.error(t("steps.saveError"));
     } else {
       if (showToast) toast.success(t("steps.saved"));
-      else {
-        setAutoSaved(true);
-        setTimeout(() => setAutoSaved(false), 2000);
-      }
       queryClient.invalidateQueries({ queryKey: ["brand_profile", brandId] });
     }
   }, [brandId, form, generated, profile, t, queryClient]);
 
-  // Auto-save on changes (debounced 2s) — only after user interaction
-  useEffect(() => {
-    if (!isDirty.current || !brandId) return;
-    if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
-    autoSaveTimer.current = setTimeout(() => {
-      saveToDb(false);
-    }, 2000);
-    return () => {
-      if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
-    };
-  }, [form, generated, brandId]);
+  useImperativeHandle(ref, () => ({ save: () => saveToDb(false) }), [saveToDb]);
 
   const handleAiAnalyze = async () => {
     if (!form.productDescription.trim()) {
@@ -159,17 +144,10 @@ export function StepIdeaFoundation() {
       <div className="rounded-xl border bg-card p-6 shadow-card">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-lg font-semibold">{t("step1.title")}</h2>
-          <div className="flex items-center gap-2">
-            {autoSaved && (
-              <span className="flex items-center gap-1 text-xs text-muted-foreground animate-fade-in">
-                <Check className="h-3 w-3" /> Auto-gespeichert
-              </span>
-            )}
-            <Button variant="outline" size="sm" className="gap-2" onClick={() => saveToDb(true)} disabled={saving}>
-              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-              {t("steps.save")}
-            </Button>
-          </div>
+          <Button variant="outline" size="sm" className="gap-2" onClick={() => saveToDb(true)} disabled={saving}>
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            {t("steps.save")}
+          </Button>
         </div>
 
         <div className="grid gap-5 sm:grid-cols-2">
@@ -194,7 +172,7 @@ export function StepIdeaFoundation() {
 
           <div className="space-y-2">
             <Label>{t("step1.priceLevel")}</Label>
-            <Select value={form.priceLevel} onValueChange={(v) => { isDirty.current = true; update("priceLevel", v); }}>
+            <Select value={form.priceLevel} onValueChange={(v) => update("priceLevel", v)}>
               <SelectTrigger><SelectValue placeholder={t("step1.choose")} /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="budget">{t("step1.priceBudget")}</SelectItem>
@@ -225,7 +203,7 @@ export function StepIdeaFoundation() {
 
           <div className="space-y-2 sm:col-span-2">
             <Label>{t("step1.timeline")}</Label>
-            <Select value={form.timeline} onValueChange={(v) => { isDirty.current = true; update("timeline", v); }}>
+            <Select value={form.timeline} onValueChange={(v) => update("timeline", v)}>
               <SelectTrigger><SelectValue placeholder={t("step1.choose")} /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="1-3">{t("step1.t13")}</SelectItem>
@@ -267,7 +245,7 @@ export function StepIdeaFoundation() {
               <Textarea
                 placeholder={t("step1.aiPlaceholder")}
                 value={generated[key]}
-                onChange={(e) => { isDirty.current = true; setGenerated((p) => ({ ...p, [key]: e.target.value })); }}
+                onChange={(e) => setGenerated((p) => ({ ...p, [key]: e.target.value }))}
                 rows={3}
                 className="bg-muted/50"
               />
@@ -277,4 +255,4 @@ export function StepIdeaFoundation() {
       </div>
     </div>
   );
-}
+});

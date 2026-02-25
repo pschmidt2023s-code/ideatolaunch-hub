@@ -1,18 +1,19 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Save, Loader2, Check } from "lucide-react";
+import { Sparkles, Save, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useBrand } from "@/hooks/useBrand";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
+import type { StepHandle } from "./StepIdeaFoundation";
 
 const toneOptions = ["Luxuriös", "Minimal", "Bold", "Verspielt", "Professionell", "Natürlich"];
 const visualOptions = ["Clean & Modern", "Vintage & Retro", "High-End Eleganz", "Bunt & Energetisch"];
 
-export function StepBrandStructure() {
+export const StepBrandStructure = forwardRef<StepHandle>(function StepBrandStructure(_, ref) {
   const { activeBrand } = useBrand();
   const queryClient = useQueryClient();
   const { t } = useTranslation();
@@ -25,11 +26,7 @@ export function StepBrandStructure() {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [autoSaved, setAutoSaved] = useState(false);
-  const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isDirty = useRef(false);
 
-  // Load existing data
   const { data: identity } = useQuery({
     queryKey: ["brand_identity", brandId],
     queryFn: async () => {
@@ -72,25 +69,11 @@ export function StepBrandStructure() {
       if (showToast) toast.error(t("steps.saveError"));
     } else {
       if (showToast) toast.success(t("steps.saved"));
-      else {
-        setAutoSaved(true);
-        setTimeout(() => setAutoSaved(false), 2000);
-      }
       queryClient.invalidateQueries({ queryKey: ["brand_identity", brandId] });
     }
   }, [brandId, brandName, tone, visual, tagline, identity, queryClient, t]);
 
-  // Auto-save on changes (debounced 2s) — only after user interaction
-  useEffect(() => {
-    if (!isDirty.current || !brandId) return;
-    if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
-    autoSaveTimer.current = setTimeout(() => {
-      saveToDb(false);
-    }, 2000);
-    return () => {
-      if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
-    };
-  }, [brandName, tone, visual, tagline, brandId]);
+  useImperativeHandle(ref, () => ({ save: () => saveToDb(false) }), [saveToDb]);
 
   const generateSuggestions = async () => {
     setLoadingSuggestions(true);
@@ -117,17 +100,10 @@ export function StepBrandStructure() {
       <div className="rounded-xl border bg-card p-6 shadow-card">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-lg font-semibold">Markenidentität</h2>
-          <div className="flex items-center gap-2">
-            {autoSaved && (
-              <span className="flex items-center gap-1 text-xs text-muted-foreground animate-fade-in">
-                <Check className="h-3 w-3" /> Auto-gespeichert
-              </span>
-            )}
-            <Button variant="outline" size="sm" className="gap-2" onClick={() => saveToDb(true)} disabled={saving}>
-              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-              {t("steps.save")}
-            </Button>
-          </div>
+          <Button variant="outline" size="sm" className="gap-2" onClick={() => saveToDb(true)} disabled={saving}>
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            {t("steps.save")}
+          </Button>
         </div>
 
         <div className="space-y-5">
@@ -137,7 +113,7 @@ export function StepBrandStructure() {
               <Input
                 placeholder="Dein Markenname..."
                 value={brandName}
-                onChange={(e) => { isDirty.current = true; setBrandName(e.target.value); }}
+                onChange={(e) => setBrandName(e.target.value)}
                 className="flex-1"
               />
               <Button
@@ -160,7 +136,6 @@ export function StepBrandStructure() {
                   <button
                     key={name}
                     onClick={() => {
-                      isDirty.current = true;
                       setBrandName(name);
                       setSuggestions([]);
                     }}
@@ -179,7 +154,7 @@ export function StepBrandStructure() {
               {toneOptions.map((t) => (
                 <button
                   key={t}
-                  onClick={() => { isDirty.current = true; setTone(t); }}
+                  onClick={() => setTone(t)}
                   className={`rounded-full border px-4 py-1.5 text-sm transition-colors ${
                     tone === t
                       ? "border-accent bg-accent/10 text-accent font-medium"
@@ -198,7 +173,7 @@ export function StepBrandStructure() {
               {visualOptions.map((v) => (
                 <button
                   key={v}
-                  onClick={() => { isDirty.current = true; setVisual(v); }}
+                  onClick={() => setVisual(v)}
                   className={`rounded-lg border p-4 text-left text-sm transition-all ${
                     visual === v
                       ? "border-accent bg-accent/5 ring-1 ring-accent/20 font-medium"
@@ -216,11 +191,11 @@ export function StepBrandStructure() {
             <Input
               placeholder="Dein Markenclaim..."
               value={tagline}
-              onChange={(e) => { isDirty.current = true; setTagline(e.target.value); }}
+              onChange={(e) => setTagline(e.target.value)}
             />
           </div>
         </div>
       </div>
     </div>
   );
-}
+});
