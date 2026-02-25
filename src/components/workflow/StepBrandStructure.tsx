@@ -27,6 +27,7 @@ export function StepBrandStructure() {
   const [saving, setSaving] = useState(false);
   const [autoSaved, setAutoSaved] = useState(false);
   const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isDirty = useRef(false);
 
   // Load existing data
   const { data: identity } = useQuery({
@@ -79,9 +80,9 @@ export function StepBrandStructure() {
     }
   }, [brandId, brandName, tone, visual, tagline, identity, queryClient, t]);
 
-  // Auto-save on changes (debounced 2s)
+  // Auto-save on changes (debounced 2s) — only after user interaction
   useEffect(() => {
-    if (!brandId || !identity && !brandName && !tone && !visual && !tagline) return;
+    if (!isDirty.current || !brandId) return;
     if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
     autoSaveTimer.current = setTimeout(() => {
       saveToDb(false);
@@ -136,7 +137,7 @@ export function StepBrandStructure() {
               <Input
                 placeholder="Dein Markenname..."
                 value={brandName}
-                onChange={(e) => setBrandName(e.target.value)}
+                onChange={(e) => { isDirty.current = true; setBrandName(e.target.value); }}
                 className="flex-1"
               />
               <Button
@@ -159,6 +160,7 @@ export function StepBrandStructure() {
                   <button
                     key={name}
                     onClick={() => {
+                      isDirty.current = true;
                       setBrandName(name);
                       setSuggestions([]);
                     }}
@@ -177,7 +179,7 @@ export function StepBrandStructure() {
               {toneOptions.map((t) => (
                 <button
                   key={t}
-                  onClick={() => setTone(t)}
+                  onClick={() => { isDirty.current = true; setTone(t); }}
                   className={`rounded-full border px-4 py-1.5 text-sm transition-colors ${
                     tone === t
                       ? "border-accent bg-accent/10 text-accent font-medium"
@@ -196,7 +198,7 @@ export function StepBrandStructure() {
               {visualOptions.map((v) => (
                 <button
                   key={v}
-                  onClick={() => setVisual(v)}
+                  onClick={() => { isDirty.current = true; setVisual(v); }}
                   className={`rounded-lg border p-4 text-left text-sm transition-all ${
                     visual === v
                       ? "border-accent bg-accent/5 ring-1 ring-accent/20 font-medium"
@@ -214,7 +216,7 @@ export function StepBrandStructure() {
             <Input
               placeholder="Dein Markenclaim..."
               value={tagline}
-              onChange={(e) => setTagline(e.target.value)}
+              onChange={(e) => { isDirty.current = true; setTagline(e.target.value); }}
             />
           </div>
         </div>

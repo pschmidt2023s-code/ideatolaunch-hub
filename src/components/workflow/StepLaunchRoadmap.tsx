@@ -70,6 +70,7 @@ export function StepLaunchRoadmap() {
   const [saving, setSaving] = useState(false);
   const [autoSaved, setAutoSaved] = useState(false);
   const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isDirty = useRef(false);
   const allTasks = weeks.flatMap((w) => w.tasks);
   const completedCount = allTasks.filter((t) => checked[t]).length;
 
@@ -120,9 +121,9 @@ export function StepLaunchRoadmap() {
     }
   }, [brandId, checked, plan, queryClient, t]);
 
-  // Auto-save on changes (debounced 2s)
+  // Auto-save on changes (debounced 2s) — only after user interaction
   useEffect(() => {
-    if (!brandId || (!plan && Object.keys(checked).length === 0)) return;
+    if (!isDirty.current || !brandId) return;
     if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
     autoSaveTimer.current = setTimeout(() => {
       saveToDb(false);
@@ -185,7 +186,7 @@ export function StepLaunchRoadmap() {
               <label key={task} className="flex items-center gap-3 cursor-pointer">
                 <Checkbox
                   checked={!!checked[task]}
-                  onCheckedChange={(v) => setChecked((p) => ({ ...p, [task]: !!v }))}
+                  onCheckedChange={(v) => { isDirty.current = true; setChecked((p) => ({ ...p, [task]: !!v })); }}
                 />
                 <span className={`text-sm ${checked[task] ? "line-through text-muted-foreground" : ""}`}>
                   {task}

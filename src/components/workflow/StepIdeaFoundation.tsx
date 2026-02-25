@@ -38,6 +38,7 @@ export function StepIdeaFoundation() {
   const [saving, setSaving] = useState(false);
   const [autoSaved, setAutoSaved] = useState(false);
   const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isDirty = useRef(false);
 
   // Load existing data
   const { data: profile } = useQuery({
@@ -72,7 +73,10 @@ export function StepIdeaFoundation() {
     }
   }, [profile]);
 
-  const update = (key: string, value: string) => setForm((p) => ({ ...p, [key]: value }));
+  const update = (key: string, value: string) => {
+    isDirty.current = true;
+    setForm((p) => ({ ...p, [key]: value }));
+  };
 
   const saveToDb = useCallback(async (showToast = true) => {
     if (!brandId) return;
@@ -108,9 +112,9 @@ export function StepIdeaFoundation() {
     }
   }, [brandId, form, generated, profile, t, queryClient]);
 
-  // Auto-save on changes (debounced 2s)
+  // Auto-save on changes (debounced 2s) — only after user interaction
   useEffect(() => {
-    if (!brandId || (!profile && !form.productDescription && !form.targetAudience)) return;
+    if (!isDirty.current || !brandId) return;
     if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
     autoSaveTimer.current = setTimeout(() => {
       saveToDb(false);
@@ -190,7 +194,7 @@ export function StepIdeaFoundation() {
 
           <div className="space-y-2">
             <Label>{t("step1.priceLevel")}</Label>
-            <Select value={form.priceLevel} onValueChange={(v) => update("priceLevel", v)}>
+            <Select value={form.priceLevel} onValueChange={(v) => { isDirty.current = true; update("priceLevel", v); }}>
               <SelectTrigger><SelectValue placeholder={t("step1.choose")} /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="budget">{t("step1.priceBudget")}</SelectItem>
@@ -221,7 +225,7 @@ export function StepIdeaFoundation() {
 
           <div className="space-y-2 sm:col-span-2">
             <Label>{t("step1.timeline")}</Label>
-            <Select value={form.timeline} onValueChange={(v) => update("timeline", v)}>
+            <Select value={form.timeline} onValueChange={(v) => { isDirty.current = true; update("timeline", v); }}>
               <SelectTrigger><SelectValue placeholder={t("step1.choose")} /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="1-3">{t("step1.t13")}</SelectItem>
@@ -263,7 +267,7 @@ export function StepIdeaFoundation() {
               <Textarea
                 placeholder={t("step1.aiPlaceholder")}
                 value={generated[key]}
-                onChange={(e) => setGenerated((p) => ({ ...p, [key]: e.target.value }))}
+                onChange={(e) => { isDirty.current = true; setGenerated((p) => ({ ...p, [key]: e.target.value })); }}
                 rows={3}
                 className="bg-muted/50"
               />
