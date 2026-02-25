@@ -3,12 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format } from "date-fns";
@@ -50,16 +45,8 @@ export default function InternalAnalytics() {
     async function load() {
       setLoading(true);
       const [evtRes, errRes] = await Promise.all([
-        supabase
-          .from("analytics_events")
-          .select("*")
-          .order("created_at", { ascending: false })
-          .limit(500),
-        supabase
-          .from("error_logs")
-          .select("*")
-          .order("created_at", { ascending: false })
-          .limit(200),
+        supabase.from("analytics_events").select("*").order("created_at", { ascending: false }).limit(500),
+        supabase.from("error_logs").select("*").order("created_at", { ascending: false }).limit(200),
       ]);
       setEvents((evtRes.data as AnalyticsEvent[]) ?? []);
       setErrors((errRes.data as ErrorLog[]) ?? []);
@@ -70,173 +57,172 @@ export default function InternalAnalytics() {
 
   const fmt = (d: string) => format(new Date(d), "dd.MM.yy HH:mm:ss");
 
-  // ── Computed metrics ──
+  // ── KPIs ──
   const now = Date.now();
-  const last24h = events.filter(
-    (e) => now - new Date(e.created_at).getTime() < 24 * 60 * 60 * 1000
-  );
+  const last24h = events.filter((e) => now - new Date(e.created_at).getTime() < 86400000);
+  const last7d = events.filter((e) => now - new Date(e.created_at).getTime() < 7 * 86400000);
   const activeUsers24h = new Set(last24h.map((e) => e.user_id)).size;
 
-  const upgradeClicks = events.filter((e) => e.event_name === "clicked_upgrade");
-  const signups = events.filter((e) => e.event_name === "user_signed_up");
+  const signups = events.filter((e) => e.event_name === "signup_completed" || e.event_name === "user_signed_up");
+  const upgradeClicks = events.filter((e) => e.event_name === "upgrade_clicked" || e.event_name === "clicked_upgrade");
   const checkouts = events.filter((e) => e.event_name === "checkout_started");
-  const subscriptions = events.filter((e) => e.event_name === "subscription_started");
+  const checkoutSuccess = events.filter((e) => e.event_name === "checkout_success" || e.event_name === "subscription_started");
 
-  // Funnel rates
-  const funnelSteps = [
-    { name: "Idea", event: "idea_completed" },
-    { name: "Calculator", event: "calculator_completed" },
-    { name: "Production", event: "production_completed" },
-    { name: "Insights", event: "viewed_insights" },
-  ];
-  const funnelCounts = funnelSteps.map((s) => ({
-    ...s,
-    count: new Set(events.filter((e) => e.event_name === s.event).map((e) => e.user_id)).size,
-  }));
+  // ── Step Funnel ──
+  const stepFunnel = useMemo(() => {
+    const steps = [1, 2, 3, 4, 5, 6, 7];
+    return steps.map((s) => {
+      const viewed = new Set(
+        events.filter((e) => e.event_name === "step_viewed" && (e.metadata as any)?.step === s).map((e) => e.user_id)
+      ).size;
+      const saved = new Set(
+        events.filter((e) => e.event_name === "step_saved" && (e.metadata as any)?.step === s).map((e) => e.user_id)
+      ).size;
+      return { step: s, viewed, saved };
+    });
+  }, [events]);
 
-  // Drop-offs
-  const dropOffs = events.filter((e) => e.event_name === "step_abandoned");
-  const dropOffByStep = useMemo(() => {
+  // ── Upgrade Funnel ──
+  const upgradeFunnel = useMemo(() => {
+    const pricingViewed = new Set(events.filter((e) => e.event_name === "pricing_viewed").map((e) => e.user_id)).size;
+    const clicked = new Set(upgradeClicks.map((e) => e.user_id)).size;
+    const started = new Set(checkouts.map((e) => e.user_id)).size;
+    const completed = new Set(checkoutSuccess.map((e) => e.user_id)).size;
+    return [
+      { label: "Pricing viewed", count: pricingViewed },
+      { label: "Upgrade clicked", count: clicked },
+      { label: "Checkout started", count: started },
+      { label: "Checkout success", count: completed },
+    ];
+  }, [events, upgradeClicks, checkouts, checkoutSuccess]);
+
+  // ── Upgrade trigger sources ──
+  const triggerSources = useMemo(() => {
+    const map: Record<string, number> = {};
+    upgradeClicks.forEach((e) => {
+      const source = (e.metadata as any)?.source || "unknown";
+      map[source] = (map[source] || 0) + 1;
+    });
+    return Object.entries(map).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  }, [upgradeClicks]);
+
+  // ── Locked feature views ──
+  const lockedViews = useMemo(() => {
+    const map: Record<string, number> = {};
+    events.filter((e) => e.event_name === "feature_locked_viewed").forEach((e) => {
+      const feat = (e.metadata as any)?.feature || "unknown";
+      map[feat] = (map[feat] || 0) + 1;
+    });
+    return Object.entries(map).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  }, [events]);
+
+  // ── Drop-offs ──
+  const dropOffs = useMemo(() => {
     const map: Record<number, number> = {};
-    dropOffs.forEach((e) => {
+    events.filter((e) => e.event_name === "step_abandoned").forEach((e) => {
       const step = (e.metadata as any)?.step;
       if (step) map[step] = (map[step] || 0) + 1;
     });
-    return Object.entries(map)
-      .map(([step, count]) => ({ step: Number(step), count }))
-      .sort((a, b) => a.step - b.step);
-  }, [dropOffs]);
+    return Object.entries(map).map(([s, c]) => ({ step: Number(s), count: c })).sort((a, b) => a.step - b.step);
+  }, [events]);
 
-  // Avg time per step (from sessions)
-  const stepEvents = events.filter((e) => e.event_name === "step_completed");
-  const avgTimePerStep = useMemo(() => {
-    const sessions: Record<string, { step: number; time: number }[]> = {};
-    stepEvents.forEach((e) => {
-      const sid = e.session_id;
-      if (!sid) return;
-      if (!sessions[sid]) sessions[sid] = [];
-      sessions[sid].push({
-        step: (e.metadata as any)?.step ?? 0,
-        time: new Date(e.created_at).getTime(),
-      });
-    });
+  // ── Top drop-off ──
+  const topDropOff = dropOffs.length > 0 ? dropOffs.reduce((a, b) => (b.count > a.count ? b : a)) : null;
 
-    const stepTimes: Record<number, number[]> = {};
-    Object.values(sessions).forEach((entries) => {
-      entries.sort((a, b) => a.time - b.time);
-      for (let i = 1; i < entries.length; i++) {
-        const diff = (entries[i].time - entries[i - 1].time) / 1000 / 60;
-        if (diff < 60) {
-          const step = entries[i - 1].step;
-          if (!stepTimes[step]) stepTimes[step] = [];
-          stepTimes[step].push(diff);
-        }
-      }
-    });
-
-    return Object.entries(stepTimes)
-      .map(([step, times]) => ({
-        step: Number(step),
-        avg: Math.round((times.reduce((a, b) => a + b, 0) / times.length) * 10) / 10,
-      }))
-      .sort((a, b) => a.step - b.step);
-  }, [stepEvents]);
-
-  // Performance warnings
-  const perfWarnings = events.filter((e) => e.event_name === "performance_warning");
+  // ── Upgrades today vs last 7d ──
+  const upgradesToday = checkoutSuccess.filter((e) => now - new Date(e.created_at).getTime() < 86400000).length;
+  const upgrades7d = checkoutSuccess.filter((e) => now - new Date(e.created_at).getTime() < 7 * 86400000).length;
 
   if (authLoading || loading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-background text-muted-foreground">
-        Loading…
-      </div>
-    );
+    return <div className="flex h-screen items-center justify-center bg-background text-muted-foreground">Loading…</div>;
   }
 
   return (
     <div className="min-h-screen bg-background p-4 sm:p-6 font-mono text-sm">
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-xl font-bold">Internal Analytics</h1>
-        <button
-          onClick={() => navigate("/dashboard")}
-          className="text-xs text-muted-foreground hover:text-foreground"
-        >
-          ← Dashboard
-        </button>
+        <button onClick={() => navigate("/dashboard")} className="text-xs text-muted-foreground hover:text-foreground">← Dashboard</button>
       </div>
 
       {/* KPI row */}
-      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8">
         {[
           { label: "Active (24h)", value: activeUsers24h },
           { label: "Signups", value: signups.length },
           { label: "Upgrade Clicks", value: upgradeClicks.length },
           { label: "Checkouts", value: checkouts.length },
-          { label: "Subscriptions", value: subscriptions.length },
+          { label: "Conversions", value: checkoutSuccess.length },
+          { label: "Upgrades today", value: upgradesToday },
+          { label: "Upgrades 7d", value: upgrades7d },
           { label: "Errors", value: errors.length },
         ].map((kpi) => (
-          <div
-            key={kpi.label}
-            className="rounded-lg border bg-card p-3 shadow-card"
-          >
+          <div key={kpi.label} className="rounded-lg border bg-card p-3 shadow-card">
             <p className="text-xs text-muted-foreground">{kpi.label}</p>
             <p className="mt-1 text-2xl font-bold">{kpi.value}</p>
           </div>
         ))}
       </div>
 
-      {/* Funnel + Drop-off + Avg Time */}
-      <div className="mb-6 grid gap-4 sm:grid-cols-3">
+      {/* Step Funnel + Upgrade Funnel + Triggers */}
+      <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-lg border bg-card p-4 shadow-card">
-          <h3 className="mb-3 text-xs font-semibold uppercase text-muted-foreground">
-            Funnel Completion (unique users)
-          </h3>
-          {funnelCounts.map((f) => (
-            <div key={f.event} className="flex items-center justify-between py-1">
-              <span className="text-xs">{f.name}</span>
+          <h3 className="mb-3 text-xs font-semibold uppercase text-muted-foreground">Step Funnel (unique users)</h3>
+          {stepFunnel.map((f) => (
+            <div key={f.step} className="flex items-center justify-between py-1">
+              <span className="text-xs">Step {f.step}</span>
+              <span className="text-xs">
+                <span className="font-bold">{f.viewed}</span>
+                <span className="text-muted-foreground"> → </span>
+                <span className="font-bold text-accent">{f.saved}</span>
+              </span>
+            </div>
+          ))}
+        </div>
+
+        <div className="rounded-lg border bg-card p-4 shadow-card">
+          <h3 className="mb-3 text-xs font-semibold uppercase text-muted-foreground">Upgrade Funnel</h3>
+          {upgradeFunnel.map((f, i) => (
+            <div key={f.label} className="flex items-center justify-between py-1">
+              <span className="text-xs">{f.label}</span>
               <span className="font-bold">{f.count}</span>
             </div>
           ))}
         </div>
 
         <div className="rounded-lg border bg-card p-4 shadow-card">
-          <h3 className="mb-3 text-xs font-semibold uppercase text-muted-foreground">
-            Drop-offs per Step
-          </h3>
-          {dropOffByStep.length === 0 ? (
-            <p className="text-xs text-muted-foreground">No drop-offs yet</p>
-          ) : (
-            dropOffByStep.map((d) => (
-              <div key={d.step} className="flex items-center justify-between py-1">
-                <span className="text-xs">Step {d.step}</span>
-                <span className="font-bold text-destructive">{d.count}</span>
-              </div>
-            ))
-          )}
+          <h3 className="mb-3 text-xs font-semibold uppercase text-muted-foreground">Upgrade Sources</h3>
+          {triggerSources.length === 0 ? (
+            <p className="text-xs text-muted-foreground">No data</p>
+          ) : triggerSources.map(([source, count]) => (
+            <div key={source} className="flex items-center justify-between py-1">
+              <span className="text-xs truncate max-w-[120px]">{source}</span>
+              <span className="font-bold">{count}</span>
+            </div>
+          ))}
         </div>
 
         <div className="rounded-lg border bg-card p-4 shadow-card">
-          <h3 className="mb-3 text-xs font-semibold uppercase text-muted-foreground">
-            Avg. Time per Step (min)
-          </h3>
-          {avgTimePerStep.length === 0 ? (
-            <p className="text-xs text-muted-foreground">Not enough data</p>
-          ) : (
-            avgTimePerStep.map((s) => (
-              <div key={s.step} className="flex items-center justify-between py-1">
-                <span className="text-xs">Step {s.step}</span>
-                <span className="font-bold">{s.avg}m</span>
-              </div>
-            ))
+          <h3 className="mb-3 text-xs font-semibold uppercase text-muted-foreground">Locked Feature Views</h3>
+          {lockedViews.length === 0 ? (
+            <p className="text-xs text-muted-foreground">No data</p>
+          ) : lockedViews.map(([feat, count]) => (
+            <div key={feat} className="flex items-center justify-between py-1">
+              <span className="text-xs truncate max-w-[120px]">{feat}</span>
+              <span className="font-bold">{count}</span>
+            </div>
+          ))}
+          {topDropOff && (
+            <div className="mt-3 pt-2 border-t">
+              <p className="text-xs text-muted-foreground">Top drop-off: <span className="font-bold text-destructive">Step {topDropOff.step}</span> ({topDropOff.count})</p>
+            </div>
           )}
         </div>
       </div>
 
       <Tabs defaultValue="events">
         <TabsList>
-          <TabsTrigger value="events">Events</TabsTrigger>
+          <TabsTrigger value="events">Events (last 200)</TabsTrigger>
           <TabsTrigger value="errors">Errors</TabsTrigger>
-          <TabsTrigger value="performance">Performance</TabsTrigger>
         </TabsList>
 
         <TabsContent value="events" className="mt-4">
@@ -254,21 +240,11 @@ export default function InternalAnalytics() {
               <TableBody>
                 {events.slice(0, 200).map((e) => (
                   <TableRow key={e.id}>
-                    <TableCell className="whitespace-nowrap text-xs">
-                      {fmt(e.created_at)}
-                    </TableCell>
-                    <TableCell className="font-medium text-xs">
-                      {e.event_name}
-                    </TableCell>
-                    <TableCell className="max-w-[100px] truncate text-xs">
-                      {e.user_id?.slice(0, 8)}
-                    </TableCell>
-                    <TableCell className="max-w-[80px] truncate text-xs text-muted-foreground">
-                      {e.session_id?.slice(0, 10)}
-                    </TableCell>
-                    <TableCell className="max-w-[250px] truncate text-xs text-muted-foreground">
-                      {JSON.stringify(e.metadata)}
-                    </TableCell>
+                    <TableCell className="whitespace-nowrap text-xs">{fmt(e.created_at)}</TableCell>
+                    <TableCell className="font-medium text-xs">{e.event_name}</TableCell>
+                    <TableCell className="max-w-[100px] truncate text-xs">{e.user_id?.slice(0, 8)}</TableCell>
+                    <TableCell className="max-w-[80px] truncate text-xs text-muted-foreground">{e.session_id?.slice(0, 10)}</TableCell>
+                    <TableCell className="max-w-[250px] truncate text-xs text-muted-foreground">{JSON.stringify(e.metadata)}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -291,50 +267,11 @@ export default function InternalAnalytics() {
               <TableBody>
                 {errors.map((e) => (
                   <TableRow key={e.id}>
-                    <TableCell className="whitespace-nowrap text-xs">
-                      {fmt(e.created_at)}
-                    </TableCell>
+                    <TableCell className="whitespace-nowrap text-xs">{fmt(e.created_at)}</TableCell>
                     <TableCell className="text-xs font-medium">{e.error_type}</TableCell>
-                    <TableCell className="max-w-[350px] truncate text-xs text-destructive">
-                      {e.message}
-                    </TableCell>
+                    <TableCell className="max-w-[350px] truncate text-xs text-destructive">{e.message}</TableCell>
                     <TableCell className="text-xs">{e.route}</TableCell>
-                    <TableCell className="max-w-[100px] truncate text-xs">
-                      {e.user_id?.slice(0, 8)}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="performance" className="mt-4">
-          <div className="rounded-lg border overflow-auto max-h-[50vh]">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[150px]">Time</TableHead>
-                  <TableHead>Label</TableHead>
-                  <TableHead>Duration (ms)</TableHead>
-                  <TableHead>User</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {perfWarnings.map((e) => (
-                  <TableRow key={e.id}>
-                    <TableCell className="whitespace-nowrap text-xs">
-                      {fmt(e.created_at)}
-                    </TableCell>
-                    <TableCell className="text-xs font-medium">
-                      {(e.metadata as any)?.label ?? "—"}
-                    </TableCell>
-                    <TableCell className="text-xs font-bold">
-                      {(e.metadata as any)?.duration_ms ?? "—"}
-                    </TableCell>
-                    <TableCell className="max-w-[100px] truncate text-xs">
-                      {e.user_id?.slice(0, 8)}
-                    </TableCell>
+                    <TableCell className="max-w-[100px] truncate text-xs">{e.user_id?.slice(0, 8)}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

@@ -1,8 +1,9 @@
+import { useEffect } from "react";
 import { Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { ReactNode } from "react";
+import { type ReactNode } from "react";
 import { getUpgradeMessage } from "@/lib/feature-flags";
 import { trackEvent } from "@/lib/analytics";
 
@@ -20,6 +21,11 @@ export function LockedOverlay({ children, feature, message, requiredPlan = "buil
   const { i18n } = useTranslation();
   const navigate = useNavigate();
   const isDE = i18n.language === "de";
+
+  // Track when a locked feature is viewed
+  useEffect(() => {
+    trackEvent("feature_locked_viewed", { feature: feature || "unknown", requiredPlan });
+  }, [feature, requiredPlan]);
 
   const upgradeMsg = feature ? getUpgradeMessage(feature) : null;
   const title = upgradeMsg

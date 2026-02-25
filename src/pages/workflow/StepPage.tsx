@@ -12,7 +12,9 @@ import { StepLaunchRoadmap } from "@/components/workflow/StepLaunchRoadmap";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, CheckCircle2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { trackEvent, startStepTimer, clearStepTimer } from "@/lib/analytics";
+import { trackEvent, trackCriticalEvent, startStepTimer, clearStepTimer } from "@/lib/analytics";
+import { useSubscription } from "@/hooks/useSubscription";
+import { useBrand } from "@/hooks/useBrand";
 import { toast } from "sonner";
 
 const stepComponents = [
@@ -35,18 +37,20 @@ export default function StepPage() {
   const { stepNumber } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { plan } = useSubscription();
+  const { activeBrand } = useBrand();
   const step = parseInt(stepNumber || "1", 10);
   const StepComponent = stepComponents[step - 1];
   const stepRef = useRef<StepHandle>(null);
 
   const stepTitleKeys = ["s1", "s2", "s3", "s4", "s5", "s6", "s7"];
 
+  const ctx = { step, plan, brandId: activeBrand?.id };
+
   useEffect(() => {
     if (step >= 1 && step <= 7) {
-      trackEvent("step_completed", { step });
-      if (step === 3) trackEvent("entered_business_calculator");
-      const funnelEvent = stepEventMap[step];
-      if (funnelEvent) trackEvent(funnelEvent, { step });
+      trackEvent("step_viewed", ctx);
+      if (step === 3) trackEvent("entered_business_calculator", ctx);
       startStepTimer(step);
     }
     return () => clearStepTimer();
@@ -58,9 +62,9 @@ export default function StepPage() {
   }
 
   const handleNext = async () => {
-    // Save current step before navigating
     try {
       await stepRef.current?.save();
+      trackCriticalEvent("step_saved", { ...ctx, plan });
     } catch {
       // Continue navigation even if save fails
     }

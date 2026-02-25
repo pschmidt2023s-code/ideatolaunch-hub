@@ -354,5 +354,10 @@
     "s5Text": "You're ready when you've defined: your product and target audience, a realistic price point, a calculated budget, and a rough understanding of your cost structure. Perfection isn't needed — but a solid foundation is.",
     "s5Example": "You know: My product costs about €8 to produce, I want to sell it for €29, my starting budget is €3,000, my target audience is women 25-40. That's enough to take the next step.",
     "s5Why": "Many wait too long for the perfect plan. Others start without any foundation. The truth is in between: a clear minimum of preparation gives you the confidence to take the next step."
+  },
+  "consent": {
+    "text": "We use anonymized analytics to improve the product. No data is shared with third parties.",
+    "accept": "Accept analytics",
+    "decline": "Decline"
   }
 }
