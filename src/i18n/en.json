@@ -107,7 +107,8 @@
     "deleteConfirm": "Are you sure you want to permanently delete \"{{name}}\"? All data for this brand will be lost.",
     "brandDeleted": "Brand deleted",
     "settings": "Settings",
-    "logout": "Log out"
+    "logout": "Log out",
+    "guidedStarter": "I need help getting started"
   },
   "steps": {
     "step": "Step {{n}}/7",

@@ -107,7 +107,8 @@
     "deleteConfirm": "Bist du sicher, dass du \"{{name}}\" unwiderruflich löschen möchtest? Alle Daten dieser Marke gehen verloren.",
     "brandDeleted": "Marke gelöscht",
     "settings": "Einstellungen",
-    "logout": "Abmelden"
+    "logout": "Abmelden",
+    "guidedStarter": "Ich brauche Hilfe beim Start"
   },
   "steps": {
     "step": "Schritt {{n}}/7",
