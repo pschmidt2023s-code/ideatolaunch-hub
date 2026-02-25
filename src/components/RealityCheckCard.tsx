@@ -4,10 +4,9 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { useBrand } from "@/hooks/useBrand";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { evaluateRealityCheck, type RealityCheckResult } from "@/lib/reality-check-engine";
+import { evaluateRealityCheck, type RealityCheckResult, type Risk } from "@/lib/reality-check-engine";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { LockedOverlay } from "@/components/LockedOverlay";
 import {
   ShieldCheck,
   ShieldAlert,
@@ -17,6 +16,7 @@ import {
   Info,
   Lock,
   Zap,
+  Lightbulb,
 } from "lucide-react";
 
 const statusConfig = {
@@ -43,27 +43,29 @@ const statusConfig = {
   },
 };
 
+const severityIcon = {
+  critical: AlertTriangle,
+  warning: AlertTriangle,
+  info: Lightbulb,
+};
+
 const severityColors = {
-  high: "text-destructive",
-  medium: "text-yellow-600 dark:text-yellow-400",
-  low: "text-muted-foreground",
+  critical: "text-destructive",
+  warning: "text-yellow-600 dark:text-yellow-400",
+  info: "text-muted-foreground",
 };
 
 export function RealityCheckCard() {
   const { i18n } = useTranslation();
   const { activeBrand } = useBrand();
-  const { plan, isFree, isBuilder, isPro } = useSubscription();
+  const { isFree, isBuilder, isPro } = useSubscription();
   const brandId = activeBrand?.id;
   const isDE = i18n.language === "de";
 
   const { data: financial } = useQuery({
     queryKey: ["financial_model", brandId],
     queryFn: async () => {
-      const { data } = await supabase
-        .from("financial_models")
-        .select("*")
-        .eq("brand_id", brandId!)
-        .maybeSingle();
+      const { data } = await supabase.from("financial_models").select("*").eq("brand_id", brandId!).maybeSingle();
       return data;
     },
     enabled: !!brandId,
@@ -72,11 +74,7 @@ export function RealityCheckCard() {
   const { data: profile } = useQuery({
     queryKey: ["brand_profile", brandId],
     queryFn: async () => {
-      const { data } = await supabase
-        .from("brand_profiles")
-        .select("budget")
-        .eq("brand_id", brandId!)
-        .maybeSingle();
+      const { data } = await supabase.from("brand_profiles").select("budget").eq("brand_id", brandId!).maybeSingle();
       return data;
     },
     enabled: !!brandId,
@@ -84,12 +82,8 @@ export function RealityCheckCard() {
 
   const result: RealityCheckResult | null = useMemo(() => {
     if (!financial) return null;
-    const unitCost =
-      (financial.production_cost ?? 0) +
-      (financial.packaging_cost ?? 0) +
-      (financial.shipping_cost ?? 0);
+    const unitCost = (financial.production_cost ?? 0) + (financial.packaging_cost ?? 0) + (financial.shipping_cost ?? 0);
     if (unitCost <= 0) return null;
-
     return evaluateRealityCheck({
       unitCost,
       recommendedPrice: financial.recommended_price ?? 0,
@@ -105,9 +99,13 @@ export function RealityCheckCard() {
   const config = statusConfig[result.status];
   const StatusIcon = config.icon;
 
-  // FREE: summary + 1 risk only
-  const visibleRisks = isFree ? result.keyRisks.slice(0, 1) : result.keyRisks;
-  const hiddenRiskCount = isFree ? Math.max(0, result.keyRisks.length - 1) : 0;
+  const criticalAndWarnings = result.risks.filter((r) => r.severity === "critical" || r.severity === "warning");
+  const infoRisks = result.risks.filter((r) => r.severity === "info");
+
+  // FREE: top risk + 1 recommendation only
+  const showFullBreakdown = isBuilder;
+  const visibleActionRisks = isFree ? criticalAndWarnings.slice(0, 1) : criticalAndWarnings;
+  const hiddenCount = isFree ? Math.max(0, criticalAndWarnings.length - 1 + infoRisks.length) : 0;
 
   return (
     <div className="rounded-xl border bg-card p-6 shadow-card space-y-5">
@@ -115,11 +113,9 @@ export function RealityCheckCard() {
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold flex items-center gap-2">
           <StatusIcon className={`h-5 w-5 ${config.color}`} />
-          {isDE ? "Reality Check" : "Reality Check"}
+          Reality Check
         </h2>
-        <span
-          className={`rounded-full px-3 py-1 text-xs font-medium border ${config.bg} ${config.color}`}
-        >
+        <span className={`rounded-full px-3 py-1 text-xs font-medium border ${config.bg} ${config.color}`}>
           {isDE ? config.label.de : config.label.en}
         </span>
       </div>
@@ -127,18 +123,11 @@ export function RealityCheckCard() {
       {/* Score bar */}
       <div className="space-y-2">
         <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">
-            {isDE ? "Machbarkeits-Score" : "Feasibility Score"}
-          </span>
-          <span className={`font-bold text-lg ${config.color}`}>
-            {result.feasibilityScore}/100
-          </span>
+          <span className="text-muted-foreground">{isDE ? "Machbarkeits-Score" : "Feasibility Score"}</span>
+          <span className={`font-bold text-lg ${config.color}`}>{result.feasibilityScore}/100</span>
         </div>
         <div className="h-3 w-full rounded-full bg-muted overflow-hidden">
-          <div
-            className={`h-full rounded-full transition-all duration-500 ${config.barColor}`}
-            style={{ width: `${result.feasibilityScore}%` }}
-          />
+          <div className={`h-full rounded-full transition-all duration-500 ${config.barColor}`} style={{ width: `${result.feasibilityScore}%` }} />
         </div>
       </div>
 
@@ -166,37 +155,39 @@ export function RealityCheckCard() {
         <p>{result.whyItMatters}</p>
       </div>
 
-      {/* Full risk breakdown — Builder+ */}
-      {isBuilder && visibleRisks.length > 0 && (
-        <div className="space-y-2">
-          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            {isDE ? "Alle erkannten Risiken" : "All Identified Risks"}
-          </p>
-          <div className="space-y-2">
-            {visibleRisks.map((risk) => (
-              <div
-                key={risk.id}
-                className="flex items-start gap-2.5 rounded-lg border p-3"
-              >
-                <AlertTriangle
-                  className={`h-4 w-4 shrink-0 mt-0.5 ${severityColors[risk.severity]}`}
-                />
-                <p className="text-sm">{risk.label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+      {/* RISKY/CRITICAL: Fix these first */}
+      {showFullBreakdown && visibleActionRisks.length > 0 && (result.status === "risky" || result.status === "critical") && (
+        <RiskList
+          title={isDE ? "Behebe diese Punkte zuerst" : "Fix These First"}
+          risks={visibleActionRisks}
+        />
+      )}
+
+      {/* SAFE: Heads-up section */}
+      {showFullBreakdown && result.status === "safe" && infoRisks.length > 0 && (
+        <RiskList
+          title={isDE ? "Gut zu wissen" : "Heads Up"}
+          risks={infoRisks.slice(0, 2)}
+        />
+      )}
+
+      {/* Builder: full breakdown for risky/critical also show info items */}
+      {showFullBreakdown && (result.status === "risky" || result.status === "critical") && infoRisks.length > 0 && (
+        <RiskList
+          title={isDE ? "Weitere Hinweise" : "Additional Notes"}
+          risks={infoRisks.slice(0, 2)}
+        />
       )}
 
       {/* Free plan: locked hint */}
-      {isFree && hiddenRiskCount > 0 && (
-        <div className="relative rounded-lg border border-dashed p-4 text-center">
+      {isFree && hiddenCount > 0 && (
+        <div className="rounded-lg border border-dashed p-4 text-center">
           <div className="flex flex-col items-center gap-2 text-muted-foreground">
             <Lock className="h-5 w-5" />
             <p className="text-sm">
               {isDE
-                ? `+${hiddenRiskCount} weitere Risiken – sichtbar ab Builder-Plan`
-                : `+${hiddenRiskCount} more risks – visible with Builder plan`}
+                ? `+${hiddenCount} weitere Hinweise – sichtbar ab Builder-Plan`
+                : `+${hiddenCount} more insights – visible with Builder plan`}
             </p>
           </div>
         </div>
@@ -216,6 +207,26 @@ export function RealityCheckCard() {
           ? "Dies ist eine Orientierungshilfe, keine Finanzberatung. Passe die Werte an deine Situation an."
           : "This is guidance, not financial advice. Adjust values to fit your situation."}
       </p>
+    </div>
+  );
+}
+
+function RiskList({ title, risks }: { title: string; risks: Risk[] }) {
+  return (
+    <div className="space-y-2">
+      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{title}</p>
+      {risks.map((risk) => {
+        const Icon = severityIcon[risk.severity];
+        return (
+          <div key={risk.key} className="rounded-lg border p-3 space-y-1.5">
+            <div className="flex items-start gap-2.5">
+              <Icon className={`h-4 w-4 shrink-0 mt-0.5 ${severityColors[risk.severity]}`} />
+              <p className="text-sm">{risk.message}</p>
+            </div>
+            <p className="text-xs text-muted-foreground pl-6">{risk.fix}</p>
+          </div>
+        );
+      })}
     </div>
   );
 }
