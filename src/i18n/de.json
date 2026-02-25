@@ -59,7 +59,19 @@
     "proF5": "30-Tage Launch-Roadmap",
     "proF6": "Compliance-Vorlagen",
     "proCta": "Builder starten",
-    "popular": "Beliebt"
+    "popular": "Beliebt",
+    "proTier": "Pro",
+    "proTierPrice": "79 €",
+    "proTierPeriod": "/ Monat",
+    "proTierF1": "Alles aus Builder inklusive",
+    "proTierF2": "Guided Founder Mode",
+    "proTierF3": "Supplier Intelligence Engine",
+    "proTierF4": "Execution Readiness Score",
+    "proTierF5": "Risk Priority Dashboard",
+    "proTierF6": "Adaptive Launch-Roadmap",
+    "proTierCta": "Pro starten",
+    "proTierBadge": "Für Macher",
+    "proTierDesc": "Für Gründer, die geführte Umsetzung wollen — nicht nur Analyse."
   },
   "footer": {
     "rights": "Alle Rechte vorbehalten."
