@@ -1,10 +1,10 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Save, Loader2 } from "lucide-react";
+import { Sparkles, Save, Loader2, Check } from "lucide-react";
 import { toast } from "sonner";
 import { withPerfTracking, logError } from "@/lib/analytics";
 import { useTranslation } from "react-i18next";
@@ -36,6 +36,8 @@ export function StepIdeaFoundation() {
 
   const [aiLoading, setAiLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [autoSaved, setAutoSaved] = useState(false);
+  const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Load existing data
   const { data: profile } = useQuery({
@@ -72,7 +74,7 @@ export function StepIdeaFoundation() {
 
   const update = (key: string, value: string) => setForm((p) => ({ ...p, [key]: value }));
 
-  const handleSave = useCallback(async () => {
+  const saveToDb = useCallback(async (showToast = true) => {
     if (!brandId) return;
     setSaving(true);
     const payload = {
@@ -95,12 +97,28 @@ export function StepIdeaFoundation() {
 
     setSaving(false);
     if (error) {
-      toast.error(t("steps.saveError"));
+      if (showToast) toast.error(t("steps.saveError"));
     } else {
-      toast.success(t("steps.saved"));
+      if (showToast) toast.success(t("steps.saved"));
+      else {
+        setAutoSaved(true);
+        setTimeout(() => setAutoSaved(false), 2000);
+      }
       queryClient.invalidateQueries({ queryKey: ["brand_profile", brandId] });
     }
   }, [brandId, form, generated, profile, t, queryClient]);
+
+  // Auto-save on changes (debounced 2s)
+  useEffect(() => {
+    if (!brandId || (!profile && !form.productDescription && !form.targetAudience)) return;
+    if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+    autoSaveTimer.current = setTimeout(() => {
+      saveToDb(false);
+    }, 2000);
+    return () => {
+      if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+    };
+  }, [form, generated, brandId]);
 
   const handleAiAnalyze = async () => {
     if (!form.productDescription.trim()) {
@@ -135,7 +153,20 @@ export function StepIdeaFoundation() {
   return (
     <div className="space-y-8">
       <div className="rounded-xl border bg-card p-6 shadow-card">
-        <h2 className="mb-6 text-lg font-semibold">{t("step1.title")}</h2>
+        <div className="mb-6 flex items-center justify-between">
+          <h2 className="text-lg font-semibold">{t("step1.title")}</h2>
+          <div className="flex items-center gap-2">
+            {autoSaved && (
+              <span className="flex items-center gap-1 text-xs text-muted-foreground animate-fade-in">
+                <Check className="h-3 w-3" /> Auto-gespeichert
+              </span>
+            )}
+            <Button variant="outline" size="sm" className="gap-2" onClick={() => saveToDb(true)} disabled={saving}>
+              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+              {t("steps.save")}
+            </Button>
+          </div>
+        </div>
 
         <div className="grid gap-5 sm:grid-cols-2">
           <div className="space-y-2 sm:col-span-2">
@@ -210,10 +241,6 @@ export function StepIdeaFoundation() {
           >
             {aiLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
             {aiLoading ? t("step1.aiRunning") : t("step1.aiAnalyze")}
-          </Button>
-          <Button variant="outline" className="gap-2" onClick={handleSave} disabled={saving}>
-            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-            {t("steps.save")}
           </Button>
         </div>
       </div>

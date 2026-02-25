@@ -1,8 +1,8 @@
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, DollarSign, Target, BarChart3, AlertTriangle, Save, Loader2 } from "lucide-react";
+import { TrendingUp, DollarSign, Target, BarChart3, AlertTriangle, Save, Loader2, Check } from "lucide-react";
 import { useBrand } from "@/hooks/useBrand";
 import { suggestPriceRange, calculateSensitivity } from "@/lib/brand-health-engine";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -42,6 +42,8 @@ export function StepBusinessCalculator() {
     marketing: 0,
   });
   const [saving, setSaving] = useState(false);
+  const [autoSaved, setAutoSaved] = useState(false);
+  const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Hydrate from saved data
   useEffect(() => {
@@ -57,7 +59,6 @@ export function StepBusinessCalculator() {
 
   const update = (key: string, value: string) => {
     const num = parseFloat(value);
-    // Prevent negative values client-side
     if (!isNaN(num) && num < 0) return;
     setCosts((p) => ({ ...p, [key]: num || 0 }));
   };
@@ -104,13 +105,10 @@ export function StepBusinessCalculator() {
     });
   }, [total, priceRange.sweet, costs.marketing, maxUnits]);
 
-  const handleSave = useCallback(async () => {
+  const saveToDb = useCallback(async (showToast = true) => {
     if (!brandId) return;
-
-    // Validate inputs
     if (costs.production < 0 || costs.packaging < 0 || costs.shipping < 0 || costs.marketing < 0) {
-      toast.error("Kosten dürfen nicht negativ sein.");
-      logError("Negative cost values attempted", { errorType: "validation", metadata: { costs } });
+      if (showToast) toast.error("Kosten dürfen nicht negativ sein.");
       return;
     }
 
@@ -141,11 +139,16 @@ export function StepBusinessCalculator() {
         if (error) throw error;
       });
 
-      toast.success(t("steps.saved"));
-      trackEvent("calculated_price", { margin, breakEven, sweetSpot: priceRange.sweet });
+      if (showToast) {
+        toast.success(t("steps.saved"));
+        trackEvent("calculated_price", { margin, breakEven, sweetSpot: priceRange.sweet });
+      } else {
+        setAutoSaved(true);
+        setTimeout(() => setAutoSaved(false), 2000);
+      }
       queryClient.invalidateQueries({ queryKey: ["financial_model", brandId] });
     } catch (err: any) {
-      toast.error(t("steps.saveError"));
+      if (showToast) toast.error(t("steps.saveError"));
       logError(err.message || "Financial model save failed", {
         errorType: "api",
         metadata: { brandId },
@@ -155,16 +158,35 @@ export function StepBusinessCalculator() {
     }
   }, [brandId, costs, priceRange.sweet, margin, breakEven, queryClient, t]);
 
+  // Auto-save on changes (debounced 2s)
+  useEffect(() => {
+    if (!brandId || (!savedFinancial && total === 0 && costs.marketing === 0)) return;
+    if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+    autoSaveTimer.current = setTimeout(() => {
+      saveToDb(false);
+    }, 2000);
+    return () => {
+      if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+    };
+  }, [costs, brandId]);
+
   return (
     <div className="space-y-8">
       {/* Input */}
       <div className="rounded-xl border bg-card p-6 shadow-card">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-semibold">{t("step3.inputTitle")}</h2>
-          <Button onClick={handleSave} disabled={saving || total === 0} className="gap-2">
-            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-            {t("steps.save")}
-          </Button>
+          <div className="flex items-center gap-2">
+            {autoSaved && (
+              <span className="flex items-center gap-1 text-xs text-muted-foreground animate-fade-in">
+                <Check className="h-3 w-3" /> Auto-gespeichert
+              </span>
+            )}
+            <Button onClick={() => saveToDb(true)} disabled={saving || total === 0} className="gap-2">
+              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+              {t("steps.save")}
+            </Button>
+          </div>
         </div>
         <div className="grid gap-5 sm:grid-cols-2">
           {[

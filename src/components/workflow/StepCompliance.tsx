@@ -1,6 +1,6 @@
 import { Checkbox } from "@/components/ui/checkbox";
-import { useState, useEffect } from "react";
-import { FileText, Save, Loader2 } from "lucide-react";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { FileText, Save, Loader2, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 import { useBrand } from "@/hooks/useBrand";
@@ -34,6 +34,8 @@ export function StepCompliance() {
 
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const [saving, setSaving] = useState(false);
+  const [autoSaved, setAutoSaved] = useState(false);
+  const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const completedCount = Object.values(checked).filter(Boolean).length;
 
   const { data: plan } = useQuery({
@@ -57,7 +59,7 @@ export function StepCompliance() {
     }
   }, [plan]);
 
-  const handleSave = async () => {
+  const saveToDb = useCallback(async (showToast = true) => {
     if (!brandId) return;
     setSaving(true);
     const payload = {
@@ -71,12 +73,28 @@ export function StepCompliance() {
 
     setSaving(false);
     if (error) {
-      toast.error(t("steps.saveError"));
+      if (showToast) toast.error(t("steps.saveError"));
     } else {
-      toast.success(t("steps.saved"));
+      if (showToast) toast.success(t("steps.saved"));
+      else {
+        setAutoSaved(true);
+        setTimeout(() => setAutoSaved(false), 2000);
+      }
       queryClient.invalidateQueries({ queryKey: ["compliance_plan", brandId] });
     }
-  };
+  }, [brandId, checked, plan, queryClient, t]);
+
+  // Auto-save on changes (debounced 2s)
+  useEffect(() => {
+    if (!brandId || (!plan && Object.keys(checked).length === 0)) return;
+    if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+    autoSaveTimer.current = setTimeout(() => {
+      saveToDb(false);
+    }, 2000);
+    return () => {
+      if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+    };
+  }, [checked, brandId]);
 
   const handleExportPdf = () => {
     if (isFree) {
@@ -100,7 +118,12 @@ export function StepCompliance() {
             <span className="rounded-full bg-accent/10 px-3 py-1 text-xs font-medium text-accent">
               {completedCount}/{labelChecklist.length} {t("step5.done")}
             </span>
-            <Button variant="outline" size="sm" className="gap-2" onClick={handleSave} disabled={saving}>
+            {autoSaved && (
+              <span className="flex items-center gap-1 text-xs text-muted-foreground animate-fade-in">
+                <Check className="h-3 w-3" /> Auto-gespeichert
+              </span>
+            )}
+            <Button variant="outline" size="sm" className="gap-2" onClick={() => saveToDb(true)} disabled={saving}>
               {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
               {t("steps.save")}
             </Button>
