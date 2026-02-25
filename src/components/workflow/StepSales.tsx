@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CheckCircle2, Save, Loader2, Check } from "lucide-react";
+import { ExplainThis } from "@/components/ExplainThis";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 import { useBrand } from "@/hooks/useBrand";
@@ -143,7 +144,7 @@ export function StepSales() {
             <Input placeholder={t("step6.launchQtyPh")} type="number" value={quantity} onChange={(e) => { isDirty.current = true; setQuantity(e.target.value); }} />
           </div>
           <div className="space-y-2">
-            <Label>{t("step6.fulfillment")}</Label>
+            <Label className="flex items-center gap-1">{t("step6.fulfillment")} <ExplainThis term="Fulfillment" /></Label>
             <Select value={fulfillment} onValueChange={(v) => { isDirty.current = true; setFulfillment(v); }}>
               <SelectTrigger><SelectValue placeholder={t("step1.choose")} /></SelectTrigger>
               <SelectContent>

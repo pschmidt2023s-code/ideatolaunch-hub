@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { TrendingUp, DollarSign, Target, BarChart3, AlertTriangle, Save, Loader2, Check } from "lucide-react";
+import { ExplainThis } from "@/components/ExplainThis";
 import { useBrand } from "@/hooks/useBrand";
 import { suggestPriceRange, calculateSensitivity } from "@/lib/brand-health-engine";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -243,14 +244,14 @@ export function StepBusinessCalculator() {
         <div className="rounded-xl border bg-card p-5 shadow-card">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <TrendingUp className={`h-4 w-4 ${marginWarning ? "text-destructive" : "text-green-600 dark:text-green-400"}`} />
-            {t("step3.margin")}
+            {t("step3.margin")} <ExplainThis term="Margin" />
           </div>
           <p className={`mt-2 text-2xl font-bold ${marginWarning ? "text-destructive" : ""}`}>{margin}%</p>
         </div>
         <div className="rounded-xl border bg-card p-5 shadow-card">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Target className="h-4 w-4 text-blue-500" />
-            {t("step3.breakEven")}
+            {t("step3.breakEven")} <ExplainThis term="Break-even" />
           </div>
           <p className="mt-2 text-2xl font-bold">{breakEven} {t("step3.pieces")}</p>
         </div>

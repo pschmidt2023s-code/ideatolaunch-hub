@@ -5,6 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Save, Loader2, Check } from "lucide-react";
+import { ExplainThis } from "@/components/ExplainThis";
 import { useTranslation } from "react-i18next";
 import { useBrand } from "@/hooks/useBrand";
 import { supabase } from "@/integrations/supabase/client";
@@ -139,7 +140,7 @@ export function StepProduction() {
             </Select>
           </div>
           <div className="space-y-2">
-            <Label>{t("step4.moq")}</Label>
+            <Label className="flex items-center gap-1">{t("step4.moq")} <ExplainThis term="MOQ" /></Label>
             <Input placeholder={t("step4.moqPh")} value={moq} onChange={(e) => { isDirty.current = true; setMoq(e.target.value); }} />
           </div>
           <div className="space-y-2">

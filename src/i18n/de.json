@@ -280,5 +280,12 @@
     "email": "E-Mail",
     "plan": "Abo",
     "currentPlan": "Aktueller Plan"
+  },
+  "guidance": {
+    "explainStep": "Diesen Schritt verstehen",
+    "whatIsThis": "Was ist das?",
+    "whyMatters": "Warum ist das wichtig?",
+    "commonMistakes": "Häufige Fehler",
+    "howToDecide": "So entscheidest du richtig"
   }
 }
