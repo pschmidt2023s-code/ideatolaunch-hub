@@ -22,7 +22,7 @@ export function UpgradeBanner() {
       <Button
         size="sm"
         className="gap-2 bg-accent text-accent-foreground hover:bg-accent/90"
-        onClick={() => { trackEvent("clicked_upgrade", { source: "banner" }); navigate("/pricing"); }}
+        onClick={() => { trackEvent("clicked_upgrade", { source: "banner" }); navigate("/dashboard/pricing"); }}
       >
         {t("upgrade.cta")}
       </Button>

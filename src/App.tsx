@@ -16,6 +16,7 @@ import StepPage from "./pages/workflow/StepPage";
 import NotFound from "./pages/NotFound";
 import Pricing from "./pages/Pricing";
 import SettingsPage from "./pages/Settings";
+import DashboardPricing from "./pages/DashboardPricing";
 import InternalAnalytics from "./pages/internal/Analytics";
 
 const queryClient = new QueryClient();
@@ -62,6 +63,14 @@ const App = () => (
                   element={
                     <ProtectedRoute>
                       <SettingsPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/dashboard/pricing"
+                  element={
+                    <ProtectedRoute>
+                      <DashboardPricing />
                     </ProtectedRoute>
                   }
                 />

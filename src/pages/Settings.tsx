@@ -3,6 +3,7 @@ import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,6 +15,7 @@ export default function SettingsPage() {
   const { user } = useAuth();
   const { isFree } = useSubscription();
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -127,7 +129,7 @@ export default function SettingsPage() {
             <Button
               variant="outline"
               className="mt-4 gap-2"
-              onClick={() => window.location.href = "/pricing"}
+              onClick={() => navigate("/dashboard/pricing")}
             >
               {t("upgrade.cta")}
             </Button>
