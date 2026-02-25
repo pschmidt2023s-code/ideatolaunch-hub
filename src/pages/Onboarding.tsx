@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Lightbulb, GraduationCap } from "lucide-react";
+import { trackEvent } from "@/lib/analytics";
 
 export default function Onboarding() {
   const navigate = useNavigate();
@@ -17,7 +18,10 @@ export default function Onboarding() {
 
         <div className="mt-10 grid gap-4 sm:grid-cols-2">
           <button
-            onClick={() => navigate("/dashboard")}
+            onClick={() => {
+              trackEvent("onboarding_finished", { path: "experienced" });
+              navigate("/dashboard");
+            }}
             className="flex flex-col items-center gap-3 rounded-xl border bg-card p-6 text-center shadow-card transition-all hover:shadow-md hover:border-accent/40"
           >
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
@@ -28,7 +32,10 @@ export default function Onboarding() {
           </button>
 
           <button
-            onClick={() => navigate("/starter")}
+            onClick={() => {
+              trackEvent("onboarding_finished", { path: "beginner" });
+              navigate("/starter");
+            }}
             className="flex flex-col items-center gap-3 rounded-xl border bg-card p-6 text-center shadow-card transition-all hover:shadow-md hover:border-accent/40"
           >
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">

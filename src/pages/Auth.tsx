@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { trackEvent } from "@/lib/analytics";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,6 +36,7 @@ export default function Auth() {
     }
 
     if (isSignUp) {
+      trackEvent("signup_completed");
       toast.success(t("auth.signupSuccess"));
     } else {
       navigate("/onboarding");

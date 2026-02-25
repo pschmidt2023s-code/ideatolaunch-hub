@@ -200,6 +200,27 @@ export function PricingSection() {
             </div>
           ))}
         </div>
+
+        {/* Stripe disclosure */}
+        <div className="mt-10 text-center space-y-2">
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            {isDE
+              ? "Zahlung wird über Stripe abgewickelt. Abonnement verlängert sich automatisch, kündbar jederzeit im Kundenportal."
+              : "Payment is processed via Stripe. Subscription renews automatically, cancel anytime in the customer portal."}
+          </p>
+          <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
+            <span>
+              {isDE
+                ? "🔒 Keine Zahlungsdaten auf dieser Plattform gespeichert"
+                : "🔒 No payment data stored on this platform"}
+            </span>
+            <span>
+              {isDE
+                ? "✓ Kein Risiko – jederzeit kündbar"
+                : "✓ No risk – cancel anytime"}
+            </span>
+          </div>
+        </div>
       </div>
     </section>
   );

@@ -36,6 +36,7 @@ export function resetSession() {
 type EventName =
   | "app_opened"
   | "signup_completed"
+  | "onboarding_finished"
   | "brand_created"
   | "first_brand_created"
   | "step_viewed"
@@ -55,6 +56,7 @@ type EventName =
   | "subscription_canceled"
   | "subscription_activated"
   | "feature_locked_viewed"
+  | "feature_locked_seen"
   | "pdf_export_clicked"
   | "insight_viewed"
   | "viewed_insights"
