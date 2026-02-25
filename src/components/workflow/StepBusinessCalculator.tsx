@@ -44,6 +44,7 @@ export function StepBusinessCalculator() {
   const [saving, setSaving] = useState(false);
   const [autoSaved, setAutoSaved] = useState(false);
   const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isDirty = useRef(false);
 
   // Hydrate from saved data
   useEffect(() => {
@@ -60,6 +61,7 @@ export function StepBusinessCalculator() {
   const update = (key: string, value: string) => {
     const num = parseFloat(value);
     if (!isNaN(num) && num < 0) return;
+    isDirty.current = true;
     setCosts((p) => ({ ...p, [key]: num || 0 }));
   };
 
@@ -158,9 +160,9 @@ export function StepBusinessCalculator() {
     }
   }, [brandId, costs, priceRange.sweet, margin, breakEven, queryClient, t]);
 
-  // Auto-save on changes (debounced 2s)
+  // Auto-save on changes (debounced 2s) — only after user interaction
   useEffect(() => {
-    if (!brandId || (!savedFinancial && total === 0 && costs.marketing === 0)) return;
+    if (!isDirty.current || !brandId) return;
     if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
     autoSaveTimer.current = setTimeout(() => {
       saveToDb(false);

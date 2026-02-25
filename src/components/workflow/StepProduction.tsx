@@ -41,6 +41,7 @@ export function StepProduction() {
   const [saving, setSaving] = useState(false);
   const [autoSaved, setAutoSaved] = useState(false);
   const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isDirty = useRef(false);
 
   const { data: plan } = useQuery({
     queryKey: ["production_plan", brandId],
@@ -96,9 +97,9 @@ export function StepProduction() {
     }
   }, [brandId, region, moq, category, checked, plan, queryClient, t]);
 
-  // Auto-save on changes (debounced 2s)
+  // Auto-save on changes (debounced 2s) — only after user interaction
   useEffect(() => {
-    if (!brandId || (!plan && !region && !moq && !category && Object.keys(checked).length === 0)) return;
+    if (!isDirty.current || !brandId) return;
     if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
     autoSaveTimer.current = setTimeout(() => {
       saveToDb(false);
@@ -128,7 +129,7 @@ export function StepProduction() {
         <div className="grid gap-5 sm:grid-cols-3">
           <div className="space-y-2">
             <Label>{t("step4.region")}</Label>
-            <Select value={region} onValueChange={setRegion}>
+            <Select value={region} onValueChange={(v) => { isDirty.current = true; setRegion(v); }}>
               <SelectTrigger><SelectValue placeholder={t("step1.choose")} /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="eu">{t("step4.eu")}</SelectItem>
@@ -139,11 +140,11 @@ export function StepProduction() {
           </div>
           <div className="space-y-2">
             <Label>{t("step4.moq")}</Label>
-            <Input placeholder={t("step4.moqPh")} value={moq} onChange={(e) => setMoq(e.target.value)} />
+            <Input placeholder={t("step4.moqPh")} value={moq} onChange={(e) => { isDirty.current = true; setMoq(e.target.value); }} />
           </div>
           <div className="space-y-2">
             <Label>{t("step4.category")}</Label>
-            <Input placeholder={t("step4.categoryPh")} value={category} onChange={(e) => setCategory(e.target.value)} />
+            <Input placeholder={t("step4.categoryPh")} value={category} onChange={(e) => { isDirty.current = true; setCategory(e.target.value); }} />
           </div>
         </div>
       </div>
@@ -155,7 +156,7 @@ export function StepProduction() {
             <label key={item} className="flex items-center gap-3 cursor-pointer">
               <Checkbox
                 checked={!!checked[item]}
-                onCheckedChange={(v) => setChecked((p) => ({ ...p, [item]: !!v }))}
+                onCheckedChange={(v) => { isDirty.current = true; setChecked((p) => ({ ...p, [item]: !!v })); }}
               />
               <span className="text-sm">{item}</span>
             </label>

@@ -35,6 +35,7 @@ export function StepSales() {
   const [saving, setSaving] = useState(false);
   const [autoSaved, setAutoSaved] = useState(false);
   const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isDirty = useRef(false);
 
   const { data: plan } = useQuery({
     queryKey: ["launch_plan", brandId],
@@ -95,9 +96,9 @@ export function StepSales() {
     }
   }, [brandId, channel, quantity, fulfillment, checked, readiness, plan, queryClient, t]);
 
-  // Auto-save on changes (debounced 2s)
+  // Auto-save on changes (debounced 2s) — only after user interaction
   useEffect(() => {
-    if (!brandId || (!plan && !channel && !quantity && !fulfillment && Object.keys(checked).length === 0)) return;
+    if (!isDirty.current || !brandId) return;
     if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
     autoSaveTimer.current = setTimeout(() => {
       saveToDb(false);
@@ -127,7 +128,7 @@ export function StepSales() {
         <div className="grid gap-5 sm:grid-cols-3">
           <div className="space-y-2">
             <Label>{t("step6.channel")}</Label>
-            <Select value={channel} onValueChange={setChannel}>
+            <Select value={channel} onValueChange={(v) => { isDirty.current = true; setChannel(v); }}>
               <SelectTrigger><SelectValue placeholder={t("step1.choose")} /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="shopify">{t("step6.shopify")}</SelectItem>
@@ -139,11 +140,11 @@ export function StepSales() {
           </div>
           <div className="space-y-2">
             <Label>{t("step6.launchQty")}</Label>
-            <Input placeholder={t("step6.launchQtyPh")} type="number" value={quantity} onChange={(e) => setQuantity(e.target.value)} />
+            <Input placeholder={t("step6.launchQtyPh")} type="number" value={quantity} onChange={(e) => { isDirty.current = true; setQuantity(e.target.value); }} />
           </div>
           <div className="space-y-2">
             <Label>{t("step6.fulfillment")}</Label>
-            <Select value={fulfillment} onValueChange={setFulfillment}>
+            <Select value={fulfillment} onValueChange={(v) => { isDirty.current = true; setFulfillment(v); }}>
               <SelectTrigger><SelectValue placeholder={t("step1.choose")} /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="self">{t("step6.self")}</SelectItem>
@@ -168,7 +169,7 @@ export function StepSales() {
             <label key={item} className="flex items-center gap-3 cursor-pointer">
               <Checkbox
                 checked={!!checked[item]}
-                onCheckedChange={(v) => setChecked((p) => ({ ...p, [item]: !!v }))}
+                onCheckedChange={(v) => { isDirty.current = true; setChecked((p) => ({ ...p, [item]: !!v })); }}
               />
               <span className={`text-sm ${checked[item] ? "line-through text-muted-foreground" : ""}`}>{item}</span>
             </label>
