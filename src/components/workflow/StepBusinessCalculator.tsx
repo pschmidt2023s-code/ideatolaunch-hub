@@ -4,6 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { TrendingUp, DollarSign, Target, BarChart3, AlertTriangle, Save, Loader2, Check } from "lucide-react";
 import { ExplainThis } from "@/components/ExplainThis";
+import { RealityCheckCard } from "@/components/RealityCheckCard";
 import { useBrand } from "@/hooks/useBrand";
 import { suggestPriceRange, calculateSensitivity } from "@/lib/brand-health-engine";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -349,6 +350,8 @@ export function StepBusinessCalculator() {
           </div>
         </div>
       )}
+      {/* Reality Check */}
+      {total > 0 && <RealityCheckCard />}
     </div>
   );
 }
