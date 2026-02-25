@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import type { StepHandle } from "./StepIdeaFoundation";
+import { SupplierMatchCard } from "@/components/SupplierMatchCard";
 
 const checklist = [
   "Produktspezifikationen definiert",
@@ -41,6 +42,9 @@ export const StepProduction = forwardRef<StepHandle>(function StepProduction(_, 
   const [category, setCategory] = useState("");
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const [saving, setSaving] = useState(false);
+  const [supplierBudget, setSupplierBudget] = useState("");
+  const [supplierQty, setSupplierQty] = useState("");
+  const [supplierSegment, setSupplierSegment] = useState<"low" | "mid" | "premium">("mid");
 
   const { data: plan } = useQuery({
     queryKey: ["production_plan", brandId],
@@ -152,6 +156,41 @@ export const StepProduction = forwardRef<StepHandle>(function StepProduction(_, 
             </li>
           ))}
         </ul>
+      </div>
+
+      {/* Supplier Matching — PRO */}
+      <div className="space-y-4">
+        <div className="rounded-xl border bg-card p-6 shadow-card">
+          <h2 className="mb-4 text-lg font-semibold">Supplier Matching — Eingaben</h2>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <div className="space-y-2">
+              <Label>Budget (€)</Label>
+              <Input type="number" placeholder="z.B. 8000" value={supplierBudget} onChange={(e) => setSupplierBudget(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>Startmenge (Stück)</Label>
+              <Input type="number" placeholder="z.B. 500" value={supplierQty} onChange={(e) => setSupplierQty(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>Preissegment</Label>
+              <Select value={supplierSegment} onValueChange={(v) => setSupplierSegment(v as "low" | "mid" | "premium")}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="low">Budget / Low</SelectItem>
+                  <SelectItem value="mid">Mittel</SelectItem>
+                  <SelectItem value="premium">Premium</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
+        <SupplierMatchCard
+          productCategory={category}
+          budget={Number(supplierBudget) || 0}
+          targetRegion={region === "asia" ? "Asia" : region === "eu" ? "EU" : "Global"}
+          launchQuantity={Number(supplierQty) || 0}
+          priceSegment={supplierSegment}
+        />
       </div>
     </div>
   );
