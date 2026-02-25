@@ -51,7 +51,8 @@ export default function AGB() {
             <p>
               Die Plattform bietet kostenlose und kostenpflichtige Pläne. Kostenpflichtige
               Abonnements werden monatlich abgerechnet und verlängern sich automatisch. Die
-              Zahlungsabwicklung erfolgt über Stripe.
+              Zahlungsabwicklung erfolgt über Stripe. Gemäß § 19 UStG wird keine
+              Umsatzsteuer berechnet (Kleinunternehmerregelung).
             </p>
           </Section>
 
