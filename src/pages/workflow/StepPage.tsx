@@ -15,6 +15,7 @@ import { useTranslation } from "react-i18next";
 import { trackEvent, trackCriticalEvent, startStepTimer, clearStepTimer } from "@/lib/analytics";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useBrand } from "@/hooks/useBrand";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const stepComponents = [
@@ -38,7 +39,7 @@ export default function StepPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { plan } = useSubscription();
-  const { activeBrand } = useBrand();
+  const { activeBrand, refetchBrands } = useBrand();
   const step = parseInt(stepNumber || "1", 10);
   const StepComponent = stepComponents[step - 1];
   const stepRef = useRef<StepHandle>(null);
@@ -46,6 +47,15 @@ export default function StepPage() {
   const stepTitleKeys = ["s1", "s2", "s3", "s4", "s5", "s6", "s7"];
 
   const ctx = { step, plan, brandId: activeBrand?.id };
+
+  const advanceStep = async (nextStep: number) => {
+    if (!activeBrand || nextStep <= activeBrand.current_step) return;
+    await supabase
+      .from("brands")
+      .update({ current_step: nextStep })
+      .eq("id", activeBrand.id);
+    refetchBrands();
+  };
 
   useEffect(() => {
     if (step >= 1 && step <= 7) {
@@ -68,6 +78,7 @@ export default function StepPage() {
     } catch {
       // Continue navigation even if save fails
     }
+    await advanceStep(step + 1);
     navigate(`/dashboard/step/${step + 1}`);
   };
 
@@ -78,6 +89,7 @@ export default function StepPage() {
     } catch {
       // Continue even if save fails
     }
+    await advanceStep(8); // mark all steps complete
     navigate("/dashboard");
   };
 
