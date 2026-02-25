@@ -591,6 +591,62 @@ export type Database = {
         }
         Relationships: []
       }
+      unboxing_profiles: {
+        Row: {
+          brand_id: string
+          created_at: string
+          custom_labeling: boolean
+          id: string
+          insert_samples: boolean
+          packaging_budget: number | null
+          packaging_type: string
+          return_friendly: boolean
+          sticker_seal: boolean
+          target_positioning: string
+          thank_you_card: boolean
+          tissue_paper: boolean
+          updated_at: string
+        }
+        Insert: {
+          brand_id: string
+          created_at?: string
+          custom_labeling?: boolean
+          id?: string
+          insert_samples?: boolean
+          packaging_budget?: number | null
+          packaging_type?: string
+          return_friendly?: boolean
+          sticker_seal?: boolean
+          target_positioning?: string
+          thank_you_card?: boolean
+          tissue_paper?: boolean
+          updated_at?: string
+        }
+        Update: {
+          brand_id?: string
+          created_at?: string
+          custom_labeling?: boolean
+          id?: string
+          insert_samples?: boolean
+          packaging_budget?: number | null
+          packaging_type?: string
+          return_friendly?: boolean
+          sticker_seal?: boolean
+          target_positioning?: string
+          thank_you_card?: boolean
+          tissue_paper?: boolean
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "unboxing_profiles_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: true
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
