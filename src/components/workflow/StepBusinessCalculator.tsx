@@ -5,6 +5,9 @@ import { Button } from "@/components/ui/button";
 import { TrendingUp, DollarSign, Target, BarChart3, AlertTriangle, Save, Loader2, Check } from "lucide-react";
 import { ExplainThis } from "@/components/ExplainThis";
 import { RealityCheckCard } from "@/components/RealityCheckCard";
+import { ScenarioSimulatorCard } from "@/components/ScenarioSimulatorCard";
+import { BudgetPlannerCard } from "@/components/BudgetPlannerCard";
+import { SmartUpgradePrompt } from "@/components/SmartUpgradePrompt";
 import { useBrand } from "@/hooks/useBrand";
 import { suggestPriceRange, calculateSensitivity } from "@/lib/brand-health-engine";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -352,6 +355,12 @@ export function StepBusinessCalculator() {
       )}
       {/* Reality Check */}
       {total > 0 && <RealityCheckCard />}
+      {/* Smart Upgrade Trigger */}
+      {total > 0 && <SmartUpgradePrompt />}
+      {/* Budget Planner (Builder+) */}
+      {total > 0 && <BudgetPlannerCard />}
+      {/* Scenario Simulator (PRO) */}
+      {total > 0 && <ScenarioSimulatorCard />}
     </div>
   );
 }

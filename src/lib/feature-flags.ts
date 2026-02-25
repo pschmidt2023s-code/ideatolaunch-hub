@@ -16,6 +16,9 @@ export interface CapabilityFlags {
   smartRoadmap: boolean;
   advancedRoadmap: boolean;       // Advanced adaptive launch roadmap
   fullInsights: boolean;
+  budgetPlanner: boolean;         // Launch budget planner
+  scenarioSimulator: boolean;     // Scenario simulator
+  fullRealityCheck: boolean;      // Full reality check breakdown
 }
 
 export function getCapabilities(plan: string): CapabilityFlags {
@@ -32,5 +35,8 @@ export function getCapabilities(plan: string): CapabilityFlags {
     smartRoadmap: isBuilder,
     advancedRoadmap: isPro,
     fullInsights: isBuilder,
+    budgetPlanner: isBuilder,
+    scenarioSimulator: isPro,
+    fullRealityCheck: isBuilder,
   };
 }
