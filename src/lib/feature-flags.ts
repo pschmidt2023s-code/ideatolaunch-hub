@@ -13,7 +13,8 @@ export type FeatureKey =
   | "adaptiveRoadmap"
   | "executionReadiness"
   | "riskDashboard"
-  | "fullRealityCheck";
+  | "fullRealityCheck"
+  | "unboxingScore";
 
 // ─── Capability Map ─────────────────────────────────────────────
 
@@ -29,6 +30,7 @@ export interface CapabilityFlags {
   canUseAdaptiveRoadmap: boolean;
   canUseRiskDashboard: boolean;
   canUseExecutionReadiness: boolean;
+  canUseUnboxingScore: boolean;
   smartRoadmap: boolean;
 }
 
@@ -48,6 +50,7 @@ export function getCapabilities(plan: string): CapabilityFlags {
     canUseAdaptiveRoadmap: isPro,
     canUseRiskDashboard: isPro,
     canUseExecutionReadiness: isPro,
+    canUseUnboxingScore: isPro,
     smartRoadmap: isBuilder,
   };
 }
@@ -72,13 +75,17 @@ export function getFeatureAccess(feature: FeatureKey, plan: string): FeatureAcce
     executionReadiness: "canUseExecutionReadiness",
     riskDashboard: "canUseRiskDashboard",
     fullRealityCheck: "canSeeFullRisks",
+    unboxingScore: "canUseUnboxingScore",
   };
 
   const capKey = featureCapMap[feature];
   if (caps[capKey]) return "enabled";
 
   // Special rule: supplierMatching shows blurred preview for builder
-  if ((feature === "supplierMatching" || feature === "supplierInsights") && plan === "builder") {
+  if (
+    (feature === "supplierMatching" || feature === "supplierInsights" || feature === "unboxingScore") &&
+    plan === "builder"
+  ) {
     return "preview";
   }
 
@@ -95,6 +102,7 @@ export function getRequiredPlan(feature: FeatureKey): "builder" | "pro" {
     "adaptiveRoadmap",
     "executionReadiness",
     "riskDashboard",
+    "unboxingScore",
   ];
   return proOnly.includes(feature) ? "pro" : "builder";
 }
@@ -215,6 +223,16 @@ const upgradeMessages: Record<FeatureKey, UpgradeMessage> = {
     desc: {
       de: "Erkenne alle Risiken und erhalte konkrete Lösungsvorschläge für jedes Problem.",
       en: "Identify all risks and get concrete fix suggestions for each issue.",
+    },
+  },
+  unboxingScore: {
+    title: {
+      de: "Unboxing Score freischalten",
+      en: "Unlock Unboxing Score",
+    },
+    desc: {
+      de: "Optimiere dein Unboxing-Erlebnis mit konkreten Empfehlungen und einem Score von 0–100.",
+      en: "Optimize your unboxing experience with actionable recommendations and a 0–100 score.",
     },
   },
 };
