@@ -75,10 +75,10 @@ export default function Dashboard() {
       toast.error(t("upgrade.brandLimit"));
       return;
     }
-    const { error } = await supabase.from("brands").insert({
+    const { data, error } = await supabase.from("brands").insert({
       user_id: user!.id,
       name: "Neue Marke",
-    });
+    }).select().single();
     if (error) {
       toast.error(t("steps.saveError"));
       logError(error.message, { errorType: "api", metadata: { action: "createBrand" } });
@@ -87,6 +87,7 @@ export default function Dashboard() {
     toast.success(t("steps.saved"));
     trackEvent(brands.length === 0 ? "first_brand_created" : "brand_created", { brandName: "Neue Marke" });
     await refetchBrands();
+    if (data) setActiveBrandId(data.id);
   };
 
   const handleRename = async () => {
