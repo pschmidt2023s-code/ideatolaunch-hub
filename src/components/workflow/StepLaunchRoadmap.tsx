@@ -117,7 +117,7 @@ export function StepLaunchRoadmap() {
   const handleExportPdf = () => {
     if (isFree) {
       toast.error(t("upgrade.pdfLocked"));
-      navigate("/pricing");
+      navigate("/dashboard/pricing");
       return;
     }
     generateBrandReport({
