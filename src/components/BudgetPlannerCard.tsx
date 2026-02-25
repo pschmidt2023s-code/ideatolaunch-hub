@@ -8,6 +8,8 @@ import { planBudget, type BudgetPlanResult } from "@/lib/budget-planner";
 import { LockedOverlay } from "@/components/LockedOverlay";
 import { AlertTriangle, PieChart, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { getCapabilities } from "@/lib/feature-flags";
+import { trackEvent } from "@/lib/analytics";
 
 const SEGMENTS = [
   { key: "production" as const, labelDe: "Produktion", labelEn: "Production", color: "bg-blue-500" },
@@ -19,9 +21,13 @@ const SEGMENTS = [
 export function BudgetPlannerCard() {
   const { i18n } = useTranslation();
   const { activeBrand } = useBrand();
-  const { isBuilder, isFree } = useSubscription();
+  const { plan } = useSubscription();
   const brandId = activeBrand?.id;
   const isDE = i18n.language === "de";
+  const caps = getCapabilities(plan);
+
+  // HARD GATING: Don't fetch data for free users
+  const shouldCompute = caps.canUseBudgetPlanner;
 
   const { data: financial } = useQuery({
     queryKey: ["financial_model", brandId],
@@ -29,7 +35,7 @@ export function BudgetPlannerCard() {
       const { data } = await supabase.from("financial_models").select("*").eq("brand_id", brandId!).maybeSingle();
       return data;
     },
-    enabled: !!brandId,
+    enabled: !!brandId && shouldCompute,
   });
 
   const { data: profile } = useQuery({
@@ -38,27 +44,25 @@ export function BudgetPlannerCard() {
       const { data } = await supabase.from("brand_profiles").select("budget").eq("brand_id", brandId!).maybeSingle();
       return data;
     },
-    enabled: !!brandId,
+    enabled: !!brandId && shouldCompute,
   });
 
   const budgetNumeric: Record<string, number> = { "<1k": 800, "1k-5k": 3000, "5k-15k": 10000, "15k+": 20000 };
 
   const result = useMemo<BudgetPlanResult | null>(() => {
-    if (!financial) return null;
+    if (!shouldCompute || !financial) return null;
     const unitCost = (financial.production_cost ?? 0) + (financial.packaging_cost ?? 0) + (financial.shipping_cost ?? 0);
     if (unitCost <= 0) return null;
     const budgetValue = budgetNumeric[profile?.budget ?? "1k-5k"] ?? 3000;
     const quantity = financial.break_even_units ?? 100;
     return planBudget(budgetValue, unitCost, quantity, financial.marketing_budget ?? 0);
-  }, [financial, profile]);
-
-  if (!financial || !result) return null;
+  }, [financial, profile, shouldCompute]);
 
   const formatCurrency = (n: number) =>
     new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(n);
 
-  // FREE: locked teaser
-  if (isFree) {
+  // FREE: contextual teaser — no logic executed
+  if (!shouldCompute) {
     return (
       <div className="rounded-xl border bg-card p-6 shadow-card">
         <div className="flex items-center justify-between mb-4">
@@ -72,13 +76,16 @@ export function BudgetPlannerCard() {
           <Lock className="h-8 w-8" />
           <p className="text-sm max-w-xs">
             {isDE
-              ? "Plane dein Launch-Budget mit automatischer Aufteilung und Reserve-Warnung."
-              : "Plan your launch budget with automatic allocation and reserve warning."}
+              ? "Wisse genau, wie du dein Budget auf Produktion, Marketing und Reserve verteilst."
+              : "Know exactly how to allocate your budget across production, marketing, and reserves."}
           </p>
           <Button
             size="sm"
             className="mt-2 gap-2 bg-accent text-accent-foreground hover:bg-accent/90"
-            onClick={() => window.location.href = "/dashboard/pricing"}
+            onClick={() => {
+              trackEvent("clicked_upgrade", { source: "budget_teaser", feature: "budgetPlanner" });
+              window.location.href = "/dashboard/pricing";
+            }}
           >
             {isDE ? "Upgrade auf Builder" : "Upgrade to Builder"}
           </Button>
@@ -86,6 +93,8 @@ export function BudgetPlannerCard() {
       </div>
     );
   }
+
+  if (!financial || !result) return null;
 
   return (
     <div className="rounded-xl border bg-card p-6 shadow-card space-y-5">
@@ -97,7 +106,6 @@ export function BudgetPlannerCard() {
         <span className="rounded-full bg-accent/10 px-3 py-1 text-xs font-medium text-accent">Builder+</span>
       </div>
 
-      {/* Visual bar */}
       <div className="space-y-3">
         <div className="flex h-4 w-full rounded-full overflow-hidden">
           {SEGMENTS.map((seg) => (
@@ -124,7 +132,6 @@ export function BudgetPlannerCard() {
         </div>
       </div>
 
-      {/* Reserve warning */}
       {result.reserveWarning && (
         <div className="flex items-start gap-3 rounded-lg border border-yellow-500/30 bg-yellow-500/5 p-3">
           <AlertTriangle className="h-4 w-4 text-yellow-600 dark:text-yellow-400 shrink-0 mt-0.5" />
@@ -141,7 +148,6 @@ export function BudgetPlannerCard() {
         </div>
       )}
 
-      {/* Suggestions */}
       {result.suggestions.length > 0 && (
         <div className="space-y-2">
           {result.suggestions.map((s, i) => (
