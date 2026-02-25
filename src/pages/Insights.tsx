@@ -133,7 +133,7 @@ export default function InsightsPage() {
   return (
     <DashboardLayout>
       {isFree ? (
-        <LockedOverlay message={t("upgrade.locked")}>
+        <LockedOverlay feature="insights">
           {insightsContent}
         </LockedOverlay>
       ) : (

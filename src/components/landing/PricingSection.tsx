@@ -15,7 +15,7 @@ interface PlanFeature {
 
 export function PricingSection() {
   const navigate = useNavigate();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const [loadingBuilder, setLoadingBuilder] = useState(false);
   const [loadingPro, setLoadingPro] = useState(false);
@@ -50,57 +50,51 @@ export function PricingSection() {
   };
 
   const freePlanFeatures: PlanFeature[] = isDE ? [
-    { label: "1 Marke", desc: "Erstelle und teste eine Marke komplett kostenlos" },
-    { label: "Einfacher Machbarkeits-Check", desc: "Status + Top-1-Risiko auf einen Blick" },
-    { label: "Statische Launch-Checkliste", desc: "Grundlegende Aufgaben für deinen Start" },
+    { label: "1 Marke erstellen", desc: "Teste deine Idee komplett kostenlos" },
+    { label: "Einfacher Wirtschaftlichkeits-Check", desc: "Schnelle Einschätzung deiner Geschäftsidee" },
+    { label: "Standard-Launch-Checklisten", desc: "Grundlegende Aufgaben für deinen Start" },
     { label: "Statische Launch-Roadmap", desc: "Überblick über die wichtigsten Launch-Schritte" },
-    { label: "Reality Check (Zusammenfassung)", desc: "Schnelle Einschätzung deiner Geschäftsidee" },
   ] : [
-    { label: "1 Brand", desc: "Create and test one brand completely free" },
-    { label: "Basic Feasibility Check", desc: "Status + top 1 risk at a glance" },
-    { label: "Static Launch Checklist", desc: "Essential tasks for your launch" },
-    { label: "Static Launch Roadmap", desc: "Overview of key launch steps" },
-    { label: "Reality Check (summary)", desc: "Quick assessment of your business idea" },
+    { label: "Create 1 brand", desc: "Test your idea completely free" },
+    { label: "Simple profitability check", desc: "Quick assessment of your business idea" },
+    { label: "Standard launch checklists", desc: "Essential tasks for your launch" },
+    { label: "Static launch roadmap", desc: "Overview of key launch steps" },
   ];
 
   const builderFeatures: PlanFeature[] = isDE ? [
     { label: "Unbegrenzte Marken", desc: "Erstelle so viele Marken wie du brauchst" },
-    { label: "Voller Business-Kalkulator", desc: "Kosten, Preise, Margen und Break-even im Detail" },
-    { label: "Budget-Planer", desc: "Optimale Verteilung auf Produktion, Marketing und Reserve" },
-    { label: "Voller Reality Check", desc: "Alle Risiken mit Erklärungen und Lösungsvorschlägen" },
-    { label: "30-Tage Launch-Roadmap", desc: "Personalisierter Wochenplan für deinen Launch" },
+    { label: "Volle KI-Unterstützung (Insights)", desc: "Risikoanalysen und strategische Empfehlungen" },
+    { label: "Erweiterte Kalkulation", desc: "Profit-Sensitivität, Break-even und Margenanalyse" },
+    { label: "PDF-Exporte", desc: "Professioneller Brand Report zum Teilen" },
+    { label: "30-Tage Launch-Roadmap", desc: "Statischer Wochenplan für deinen Launch" },
     { label: "Compliance-Vorlagen", desc: "Label-Checklisten und rechtliche Hinweise" },
-    { label: "PDF-Export", desc: "Professioneller Brand Report zum Teilen" },
-    { label: "Guided Mode", desc: "Schritt-für-Schritt-Erklärungen und Entscheidungshilfen" },
+    { label: "Budget-Planer", desc: "Optimale Verteilung auf Produktion, Marketing und Reserve" },
   ] : [
-    { label: "Unlimited Brands", desc: "Create as many brands as you need" },
-    { label: "Full Business Calculator", desc: "Costs, prices, margins and break-even in detail" },
-    { label: "Budget Planner", desc: "Optimal allocation across production, marketing, and reserves" },
-    { label: "Full Reality Check", desc: "All risks with explanations and fix suggestions" },
-    { label: "30-Day Launch Roadmap", desc: "Personalized weekly plan for your launch" },
-    { label: "Compliance Templates", desc: "Label checklists and legal notes" },
-    { label: "PDF Export", desc: "Professional brand report to share" },
-    { label: "Guided Mode", desc: "Step-by-step explanations and decision helpers" },
+    { label: "Unlimited brands", desc: "Create as many brands as you need" },
+    { label: "Full AI support (Insights)", desc: "Risk analysis and strategic recommendations" },
+    { label: "Advanced calculations", desc: "Profit sensitivity, break-even and margin analysis" },
+    { label: "PDF exports", desc: "Professional brand report to share" },
+    { label: "30-day launch roadmap", desc: "Static weekly plan for your launch" },
+    { label: "Compliance templates", desc: "Label checklists and legal notes" },
+    { label: "Budget planner", desc: "Optimal allocation across production, marketing, and reserves" },
   ];
 
   const proFeatures: PlanFeature[] = isDE ? [
     { label: "Alles aus Builder", desc: "Vollständiger Zugang zu allen Builder-Features" },
-    { label: "Szenario-Simulator", desc: "Simuliere verschiedene Mengen- und Preisszenarien" },
-    { label: "Supplier Intelligence Engine", desc: "Lieferantenbewertung und Kostenoptimierung" },
+    { label: "Guided Founder Mode", desc: "Tour + kontextuelle Hilfe pro Step" },
+    { label: "Supplier Matching Engine", desc: "Konkrete Production + Packaging Matches" },
     { label: "Execution Readiness Score", desc: "Wie launch-bereit ist deine Marke wirklich?" },
-    { label: "Risk Priority Ranking", desc: "Risiken nach Impact priorisiert" },
+    { label: "Risk Priority Dashboard", desc: "Risiken nach Impact priorisiert" },
     { label: "Adaptive Launch-Roadmap", desc: "Dynamische Roadmap basierend auf deinen Daten" },
-    { label: "Guided Founder Mode (erweitert)", desc: "Proaktive Handlungsempfehlungen in Echtzeit" },
-    { label: "Alle zukünftigen Features inklusive", desc: "Automatischer Zugang zu neuen Pro-Features" },
+    { label: "Szenario-Simulator", desc: "Simuliere verschiedene Mengen- und Preisszenarien" },
   ] : [
     { label: "Everything in Builder", desc: "Full access to all Builder features" },
-    { label: "Scenario Simulator", desc: "Simulate different quantity and pricing scenarios" },
-    { label: "Supplier Intelligence Engine", desc: "Supplier evaluation and cost optimization" },
+    { label: "Guided Founder Mode", desc: "Tour + contextual help per step" },
+    { label: "Supplier Matching Engine", desc: "Concrete production + packaging matches" },
     { label: "Execution Readiness Score", desc: "How launch-ready is your brand really?" },
-    { label: "Risk Priority Ranking", desc: "Risks prioritized by impact" },
+    { label: "Risk Priority Dashboard", desc: "Risks prioritized by impact" },
     { label: "Adaptive Launch Roadmap", desc: "Dynamic roadmap based on your data" },
-    { label: "Guided Founder Mode (advanced)", desc: "Proactive recommendations in real-time" },
-    { label: "All future features included", desc: "Automatic access to new Pro features" },
+    { label: "Scenario Simulator", desc: "Simulate different quantity and pricing scenarios" },
   ];
 
   const plans = [
@@ -137,7 +131,7 @@ export function PricingSection() {
         ? (isDE ? "Weiterleitung zu Stripe..." : "Redirecting to Stripe...")
         : (isDE ? "Pro starten" : "Start Pro"),
       highlighted: false,
-      badge: isDE ? "Für ambitionierte Gründer" : "Best for serious founders",
+      badge: "Early Access",
       onClick: () => handleCheckout("pro", setLoadingPro),
       loading: loadingPro,
     },
