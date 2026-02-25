@@ -9,6 +9,23 @@ function jsonResponse(body: Record<string, unknown>, status = 200) {
   });
 }
 
+/** Determine plan from Stripe subscription items */
+function determinePlan(subscription: Stripe.Subscription, stripe: Stripe): string {
+  // Check product metadata for plan
+  for (const item of subscription.items.data) {
+    const product = item.price.product;
+    if (typeof product === "object" && product.metadata?.plan) {
+      return product.metadata.plan; // "builder" or "pro"
+    }
+  }
+  // Fallback by price amount
+  for (const item of subscription.items.data) {
+    if (item.price.unit_amount === 7900) return "pro";
+    if (item.price.unit_amount === 2900) return "builder";
+  }
+  return "builder";
+}
+
 serve(async (req) => {
   try {
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
@@ -72,12 +89,19 @@ serve(async (req) => {
             break;
           }
 
-          const sub = await stripe.subscriptions.retrieve(subscriptionId);
+          // Retrieve full subscription to determine plan
+          const sub = await stripe.subscriptions.retrieve(subscriptionId, {
+            expand: ["items.data.price.product"],
+          });
+
+          // Determine plan from checkout metadata or subscription items
+          let plan = session.metadata?.plan || determinePlan(sub, stripe);
+          if (plan !== "builder" && plan !== "pro") plan = "builder";
 
           const { error } = await supabaseAdmin
             .from("subscriptions")
             .update({
-              status: "builder",
+              status: plan,
               stripe_customer_id: customerId,
               stripe_subscription_id: subscriptionId,
               current_period_end: new Date(sub.current_period_end * 1000).toISOString(),
@@ -85,6 +109,7 @@ serve(async (req) => {
             .eq("user_id", user.id);
 
           if (error) console.error("Failed to update subscription:", error);
+          else console.log(`Updated user ${user.id} to plan: ${plan}`);
         }
         break;
       }
@@ -100,7 +125,17 @@ serve(async (req) => {
           .maybeSingle();
 
         if (data) {
-          const status = subscription.status === "active" ? "builder" : "free";
+          let status: string;
+          if (subscription.status === "active") {
+            // Retrieve with expanded product to determine plan
+            const fullSub = await stripe.subscriptions.retrieve(subscription.id, {
+              expand: ["items.data.price.product"],
+            });
+            status = determinePlan(fullSub, stripe);
+          } else {
+            status = "free";
+          }
+
           await supabaseAdmin
             .from("subscriptions")
             .update({
@@ -108,6 +143,8 @@ serve(async (req) => {
               current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
             })
             .eq("user_id", data.user_id);
+          
+          console.log(`Subscription updated for user ${data.user_id}: ${status}`);
         }
         break;
       }
@@ -124,6 +161,8 @@ serve(async (req) => {
             current_period_end: null,
           })
           .eq("stripe_customer_id", customerId);
+        
+        console.log(`Subscription deleted for customer ${customerId}, downgraded to free`);
         break;
       }
     }

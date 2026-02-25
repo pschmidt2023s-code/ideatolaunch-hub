@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { useBrandHealth } from "@/hooks/useBrandHealth";
 import { useSubscription } from "@/hooks/useSubscription";
+import { getCapabilities } from "@/lib/feature-flags";
 import { LockedOverlay } from "@/components/LockedOverlay";
 import { useTranslation } from "react-i18next";
 import {
@@ -16,7 +17,8 @@ import { trackEvent } from "@/lib/analytics";
 
 export default function InsightsPage() {
   const { health } = useBrandHealth();
-  const { isFree } = useSubscription();
+  const { plan } = useSubscription();
+  const caps = getCapabilities(plan);
   const { t } = useTranslation();
 
   useEffect(() => { trackEvent("viewed_insights"); }, []);
@@ -132,7 +134,7 @@ export default function InsightsPage() {
 
   return (
     <DashboardLayout>
-      {isFree ? (
+      {!caps.canSeeInsights ? (
         <LockedOverlay feature="insights">
           {insightsContent}
         </LockedOverlay>

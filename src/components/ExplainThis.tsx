@@ -3,6 +3,7 @@ import { HelpCircle, X } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { getTermDefinition } from "@/lib/guidance-engine";
 import { useSubscription } from "@/hooks/useSubscription";
+import { getCapabilities } from "@/lib/feature-flags";
 import { useTranslation } from "react-i18next";
 
 interface ExplainThisProps {
@@ -10,12 +11,13 @@ interface ExplainThisProps {
 }
 
 export function ExplainThis({ term }: ExplainThisProps) {
-  const { isFree } = useSubscription();
+  const { plan } = useSubscription();
+  const caps = getCapabilities(plan);
   const { i18n } = useTranslation();
   const [open, setOpen] = useState(false);
 
-  // Only available for Builder+
-  if (isFree) return null;
+  // Only available for Builder+ (via capabilities — uses canSeeInsights as proxy)
+  if (!caps.canSeeInsights) return null;
 
   const definition = getTermDefinition(term, i18n.language);
   if (!definition) return null;
