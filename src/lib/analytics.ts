@@ -24,6 +24,7 @@ type EventName =
   | "calculated_price"
   | "viewed_insights"
   | "clicked_upgrade"
+  | "clicked_smart_upgrade"
   | "checkout_started"
   | "subscription_started"
   | "subscription_canceled"
