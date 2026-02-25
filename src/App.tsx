@@ -7,6 +7,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { BrandProvider } from "@/hooks/useBrand";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 import "@/i18n";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -91,6 +92,7 @@ const App = () => (
                 <Route path="/admin/insights" element={<AdminInsights />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
+              <CookieConsentBanner />
             </BrowserRouter>
           </TooltipProvider>
         </BrandProvider>

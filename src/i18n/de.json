@@ -354,5 +354,10 @@
     "s5Text": "Du bist bereit, wenn du folgendes definiert hast: Produkt und Zielgruppe, eine realistische Preisvorstellung, ein kalkuliertes Budget, und eine grobe Vorstellung deiner Kostenstruktur. Perfektion ist nicht nötig — aber ein solides Fundament schon.",
     "s5Example": "Du weißt: Mein Produkt kostet ca. 8 € in der Herstellung, ich will es für 29 € verkaufen, mein Startbudget ist 3.000 €, meine Zielgruppe sind Frauen 25-40. Das reicht, um den nächsten Schritt zu gehen.",
     "s5Why": "Viele warten zu lange auf den perfekten Plan. Andere starten ohne jede Grundlage. Die Wahrheit liegt dazwischen: Ein klares Minimum an Vorbereitung gibt dir die Sicherheit, den nächsten Schritt zu wagen."
+  },
+  "consent": {
+    "text": "Wir nutzen anonymisierte Analysen, um das Produkt zu verbessern. Keine Daten werden an Dritte weitergegeben.",
+    "accept": "Analytics akzeptieren",
+    "decline": "Ablehnen"
   }
 }

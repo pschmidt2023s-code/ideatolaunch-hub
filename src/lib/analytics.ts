@@ -1,5 +1,23 @@
 import { supabase } from "@/integrations/supabase/client";
 
+// ── Consent ─────────────────────────────────────────────────
+const CONSENT_KEY = "analytics_consent";
+
+export function getConsent(): boolean | null {
+  const val = localStorage.getItem(CONSENT_KEY);
+  if (val === "true") return true;
+  if (val === "false") return false;
+  return null; // not yet decided
+}
+
+export function setConsent(accepted: boolean) {
+  localStorage.setItem(CONSENT_KEY, String(accepted));
+}
+
+function isTrackingAllowed(): boolean {
+  return getConsent() === true;
+}
+
 // ── Session ID ──────────────────────────────────────────────
 let _sessionId: string | null = null;
 
@@ -10,39 +28,53 @@ function getSessionId(): string {
   return _sessionId;
 }
 
-/** Reset session (call on login) */
 export function resetSession() {
   _sessionId = null;
 }
 
 // ── Event types ─────────────────────────────────────────────
 type EventName =
-  | "user_signed_up"
-  | "first_brand_created"
+  | "app_opened"
+  | "signup_completed"
   | "brand_created"
-  | "entered_business_calculator"
-  | "calculated_price"
-  | "viewed_insights"
+  | "first_brand_created"
+  | "step_viewed"
+  | "step_saved"
+  | "step_completed"
+  | "step_abandoned"
+  | "guidance_opened"
+  | "supplier_matches_viewed"
+  | "scenario_simulation_used"
+  | "pricing_viewed"
+  | "upgrade_clicked"
   | "clicked_upgrade"
   | "clicked_smart_upgrade"
   | "checkout_started"
+  | "checkout_success"
   | "subscription_started"
   | "subscription_canceled"
   | "subscription_activated"
-  | "step_completed"
+  | "feature_locked_viewed"
+  | "pdf_export_clicked"
+  | "insight_viewed"
+  | "viewed_insights"
+  | "entered_business_calculator"
+  | "calculated_price"
   | "idea_completed"
   | "calculator_completed"
   | "production_completed"
-  | "step_abandoned"
   | "page_load_time"
   | "calculation_time"
-  | "performance_warning";
+  | "performance_warning"
+  | "user_signed_up";
 
 // ── Core tracking ───────────────────────────────────────────
 export async function trackEvent(
-  eventName: EventName,
+  eventName: EventName | string,
   metadata: Record<string, unknown> = {}
 ) {
+  if (!isTrackingAllowed()) return;
+
   try {
     const {
       data: { user },
@@ -62,6 +94,45 @@ export async function trackEvent(
   }
 }
 
+/** Track event and also persist to founder_analytics_events for admin dashboard */
+export async function trackCriticalEvent(
+  eventName: string,
+  metadata: Record<string, unknown> & { plan?: string; step?: number; riskLevel?: string }
+) {
+  if (!isTrackingAllowed()) return;
+
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
+
+    // Fire both in parallel
+    await Promise.all([
+      supabase.from("analytics_events").insert([
+        {
+          user_id: user.id,
+          event_name: eventName,
+          metadata: metadata as any,
+          session_id: getSessionId(),
+        },
+      ]),
+      supabase.from("founder_analytics_events").insert([
+        {
+          user_id: user.id,
+          event_name: eventName,
+          plan: metadata.plan ?? "free",
+          step: metadata.step ?? null,
+          risk_level: metadata.riskLevel ?? null,
+          metadata: metadata as any,
+        },
+      ]),
+    ]);
+  } catch {
+    // Silent fail
+  }
+}
+
 // ── Error logging ───────────────────────────────────────────
 type ErrorType = "frontend" | "api" | "validation" | "performance";
 
@@ -74,6 +145,7 @@ export async function logError(
     metadata?: Record<string, unknown>;
   } = {}
 ) {
+  // Always log errors regardless of consent (operational necessity)
   try {
     const {
       data: { user },
@@ -96,7 +168,6 @@ export async function logError(
 }
 
 // ── Performance tracking ────────────────────────────────────
-/** Measure an async operation; logs if it exceeds threshold (default 800ms) */
 export async function withPerfTracking<T>(
   label: string,
   fn: () => Promise<T>,
@@ -119,14 +190,12 @@ export async function withPerfTracking<T>(
 
 // ── Drop-off tracking ───────────────────────────────────────
 let _abandonTimer: ReturnType<typeof setTimeout> | null = null;
-let _currentStep: number | null = null;
 
 export function startStepTimer(step: number) {
   clearStepTimer();
-  _currentStep = step;
   _abandonTimer = setTimeout(() => {
     trackEvent("step_abandoned", { step, after_minutes: 15 });
-  }, 15 * 60 * 1000); // 15 minutes
+  }, 15 * 60 * 1000);
 }
 
 export function clearStepTimer() {
@@ -134,7 +203,6 @@ export function clearStepTimer() {
     clearTimeout(_abandonTimer);
     _abandonTimer = null;
   }
-  _currentStep = null;
 }
 
 // ── Page load tracking ──────────────────────────────────────
