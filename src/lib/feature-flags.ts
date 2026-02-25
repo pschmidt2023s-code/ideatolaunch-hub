@@ -1,34 +1,36 @@
 // ─── Plan Tiers & Feature Flags ─────────────────────────────────
-// "pro" is not yet a purchasable plan but exists internally
-// for feature-flag gating. All pro features are hidden behind
-// ENABLE_PRO_FEATURES until the pricing tier goes live.
 
 export type Tier = "free" | "builder" | "pro";
 
-export const ENABLE_PRO_FEATURES = false; // flip when Pro tier launches
+export const ENABLE_PRO_FEATURES = true; // Pro tier is now live
 
 // ─── Capability Map ─────────────────────────────────────────────
 
 export interface CapabilityFlags {
-  guidedEducation: boolean;   // "Explain this step" + terminology help
-  guidedExecution: boolean;   // Proactive guided founder moments
-  supplierInsights: boolean;  // Supplier intelligence engine
+  guidedEducation: boolean;       // "Explain this step" + terminology help
+  guidedExecution: boolean;       // Proactive guided founder moments
+  supplierInsights: boolean;      // Supplier intelligence engine
+  executionReadiness: boolean;    // Execution readiness score
+  riskPrioritization: boolean;    // Risk priority dashboard
   pdfExport: boolean;
   smartRoadmap: boolean;
+  advancedRoadmap: boolean;       // Advanced adaptive launch roadmap
   fullInsights: boolean;
 }
 
 export function getCapabilities(plan: string): CapabilityFlags {
-  const isBuilder = plan === "builder";
-  // Pro not purchasable yet — only activates via ENABLE_PRO_FEATURES
-  const isPro = false && ENABLE_PRO_FEATURES;
+  const isBuilder = plan === "builder" || plan === "pro";
+  const isPro = plan === "pro";
 
   return {
-    guidedEducation: isBuilder || isPro,
+    guidedEducation: isBuilder,
     guidedExecution: isPro,
     supplierInsights: isPro,
-    pdfExport: isBuilder || isPro,
-    smartRoadmap: isBuilder || isPro,
-    fullInsights: isBuilder || isPro,
+    executionReadiness: isPro,
+    riskPrioritization: isPro,
+    pdfExport: isBuilder,
+    smartRoadmap: isBuilder,
+    advancedRoadmap: isPro,
+    fullInsights: isBuilder,
   };
 }

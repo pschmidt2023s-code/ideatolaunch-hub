@@ -59,7 +59,19 @@
     "proF5": "30-day launch roadmap",
     "proF6": "Compliance templates",
     "proCta": "Start Builder",
-    "popular": "Popular"
+    "popular": "Popular",
+    "proTier": "Pro",
+    "proTierPrice": "€79",
+    "proTierPeriod": "/ month",
+    "proTierF1": "Everything in Builder included",
+    "proTierF2": "Guided Founder Mode",
+    "proTierF3": "Supplier Intelligence Engine",
+    "proTierF4": "Execution Readiness Score",
+    "proTierF5": "Risk Priority Dashboard",
+    "proTierF6": "Adaptive Launch Roadmap",
+    "proTierCta": "Start Pro",
+    "proTierBadge": "For doers",
+    "proTierDesc": "For founders who want guided execution, not just analysis."
   },
   "footer": {
     "rights": "All rights reserved."
