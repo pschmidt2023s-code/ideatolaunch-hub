@@ -62,44 +62,44 @@ export function PricingSection() {
   ];
 
   const builderFeatures: PlanFeature[] = isDE ? [
-    { label: "Unbegrenzte Marken", desc: "Erstelle so viele Marken wie du brauchst" },
-    { label: "Volle KI-Unterstützung (Insights)", desc: "Risikoanalysen und strategische Empfehlungen" },
-    { label: "Erweiterte Kalkulation", desc: "Profit-Sensitivität, Break-even und Margenanalyse" },
+    { label: "Realistische Gewinn-Prognosen", desc: "Keine Schätzungen – echte Zahlen für dein Modell" },
+    { label: "Break-even Klarheit", desc: "Wisse genau, ab wann du profitabel bist" },
+    { label: "Budget-Kontrolle", desc: "Optimale Verteilung auf Produktion, Marketing und Reserve" },
+    { label: "Risikoanalyse per KI", desc: "Schwachstellen erkennen, bevor sie teuer werden" },
+    { label: "Launch-Struktur", desc: "30-Tage Wochenplan für deinen Start" },
     { label: "PDF-Exporte", desc: "Professioneller Brand Report zum Teilen" },
-    { label: "30-Tage Launch-Roadmap", desc: "Statischer Wochenplan für deinen Launch" },
     { label: "Compliance-Vorlagen", desc: "Label-Checklisten und rechtliche Hinweise" },
-    { label: "Budget-Planer", desc: "Optimale Verteilung auf Produktion, Marketing und Reserve" },
   ] : [
-    { label: "Unlimited brands", desc: "Create as many brands as you need" },
-    { label: "Full AI support (Insights)", desc: "Risk analysis and strategic recommendations" },
-    { label: "Advanced calculations", desc: "Profit sensitivity, break-even and margin analysis" },
+    { label: "Realistic profit forecasts", desc: "No guesswork – real numbers for your model" },
+    { label: "Break-even clarity", desc: "Know exactly when you become profitable" },
+    { label: "Budget control", desc: "Optimal allocation across production, marketing, and reserves" },
+    { label: "AI-powered risk analysis", desc: "Spot weaknesses before they get expensive" },
+    { label: "Launch structure", desc: "30-day weekly plan for your launch" },
     { label: "PDF exports", desc: "Professional brand report to share" },
-    { label: "30-day launch roadmap", desc: "Static weekly plan for your launch" },
     { label: "Compliance templates", desc: "Label checklists and legal notes" },
-    { label: "Budget planner", desc: "Optimal allocation across production, marketing, and reserves" },
   ];
 
   const proFeatures: PlanFeature[] = isDE ? [
     { label: "Alles aus Builder", desc: "Vollständiger Zugang zu allen Builder-Features" },
-    { label: "Guided Founder Mode", desc: "Tour + kontextuelle Hilfe pro Step" },
-    { label: "Supplier Matching Engine", desc: "Konkrete Production + Packaging Matches" },
+    { label: "Produktionsfehler vermeiden", desc: "Risiken vor der ersten Bestellung erkennen" },
+    { label: "Kapitalbindung kontrollieren", desc: "Wisse genau, wo dein Geld gebunden ist" },
+    { label: "Szenario-Simulation vor Investition", desc: "Verschiedene Mengen- und Preisszenarien durchspielen" },
+    { label: "Lieferanten-Vergleich", desc: "Konkrete Production + Packaging Matches" },
+    { label: "Datenbasierte Launch-Entscheidung", desc: "Adaptive Roadmap basierend auf deinen Daten" },
     { label: "Execution Readiness Score", desc: "Wie launch-bereit ist deine Marke wirklich?" },
-    { label: "Risk Priority Dashboard", desc: "Risiken nach Impact priorisiert" },
-    { label: "Adaptive Launch-Roadmap", desc: "Dynamische Roadmap basierend auf deinen Daten" },
-    { label: "Szenario-Simulator", desc: "Simuliere verschiedene Mengen- und Preisszenarien" },
   ] : [
     { label: "Everything in Builder", desc: "Full access to all Builder features" },
-    { label: "Guided Founder Mode", desc: "Tour + contextual help per step" },
-    { label: "Supplier Matching Engine", desc: "Concrete production + packaging matches" },
+    { label: "Avoid production mistakes", desc: "Spot risks before your first order" },
+    { label: "Control capital commitment", desc: "Know exactly where your money is tied up" },
+    { label: "Scenario simulation before investing", desc: "Test different quantity and pricing scenarios" },
+    { label: "Supplier comparison", desc: "Concrete production + packaging matches" },
+    { label: "Data-driven launch decisions", desc: "Adaptive roadmap based on your data" },
     { label: "Execution Readiness Score", desc: "How launch-ready is your brand really?" },
-    { label: "Risk Priority Dashboard", desc: "Risks prioritized by impact" },
-    { label: "Adaptive Launch Roadmap", desc: "Dynamic roadmap based on your data" },
-    { label: "Scenario Simulator", desc: "Simulate different quantity and pricing scenarios" },
   ];
 
   const plans = [
     {
-      name: "Free",
+      name: isDE ? "Idee prüfen – kostenlos starten" : "Test your idea – start free",
       price: isDE ? "0 €" : "€0",
       period: isDE ? "für immer" : "forever",
       features: freePlanFeatures,
@@ -108,32 +108,37 @@ export function PricingSection() {
       badge: null,
       onClick: () => navigate("/auth"),
       loading: false,
+      anchor: null,
     },
     {
-      name: "Builder",
+      name: isDE ? "Strukturiert aufbauen" : "Build with structure",
       price: isDE ? "29 €" : "€29",
       period: "/ " + (isDE ? "Monat" : "month"),
       features: builderFeatures,
       cta: loadingBuilder
         ? (isDE ? "Weiterleitung zu Stripe..." : "Redirecting to Stripe...")
-        : (isDE ? "Builder starten" : "Start Builder"),
+        : (isDE ? "Strukturiert starten" : "Start structured"),
       highlighted: true,
       badge: isDE ? "Beliebt" : "Popular",
       onClick: () => handleCheckout("builder", setLoadingBuilder),
       loading: loadingBuilder,
+      anchor: null,
     },
     {
-      name: "Pro",
+      name: isDE ? "Risiken minimieren" : "Minimize risk",
       price: isDE ? "79 €" : "€79",
       period: "/ " + (isDE ? "Monat" : "month"),
       features: proFeatures,
       cta: loadingPro
         ? (isDE ? "Weiterleitung zu Stripe..." : "Redirecting to Stripe...")
-        : (isDE ? "Pro starten" : "Start Pro"),
+        : (isDE ? "Risiken absichern" : "Secure against risks"),
       highlighted: false,
       badge: "Early Access",
       onClick: () => handleCheckout("pro", setLoadingPro),
       loading: loadingPro,
+      anchor: isDE
+        ? "Eine falsche Produktionsentscheidung kostet oft 5.000 €+. Dieses Tool kostet 79 €."
+        : "One wrong production decision often costs €5,000+. This tool costs €79.",
     },
   ];
 
@@ -169,7 +174,7 @@ export function PricingSection() {
                   {plan.badge}
                 </div>
               )}
-              <h3 className="text-xl font-semibold">{plan.name}</h3>
+              <h3 className="text-lg font-semibold leading-snug">{plan.name}</h3>
               <div className="mt-4 flex items-baseline gap-1">
                 <span className="text-4xl font-bold">{plan.price}</span>
                 <span className="text-muted-foreground">{plan.period}</span>
@@ -197,6 +202,11 @@ export function PricingSection() {
               >
                 {plan.cta}
               </Button>
+              {plan.anchor && (
+                <p className="mt-3 text-xs text-center text-muted-foreground italic">
+                  {plan.anchor}
+                </p>
+              )}
             </div>
           ))}
         </div>
