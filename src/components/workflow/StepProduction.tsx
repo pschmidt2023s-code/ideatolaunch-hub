@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { Save, Loader2 } from "lucide-react";
+import { Save, Loader2, Check } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useBrand } from "@/hooks/useBrand";
 import { supabase } from "@/integrations/supabase/client";
@@ -39,6 +39,8 @@ export function StepProduction() {
   const [category, setCategory] = useState("");
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const [saving, setSaving] = useState(false);
+  const [autoSaved, setAutoSaved] = useState(false);
+  const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { data: plan } = useQuery({
     queryKey: ["production_plan", brandId],
@@ -66,7 +68,7 @@ export function StepProduction() {
     }
   }, [plan]);
 
-  const handleSave = async () => {
+  const saveToDb = useCallback(async (showToast = true) => {
     if (!brandId) return;
     setSaving(true);
     const payload = {
@@ -83,22 +85,45 @@ export function StepProduction() {
 
     setSaving(false);
     if (error) {
-      toast.error(t("steps.saveError"));
+      if (showToast) toast.error(t("steps.saveError"));
     } else {
-      toast.success(t("steps.saved"));
+      if (showToast) toast.success(t("steps.saved"));
+      else {
+        setAutoSaved(true);
+        setTimeout(() => setAutoSaved(false), 2000);
+      }
       queryClient.invalidateQueries({ queryKey: ["production_plan", brandId] });
     }
-  };
+  }, [brandId, region, moq, category, checked, plan, queryClient, t]);
+
+  // Auto-save on changes (debounced 2s)
+  useEffect(() => {
+    if (!brandId || (!plan && !region && !moq && !category && Object.keys(checked).length === 0)) return;
+    if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+    autoSaveTimer.current = setTimeout(() => {
+      saveToDb(false);
+    }, 2000);
+    return () => {
+      if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+    };
+  }, [region, moq, category, checked, brandId]);
 
   return (
     <div className="space-y-8">
       <div className="rounded-xl border bg-card p-6 shadow-card">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-lg font-semibold">{t("step4.title")}</h2>
-          <Button variant="outline" size="sm" className="gap-2" onClick={handleSave} disabled={saving}>
-            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-            {t("steps.save")}
-          </Button>
+          <div className="flex items-center gap-2">
+            {autoSaved && (
+              <span className="flex items-center gap-1 text-xs text-muted-foreground animate-fade-in">
+                <Check className="h-3 w-3" /> Auto-gespeichert
+              </span>
+            )}
+            <Button variant="outline" size="sm" className="gap-2" onClick={() => saveToDb(true)} disabled={saving}>
+              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+              {t("steps.save")}
+            </Button>
+          </div>
         </div>
         <div className="grid gap-5 sm:grid-cols-3">
           <div className="space-y-2">
