@@ -83,7 +83,7 @@ export default function Dashboard() {
     }
     toast.success(t("steps.saved"));
     trackEvent(brands.length === 0 ? "first_brand_created" : "brand_created", { brandName: "Neue Marke" });
-    refetchBrands();
+    await refetchBrands();
   };
 
   const handleRename = async () => {
