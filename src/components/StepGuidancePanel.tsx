@@ -9,12 +9,12 @@ interface StepGuidancePanelProps {
 }
 
 export function StepGuidancePanel({ stepNumber }: StepGuidancePanelProps) {
-  const { isFree } = useSubscription();
+  const { isPro } = useSubscription();
   const { i18n, t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
 
-  // Only available for Builder+
-  if (isFree) return null;
+  // Only available for Pro
+  if (!isPro) return null;
 
   const guidance = getStepGuidance(stepNumber, i18n.language);
   if (!guidance) return null;

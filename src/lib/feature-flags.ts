@@ -7,36 +7,44 @@ export const ENABLE_PRO_FEATURES = true; // Pro tier is now live
 // ─── Capability Map ─────────────────────────────────────────────
 
 export interface CapabilityFlags {
-  // Education & Guidance
-  guidedEducation: boolean;       // "Explain this step" + terminology help
-  guidedExecution: boolean;       // Proactive guided founder moments (advanced)
-
-  // Analysis & Intelligence
-  supplierInsights: boolean;      // Supplier intelligence engine
-  executionReadiness: boolean;    // Execution readiness score
-  riskPrioritization: boolean;    // Risk priority dashboard
-
-  // Tools & Export
-  pdfExport: boolean;
-  budgetPlanner: boolean;         // Launch budget planner
-  scenarioSimulator: boolean;     // Scenario simulator
-
-  // Reality Check
-  fullRealityCheck: boolean;      // Full reality check breakdown (all risks)
-
-  // Roadmap
-  smartRoadmap: boolean;          // 30-day launch roadmap
-  advancedRoadmap: boolean;       // Advanced adaptive launch roadmap
+  // Brand limits
+  canCreateUnlimitedBrands: boolean;
 
   // Insights
-  fullInsights: boolean;
+  canSeeInsights: boolean;
 
-  // Computed booleans
+  // Analysis & Intelligence
   canSeeFullRisks: boolean;
   canUseBudgetPlanner: boolean;
   canUseScenarioSimulator: boolean;
-  canUseSupplierInsights: boolean;
+  canUseSupplierMatching: boolean;
+  canUseExecutionReadiness: boolean;
+  canUseRiskDashboard: boolean;
+  canUseAdaptiveRoadmap: boolean;
+
+  // Guidance
+  canUseGuidedFounderMode: boolean;
+
+  // Export
+  canExportPDF: boolean;
+
+  // Roadmap
+  smartRoadmap: boolean;
+
+  // Legacy compat
+  guidedEducation: boolean;
+  guidedExecution: boolean;
+  supplierInsights: boolean;
+  executionReadiness: boolean;
+  riskPrioritization: boolean;
+  pdfExport: boolean;
+  budgetPlanner: boolean;
+  scenarioSimulator: boolean;
+  fullRealityCheck: boolean;
+  advancedRoadmap: boolean;
+  fullInsights: boolean;
   canSeeRiskRanking: boolean;
+  canUseSupplierInsights: boolean;
 }
 
 export function getCapabilities(plan: string): CapabilityFlags {
@@ -44,36 +52,44 @@ export function getCapabilities(plan: string): CapabilityFlags {
   const isPro = plan === "pro";
 
   return {
-    // Education & Guidance
-    guidedEducation: isBuilder,
-    guidedExecution: isPro,
-
-    // Analysis & Intelligence
-    supplierInsights: isPro,
-    executionReadiness: isPro,
-    riskPrioritization: isPro,
-
-    // Tools & Export
-    pdfExport: isBuilder,
-    budgetPlanner: isBuilder,
-    scenarioSimulator: isPro,
-
-    // Reality Check
-    fullRealityCheck: isBuilder,
-
-    // Roadmap
-    smartRoadmap: isBuilder,
-    advancedRoadmap: isPro,
+    // Brand limits
+    canCreateUnlimitedBrands: isBuilder,
 
     // Insights
-    fullInsights: isBuilder,
+    canSeeInsights: isBuilder,
 
-    // Hard gating booleans
+    // Analysis
     canSeeFullRisks: isBuilder,
     canUseBudgetPlanner: isBuilder,
     canUseScenarioSimulator: isPro,
-    canUseSupplierInsights: isPro,
+    canUseSupplierMatching: isPro,
+    canUseExecutionReadiness: isPro,
+    canUseRiskDashboard: isPro,
+    canUseAdaptiveRoadmap: isPro,
+
+    // Guidance
+    canUseGuidedFounderMode: isPro,
+
+    // Export
+    canExportPDF: isBuilder,
+
+    // Roadmap
+    smartRoadmap: isBuilder,
+
+    // Legacy compat aliases
+    guidedEducation: isBuilder,
+    guidedExecution: isPro,
+    supplierInsights: isPro,
+    executionReadiness: isPro,
+    riskPrioritization: isPro,
+    pdfExport: isBuilder,
+    budgetPlanner: isBuilder,
+    scenarioSimulator: isPro,
+    fullRealityCheck: isBuilder,
+    advancedRoadmap: isPro,
+    fullInsights: isBuilder,
     canSeeRiskRanking: isPro,
+    canUseSupplierInsights: isPro,
   };
 }
 
@@ -121,8 +137,18 @@ const upgradeMessages: Record<string, UpgradeMessage> = {
       en: "Unlock Supplier Intelligence",
     },
     desc: {
-      de: "Erhalte Einblicke in Lieferantenbewertung, MOQ-Vergleiche und Kostenoptimierung.",
-      en: "Get insights on supplier evaluation, MOQ comparisons, and cost optimization.",
+      de: "Erhalte konkrete Lieferanten-Matches, MOQ-Vergleiche und Kostenoptimierung.",
+      en: "Get concrete supplier matches, MOQ comparisons, and cost optimization.",
+    },
+  },
+  supplierMatching: {
+    title: {
+      de: "Supplier Matching freischalten",
+      en: "Unlock Supplier Matching",
+    },
+    desc: {
+      de: "Supplier Matching hilft dir, Überbestände zu vermeiden und den richtigen Partner zu finden.",
+      en: "Supplier Matching helps you avoid overcommitting inventory and find the right partner.",
     },
   },
   riskRanking: {
@@ -143,6 +169,46 @@ const upgradeMessages: Record<string, UpgradeMessage> = {
     desc: {
       de: "Exportiere deinen kompletten Brand Report als professionelles PDF.",
       en: "Export your complete brand report as a professional PDF.",
+    },
+  },
+  insights: {
+    title: {
+      de: "Insights freischalten",
+      en: "Unlock Insights",
+    },
+    desc: {
+      de: "Erhalte KI-gestützte Risikoanalysen und strategische Empfehlungen für deine Marke.",
+      en: "Get AI-powered risk analysis and strategic recommendations for your brand.",
+    },
+  },
+  guidedFounderMode: {
+    title: {
+      de: "Guided Founder Mode freischalten",
+      en: "Unlock Guided Founder Mode",
+    },
+    desc: {
+      de: "Erhalte proaktive Hilfe und Erklärungen bei jedem Schritt deines Markenaufbaus.",
+      en: "Get proactive help and explanations at every step of building your brand.",
+    },
+  },
+  adaptiveRoadmap: {
+    title: {
+      de: "Adaptive Launch-Roadmap freischalten",
+      en: "Unlock Adaptive Launch Roadmap",
+    },
+    desc: {
+      de: "Deine Roadmap passt sich dynamisch an deine Brand-Health-Daten an.",
+      en: "Your roadmap adapts dynamically based on your brand health data.",
+    },
+  },
+  executionReadiness: {
+    title: {
+      de: "Execution Readiness Score freischalten",
+      en: "Unlock Execution Readiness Score",
+    },
+    desc: {
+      de: "Erfahre genau, wie launch-bereit deine Marke wirklich ist.",
+      en: "Find out exactly how launch-ready your brand really is.",
     },
   },
   default: {
