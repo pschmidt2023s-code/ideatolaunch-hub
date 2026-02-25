@@ -1,21 +1,95 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Save, Loader2 } from "lucide-react";
+import { Sparkles, Save, Loader2, Check } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useBrand } from "@/hooks/useBrand";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 
 const toneOptions = ["Luxuriös", "Minimal", "Bold", "Verspielt", "Professionell", "Natürlich"];
 const visualOptions = ["Clean & Modern", "Vintage & Retro", "High-End Eleganz", "Bunt & Energetisch"];
 
 export function StepBrandStructure() {
+  const { activeBrand } = useBrand();
+  const queryClient = useQueryClient();
+  const { t } = useTranslation();
+  const brandId = activeBrand?.id;
+
   const [brandName, setBrandName] = useState("");
   const [tone, setTone] = useState("");
   const [visual, setVisual] = useState("");
   const [tagline, setTagline] = useState("");
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [autoSaved, setAutoSaved] = useState(false);
+  const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Load existing data
+  const { data: identity } = useQuery({
+    queryKey: ["brand_identity", brandId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("brand_identities")
+        .select("*")
+        .eq("brand_id", brandId!)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!brandId,
+  });
+
+  useEffect(() => {
+    if (identity) {
+      setBrandName(identity.brand_name || "");
+      setTone(identity.tone || "");
+      setVisual(identity.visual_direction || "");
+      setTagline(identity.tagline || "");
+    }
+  }, [identity]);
+
+  const saveToDb = useCallback(async (showToast = true) => {
+    if (!brandId) return;
+    setSaving(true);
+    const payload = {
+      brand_id: brandId,
+      brand_name: brandName.trim(),
+      tone,
+      visual_direction: visual,
+      tagline: tagline.trim(),
+    };
+
+    const { error } = identity
+      ? await supabase.from("brand_identities").update(payload).eq("id", identity.id)
+      : await supabase.from("brand_identities").insert(payload);
+
+    setSaving(false);
+    if (error) {
+      if (showToast) toast.error(t("steps.saveError"));
+    } else {
+      if (showToast) toast.success(t("steps.saved"));
+      else {
+        setAutoSaved(true);
+        setTimeout(() => setAutoSaved(false), 2000);
+      }
+      queryClient.invalidateQueries({ queryKey: ["brand_identity", brandId] });
+    }
+  }, [brandId, brandName, tone, visual, tagline, identity, queryClient, t]);
+
+  // Auto-save on changes (debounced 2s)
+  useEffect(() => {
+    if (!brandId || !identity && !brandName && !tone && !visual && !tagline) return;
+    if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+    autoSaveTimer.current = setTimeout(() => {
+      saveToDb(false);
+    }, 2000);
+    return () => {
+      if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+    };
+  }, [brandName, tone, visual, tagline, brandId]);
 
   const generateSuggestions = async () => {
     setLoadingSuggestions(true);
@@ -40,7 +114,20 @@ export function StepBrandStructure() {
   return (
     <div className="space-y-8">
       <div className="rounded-xl border bg-card p-6 shadow-card">
-        <h2 className="mb-6 text-lg font-semibold">Markenidentität</h2>
+        <div className="mb-6 flex items-center justify-between">
+          <h2 className="text-lg font-semibold">Markenidentität</h2>
+          <div className="flex items-center gap-2">
+            {autoSaved && (
+              <span className="flex items-center gap-1 text-xs text-muted-foreground animate-fade-in">
+                <Check className="h-3 w-3" /> Auto-gespeichert
+              </span>
+            )}
+            <Button variant="outline" size="sm" className="gap-2" onClick={() => saveToDb(true)} disabled={saving}>
+              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+              {t("steps.save")}
+            </Button>
+          </div>
+        </div>
 
         <div className="space-y-5">
           <div className="space-y-2">
@@ -131,15 +218,6 @@ export function StepBrandStructure() {
             />
           </div>
         </div>
-
-        <Button
-          className="mt-6 gap-2"
-          variant="outline"
-          onClick={() => toast.success("Gespeichert!")}
-        >
-          <Save className="h-4 w-4" />
-          Speichern
-        </Button>
       </div>
     </div>
   );
