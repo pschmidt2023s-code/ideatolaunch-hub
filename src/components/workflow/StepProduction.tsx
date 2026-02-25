@@ -12,7 +12,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import type { StepHandle } from "./StepIdeaFoundation";
-import { SupplierMatchCard } from "@/components/SupplierMatchCard";
+import { SupplierExperienceCard } from "@/components/SupplierExperienceCard";
+import { CATEGORIES, normalizeCategoryId } from "@/lib/categories";
 
 const checklist = [
   "Produktspezifikationen definiert",
@@ -44,7 +45,8 @@ export const StepProduction = forwardRef<StepHandle>(function StepProduction(_, 
   const [saving, setSaving] = useState(false);
   const [supplierBudget, setSupplierBudget] = useState("");
   const [supplierQty, setSupplierQty] = useState("");
-  const [supplierSegment, setSupplierSegment] = useState<"low" | "mid" | "premium">("mid");
+  const [supplierSegment, setSupplierSegment] = useState<"budget" | "mid" | "premium">("mid");
+  const [addonBudget, setAddonBudget] = useState("");
 
   const { data: plan } = useQuery({
     queryKey: ["production_plan", brandId],
@@ -63,7 +65,10 @@ export const StepProduction = forwardRef<StepHandle>(function StepProduction(_, 
     if (plan) {
       setRegion(plan.production_region || "");
       setMoq(plan.moq_expectation || "");
-      setCategory(plan.product_category || "");
+      // Normalize legacy free-text to canonical id
+      const raw = plan.product_category || "";
+      const normalized = CATEGORIES.some((c) => c.id === raw) ? raw : normalizeCategoryId(raw);
+      setCategory(normalized);
       if (Array.isArray(plan.checklist)) {
         const c: Record<string, boolean> = {};
         (plan.checklist as string[]).forEach((item) => { c[item] = true; });
@@ -126,7 +131,14 @@ export const StepProduction = forwardRef<StepHandle>(function StepProduction(_, 
           </div>
           <div className="space-y-2">
             <Label>{t("step4.category")}</Label>
-            <Input placeholder={t("step4.categoryPh")} value={category} onChange={(e) => setCategory(e.target.value)} />
+            <Select value={category} onValueChange={setCategory}>
+              <SelectTrigger><SelectValue placeholder={t("step4.categoryPh")} /></SelectTrigger>
+              <SelectContent>
+                {CATEGORIES.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>{c.labelDe}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
       </div>
@@ -158,11 +170,11 @@ export const StepProduction = forwardRef<StepHandle>(function StepProduction(_, 
         </ul>
       </div>
 
-      {/* Supplier Matching — PRO */}
+      {/* Supplier Experience — PRO */}
       <div className="space-y-4">
         <div className="rounded-xl border bg-card p-6 shadow-card">
           <h2 className="mb-4 text-lg font-semibold">Supplier Matching — Eingaben</h2>
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div className="space-y-2">
               <Label>Budget (€)</Label>
               <Input type="number" placeholder="z.B. 8000" value={supplierBudget} onChange={(e) => setSupplierBudget(e.target.value)} />
@@ -173,23 +185,28 @@ export const StepProduction = forwardRef<StepHandle>(function StepProduction(_, 
             </div>
             <div className="space-y-2">
               <Label>Preissegment</Label>
-              <Select value={supplierSegment} onValueChange={(v) => setSupplierSegment(v as "low" | "mid" | "premium")}>
+              <Select value={supplierSegment} onValueChange={(v) => setSupplierSegment(v as "budget" | "mid" | "premium")}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="low">Budget / Low</SelectItem>
+                  <SelectItem value="budget">Budget</SelectItem>
                   <SelectItem value="mid">Mittel</SelectItem>
                   <SelectItem value="premium">Premium</SelectItem>
                 </SelectContent>
               </Select>
             </div>
+            <div className="space-y-2">
+              <Label>Unboxing-Budget (€, optional)</Label>
+              <Input type="number" placeholder="z.B. 500" value={addonBudget} onChange={(e) => setAddonBudget(e.target.value)} />
+            </div>
           </div>
         </div>
-        <SupplierMatchCard
-          productCategory={category}
+        <SupplierExperienceCard
+          categoryId={category}
           budget={Number(supplierBudget) || 0}
           targetRegion={region === "asia" ? "Asia" : region === "eu" ? "EU" : "Global"}
           launchQuantity={Number(supplierQty) || 0}
           priceSegment={supplierSegment}
+          addonBudget={Number(addonBudget) || undefined}
         />
       </div>
     </div>
