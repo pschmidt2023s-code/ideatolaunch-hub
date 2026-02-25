@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN completed_starter_mode boolean NOT NULL DEFAULT false;

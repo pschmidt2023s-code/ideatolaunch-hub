@@ -299,5 +299,40 @@
     "whyMatters": "Why does this matter?",
     "commonMistakes": "Common mistakes",
     "howToDecide": "How to decide"
+  },
+  "onboarding": {
+    "title": "How experienced are you?",
+    "subtitle": "We'll tailor the start to your experience level.",
+    "experienced": "I already have a product idea",
+    "experiencedDesc": "Jump straight into the workflow and build your brand.",
+    "beginner": "I'm new and need guidance first",
+    "beginnerDesc": "Learn the fundamentals before you get started."
+  },
+  "starter": {
+    "title": "Founder Starter Mode",
+    "subtitle": "Step {{step}} of {{total}}",
+    "example": "Practical example",
+    "whyMatters": "Why this matters",
+    "finish": "Basics understood – let's go",
+    "s1Title": "How product businesses actually make money",
+    "s1Text": "A product business makes money from the difference between production cost and selling price — the margin. The bigger the margin, the more room for marketing, growth, and profit. But margin alone isn't enough. You need enough sales volume to cover your fixed costs. Only then are you profitable.",
+    "s1Example": "You buy a product for €5 and sell it for €25. Your margin is 80%. But if you spend €2,000 on marketing and only sell 50 units, you're still losing money.",
+    "s1Why": "Many founders focus only on the selling price and forget fixed costs, returns, and marketing spend. Understanding unit economics leads to better decisions.",
+    "s2Title": "What margin, MOQ and break-even really mean",
+    "s2Text": "Margin is the percentage left after deducting all costs from the selling price. MOQ (Minimum Order Quantity) is the smallest batch a manufacturer will produce. Break-even is the point where your total sales cover all your costs — beyond this, you're profitable.",
+    "s2Example": "A manufacturer requires an MOQ of 500 units at €8 each. Your total investment: €4,000. At a selling price of €29 with a 45% margin, you reach break-even after about 310 units sold.",
+    "s2Why": "Without these three metrics, you can't assess whether your business model is viable. They form the foundation of every serious financial plan.",
+    "s3Title": "Typical beginner mistakes",
+    "s3Text": "The most common mistakes: ordering too much too early, pricing too low, forgetting marketing budget, not defining a target audience, and underestimating packaging costs. Any of these can eat through your startup budget before you make your first sale.",
+    "s3Example": "A founder orders 2,000 units without market testing. After 6 months, 1,500 sit in a warehouse. The tied-up capital is missing for marketing — a vicious cycle.",
+    "s3Why": "Mistakes in the launch phase are expensive and hard to correct. Knowing the typical pitfalls helps you avoid them and use your budget much more efficiently.",
+    "s4Title": "What you need before talking to suppliers",
+    "s4Text": "Before contacting suppliers, you need: a clear product description, your target price segment, a realistic MOQ expectation, a defined budget, and quality requirements. Without this preparation, you won't get serious quotes.",
+    "s4Example": "Instead of 'I'm looking for someone who makes cosmetics', say: 'I'm looking for a contract manufacturer for a vegan face cream, 50ml, MOQ 300 units, target price under €6 per unit, EU production.'",
+    "s4Why": "Suppliers take you seriously when you're prepared. Clear requirements save weeks of back-and-forth and protect you from bad deals.",
+    "s5Title": "When you're ready to validate your idea",
+    "s5Text": "You're ready when you've defined: your product and target audience, a realistic price point, a calculated budget, and a rough understanding of your cost structure. Perfection isn't needed — but a solid foundation is.",
+    "s5Example": "You know: My product costs about €8 to produce, I want to sell it for €29, my starting budget is €3,000, my target audience is women 25-40. That's enough to take the next step.",
+    "s5Why": "Many wait too long for the perfect plan. Others start without any foundation. The truth is in between: a clear minimum of preparation gives you the confidence to take the next step."
   }
 }
