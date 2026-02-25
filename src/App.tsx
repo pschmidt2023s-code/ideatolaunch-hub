@@ -20,6 +20,7 @@ import Pricing from "./pages/Pricing";
 import SettingsPage from "./pages/Settings";
 import DashboardPricing from "./pages/DashboardPricing";
 import InternalAnalytics from "./pages/internal/Analytics";
+import AdminInsights from "./pages/admin/Insights";
 
 const queryClient = new QueryClient();
 
@@ -87,6 +88,7 @@ const App = () => (
                     </ProtectedRoute>
                   }
                 />
+                <Route path="/admin/insights" element={<AdminInsights />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
