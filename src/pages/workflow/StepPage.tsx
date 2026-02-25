@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
+import { StepGuidancePanel } from "@/components/StepGuidancePanel";
 import { StepIdeaFoundation } from "@/components/workflow/StepIdeaFoundation";
 import { StepBrandStructure } from "@/components/workflow/StepBrandStructure";
 import { StepBusinessCalculator } from "@/components/workflow/StepBusinessCalculator";
@@ -65,7 +66,11 @@ export default function StepPage() {
           <span>{stepTitle}</span>
         </div>
 
-        <h1 className="mb-8 text-2xl font-bold">{stepTitle}</h1>
+        <h1 className="mb-6 text-2xl font-bold">{stepTitle}</h1>
+
+        <div className="mb-6">
+          <StepGuidancePanel stepNumber={step} />
+        </div>
 
         <StepComponent />
 

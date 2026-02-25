@@ -280,5 +280,12 @@
     "email": "Email",
     "plan": "Subscription",
     "currentPlan": "Current Plan"
+  },
+  "guidance": {
+    "explainStep": "Explain this step",
+    "whatIsThis": "What is this?",
+    "whyMatters": "Why does this matter?",
+    "commonMistakes": "Common mistakes",
+    "howToDecide": "How to decide"
   }
 }
