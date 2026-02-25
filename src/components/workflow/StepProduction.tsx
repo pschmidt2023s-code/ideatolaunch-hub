@@ -1,16 +1,17 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { Save, Loader2, Check } from "lucide-react";
+import { Save, Loader2 } from "lucide-react";
 import { ExplainThis } from "@/components/ExplainThis";
 import { useTranslation } from "react-i18next";
 import { useBrand } from "@/hooks/useBrand";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import type { StepHandle } from "./StepIdeaFoundation";
 
 const checklist = [
   "Produktspezifikationen definiert",
@@ -29,7 +30,7 @@ const supplierQuestions = [
   "Welche Zahlungsbedingungen gelten?",
 ];
 
-export function StepProduction() {
+export const StepProduction = forwardRef<StepHandle>(function StepProduction(_, ref) {
   const { t } = useTranslation();
   const { activeBrand } = useBrand();
   const queryClient = useQueryClient();
@@ -40,9 +41,6 @@ export function StepProduction() {
   const [category, setCategory] = useState("");
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const [saving, setSaving] = useState(false);
-  const [autoSaved, setAutoSaved] = useState(false);
-  const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isDirty = useRef(false);
 
   const { data: plan } = useQuery({
     queryKey: ["production_plan", brandId],
@@ -90,47 +88,26 @@ export function StepProduction() {
       if (showToast) toast.error(t("steps.saveError"));
     } else {
       if (showToast) toast.success(t("steps.saved"));
-      else {
-        setAutoSaved(true);
-        setTimeout(() => setAutoSaved(false), 2000);
-      }
       queryClient.invalidateQueries({ queryKey: ["production_plan", brandId] });
     }
   }, [brandId, region, moq, category, checked, plan, queryClient, t]);
 
-  // Auto-save on changes (debounced 2s) — only after user interaction
-  useEffect(() => {
-    if (!isDirty.current || !brandId) return;
-    if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
-    autoSaveTimer.current = setTimeout(() => {
-      saveToDb(false);
-    }, 2000);
-    return () => {
-      if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
-    };
-  }, [region, moq, category, checked, brandId]);
+  useImperativeHandle(ref, () => ({ save: () => saveToDb(false) }), [saveToDb]);
 
   return (
     <div className="space-y-8">
       <div className="rounded-xl border bg-card p-6 shadow-card">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-lg font-semibold">{t("step4.title")}</h2>
-          <div className="flex items-center gap-2">
-            {autoSaved && (
-              <span className="flex items-center gap-1 text-xs text-muted-foreground animate-fade-in">
-                <Check className="h-3 w-3" /> Auto-gespeichert
-              </span>
-            )}
-            <Button variant="outline" size="sm" className="gap-2" onClick={() => saveToDb(true)} disabled={saving}>
-              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-              {t("steps.save")}
-            </Button>
-          </div>
+          <Button variant="outline" size="sm" className="gap-2" onClick={() => saveToDb(true)} disabled={saving}>
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            {t("steps.save")}
+          </Button>
         </div>
         <div className="grid gap-5 sm:grid-cols-3">
           <div className="space-y-2">
             <Label>{t("step4.region")}</Label>
-            <Select value={region} onValueChange={(v) => { isDirty.current = true; setRegion(v); }}>
+            <Select value={region} onValueChange={setRegion}>
               <SelectTrigger><SelectValue placeholder={t("step1.choose")} /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="eu">{t("step4.eu")}</SelectItem>
@@ -141,11 +118,11 @@ export function StepProduction() {
           </div>
           <div className="space-y-2">
             <Label className="flex items-center gap-1">{t("step4.moq")} <ExplainThis term="MOQ" /></Label>
-            <Input placeholder={t("step4.moqPh")} value={moq} onChange={(e) => { isDirty.current = true; setMoq(e.target.value); }} />
+            <Input placeholder={t("step4.moqPh")} value={moq} onChange={(e) => setMoq(e.target.value)} />
           </div>
           <div className="space-y-2">
             <Label>{t("step4.category")}</Label>
-            <Input placeholder={t("step4.categoryPh")} value={category} onChange={(e) => { isDirty.current = true; setCategory(e.target.value); }} />
+            <Input placeholder={t("step4.categoryPh")} value={category} onChange={(e) => setCategory(e.target.value)} />
           </div>
         </div>
       </div>
@@ -157,7 +134,7 @@ export function StepProduction() {
             <label key={item} className="flex items-center gap-3 cursor-pointer">
               <Checkbox
                 checked={!!checked[item]}
-                onCheckedChange={(v) => { isDirty.current = true; setChecked((p) => ({ ...p, [item]: !!v })); }}
+                onCheckedChange={(v) => setChecked((p) => ({ ...p, [item]: !!v }))}
               />
               <span className="text-sm">{item}</span>
             </label>
@@ -178,4 +155,4 @@ export function StepProduction() {
       </div>
     </div>
   );
-}
+});

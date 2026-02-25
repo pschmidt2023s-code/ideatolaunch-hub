@@ -1,8 +1,8 @@
-import { useState, useMemo, useEffect, useCallback, useRef } from "react";
+import { useState, useMemo, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, DollarSign, Target, BarChart3, AlertTriangle, Save, Loader2, Check } from "lucide-react";
+import { TrendingUp, DollarSign, Target, BarChart3, AlertTriangle, Save, Loader2 } from "lucide-react";
 import { ExplainThis } from "@/components/ExplainThis";
 import { RealityCheckCard } from "@/components/RealityCheckCard";
 import { ScenarioSimulatorCard } from "@/components/ScenarioSimulatorCard";
@@ -15,8 +15,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { trackEvent, withPerfTracking, logError } from "@/lib/analytics";
+import type { StepHandle } from "./StepIdeaFoundation";
 
-export function StepBusinessCalculator() {
+export const StepBusinessCalculator = forwardRef<StepHandle>(function StepBusinessCalculator(_, ref) {
   const { activeBrand } = useBrand();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -47,11 +48,7 @@ export function StepBusinessCalculator() {
     marketing: 0,
   });
   const [saving, setSaving] = useState(false);
-  const [autoSaved, setAutoSaved] = useState(false);
-  const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isDirty = useRef(false);
 
-  // Hydrate from saved data
   useEffect(() => {
     if (savedFinancial) {
       setCosts({
@@ -66,7 +63,6 @@ export function StepBusinessCalculator() {
   const update = (key: string, value: string) => {
     const num = parseFloat(value);
     if (!isNaN(num) && num < 0) return;
-    isDirty.current = true;
     setCosts((p) => ({ ...p, [key]: num || 0 }));
   };
 
@@ -149,9 +145,6 @@ export function StepBusinessCalculator() {
       if (showToast) {
         toast.success(t("steps.saved"));
         trackEvent("calculated_price", { margin, breakEven, sweetSpot: priceRange.sweet });
-      } else {
-        setAutoSaved(true);
-        setTimeout(() => setAutoSaved(false), 2000);
       }
       queryClient.invalidateQueries({ queryKey: ["financial_model", brandId] });
     } catch (err: any) {
@@ -165,17 +158,7 @@ export function StepBusinessCalculator() {
     }
   }, [brandId, costs, priceRange.sweet, margin, breakEven, queryClient, t]);
 
-  // Auto-save on changes (debounced 2s) — only after user interaction
-  useEffect(() => {
-    if (!isDirty.current || !brandId) return;
-    if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
-    autoSaveTimer.current = setTimeout(() => {
-      saveToDb(false);
-    }, 2000);
-    return () => {
-      if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
-    };
-  }, [costs, brandId]);
+  useImperativeHandle(ref, () => ({ save: () => saveToDb(false) }), [saveToDb]);
 
   return (
     <div className="space-y-8">
@@ -183,17 +166,10 @@ export function StepBusinessCalculator() {
       <div className="rounded-xl border bg-card p-6 shadow-card">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-semibold">{t("step3.inputTitle")}</h2>
-          <div className="flex items-center gap-2">
-            {autoSaved && (
-              <span className="flex items-center gap-1 text-xs text-muted-foreground animate-fade-in">
-                <Check className="h-3 w-3" /> Auto-gespeichert
-              </span>
-            )}
-            <Button onClick={() => saveToDb(true)} disabled={saving || total === 0} className="gap-2">
-              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-              {t("steps.save")}
-            </Button>
-          </div>
+          <Button onClick={() => saveToDb(true)} disabled={saving || total === 0} className="gap-2">
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            {t("steps.save")}
+          </Button>
         </div>
         <div className="grid gap-5 sm:grid-cols-2">
           {[
@@ -231,7 +207,7 @@ export function StepBusinessCalculator() {
         </div>
       )}
 
-      {/* KPIs with price range */}
+      {/* KPIs */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-xl border bg-card p-5 shadow-card">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -353,14 +329,10 @@ export function StepBusinessCalculator() {
           </div>
         </div>
       )}
-      {/* Reality Check */}
       {total > 0 && <RealityCheckCard />}
-      {/* Smart Upgrade Trigger */}
       {total > 0 && <SmartUpgradePrompt />}
-      {/* Budget Planner (Builder+) */}
       {total > 0 && <BudgetPlannerCard />}
-      {/* Scenario Simulator (PRO) */}
       {total > 0 && <ScenarioSimulatorCard />}
     </div>
   );
-}
+});
