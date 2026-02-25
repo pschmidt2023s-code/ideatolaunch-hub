@@ -13,23 +13,22 @@ export default function Impressum() {
 
           <section className="space-y-1 mb-8">
             <h2 className="text-lg font-semibold">Angaben gemäß § 5 TMG</h2>
-            <p className="text-foreground">[Vor- und Nachname]</p>
-            <p className="text-foreground">[Straße und Hausnummer]</p>
-            <p className="text-foreground">[PLZ Ort]</p>
-            <p className="text-foreground">[Land]</p>
+            <p className="text-foreground">Patric-Maurice Schmidt</p>
+            <p className="text-foreground">BGM.-Scheller-Str 14</p>
+            <p className="text-foreground">96215 Lichtenfels</p>
+            <p className="text-foreground">Deutschland</p>
           </section>
 
           <section className="space-y-1 mb-8">
             <h2 className="text-lg font-semibold">Kontakt</h2>
-            <p className="text-foreground">E-Mail: [deine@email.de]</p>
+            <p className="text-foreground">E-Mail: support@buildyourbrand.de</p>
           </section>
 
           <section className="space-y-1 mb-8">
-            <h2 className="text-lg font-semibold">Umsatzsteuer-ID</h2>
+            <h2 className="text-lg font-semibold">Umsatzsteuer</h2>
             <p className="text-muted-foreground">
-              Umsatzsteuer-Identifikationsnummer gemäß § 27 a Umsatzsteuergesetz:
+              Gemäß § 19 UStG wird keine Umsatzsteuer berechnet (Kleinunternehmerregelung).
             </p>
-            <p className="text-foreground">[DE XXXXXXXXX] (falls vorhanden)</p>
           </section>
 
           <section className="space-y-2 mb-8">

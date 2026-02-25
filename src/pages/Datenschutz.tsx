@@ -12,9 +12,9 @@ export default function Datenschutz() {
           <h1 className="text-2xl font-bold mb-8">Datenschutzerklärung</h1>
 
           <Section title="1. Verantwortliche Stelle">
-            <p>[Vor- und Nachname]</p>
-            <p>[Adresse]</p>
-            <p>E-Mail: [deine@email.de]</p>
+            <p>Patric-Maurice Schmidt</p>
+            <p>BGM.-Scheller-Str 14, 96215 Lichtenfels, Deutschland</p>
+            <p>E-Mail: support@buildyourbrand.de</p>
           </Section>
 
           <Section title="2. Erhebung und Verarbeitung personenbezogener Daten">
@@ -96,7 +96,7 @@ export default function Datenschutz() {
           <Section title="9. Kontakt">
             <p>
               Bei Fragen zum Datenschutz wenden Sie sich bitte an:{" "}
-              <span className="text-accent">[deine@email.de]</span>
+              <span className="text-accent">support@buildyourbrand.de</span>
             </p>
           </Section>
 
