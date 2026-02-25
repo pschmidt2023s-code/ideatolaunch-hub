@@ -23,6 +23,9 @@ import DashboardPricing from "./pages/DashboardPricing";
 import InternalAnalytics from "./pages/internal/Analytics";
 import AdminInsights from "./pages/admin/Insights";
 import DebugGating from "./pages/debug/Gating";
+import Impressum from "./pages/Impressum";
+import Datenschutz from "./pages/Datenschutz";
+import AGB from "./pages/AGB";
 
 const queryClient = new QueryClient();
 
@@ -41,7 +44,9 @@ const App = () => (
                 <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
                 <Route path="/starter" element={<ProtectedRoute><StarterMode /></ProtectedRoute>} />
                 <Route path="/pricing" element={<Pricing />} />
-                <Route path="/pricing" element={<Pricing />} />
+                <Route path="/impressum" element={<Impressum />} />
+                <Route path="/datenschutz" element={<Datenschutz />} />
+                <Route path="/agb" element={<AGB />} />
                 <Route
                   path="/dashboard"
                   element={
