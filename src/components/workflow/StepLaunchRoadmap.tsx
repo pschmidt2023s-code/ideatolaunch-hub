@@ -5,6 +5,7 @@ import { Save, Loader2, FileText, AlertTriangle, Info, CheckCircle2 } from "luci
 import { useTranslation } from "react-i18next";
 import { useBrand } from "@/hooks/useBrand";
 import { useSubscription } from "@/hooks/useSubscription";
+import { getCapabilities } from "@/lib/feature-flags";
 import { useBrandHealth } from "@/hooks/useBrandHealth";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -64,7 +65,7 @@ const staticWeeks = [
 export const StepLaunchRoadmap = forwardRef<StepHandle>(function StepLaunchRoadmap(_, ref) {
   const { t } = useTranslation();
   const { activeBrand } = useBrand();
-  const { isFree, isBuilder } = useSubscription();
+  const { plan } = useSubscription();
   const { health } = useBrandHealth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -73,10 +74,12 @@ export const StepLaunchRoadmap = forwardRef<StepHandle>(function StepLaunchRoadm
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const [saving, setSaving] = useState(false);
 
+  const caps = getCapabilities(plan);
+
   const smartWeeks: SmartWeek[] | null = useMemo(() => {
-    if (!isBuilder || !health) return null;
+    if (!caps.smartRoadmap || !health) return null;
     return generateSmartRoadmap(health);
-  }, [isBuilder, health]);
+  }, [caps.smartRoadmap, health]);
 
   const allTaskIds = useMemo(() => {
     if (smartWeeks) {
@@ -90,7 +93,7 @@ export const StepLaunchRoadmap = forwardRef<StepHandle>(function StepLaunchRoadm
 
   const completedCount = allTaskIds.filter((id) => checked[id]).length;
 
-  const { data: plan } = useQuery({
+  const { data: launchPlan } = useQuery({
     queryKey: ["launch_plan_roadmap", brandId],
     queryFn: async () => {
       const { data } = await supabase
@@ -104,12 +107,12 @@ export const StepLaunchRoadmap = forwardRef<StepHandle>(function StepLaunchRoadm
   });
 
   useEffect(() => {
-    if (plan && Array.isArray(plan.roadmap)) {
+    if (launchPlan && Array.isArray(launchPlan.roadmap)) {
       const c: Record<string, boolean> = {};
-      (plan.roadmap as string[]).forEach((item) => { c[item] = true; });
+      (launchPlan.roadmap as string[]).forEach((item) => { c[item] = true; });
       setChecked(c);
     }
-  }, [plan]);
+  }, [launchPlan]);
 
   const saveToDb = useCallback(async (showToast = true) => {
     if (!brandId) return;
@@ -120,8 +123,8 @@ export const StepLaunchRoadmap = forwardRef<StepHandle>(function StepLaunchRoadm
       roadmap: completedTasks,
     };
 
-    const { error } = plan
-      ? await supabase.from("launch_plans").update(payload).eq("id", plan.id)
+    const { error } = launchPlan
+      ? await supabase.from("launch_plans").update(payload).eq("id", launchPlan.id)
       : await supabase.from("launch_plans").insert(payload);
 
     setSaving(false);
@@ -131,12 +134,12 @@ export const StepLaunchRoadmap = forwardRef<StepHandle>(function StepLaunchRoadm
       if (showToast) toast.success(t("steps.saved"));
       queryClient.invalidateQueries({ queryKey: ["launch_plan_roadmap", brandId] });
     }
-  }, [brandId, checked, plan, queryClient, t]);
+  }, [brandId, checked, launchPlan, queryClient, t]);
 
   useImperativeHandle(ref, () => ({ save: () => saveToDb(false) }), [saveToDb]);
 
   const handleExportPdf = () => {
-    if (isFree) {
+    if (!caps.canExportPDF) {
       toast.error(t("upgrade.pdfLocked"));
       navigate("/dashboard/pricing");
       return;
@@ -172,7 +175,7 @@ export const StepLaunchRoadmap = forwardRef<StepHandle>(function StepLaunchRoadm
         </div>
       </div>
 
-      {isBuilder && hasDynamicTasks && (
+      {caps.smartRoadmap && hasDynamicTasks && (
         <div className="flex items-start gap-3 rounded-lg border border-accent/30 bg-accent/5 p-4">
           <Info className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
           <p className="text-sm text-muted-foreground">

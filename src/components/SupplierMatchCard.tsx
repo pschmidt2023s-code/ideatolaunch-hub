@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { AlertTriangle, MapPin, Clock, Package, Factory, TrendingUp } from "lucide-react";
 import { useSubscription } from "@/hooks/useSubscription";
 import { LockedOverlay } from "@/components/LockedOverlay";
+import { getFeatureAccess } from "@/lib/feature-flags";
 import { matchSuppliers, type SupplierMatchInput } from "@/lib/supplier-matcher";
 import type { Supplier } from "@/data/supplier-database";
 
@@ -68,7 +69,6 @@ function MatchContent({ input }: { input: SupplierMatchInput }) {
 
   return (
     <div className="space-y-6">
-      {/* Region recommendation */}
       <div className="rounded-lg border bg-accent/5 p-4 space-y-1">
         <div className="flex items-center gap-2 text-sm font-medium">
           <MapPin className="h-4 w-4 text-accent" />
@@ -77,7 +77,6 @@ function MatchContent({ input }: { input: SupplierMatchInput }) {
         <p className="text-xs text-muted-foreground">{result.reasoning}</p>
       </div>
 
-      {/* Production suppliers */}
       <div className="space-y-3">
         <div className="flex items-center gap-2 text-sm font-semibold">
           <Factory className="h-4 w-4" />
@@ -96,7 +95,6 @@ function MatchContent({ input }: { input: SupplierMatchInput }) {
         )}
       </div>
 
-      {/* Packaging suppliers */}
       <div className="space-y-3">
         <div className="flex items-center gap-2 text-sm font-semibold">
           <Package className="h-4 w-4" />
@@ -107,7 +105,6 @@ function MatchContent({ input }: { input: SupplierMatchInput }) {
         ))}
       </div>
 
-      {/* Risk warnings */}
       {result.riskNotes.length > 0 && (
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-sm font-semibold text-destructive">
@@ -133,7 +130,8 @@ export function SupplierMatchCard({
   launchQuantity,
   priceSegment,
 }: SupplierMatchCardProps) {
-  const { isPro } = useSubscription();
+  const { plan } = useSubscription();
+  const access = getFeatureAccess("supplierMatching", plan);
 
   const hasInput = productCategory.trim().length > 0 && budget > 0 && launchQuantity > 0;
 
@@ -166,9 +164,9 @@ export function SupplierMatchCard({
     </Card>
   );
 
-  if (!isPro) {
+  if (access !== "enabled") {
     return (
-      <LockedOverlay feature="supplierInsights" requiredPlan="pro">
+      <LockedOverlay feature="supplierMatching">
         {card}
       </LockedOverlay>
     );

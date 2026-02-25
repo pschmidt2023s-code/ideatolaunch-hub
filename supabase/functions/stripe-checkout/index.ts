@@ -15,6 +15,21 @@ function jsonResponse(body: Record<string, unknown>, status = 200) {
   });
 }
 
+const PLAN_CONFIG: Record<string, { name: string; description: string; amount: number; metaPlan: string }> = {
+  builder: {
+    name: "BrandOS Builder",
+    description: "Unlimited brands, full insights, PDF exports",
+    amount: 2900,
+    metaPlan: "builder",
+  },
+  pro: {
+    name: "BrandOS Pro",
+    description: "Everything in Builder + Guided Founder Mode, Supplier Matching, Scenario Simulator",
+    amount: 7900,
+    metaPlan: "pro",
+  },
+};
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -38,6 +53,8 @@ serve(async (req) => {
       return jsonResponse({ error: "Invalid JSON body" }, 400);
     }
     const return_url = typeof body.return_url === "string" ? body.return_url : req.headers.get("origin") || "http://localhost:3000";
+    const tier = typeof body.tier === "string" && body.tier in PLAN_CONFIG ? body.tier : "builder";
+    const planConfig = PLAN_CONFIG[tier];
 
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
     if (!stripeKey) {
@@ -62,24 +79,24 @@ serve(async (req) => {
 
     // Find or create product
     const products = await stripe.products.list({ active: true, limit: 100 });
-    let product = products.data.find((p) => p.metadata?.plan === "builder");
+    let product = products.data.find((p) => p.metadata?.plan === planConfig.metaPlan);
     if (!product) {
       product = await stripe.products.create({
-        name: "BrandOS Builder",
-        description: "Unlimited brands, full insights, PDF exports",
-        metadata: { plan: "builder" },
+        name: planConfig.name,
+        description: planConfig.description,
+        metadata: { plan: planConfig.metaPlan },
       });
     }
 
     // Find or create price
     const prices = await stripe.prices.list({ product: product.id, active: true, limit: 10 });
     let price = prices.data.find(
-      (p) => p.unit_amount === 2900 && p.currency === "eur" && p.recurring?.interval === "month"
+      (p) => p.unit_amount === planConfig.amount && p.currency === "eur" && p.recurring?.interval === "month"
     );
     if (!price) {
       price = await stripe.prices.create({
         product: product.id,
-        unit_amount: 2900,
+        unit_amount: planConfig.amount,
         currency: "eur",
         recurring: { interval: "month" },
       });
@@ -105,6 +122,7 @@ serve(async (req) => {
       mode: "subscription",
       success_url: `${return_url}/dashboard?upgraded=true`,
       cancel_url: `${return_url}/dashboard`,
+      metadata: { plan: planConfig.metaPlan },
     });
 
     return jsonResponse({ url: session.url });

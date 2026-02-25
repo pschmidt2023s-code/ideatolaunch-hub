@@ -2,6 +2,7 @@ import { useState } from "react";
 import { BookOpen, ChevronDown, ChevronUp, Lightbulb, AlertCircle, Target, Sparkles } from "lucide-react";
 import { getStepGuidance } from "@/lib/guidance-engine";
 import { useSubscription } from "@/hooks/useSubscription";
+import { getCapabilities } from "@/lib/feature-flags";
 import { useTranslation } from "react-i18next";
 
 interface StepGuidancePanelProps {
@@ -9,12 +10,13 @@ interface StepGuidancePanelProps {
 }
 
 export function StepGuidancePanel({ stepNumber }: StepGuidancePanelProps) {
-  const { isPro } = useSubscription();
+  const { plan } = useSubscription();
+  const caps = getCapabilities(plan);
   const { i18n, t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
 
-  // Only available for Pro
-  if (!isPro) return null;
+  // Only available for Pro (via capabilities)
+  if (!caps.canUseGuidedFounderMode) return null;
 
   const guidance = getStepGuidance(stepNumber, i18n.language);
   if (!guidance) return null;
@@ -38,7 +40,6 @@ export function StepGuidancePanel({ stepNumber }: StepGuidancePanelProps) {
 
       {expanded && (
         <div className="border-t px-4 pb-4 pt-3 space-y-4 animate-fade-in">
-          {/* What is this */}
           <div className="space-y-1">
             <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground uppercase tracking-wide">
               <Lightbulb className="h-3 w-3" />
@@ -47,7 +48,6 @@ export function StepGuidancePanel({ stepNumber }: StepGuidancePanelProps) {
             <p className="text-sm">{guidance.what_is_this}</p>
           </div>
 
-          {/* Why it matters */}
           <div className="space-y-1">
             <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground uppercase tracking-wide">
               <Target className="h-3 w-3" />
@@ -56,7 +56,6 @@ export function StepGuidancePanel({ stepNumber }: StepGuidancePanelProps) {
             <p className="text-sm">{guidance.why_it_matters}</p>
           </div>
 
-          {/* Common mistakes */}
           <div className="space-y-1.5">
             <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground uppercase tracking-wide">
               <AlertCircle className="h-3 w-3" />
@@ -72,7 +71,6 @@ export function StepGuidancePanel({ stepNumber }: StepGuidancePanelProps) {
             </ul>
           </div>
 
-          {/* How to decide */}
           <div className="space-y-1">
             <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground uppercase tracking-wide">
               <Sparkles className="h-3 w-3" />
@@ -81,7 +79,6 @@ export function StepGuidancePanel({ stepNumber }: StepGuidancePanelProps) {
             <p className="text-sm">{guidance.how_to_decide}</p>
           </div>
 
-          {/* Confidence tip */}
           <div className="rounded-lg bg-accent/5 border border-accent/20 px-3 py-2">
             <p className="text-xs text-muted-foreground">
               <span className="font-medium text-accent">💡 Tipp:</span> {guidance.confidence_tip}

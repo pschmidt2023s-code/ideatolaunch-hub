@@ -22,6 +22,7 @@ import SettingsPage from "./pages/Settings";
 import DashboardPricing from "./pages/DashboardPricing";
 import InternalAnalytics from "./pages/internal/Analytics";
 import AdminInsights from "./pages/admin/Insights";
+import DebugGating from "./pages/debug/Gating";
 
 const queryClient = new QueryClient();
 
@@ -90,6 +91,7 @@ const App = () => (
                   }
                 />
                 <Route path="/admin/insights" element={<AdminInsights />} />
+                <Route path="/debug/gating" element={<DebugGating />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
               <CookieConsentBanner />
