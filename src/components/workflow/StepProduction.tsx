@@ -100,6 +100,14 @@ export const StepProduction = forwardRef<StepHandle>(function StepProduction(_, 
         (plan.checklist as string[]).forEach((item) => { c[item] = true; });
         setChecked(c);
       }
+      // Restore supplier matching inputs from risk_warnings JSON (repurposed as supplier_inputs)
+      const si = plan.supplier_questions as any;
+      if (si && typeof si === "object" && !Array.isArray(si)) {
+        setSupplierBudget(si.supplierBudget ?? "");
+        setSupplierQty(si.supplierQty ?? "");
+        setSupplierSegment(si.supplierSegment ?? "mid");
+        setAddonBudget(si.addonBudget ?? "");
+      }
     }
   }, [plan]);
 
@@ -125,6 +133,7 @@ export const StepProduction = forwardRef<StepHandle>(function StepProduction(_, 
       moq_expectation: moq,
       product_category: category,
       checklist: Object.entries(checked).filter(([, v]) => v).map(([k]) => k),
+      supplier_questions: { supplierBudget, supplierQty, supplierSegment, addonBudget },
     };
 
     const { error } = plan
@@ -163,7 +172,8 @@ export const StepProduction = forwardRef<StepHandle>(function StepProduction(_, 
     }
   }, [brandId, region, moq, category, checked, plan, queryClient, t,
       packagingType, tissuePaper, stickerSeal, thankYouCard, insertSamples,
-      customLabeling, returnFriendly, pkgBudget, supplierSegment, unboxingProfile]);
+      customLabeling, returnFriendly, pkgBudget, supplierSegment, unboxingProfile,
+      supplierBudget, supplierQty, addonBudget]);
 
   useImperativeHandle(ref, () => ({ save: () => saveToDb(false) }), [saveToDb]);
 
@@ -199,7 +209,7 @@ export const StepProduction = forwardRef<StepHandle>(function StepProduction(_, 
               <SelectTrigger><SelectValue placeholder={t("step4.categoryPh")} /></SelectTrigger>
               <SelectContent>
                 {CATEGORIES.map((c) => (
-                  <SelectItem key={c.id} value={c.id}>{c.labelDe}</SelectItem>
+                  <SelectItem key={c.id} value={c.id}>{t(`step4.cat${c.id.charAt(0).toUpperCase() + c.id.slice(1)}` as any, c.labelDe)}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -237,30 +247,30 @@ export const StepProduction = forwardRef<StepHandle>(function StepProduction(_, 
       {/* Supplier Experience — PRO */}
       <div className="space-y-4">
         <div className="rounded-xl border bg-card p-6 shadow-card">
-          <h2 className="mb-4 text-lg font-semibold">Supplier Matching — Eingaben</h2>
+          <h2 className="mb-4 text-lg font-semibold">{t("step4.supplierTitle")}</h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div className="space-y-2">
-              <Label>Budget (€)</Label>
-              <Input type="number" placeholder="z.B. 8000" value={supplierBudget} onChange={(e) => setSupplierBudget(e.target.value)} />
+              <Label>{t("step4.budget")}</Label>
+              <Input type="number" placeholder={t("step4.budgetPh")} value={supplierBudget} onChange={(e) => setSupplierBudget(e.target.value)} />
             </div>
             <div className="space-y-2">
-              <Label>Startmenge (Stück)</Label>
-              <Input type="number" placeholder="z.B. 500" value={supplierQty} onChange={(e) => setSupplierQty(e.target.value)} />
+              <Label>{t("step4.startQty")}</Label>
+              <Input type="number" placeholder={t("step4.startQtyPh")} value={supplierQty} onChange={(e) => setSupplierQty(e.target.value)} />
             </div>
             <div className="space-y-2">
-              <Label>Preissegment</Label>
+              <Label>{t("step4.priceSegment")}</Label>
               <Select value={supplierSegment} onValueChange={(v) => setSupplierSegment(v as "budget" | "mid" | "premium")}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="budget">Budget</SelectItem>
-                  <SelectItem value="mid">Mittel</SelectItem>
-                  <SelectItem value="premium">Premium</SelectItem>
+                  <SelectItem value="budget">{t("step4.segBudget")}</SelectItem>
+                  <SelectItem value="mid">{t("step4.segMid")}</SelectItem>
+                  <SelectItem value="premium">{t("step4.segPremium")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Unboxing-Budget (€, optional)</Label>
-              <Input type="number" placeholder="z.B. 500" value={addonBudget} onChange={(e) => setAddonBudget(e.target.value)} />
+              <Label>{t("step4.addonBudget")}</Label>
+              <Input type="number" placeholder={t("step4.addonBudgetPh")} value={addonBudget} onChange={(e) => setAddonBudget(e.target.value)} />
             </div>
           </div>
         </div>
@@ -276,29 +286,29 @@ export const StepProduction = forwardRef<StepHandle>(function StepProduction(_, 
 
       {/* Unboxing Profile & Score — PRO */}
       <div className="rounded-xl border bg-card p-6 shadow-card space-y-5">
-        <h2 className="text-lg font-semibold">Unboxing Experience — Profil</h2>
+        <h2 className="text-lg font-semibold">{t("step4.unboxingTitle")}</h2>
 
         <div className="space-y-2">
-          <Label>Verpackungstyp</Label>
+          <Label>{t("step4.packagingType")}</Label>
           <Select value={packagingType} onValueChange={(v) => setPackagingType(v as PackagingType)}>
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="poly_mailer">Polybag / Mailer</SelectItem>
-              <SelectItem value="kraft_box">Kraft-Box</SelectItem>
-              <SelectItem value="rigid_box">Rigid Box</SelectItem>
-              <SelectItem value="custom_box">Custom Box</SelectItem>
+              <SelectItem value="poly_mailer">{t("step4.polyMailer")}</SelectItem>
+              <SelectItem value="kraft_box">{t("step4.kraftBox")}</SelectItem>
+              <SelectItem value="rigid_box">{t("step4.rigidBox")}</SelectItem>
+              <SelectItem value="custom_box">{t("step4.customBox")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {([
-            ["tissuePaper", tissuePaper, setTissuePaper, "Seidenpapier"] as const,
-            ["stickerSeal", stickerSeal, setStickerSeal, "Sticker-Siegel"] as const,
-            ["thankYouCard", thankYouCard, setThankYouCard, "Dankeskarte"] as const,
-            ["insertSamples", insertSamples, setInsertSamples, "Produkt-Beilagen"] as const,
-            ["customLabeling", customLabeling, setCustomLabeling, "Custom Labeling"] as const,
-            ["returnFriendly", returnFriendly, setReturnFriendly, "Rücksendefreundlich"] as const,
+            ["tissuePaper", tissuePaper, setTissuePaper, t("step4.tissuePaper")] as const,
+            ["stickerSeal", stickerSeal, setStickerSeal, t("step4.stickerSeal")] as const,
+            ["thankYouCard", thankYouCard, setThankYouCard, t("step4.thankYouCard")] as const,
+            ["insertSamples", insertSamples, setInsertSamples, t("step4.insertSamples")] as const,
+            ["customLabeling", customLabeling, setCustomLabeling, t("step4.customLabeling")] as const,
+            ["returnFriendly", returnFriendly, setReturnFriendly, t("step4.returnFriendly")] as const,
           ]).map(([key, val, setter, label]) => (
             <label key={key} className="flex items-center justify-between gap-2 rounded-lg border p-3 cursor-pointer">
               <span className="text-sm">{label}</span>
@@ -308,8 +318,8 @@ export const StepProduction = forwardRef<StepHandle>(function StepProduction(_, 
         </div>
 
         <div className="max-w-xs space-y-2">
-          <Label>Verpackungsbudget pro Bestellung (€, optional)</Label>
-          <Input type="number" placeholder="z.B. 2.50" value={pkgBudget} onChange={(e) => setPkgBudget(e.target.value)} />
+          <Label>{t("step4.pkgBudget")}</Label>
+          <Input type="number" placeholder={t("step4.pkgBudgetPh")} value={pkgBudget} onChange={(e) => setPkgBudget(e.target.value)} />
         </div>
       </div>
 
