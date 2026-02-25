@@ -58,18 +58,17 @@ export default function StepPage() {
   };
 
   useEffect(() => {
-    if (step >= 1 && step <= 7) {
-      trackEvent("step_viewed", ctx);
-      if (step === 3) trackEvent("entered_business_calculator", ctx);
-      startStepTimer(step);
+    if (step < 1 || step > 7 || !StepComponent) {
+      navigate("/dashboard", { replace: true });
+      return;
     }
+    trackEvent("step_viewed", ctx);
+    if (step === 3) trackEvent("entered_business_calculator", ctx);
+    startStepTimer(step);
     return () => clearStepTimer();
   }, [step]);
 
-  if (!StepComponent || step < 1 || step > 7) {
-    navigate("/dashboard");
-    return null;
-  }
+  if (!StepComponent || step < 1 || step > 7) return null;
 
   const handleNext = async () => {
     try {

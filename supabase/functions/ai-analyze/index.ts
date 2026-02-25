@@ -77,7 +77,7 @@ Antworte NUR mit einem JSON-Objekt (kein Markdown, kein Code-Block) mit genau di
         Authorization: `Bearer ${LOVABLE_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: "google/gemini-2.5-flash-lite",
         messages: [{ role: "user", content: prompt }],
         temperature: 0.7,
       }),
