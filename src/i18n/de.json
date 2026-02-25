@@ -269,5 +269,14 @@
   "lang": {
     "de": "Deutsch",
     "en": "English"
+  },
+  "settings": {
+    "profile": "Profil",
+    "firstName": "Vorname",
+    "lastName": "Nachname",
+    "company": "Unternehmen",
+    "email": "E-Mail",
+    "plan": "Abo",
+    "currentPlan": "Aktueller Plan"
   }
 }
