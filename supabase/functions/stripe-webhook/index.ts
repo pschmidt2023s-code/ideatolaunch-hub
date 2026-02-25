@@ -7,6 +7,7 @@ import {
   cancellationEmail,
   upgradeEmail,
 } from "../_shared/email.ts";
+import type { Locale } from "../_shared/email.ts";
 
 function jsonResponse(body: Record<string, unknown>, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -32,6 +33,36 @@ function determinePlan(subscription: Stripe.Subscription): string {
 
 /** Map plan rank for upgrade detection */
 const PLAN_RANK: Record<string, number> = { free: 0, builder: 1, pro: 2 };
+
+/** Resolve user locale from profile, default to "de" */
+async function getUserLocaleAndName(
+  supabase: ReturnType<typeof createClient>,
+  userId: string
+): Promise<{ locale: Locale; firstName?: string }> {
+  try {
+    const { data } = await supabase
+      .from("profiles")
+      .select("first_name")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    // For now locale defaults to "de" – extend profiles table with locale column if needed
+    return { locale: "de", firstName: data?.first_name || undefined };
+  } catch {
+    return { locale: "de" };
+  }
+}
+
+/** Format date for locale */
+function formatDate(dateStr: string | null | undefined, timestamp: number | undefined, locale: Locale): string {
+  const date = dateStr ? new Date(dateStr) : timestamp ? new Date(timestamp * 1000) : null;
+  if (!date) return "";
+  return date.toLocaleDateString(locale === "de" ? "de-DE" : "en-US", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+}
 
 serve(async (req) => {
   try {
@@ -104,13 +135,15 @@ serve(async (req) => {
           let plan = session.metadata?.plan || determinePlan(sub);
           if (plan !== "builder" && plan !== "pro") plan = "builder";
 
+          const periodEnd = new Date(sub.current_period_end * 1000).toISOString();
+
           const { error } = await supabaseAdmin
             .from("subscriptions")
             .update({
               status: plan,
               stripe_customer_id: customerId,
               stripe_subscription_id: subscriptionId,
-              current_period_end: new Date(sub.current_period_end * 1000).toISOString(),
+              current_period_end: periodEnd,
             })
             .eq("user_id", user.id);
 
@@ -121,7 +154,9 @@ serve(async (req) => {
 
             // 📧 Payment success email (non-blocking)
             try {
-              const tpl = paymentSuccessEmail(plan);
+              const { locale, firstName } = await getUserLocaleAndName(supabaseAdmin, user.id);
+              const nextBilling = formatDate(periodEnd, undefined, locale);
+              const tpl = paymentSuccessEmail({ plan, locale, firstName, nextBillingDate: nextBilling });
               await sendEmail({ to: email, ...tpl });
             } catch (e) {
               console.error("[email] payment success email failed:", e);
@@ -174,7 +209,8 @@ serve(async (req) => {
               const customer = await stripe.customers.retrieve(customerId);
               const email = (customer as Stripe.Customer).email;
               if (email) {
-                const tpl = upgradeEmail(previousPlan, newStatus);
+                const { locale, firstName } = await getUserLocaleAndName(supabaseAdmin, data.user_id);
+                const tpl = upgradeEmail({ oldPlan: previousPlan, newPlan: newStatus, locale, firstName });
                 await sendEmail({ to: email, ...tpl });
               }
             } catch (e) {
@@ -198,17 +234,6 @@ serve(async (req) => {
           .maybeSingle();
 
         const previousPlan = subData?.status || "builder";
-        const accessUntil = subData?.current_period_end
-          ? new Date(subData.current_period_end).toLocaleDateString("de-DE", {
-              day: "2-digit",
-              month: "2-digit",
-              year: "numeric",
-            })
-          : new Date(subscription.current_period_end * 1000).toLocaleDateString("de-DE", {
-              day: "2-digit",
-              month: "2-digit",
-              year: "numeric",
-            });
 
         await supabaseAdmin
           .from("subscriptions")
@@ -225,8 +250,14 @@ serve(async (req) => {
         try {
           const customer = await stripe.customers.retrieve(customerId);
           const email = (customer as Stripe.Customer).email;
-          if (email) {
-            const tpl = cancellationEmail(previousPlan, accessUntil);
+          if (email && subData?.user_id) {
+            const { locale, firstName } = await getUserLocaleAndName(supabaseAdmin, subData.user_id);
+            const accessUntil = formatDate(
+              subData.current_period_end,
+              subscription.current_period_end,
+              locale
+            );
+            const tpl = cancellationEmail({ plan: previousPlan, accessUntil, locale, firstName });
             await sendEmail({ to: email, ...tpl });
           }
         } catch (e) {
