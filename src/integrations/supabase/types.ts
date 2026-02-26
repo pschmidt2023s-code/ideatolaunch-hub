@@ -478,6 +478,36 @@ export type Database = {
           },
         ]
       }
+      leads: {
+        Row: {
+          converted: boolean
+          created_at: string
+          email: string
+          id: string
+          page: string | null
+          source: string
+          trigger_type: string | null
+        }
+        Insert: {
+          converted?: boolean
+          created_at?: string
+          email: string
+          id?: string
+          page?: string | null
+          source?: string
+          trigger_type?: string | null
+        }
+        Update: {
+          converted?: boolean
+          created_at?: string
+          email?: string
+          id?: string
+          page?: string | null
+          source?: string
+          trigger_type?: string | null
+        }
+        Relationships: []
+      }
       production_plans: {
         Row: {
           brand_id: string

@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { X, Download, ArrowRight } from "lucide-react";
+import { X, Download, ArrowRight, CheckCircle2, Sparkles } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 interface LeadMagnetPopupProps {
   trigger: "scroll" | "exit" | "tool";
@@ -12,17 +14,48 @@ interface LeadMagnetPopupProps {
 export function LeadMagnetPopup({ trigger, onClose }: LeadMagnetPopupProps) {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     trackEvent("feature_locked_viewed", { source: `lead_magnet_${trigger}` });
   }, [trigger]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
-    trackEvent("upgrade_clicked", { source: "lead_magnet", trigger, email_captured: true });
+    if (!email || saving) return;
+    setSaving(true);
+
+    try {
+      // Save lead to database
+      await supabase.from("leads" as any).insert({
+        email,
+        source: "blueprint",
+        trigger_type: trigger,
+        page: window.location.pathname,
+      });
+
+      trackEvent("upgrade_clicked", {
+        source: "lead_magnet",
+        trigger,
+        email_captured: true,
+        action: "blueprint_download",
+      });
+    } catch {
+      // Silent fail
+    }
+
+    setSaving(false);
     setSubmitted(true);
   };
+
+  const contentOutline = [
+    "Budget-Planung Template",
+    "MOQ Verhandlungsfragen",
+    "Produktionskosten Checkliste",
+    "Launch 30-Tage Plan",
+    "Top 10 Fehler vermeiden",
+  ];
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-foreground/40 backdrop-blur-sm animate-fade-in">
@@ -39,12 +72,23 @@ export function LeadMagnetPopup({ trigger, onClose }: LeadMagnetPopupProps) {
             <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-accent/10">
               <Download className="h-6 w-6 text-accent" />
             </div>
-            <h3 className="text-xl font-bold mb-2">
+            <h3 className="text-xl font-bold mb-1">
               Eigenmarke Starter Blueprint 2026
             </h3>
-            <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
-              Kostenloser PDF-Guide: Die 7 Schritte zum erfolgreichen Markenstart – mit Kalkulationsvorlagen, Lieferanten-Checklisten und Launch-Timeline.
+            <p className="text-sm text-accent font-medium mb-4">
+              Die 7-Schritte-Launch-Strategie
             </p>
+
+            {/* Content preview */}
+            <div className="mb-5 space-y-1.5">
+              {contentOutline.map((item) => (
+                <div key={item} className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-accent shrink-0" />
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+
             <form onSubmit={handleSubmit} className="space-y-3">
               <Input
                 type="email"
@@ -56,9 +100,11 @@ export function LeadMagnetPopup({ trigger, onClose }: LeadMagnetPopupProps) {
               />
               <Button
                 type="submit"
+                disabled={saving}
                 className="w-full gap-2 bg-accent text-accent-foreground hover:bg-accent/90"
               >
-                Blueprint herunterladen <Download className="h-4 w-4" />
+                {saving ? "Wird gesendet..." : "Blueprint herunterladen"}
+                <Download className="h-4 w-4" />
               </Button>
             </form>
             <p className="mt-3 text-xs text-muted-foreground text-center">
@@ -67,22 +113,33 @@ export function LeadMagnetPopup({ trigger, onClose }: LeadMagnetPopupProps) {
           </>
         ) : (
           <div className="text-center py-4">
-            <div className="mb-4 mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-success/10">
-              <span className="text-2xl">✓</span>
+            <div className="mb-4 mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-accent/10">
+              <CheckCircle2 className="h-7 w-7 text-accent" />
             </div>
-            <h3 className="text-xl font-bold mb-2">Blueprint ist unterwegs!</h3>
-            <p className="text-sm text-muted-foreground mb-6">
-              Prüfe dein Postfach. Möchtest du jetzt direkt durchstarten?
+            <h3 className="text-xl font-bold mb-2">Blueprint ist unterwegs! 🎉</h3>
+            <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+              Prüfe dein Postfach. Möchtest du jetzt direkt mit dem vollen System durchstarten?
             </p>
-            <Button
-              className="gap-2 bg-accent text-accent-foreground hover:bg-accent/90"
-              onClick={() => {
-                onClose();
-                window.location.href = "/auth?tab=signup";
-              }}
-            >
-              Kostenlos starten <ArrowRight className="h-4 w-4" />
-            </Button>
+
+            <div className="space-y-3">
+              <Button
+                className="w-full gap-2 bg-accent text-accent-foreground hover:bg-accent/90"
+                onClick={() => {
+                  trackEvent("upgrade_clicked", { source: "lead_magnet_thankyou", plan: "builder" });
+                  onClose();
+                  navigate("/auth?tab=signup");
+                }}
+              >
+                <Sparkles className="h-4 w-4" />
+                Kostenlos starten – Builder testen
+              </Button>
+              <button
+                onClick={onClose}
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Später vielleicht
+              </button>
+            </div>
           </div>
         )}
       </div>

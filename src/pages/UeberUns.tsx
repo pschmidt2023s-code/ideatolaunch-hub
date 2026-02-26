@@ -2,7 +2,7 @@ import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { SEO } from "@/components/SEO";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Target, Shield, Lightbulb, Users } from "lucide-react";
+import { ArrowRight, Target, Shield, Lightbulb, Users, Flame, Award, Quote } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function UeberUns() {
@@ -38,11 +38,32 @@ export default function UeberUns() {
                 Die Idee zu BuildYourBrand entstand aus eigener Erfahrung. Als Gründer im E-Commerce haben wir selbst erlebt, wie komplex und riskant der Aufbau einer Eigenmarke sein kann: falsche Produktionsmengen, unerwartete Kosten, fehlende Compliance – und kein einziges Tool, das den gesamten Prozess abbildet.
               </p>
               <p>
-                Wir haben mit Excel-Tabellen angefangen, dann Notion ausprobiert, dutzende Rechner getestet – und am Ende immer noch kritische Fehler gemacht. Deshalb haben wir BuildYourBrand gebaut: <strong className="text-foreground">Ein einziges System, das den kompletten Markenaufbau von der Idee bis zum Launch strukturiert.</strong>
+                Wir haben mit Excel-Tabellen angefangen, dann Notion ausprobiert, dutzende Rechner getestet – und am Ende immer noch kritische Fehler gemacht. <strong className="text-foreground">Ein einziger Produktionsfehler hat uns über 8.000 € gekostet.</strong> Das war der Moment, in dem wir beschlossen haben: Es muss ein besseres System geben.
+              </p>
+              <p>
+                Deshalb haben wir BuildYourBrand gebaut: <strong className="text-foreground">Ein einziges System, das den kompletten Markenaufbau von der Idee bis zum Launch strukturiert – mit datenbasierter Risikoanalyse, damit anderen Gründern nicht das Gleiche passiert.</strong>
               </p>
               <p>
                 Heute nutzen Gründer in Deutschland, Österreich und der Schweiz unsere Plattform, um Produktionskosten zu kalkulieren, Lieferanten zu vergleichen, Risiken zu simulieren und ihren Launch datenbasiert zu planen.
               </p>
+            </div>
+          </section>
+
+          {/* Credibility Block */}
+          <section className="mb-14">
+            <div className="rounded-xl border bg-card p-6 md:p-8 flex gap-5 items-start">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-accent/10">
+                <Quote className="h-5 w-5 text-accent" />
+              </div>
+              <div>
+                <p className="text-foreground font-medium leading-relaxed mb-3 italic">
+                  „Wir sind keine Berater, die von der Seitenlinie zusehen. Wir haben selbst Produkte kalkuliert, mit Lieferanten verhandelt und Launches gemanagt – mit all den Fehlern, die dazugehören."
+                </p>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Award className="h-4 w-4 text-accent" />
+                  <span>Patric-Maurice Schmidt · Gründer, BuildYourBrand</span>
+                </div>
+              </div>
             </div>
           </section>
 
@@ -59,15 +80,17 @@ export default function UeberUns() {
             </div>
           </section>
 
-          {/* Values */}
+          {/* Warum wir anders sind */}
           <section className="mb-14">
-            <h2 className="text-2xl font-bold mb-6">Wofür wir stehen</h2>
+            <h2 className="text-2xl font-bold mb-6">Warum wir anders sind</h2>
             <div className="grid gap-4 sm:grid-cols-2">
               {[
-                { icon: Target, title: "Klarheit vor Komplexität", desc: "Wir reduzieren den Markenaufbau auf das Wesentliche. Keine überladenen Features – nur was du wirklich brauchst." },
-                { icon: Shield, title: "Transparenz", desc: "Offene Preise, keine versteckten Kosten. Du weißt immer, wofür du zahlst und warum." },
+                { icon: Flame, title: "Aus Erfahrung gebaut", desc: "Kein theoretisches Tool. Jede Funktion basiert auf echten Fehlern und echten Erfolgen im Markenaufbau." },
+                { icon: Target, title: "Klarheit statt Komplexität", desc: "Wir reduzieren den Markenaufbau auf das Wesentliche. Keine überladenen Features – nur was du wirklich brauchst." },
+                { icon: Shield, title: "Risiko zuerst", desc: "Andere Tools zeigen dir, was du TUN sollst. Wir zeigen dir, was SCHIEFGEHEN kann – bevor es teuer wird." },
                 { icon: Lightbulb, title: "Datengetrieben", desc: "Entscheidungen basieren auf Zahlen, nicht auf Bauchgefühl. Unsere KI analysiert Risiken, bevor sie teuer werden." },
                 { icon: Users, title: "Made in Germany", desc: "Entwickelt für den DACH-Markt. DSGVO-konform, EU-gehostet, auf deutsche Gründer zugeschnitten." },
+                { icon: Award, title: "Transparente Preise", desc: "Offene Preise, keine versteckten Kosten. Du weißt immer, wofür du zahlst und warum." },
               ].map(({ icon: Icon, title, desc }) => (
                 <div key={title} className="rounded-xl border bg-card p-6">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10 mb-3">
