@@ -99,7 +99,7 @@ export function PricingSection() {
 
   const plans = [
     {
-      name: isDE ? "Idee prüfen – kostenlos starten" : "Test your idea – start free",
+      name: "Free",
       price: isDE ? "0 €" : "€0",
       period: isDE ? "für immer" : "forever",
       features: freePlanFeatures,
@@ -111,7 +111,7 @@ export function PricingSection() {
       anchor: null,
     },
     {
-      name: isDE ? "Strukturiert aufbauen" : "Build with structure",
+      name: "Builder",
       price: isDE ? "29 €" : "€29",
       period: "/ " + (isDE ? "Monat" : "month"),
       features: builderFeatures,
@@ -125,7 +125,7 @@ export function PricingSection() {
       anchor: null,
     },
     {
-      name: isDE ? "Risiken minimieren" : "Minimize risk",
+      name: "Pro",
       price: isDE ? "79 €" : "€79",
       period: "/ " + (isDE ? "Monat" : "month"),
       features: proFeatures,
