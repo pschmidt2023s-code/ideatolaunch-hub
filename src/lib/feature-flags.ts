@@ -37,6 +37,13 @@ export interface CapabilityFlags {
   canUseExecutionReadiness: boolean;
   canUseUnboxingScore: boolean;
   smartRoadmap: boolean;
+  // Builder-level intelligence features
+  canUseBasicMarketDemand: boolean;
+  canUseBasicCompetitorOverview: boolean;
+  canUseCashflowTimeline: boolean;
+  canUseSupplierRiskBase: boolean;
+  canUseLaunchReadiness: boolean;
+  canUseLimitedAiSuggestions: boolean;
 }
 
 export function getCapabilities(plan: string): CapabilityFlags {
@@ -57,6 +64,13 @@ export function getCapabilities(plan: string): CapabilityFlags {
     canUseExecutionReadiness: isPro,
     canUseUnboxingScore: isPro,
     smartRoadmap: isBuilder,
+    // Builder gets basic versions of intelligence features
+    canUseBasicMarketDemand: isBuilder,
+    canUseBasicCompetitorOverview: isBuilder,
+    canUseCashflowTimeline: isBuilder,
+    canUseSupplierRiskBase: isBuilder,
+    canUseLaunchReadiness: isBuilder,
+    canUseLimitedAiSuggestions: isBuilder,
   };
 }
 

@@ -36,6 +36,9 @@ export default function AGB() {
               <li>7-Schritte-Workflow für den strukturierten Markenaufbau</li>
               <li>Kostenrechner, Break-Even-Analyse und Szenario-Simulation</li>
               <li>KI-gestützte Risikoanalyse und Lieferanten-Matching</li>
+              <li>Market Reality Engine mit Demand- und Wettbewerbsanalyse</li>
+              <li>Cashflow Survival Engine mit Liquiditäts- und Stress-Test-Simulation</li>
+              <li>AI Founder Copilot für datenbasierte Strategieberatung</li>
               <li>Academy mit Guides und Tutorials</li>
               <li>Research-Berichte und Marktdaten</li>
               <li>Case Studies und Vergleichsseiten</li>
@@ -67,12 +70,41 @@ export default function AGB() {
             </p>
           </Section>
 
-          <Section title="5. Abonnement und Zahlung">
+          <Section title="5. Simulationen, Prognosen und KI-Funktionen">
+            <p>
+              Die Plattform enthält Simulations- und Prognosewerkzeuge, darunter:
+            </p>
+            <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
+              <li>Market Reality Engine (Nachfrage- und Wettbewerbsanalyse)</li>
+              <li>Cashflow Survival Engine (Liquiditätsprognosen und Stress-Tests)</li>
+              <li>Szenario-Simulation (Auswirkungsberechnung bei Parameteränderungen)</li>
+              <li>AI Founder Copilot (KI-gestützte Strategieempfehlungen)</li>
+              <li>Launch Probability Score (Datenbasierte Launch-Einschätzung)</li>
+              <li>Supplier Risk Index (Lieferantenrisikobewertung)</li>
+            </ul>
+            <p>
+              <strong>Haftungsausschluss für Simulationen:</strong> Alle Simulationen,
+              Prognosen, Scores und KI-Empfehlungen sind rein informativ und basieren auf
+              vereinfachten Modellen und Ihren Eingaben. Sie stellen keine Finanzberatung,
+              Steuerberatung, Rechtsberatung oder Investitionsempfehlung dar. Marktdaten
+              können sich jederzeit ändern. Vergangene Trends garantieren keine zukünftigen
+              Ergebnisse.
+            </p>
+            <p>
+              <strong>KI-Nutzung:</strong> Der AI Founder Copilot nutzt KI-Modelle zur
+              Generierung von Empfehlungen. Diese KI-Ausgaben können fehlerhaft, veraltet
+              oder unvollständig sein. Die endgültige Verantwortung für alle
+              Geschäftsentscheidungen liegt beim Nutzer.
+            </p>
+          </Section>
+
+          <Section title="6. Abonnement und Zahlung">
             <p>
               Die Plattform bietet drei Pläne: Free (kostenlos), Builder (29 €/Monat) und
-              Pro (79 €/Monat). Kostenpflichtige Abonnements werden monatlich abgerechnet
-              und verlängern sich automatisch. Die Zahlungsabwicklung erfolgt über Stripe.
-              Gemäß § 19 UStG wird keine Umsatzsteuer berechnet (Kleinunternehmerregelung).
+              Pro – Founder Intelligence Suite (79 €/Monat). Kostenpflichtige Abonnements
+              werden monatlich abgerechnet und verlängern sich automatisch. Die
+              Zahlungsabwicklung erfolgt über Stripe. Gemäß § 19 UStG wird keine
+              Umsatzsteuer berechnet (Kleinunternehmerregelung).
             </p>
             <p>
               Es gilt eine 14-tägige Geld-zurück-Garantie. Innerhalb von 14 Tagen nach
@@ -80,7 +112,7 @@ export default function AGB() {
             </p>
           </Section>
 
-          <Section title="6. Kündigung">
+          <Section title="7. Kündigung">
             <p>
               Sie können Ihr Abonnement jederzeit zum Ende des aktuellen
               Abrechnungszeitraums kündigen. Es gibt keine Mindestlaufzeit. Die Kündigung
@@ -89,7 +121,7 @@ export default function AGB() {
             </p>
           </Section>
 
-          <Section title="7. Empfehlungsprogramm (Referral)">
+          <Section title="8. Empfehlungsprogramm (Referral)">
             <p>
               Registrierte Nutzer erhalten einen persönlichen Empfehlungslink. Für
               erfolgreiche Empfehlungen gelten folgende Prämien:
@@ -106,7 +138,7 @@ export default function AGB() {
             </p>
           </Section>
 
-          <Section title="8. Affiliate-Programm">
+          <Section title="9. Affiliate-Programm">
             <p>
               Das Affiliate-Programm richtet sich an Content-Creator, Blogger und Partner.
               Affiliates erhalten eine Provision von 25% (wiederkehrend) auf Builder- und
@@ -120,7 +152,7 @@ export default function AGB() {
             </p>
           </Section>
 
-          <Section title="9. Community & Inhalte">
+          <Section title="10. Community & Inhalte">
             <p>
               Die Community dient dem Austausch zwischen Gründern. Nutzer verpflichten sich,
               keine rechtswidrigen, beleidigenden oder Spam-Inhalte zu teilen. Wir behalten
@@ -133,7 +165,7 @@ export default function AGB() {
             </p>
           </Section>
 
-          <Section title="10. Geistiges Eigentum">
+          <Section title="11. Geistiges Eigentum">
             <p>
               Alle Inhalte der Plattform (Texte, Grafiken, Berechnungen, Reports, Software)
               sind urheberrechtlich geschützt. Die Nutzung ist auf den vertraglich
@@ -142,7 +174,7 @@ export default function AGB() {
             </p>
           </Section>
 
-          <Section title="11. Digitaler Dienst">
+          <Section title="12. Digitaler Dienst">
             <p>
               BuildYourBrand ist ein rein digitaler Dienst. Es erfolgt kein Versand
               physischer Produkte. Der Zugang wird nach Registrierung und ggf. Zahlung
@@ -150,7 +182,7 @@ export default function AGB() {
             </p>
           </Section>
 
-          <Section title="12. Änderungen">
+          <Section title="13. Änderungen">
             <p>
               Wir behalten uns vor, diese Nutzungsbedingungen anzupassen. Wesentliche
               Änderungen werden mindestens 14 Tage vor Inkrafttreten per E-Mail oder
@@ -158,7 +190,7 @@ export default function AGB() {
             </p>
           </Section>
 
-          <Section title="13. Anwendbares Recht">
+          <Section title="14. Anwendbares Recht">
             <p>
               Es gilt das Recht der Bundesrepublik Deutschland. Gerichtsstand ist, soweit
               gesetzlich zulässig, der Sitz des Anbieters (Lichtenfels).

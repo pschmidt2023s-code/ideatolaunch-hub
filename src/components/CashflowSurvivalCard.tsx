@@ -8,6 +8,7 @@ import { DollarSign, AlertTriangle, TrendingDown, Clock, Shield } from "lucide-r
 import { computeCashflow, applyStress, STRESS_PRESETS, type CashflowInput } from "@/lib/cashflow-engine";
 import { useSubscription } from "@/hooks/useSubscription";
 import { LockedOverlay } from "@/components/LockedOverlay";
+import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 
 export function CashflowSurvivalCard() {
   const { plan } = useSubscription();
@@ -168,6 +169,7 @@ export function CashflowSurvivalCard() {
           ))}
         </div>
       )}
+      <LegalDisclaimer type="cashflow" />
     </div>
   );
 

@@ -144,6 +144,22 @@ export default function AdminDashboard() {
   const pricingClicks = eventCounts["pricing_viewed"] ?? 0;
   const upgradeAttempts = (eventCounts["upgrade_clicked"] ?? 0) + (eventCounts["clicked_upgrade"] ?? 0);
 
+  // Intelligence module usage
+  const copilotUsage = events.filter(e => e.event_name === "copilot_message_sent" || e.event_name === "copilot_opened").length;
+  const stressTestUsage = events.filter(e => e.event_name === "stress_test_used" || e.event_name === "scenario_simulation_used").length;
+  const marketRealityUsage = events.filter(e => e.event_name === "market_reality_viewed" || e.event_name === "market_analysis_run").length;
+  const cashflowUsage = events.filter(e => e.event_name === "cashflow_viewed" || e.event_name === "cashflow_analysis_run").length;
+
+  // Builder vs Pro usage from events metadata
+  const builderEvents = events.filter(e => {
+    const meta = e.metadata as any;
+    return meta?.plan === "builder" || meta?.source === "builder";
+  }).length;
+  const proEvents = events.filter(e => {
+    const meta = e.metadata as any;
+    return meta?.plan === "pro" || meta?.source === "pro";
+  }).length;
+
   // Top pages (from events metadata)
   const pageVisits: Record<string, number> = {};
   events.forEach(e => {
@@ -479,6 +495,57 @@ export default function AdminDashboard() {
                 <p className="text-xs text-muted-foreground">
                   Core Web Vitals werden clientseitig getrackt. Lighthouse-Score manuell eintragen.
                 </p>
+              </div>
+            </div>
+          </SectionCard>
+
+          {/* ── Founder Intelligence Metrics ── */}
+          <SectionCard title="Intelligence Module Usage">
+            <div className="space-y-3">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">AI Copilot Nutzung</span>
+                <span className="font-bold text-accent">{copilotUsage}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Stress Test Sim.</span>
+                <span className="font-bold">{stressTestUsage}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Market Reality</span>
+                <span className="font-bold">{marketRealityUsage}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Cashflow Engine</span>
+                <span className="font-bold">{cashflowUsage}</span>
+              </div>
+            </div>
+          </SectionCard>
+
+          <SectionCard title="Builder vs Pro Usage">
+            <div className="space-y-4">
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm">Builder Events</span>
+                  <span className="text-sm font-bold">{builderEvents}</span>
+                </div>
+                <div className="h-2 rounded-full bg-muted overflow-hidden">
+                  <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${builderEvents + proEvents > 0 ? Math.round((builderEvents / (builderEvents + proEvents)) * 100) : 50}%` }} />
+                </div>
+              </div>
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm">Pro Events</span>
+                  <span className="text-sm font-bold">{proEvents}</span>
+                </div>
+                <div className="h-2 rounded-full bg-muted overflow-hidden">
+                  <div className="h-full rounded-full bg-accent transition-all" style={{ width: `${builderEvents + proEvents > 0 ? Math.round((proEvents / (builderEvents + proEvents)) * 100) : 50}%` }} />
+                </div>
+              </div>
+              <div className="pt-2 border-t">
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>Builder → Pro Conversion</span>
+                  <span className="font-bold text-foreground">{builderToPro}%</span>
+                </div>
               </div>
             </div>
           </SectionCard>
