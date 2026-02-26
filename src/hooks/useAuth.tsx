@@ -2,6 +2,7 @@ import { useState, useEffect, createContext, useContext, ReactNode } from "react
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { trackEvent, resetSession } from "@/lib/analytics";
+import { startInactivityMonitor } from "@/lib/security";
 
 interface AuthContextType {
   user: User | null;
@@ -34,6 +35,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Inactivity session expiration (30 min)
+  useEffect(() => {
+    if (!user) return;
+    const cleanup = startInactivityMonitor(async () => {
+      await supabase.auth.signOut();
+    });
+    return cleanup;
+  }, [user]);
 
   const signUp = async (email: string, password: string) => {
     const { error } = await supabase.auth.signUp({
