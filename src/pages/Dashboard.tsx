@@ -131,7 +131,8 @@ export default function Dashboard() {
   };
 
   const currentBrand = activeBrand;
-  const progress = currentBrand ? Math.round(((currentBrand.current_step - 1) / 7) * 100) : 0;
+  const clampedStep = currentBrand ? Math.min(currentBrand.current_step, 7) : 1;
+  const progress = currentBrand ? Math.round(((clampedStep - 1) / 7) * 100) : 0;
 
   return (
     <DashboardLayout>
@@ -187,7 +188,7 @@ export default function Dashboard() {
                   <h2 className="text-lg font-semibold">{currentBrand.name}</h2>
                   <div className="flex items-center gap-2">
                     <span className="rounded-full bg-accent/10 px-3 py-1 text-xs font-medium text-accent">
-                      {t("dashboard.stepOf", { step: currentBrand.current_step })}
+                      {t("dashboard.stepOf", { step: clampedStep })}
                     </span>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -217,8 +218,8 @@ export default function Dashboard() {
                   {stepKeys.map((key, i) => {
                     const Icon = stepIcons[i];
                     const stepNum = i + 1;
-                    const isCompleted = stepNum < currentBrand.current_step;
-                    const isCurrent = stepNum === currentBrand.current_step;
+                    const isCompleted = stepNum < clampedStep;
+                    const isCurrent = stepNum === clampedStep;
 
                     return (
                       <button
@@ -241,7 +242,7 @@ export default function Dashboard() {
 
                 <Button
                   className="mt-6 gap-2 bg-accent text-accent-foreground hover:bg-accent/90"
-                  onClick={() => navigate(`/dashboard/step/${currentBrand.current_step}`)}
+                  onClick={() => navigate(`/dashboard/step/${clampedStep}`)}
                 >
                   {t("dashboard.continue")}
                   <ArrowRight className="h-4 w-4" />
@@ -262,12 +263,12 @@ export default function Dashboard() {
                         className="flex-1 cursor-pointer"
                         onClick={() => {
                           setActiveBrandId(brand.id);
-                          navigate(`/dashboard/step/${brand.current_step}`);
+                          navigate(`/dashboard/step/${Math.min(brand.current_step, 7)}`);
                         }}
                       >
                         <p className="font-medium">{brand.name}</p>
                         <p className="text-sm text-muted-foreground">
-                          {t("dashboard.stepOf", { step: brand.current_step })}
+                          {t("dashboard.stepOf", { step: Math.min(brand.current_step, 7) })}
                         </p>
                       </div>
                       <div className="flex items-center gap-1">
@@ -295,7 +296,7 @@ export default function Dashboard() {
                           className="h-4 w-4 text-muted-foreground cursor-pointer"
                           onClick={() => {
                             setActiveBrandId(brand.id);
-                            navigate(`/dashboard/step/${brand.current_step}`);
+                            navigate(`/dashboard/step/${Math.min(brand.current_step, 7)}`);
                           }}
                         />
                       </div>
