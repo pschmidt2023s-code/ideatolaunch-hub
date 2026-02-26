@@ -37,6 +37,22 @@ const MinimalistischerArbeitsplatz = lazy(() => import("./pages/blog/Minimalisti
 const ProduktivitaetHomeOffice = lazy(() => import("./pages/blog/ProduktivitaetHomeOffice"));
 const SchreibtischSetupGuide = lazy(() => import("./pages/blog/SchreibtischSetupGuide"));
 
+// Free Tools
+const ProduktionskostenRechner = lazy(() => import("./pages/tools/ProduktionskostenRechner"));
+const BreakEvenRechner = lazy(() => import("./pages/tools/BreakEvenRechner"));
+const MoqRechner = lazy(() => import("./pages/tools/MoqRechner"));
+
+// Guide / Pillar + Cluster
+const EigenmarkeGruenden = lazy(() => import("./pages/guide/EigenmarkeGruenden"));
+const PrivateLabelStarten = lazy(() => import("./pages/guide/PrivateLabelStarten"));
+const LieferantenFinden = lazy(() => import("./pages/guide/LieferantenFinden"));
+const ProduktionskostenKalkulieren = lazy(() => import("./pages/guide/ProduktionskostenKalkulieren"));
+const MoqBerechnen = lazy(() => import("./pages/guide/MoqBerechnen"));
+const BreakEvenGuide = lazy(() => import("./pages/guide/BreakEvenGuide"));
+const KapitalbedarfBerechnen = lazy(() => import("./pages/guide/KapitalbedarfBerechnen"));
+const LaunchPlanErstellen = lazy(() => import("./pages/guide/LaunchPlanErstellen"));
+const ProduktionsfehlerVermeiden = lazy(() => import("./pages/guide/ProduktionsfehlerVermeiden"));
+
 const queryClient = new QueryClient();
 
 function LazyFallback() {
@@ -67,10 +83,30 @@ const App = () => (
                   <Route path="/datenschutz" element={<Datenschutz />} />
                   <Route path="/agb" element={<AGB />} />
                   <Route path="/product" element={<Product />} />
+
+                  {/* Blog */}
                   <Route path="/blog" element={<Blog />} />
                   <Route path="/blog/minimalistischer-arbeitsplatz" element={<MinimalistischerArbeitsplatz />} />
                   <Route path="/blog/produktivitaet-home-office" element={<ProduktivitaetHomeOffice />} />
                   <Route path="/blog/schreibtisch-setup-guide" element={<SchreibtischSetupGuide />} />
+
+                  {/* Free Tools */}
+                  <Route path="/tools/produktionskosten-rechner" element={<ProduktionskostenRechner />} />
+                  <Route path="/tools/break-even-rechner" element={<BreakEvenRechner />} />
+                  <Route path="/tools/moq-rechner" element={<MoqRechner />} />
+
+                  {/* Guide / Pillar + Cluster */}
+                  <Route path="/guide/eigenmarke-gruenden" element={<EigenmarkeGruenden />} />
+                  <Route path="/guide/private-label-starten" element={<PrivateLabelStarten />} />
+                  <Route path="/guide/lieferanten-finden" element={<LieferantenFinden />} />
+                  <Route path="/guide/produktionskosten-kalkulieren" element={<ProduktionskostenKalkulieren />} />
+                  <Route path="/guide/moq-berechnen" element={<MoqBerechnen />} />
+                  <Route path="/guide/break-even-rechner" element={<BreakEvenGuide />} />
+                  <Route path="/guide/kapitalbedarf-berechnen" element={<KapitalbedarfBerechnen />} />
+                  <Route path="/guide/launch-plan-erstellen" element={<LaunchPlanErstellen />} />
+                  <Route path="/guide/produktionsfehler-vermeiden" element={<ProduktionsfehlerVermeiden />} />
+
+                  {/* Dashboard */}
                   <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                   <Route path="/dashboard/insights" element={<ProtectedRoute><InsightsPage /></ProtectedRoute>} />
                   <Route path="/dashboard/step/:stepNumber" element={<ProtectedRoute><StepPage /></ProtectedRoute>} />
