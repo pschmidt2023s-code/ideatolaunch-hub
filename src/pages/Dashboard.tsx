@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import confetti from "canvas-confetti";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { useAuth } from "@/hooks/useAuth";
 import { useBrand } from "@/hooks/useBrand";
@@ -52,6 +53,7 @@ import {
   Pencil,
   Trash2,
   HelpCircle,
+  PartyPopper,
 } from "lucide-react";
 import { GuidedStarterDialog } from "@/components/GuidedStarterDialog";
 
@@ -163,6 +165,22 @@ export default function Dashboard() {
   const isCompleted = currentBrand ? currentBrand.current_step > 7 : false;
   const clampedStep = currentBrand ? Math.min(currentBrand.current_step, 7) : 1;
   const progress = isCompleted ? 100 : currentBrand ? Math.round(((clampedStep - 1) / 7) * 100) : 0;
+  const confettiFired = useRef(false);
+
+  useEffect(() => {
+    if (isCompleted && !confettiFired.current) {
+      confettiFired.current = true;
+      const duration = 2000;
+      const end = Date.now() + duration;
+      const frame = () => {
+        confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0, y: 0.7 } });
+        confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1, y: 0.7 } });
+        if (Date.now() < end) requestAnimationFrame(frame);
+      };
+      frame();
+    }
+    if (!isCompleted) confettiFired.current = false;
+  }, [isCompleted]);
 
   return (
     <DashboardLayout>
@@ -209,6 +227,23 @@ export default function Dashboard() {
           </div>
         ) : (
           <div className="space-y-6">
+            {currentBrand && isCompleted && (
+              <div className="animate-fade-in rounded-xl border border-green-500/30 bg-gradient-to-r from-green-500/10 via-emerald-500/10 to-teal-500/10 p-6 shadow-card">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-500/20">
+                    <PartyPopper className="h-6 w-6 text-green-600 dark:text-green-400" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-green-700 dark:text-green-300">
+                      🎉 {t("dashboard.congratulations", "Glückwunsch!")}
+                    </h2>
+                    <p className="text-sm text-green-600/80 dark:text-green-400/80">
+                      {t("dashboard.brandComplete", "Deine Marke «{{name}}» ist startklar! Alle 7 Schritte abgeschlossen.").replace("{{name}}", currentBrand.name)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
             {currentBrand && <BrandHealthCard />}
             {currentBrand && <BlueprintExport />}
 
@@ -248,8 +283,8 @@ export default function Dashboard() {
                   {stepKeys.map((key, i) => {
                     const Icon = stepIcons[i];
                     const stepNum = i + 1;
-                    const isCompleted = stepNum < clampedStep;
-                    const isCurrent = stepNum === clampedStep;
+                    const stepDone = stepNum < clampedStep || (isCompleted && stepNum === 7);
+                    const isCurrent = !isCompleted && stepNum === clampedStep;
 
                     return (
                       <button
@@ -258,12 +293,12 @@ export default function Dashboard() {
                         className={`flex flex-col items-center gap-2 rounded-lg border p-3 text-center transition-all hover:shadow-md ${
                           isCurrent
                             ? "border-accent bg-accent/5 ring-1 ring-accent/20"
-                            : isCompleted
+                            : stepDone
                             ? "border-green-500/30 bg-green-500/5"
                             : "opacity-60"
                         }`}
                       >
-                        <Icon className={`h-5 w-5 ${isCurrent ? "text-accent" : isCompleted ? "text-green-600 dark:text-green-400" : "text-muted-foreground"}`} />
+                        <Icon className={`h-5 w-5 ${isCurrent ? "text-accent" : stepDone ? "text-green-600 dark:text-green-400" : "text-muted-foreground"}`} />
                         <span className="text-xs font-medium leading-tight">{t(`steps.${key}`)}</span>
                       </button>
                     );
