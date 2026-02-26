@@ -187,3 +187,99 @@ export function cancellationEmail(params: CancellationParams): EmailOutput {
 
   return { subject, html: wrapLayout(bodyHtml, locale), text };
 }
+
+// ─── 4. Blueprint – 7-Step Workflow Overview ────────────────────────
+
+interface BlueprintParams {
+  locale?: Locale;
+  firstName?: string;
+}
+
+const STEPS_DE = [
+  { num: 1, title: "Idea Foundation", desc: "Produktidee validieren, Zielgruppe definieren, Marktchance bewerten" },
+  { num: 2, title: "Brand Structure", desc: "Markenname, Positionierung, Tone of Voice & visuelle Richtung festlegen" },
+  { num: 3, title: "Business Calculator", desc: "Kosten kalkulieren, Preise simulieren, Break-Even berechnen" },
+  { num: 4, title: "Production Planning", desc: "Lieferanten finden, MOQ klären, Produktionscheckliste abarbeiten" },
+  { num: 5, title: "Packaging & Compliance", desc: "Verpackung designen, Etikettierung prüfen, rechtliche Anforderungen erfüllen" },
+  { num: 6, title: "Sales Foundation", desc: "Vertriebskanal wählen, Fulfillment planen, erste Verkaufsstrategie aufbauen" },
+  { num: 7, title: "Launch Roadmap", desc: "Timeline erstellen, Go-Live-Checkliste durchgehen, Marke starten" },
+];
+
+const STEPS_EN = [
+  { num: 1, title: "Idea Foundation", desc: "Validate your product idea, define target audience, assess market opportunity" },
+  { num: 2, title: "Brand Structure", desc: "Set brand name, positioning, tone of voice & visual direction" },
+  { num: 3, title: "Business Calculator", desc: "Calculate costs, simulate pricing, compute break-even" },
+  { num: 4, title: "Production Planning", desc: "Find suppliers, clarify MOQ, work through production checklist" },
+  { num: 5, title: "Packaging & Compliance", desc: "Design packaging, check labeling, meet legal requirements" },
+  { num: 6, title: "Sales Foundation", desc: "Choose sales channel, plan fulfillment, build first sales strategy" },
+  { num: 7, title: "Launch Roadmap", desc: "Create timeline, complete go-live checklist, launch your brand" },
+];
+
+export function blueprintEmail(params: BlueprintParams): EmailOutput {
+  const { locale = "de", firstName } = params;
+  const de = locale === "de";
+  const steps = de ? STEPS_DE : STEPS_EN;
+
+  const greeting = firstName
+    ? (de ? `Hallo ${firstName},` : `Hi ${firstName},`)
+    : (de ? "Hallo!" : "Hi!");
+
+  const subject = de
+    ? "Dein 7-Schritte-Blueprint zum Markenaufbau"
+    : "Your 7-Step Brand Building Blueprint";
+
+  const intro = de
+    ? "Hier ist dein persönlicher Blueprint – die 7 Schritte von der Idee bis zum Launch deiner Eigenmarke:"
+    : "Here's your personal blueprint – the 7 steps from idea to launching your own brand:";
+
+  const stepsHtml = steps
+    .map(
+      (s) =>
+        `<tr>
+          <td style="width:40px;vertical-align:top;padding:12px 0;">
+            <div style="width:32px;height:32px;border-radius:50%;background:#18181b;color:#fff;font-weight:700;font-size:14px;line-height:32px;text-align:center;">${s.num}</div>
+          </td>
+          <td style="padding:12px 0 12px 12px;">
+            <strong style="font-size:15px;color:#18181b;">${s.title}</strong><br>
+            <span style="font-size:13px;color:#71717a;">${s.desc}</span>
+          </td>
+        </tr>`
+    )
+    .join("\n");
+
+  const ctaLabel = de ? "Jetzt starten" : "Get started";
+  const outroText = de
+    ? "Starte jetzt mit Schritt 1 und arbeite dich durch – dein Dashboard führt dich."
+    : "Start with step 1 and work your way through – your dashboard will guide you.";
+
+  const bodyHtml = `
+    <p>${greeting}</p>
+    <h1>${subject}</h1>
+    <p>${intro}</p>
+    <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;margin:16px 0;">
+      ${stepsHtml}
+    </table>
+    <p>${outroText}</p>
+    <a href="${APP_URL}/dashboard" class="cta">${ctaLabel}</a>
+  `;
+
+  const stepsText = steps.map((s) => `${s.num}. ${s.title} – ${s.desc}`).join("\n");
+
+  const text = [
+    greeting,
+    "",
+    subject,
+    "",
+    intro,
+    "",
+    stepsText,
+    "",
+    outroText,
+    "",
+    `${ctaLabel}: ${APP_URL}/dashboard`,
+    "",
+    `Support: ${SUPPORT_EMAIL}`,
+  ].join("\n");
+
+  return { subject, html: wrapLayout(bodyHtml, locale), text };
+}
