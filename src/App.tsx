@@ -71,6 +71,7 @@ const BestTools = lazy(() => import("./pages/comparisons/BestTools"));
 const CompliancePage = lazy(() => import("./pages/CompliancePage"));
 const StrategicPage = lazy(() => import("./pages/StrategicPage"));
 const AdminFraud = lazy(() => import("./pages/admin/FraudPage"));
+const FounderIntelligencePage = lazy(() => import("./pages/FounderIntelligencePage"));
 
 const queryClient = new QueryClient();
 
@@ -146,6 +147,7 @@ const App = () => (
                   <Route path="/dashboard/affiliate" element={<ProtectedRoute><AffiliateDashboard /></ProtectedRoute>} />
                   <Route path="/dashboard/compliance" element={<ProtectedRoute><CompliancePage /></ProtectedRoute>} />
                   <Route path="/dashboard/strategic" element={<ProtectedRoute><StrategicPage /></ProtectedRoute>} />
+                  <Route path="/dashboard/intelligence" element={<ProtectedRoute><FounderIntelligencePage /></ProtectedRoute>} />
                   <Route path="/internal/analytics" element={<ProtectedRoute><InternalAnalytics /></ProtectedRoute>} />
                   <Route path="/admin/insights" element={<AdminInsights />} />
                   <Route path="/admin/dashboard" element={<AdminDashboard />} />
