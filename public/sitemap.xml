@@ -33,6 +33,11 @@
   <!-- About -->
   <url><loc>https://brand.aldenairperfumes.de/ueber-uns</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
 
+  <!-- Authority & Community -->
+  <url><loc>https://brand.aldenairperfumes.de/case-studies</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://brand.aldenairperfumes.de/community</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://brand.aldenairperfumes.de/ueber-uns</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+
   <!-- Legal -->
   <url><loc>https://brand.aldenairperfumes.de/impressum</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
   <url><loc>https://brand.aldenairperfumes.de/datenschutz</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>

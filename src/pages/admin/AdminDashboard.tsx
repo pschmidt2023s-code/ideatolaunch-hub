@@ -3,12 +3,15 @@ import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { checkIsAdmin, getPlanDistribution, getUpgradeTriggerSources, getStepDropOffRates, type PlanDistribution, type UpgradeTrigger, type StepDropOff } from "@/lib/founder-analytics";
 import { supabase } from "@/integrations/supabase/client";
-import { Users, TrendingUp, Mail, CreditCard, BarChart3, MousePointerClick, ArrowLeft } from "lucide-react";
+import { Users, TrendingUp, Mail, CreditCard, BarChart3, MousePointerClick, ArrowLeft, Gift, Handshake, MessageCircle } from "lucide-react";
 
 // ── Types ──
 interface LeadRow { id: string; email: string; source: string; trigger_type: string | null; page: string | null; converted: boolean; created_at: string; }
 interface EventRow { event_name: string; metadata: any; created_at: string; }
 interface SubRow { status: string; stripe_subscription_id: string | null; created_at: string; current_period_end: string | null; }
+interface ReferralRow { referral_count: number; reward_builder_months: number; }
+interface AffiliateRow { total_clicks: number; total_conversions: number; total_earnings: number; }
+interface WaitlistRow { id: string; email: string; niche: string | null; created_at: string; }
 
 // ── Metric Card ──
 function MetricCard({ icon: Icon, label, value, sub, accent }: { icon: any; label: string; value: string | number; sub?: string; accent?: boolean }) {
@@ -59,6 +62,9 @@ export default function AdminDashboard() {
   const [subscriptions, setSubscriptions] = useState<SubRow[]>([]);
   const [triggers, setTriggers] = useState<UpgradeTrigger[]>([]);
   const [dropOffs, setDropOffs] = useState<StepDropOff[]>([]);
+  const [referrals, setReferrals] = useState<ReferralRow[]>([]);
+  const [affiliatesData, setAffiliatesData] = useState<AffiliateRow[]>([]);
+  const [waitlist, setWaitlist] = useState<WaitlistRow[]>([]);
 
   useEffect(() => {
     if (authLoading) return;
@@ -79,13 +85,19 @@ export default function AdminDashboard() {
       supabase.from("subscriptions").select("status, stripe_subscription_id, created_at, current_period_end"),
       getUpgradeTriggerSources(),
       getStepDropOffRates(),
-    ]).then(([planData, leadRes, eventRes, subRes, triggerData, dropOffData]) => {
+      supabase.from("referrals" as any).select("referral_count, reward_builder_months"),
+      supabase.from("affiliates" as any).select("total_clicks, total_conversions, total_earnings"),
+      supabase.from("community_waitlist" as any).select("*").order("created_at", { ascending: false }).limit(100),
+    ]).then(([planData, leadRes, eventRes, subRes, triggerData, dropOffData, refRes, affRes, waitRes]) => {
       setPlans(planData);
       setLeads((leadRes.data ?? []) as unknown as LeadRow[]);
       setEvents((eventRes.data ?? []) as EventRow[]);
       setSubscriptions((subRes.data ?? []) as SubRow[]);
       setTriggers(triggerData);
       setDropOffs(dropOffData);
+      setReferrals((refRes.data ?? []) as unknown as ReferralRow[]);
+      setAffiliatesData((affRes.data ?? []) as unknown as AffiliateRow[]);
+      setWaitlist((waitRes.data ?? []) as unknown as WaitlistRow[]);
       setLoading(false);
     });
   }, [authorized]);
@@ -134,6 +146,13 @@ export default function AdminDashboard() {
     const page = (e.metadata as any)?.page || (e.metadata as any)?.url;
     if (page) pageVisits[page] = (pageVisits[page] || 0) + 1;
   });
+
+  // Growth metrics
+  const totalReferrals = referrals.reduce((s, r) => s + r.referral_count, 0);
+  const totalAffClicks = affiliatesData.reduce((s, a) => s + a.total_clicks, 0);
+  const totalAffConversions = affiliatesData.reduce((s, a) => s + a.total_conversions, 0);
+  const totalAffEarnings = affiliatesData.reduce((s, a) => s + a.total_earnings, 0);
+  const waitlistCount = waitlist.length;
 
   const maxTrigger = Math.max(...triggers.map(t => t.count), 1);
   const maxLeadSource = Math.max(...Object.values(leadsBySource), 1);
@@ -323,6 +342,71 @@ export default function AdminDashboard() {
                 ))}
               </div>
             )}
+          </SectionCard>
+
+          {/* ── Growth Engine ── */}
+          <SectionCard title="Referral Programm">
+            <div className="space-y-3">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Gesamt Referrals</span>
+                <span className="font-bold">{totalReferrals}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Aktive Empfehler</span>
+                <span className="font-bold">{referrals.filter(r => r.referral_count > 0).length}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Vergebene Builder-Monate</span>
+                <span className="font-bold text-accent">{referrals.reduce((s, r) => s + r.reward_builder_months, 0)}</span>
+              </div>
+            </div>
+          </SectionCard>
+
+          <SectionCard title="Affiliate Programm">
+            <div className="space-y-3">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Gesamt Klicks</span>
+                <span className="font-bold">{totalAffClicks}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Conversions</span>
+                <span className="font-bold">{totalAffConversions}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Affiliate Einnahmen</span>
+                <span className="font-bold text-accent">{totalAffEarnings.toFixed(2)} €</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Aktive Affiliates</span>
+                <span className="font-bold">{affiliatesData.length}</span>
+              </div>
+            </div>
+          </SectionCard>
+
+          <SectionCard title="Community Warteliste">
+            <div className="space-y-3">
+              <div className="flex justify-between text-sm mb-3">
+                <span className="text-muted-foreground">Wartelisten-Einträge</span>
+                <span className="font-bold text-accent">{waitlistCount}</span>
+              </div>
+              {waitlist.length === 0 ? (
+                <p className="text-xs text-muted-foreground">Noch keine Einträge</p>
+              ) : (
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {waitlist.slice(0, 8).map(w => (
+                    <div key={w.id} className="flex items-center justify-between text-sm border-b border-border/50 pb-1.5">
+                      <div className="truncate mr-2">
+                        <span className="text-foreground">{w.email}</span>
+                        {w.niche && <span className="text-xs text-muted-foreground ml-2">{w.niche}</span>}
+                      </div>
+                      <span className="text-xs text-muted-foreground shrink-0">
+                        {new Date(w.created_at).toLocaleDateString("de-DE")}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </SectionCard>
         </div>
       </div>
