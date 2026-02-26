@@ -160,8 +160,9 @@ export default function Dashboard() {
   };
 
   const currentBrand = activeBrand;
+  const isCompleted = currentBrand ? currentBrand.current_step > 7 : false;
   const clampedStep = currentBrand ? Math.min(currentBrand.current_step, 7) : 1;
-  const progress = currentBrand ? Math.round(((clampedStep - 1) / 7) * 100) : 0;
+  const progress = isCompleted ? 100 : currentBrand ? Math.round(((clampedStep - 1) / 7) * 100) : 0;
 
   return (
     <DashboardLayout>
@@ -216,8 +217,8 @@ export default function Dashboard() {
                 <div className="mb-4 flex items-center justify-between">
                   <h2 className="text-lg font-semibold">{currentBrand.name}</h2>
                   <div className="flex items-center gap-2">
-                    <span className="rounded-full bg-accent/10 px-3 py-1 text-xs font-medium text-accent">
-                      {t("dashboard.stepOf", { step: clampedStep })}
+                    <span className={`rounded-full px-3 py-1 text-xs font-medium ${isCompleted ? "bg-green-500/10 text-green-600 dark:text-green-400" : "bg-accent/10 text-accent"}`}>
+                      {isCompleted ? t("dashboard.completed", "✓ Abgeschlossen") : t("dashboard.stepOf", { step: clampedStep })}
                     </span>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
