@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import confetti from "canvas-confetti";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { useAuth } from "@/hooks/useAuth";
@@ -165,22 +165,20 @@ export default function Dashboard() {
   const isCompleted = currentBrand ? currentBrand.current_step > 7 : false;
   const clampedStep = currentBrand ? Math.min(currentBrand.current_step, 7) : 1;
   const progress = isCompleted ? 100 : currentBrand ? Math.round(((clampedStep - 1) / 7) * 100) : 0;
-  const confettiFired = useRef(false);
-
   useEffect(() => {
-    if (isCompleted && !confettiFired.current) {
-      confettiFired.current = true;
-      const duration = 2000;
-      const end = Date.now() + duration;
-      const frame = () => {
-        confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0, y: 0.7 } });
-        confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1, y: 0.7 } });
-        if (Date.now() < end) requestAnimationFrame(frame);
-      };
-      frame();
-    }
-    if (!isCompleted) confettiFired.current = false;
-  }, [isCompleted]);
+    if (!isCompleted || !currentBrand) return;
+    const storageKey = `confetti_fired_${currentBrand.id}`;
+    if (localStorage.getItem(storageKey)) return;
+    localStorage.setItem(storageKey, "true");
+    const duration = 2000;
+    const end = Date.now() + duration;
+    const frame = () => {
+      confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0, y: 0.7 } });
+      confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1, y: 0.7 } });
+      if (Date.now() < end) requestAnimationFrame(frame);
+    };
+    frame();
+  }, [isCompleted, currentBrand]);
 
   return (
     <DashboardLayout>
