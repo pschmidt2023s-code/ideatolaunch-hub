@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://ideatolaunch-hub.lovable.app/sitemap.xml
+Sitemap: https://brand.aldenairperfumes.de/sitemap.xml
