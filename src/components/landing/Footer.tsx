@@ -37,6 +37,12 @@ export function Footer() {
               <Link to="/ueber-uns" className="hover:text-foreground transition-colors">
                 {isDE ? "Über uns" : "About"}
               </Link>
+              <Link to="/case-studies" className="hover:text-foreground transition-colors">
+                Case Studies
+              </Link>
+              <Link to="/community" className="hover:text-foreground transition-colors">
+                Community
+              </Link>
             </nav>
           </div>
 

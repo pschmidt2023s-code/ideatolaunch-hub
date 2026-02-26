@@ -14,6 +14,7 @@ import {
   LogOut,
   Settings,
   Brain,
+  Gift,
 } from "lucide-react";
 
 interface DashboardSidebarProps {
@@ -47,6 +48,7 @@ export function DashboardSidebar({ onNavigate }: DashboardSidebarProps) {
     { icon: Shield, label: t("steps.s5"), path: "/dashboard/step/5" },
     { icon: ShoppingBag, label: t("steps.s6"), path: "/dashboard/step/6" },
     { icon: Rocket, label: t("steps.s7"), path: "/dashboard/step/7" },
+    { icon: Gift, label: "Empfehlungen", path: "/dashboard/referrals" },
   ];
 
   return (

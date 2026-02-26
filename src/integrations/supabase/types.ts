@@ -32,6 +32,48 @@ export type Database = {
         }
         Relationships: []
       }
+      affiliates: {
+        Row: {
+          active_referrals: number
+          affiliate_code: string
+          commission_rate: number
+          created_at: string
+          id: string
+          payout_status: string
+          total_clicks: number
+          total_conversions: number
+          total_earnings: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          active_referrals?: number
+          affiliate_code: string
+          commission_rate?: number
+          created_at?: string
+          id?: string
+          payout_status?: string
+          total_clicks?: number
+          total_conversions?: number
+          total_earnings?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          active_referrals?: number
+          affiliate_code?: string
+          commission_rate?: number
+          created_at?: string
+          id?: string
+          payout_status?: string
+          total_clicks?: number
+          total_conversions?: number
+          total_earnings?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       analytics_events: {
         Row: {
           created_at: string
@@ -227,6 +269,30 @@ export type Database = {
           name?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      community_waitlist: {
+        Row: {
+          created_at: string
+          current_plan: string | null
+          email: string
+          id: string
+          niche: string | null
+        }
+        Insert: {
+          created_at?: string
+          current_plan?: string | null
+          email: string
+          id?: string
+          niche?: string | null
+        }
+        Update: {
+          created_at?: string
+          current_plan?: string | null
+          email?: string
+          id?: string
+          niche?: string | null
         }
         Relationships: []
       }
@@ -563,6 +629,7 @@ export type Database = {
           first_name: string | null
           id: string
           last_name: string | null
+          referred_by: string | null
           updated_at: string
           user_id: string
         }
@@ -573,6 +640,7 @@ export type Database = {
           first_name?: string | null
           id?: string
           last_name?: string | null
+          referred_by?: string | null
           updated_at?: string
           user_id: string
         }
@@ -583,6 +651,40 @@ export type Database = {
           first_name?: string | null
           id?: string
           last_name?: string | null
+          referred_by?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      referrals: {
+        Row: {
+          created_at: string
+          id: string
+          referral_code: string
+          referral_count: number
+          reward_builder_months: number
+          reward_pro_trial: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          referral_code: string
+          referral_count?: number
+          reward_builder_months?: number
+          reward_pro_trial?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          referral_code?: string
+          referral_count?: number
+          reward_builder_months?: number
+          reward_pro_trial?: boolean
           updated_at?: string
           user_id?: string
         }

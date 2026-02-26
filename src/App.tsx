@@ -54,6 +54,10 @@ const KapitalbedarfBerechnen = lazy(() => import("./pages/guide/KapitalbedarfBer
 const LaunchPlanErstellen = lazy(() => import("./pages/guide/LaunchPlanErstellen"));
 const ProduktionsfehlerVermeiden = lazy(() => import("./pages/guide/ProduktionsfehlerVermeiden"));
 const UeberUns = lazy(() => import("./pages/UeberUns"));
+const CaseStudies = lazy(() => import("./pages/CaseStudies"));
+const Community = lazy(() => import("./pages/Community"));
+const ReferralDashboard = lazy(() => import("./pages/ReferralDashboard"));
+const AffiliateDashboard = lazy(() => import("./pages/AffiliateDashboard"));
 
 const queryClient = new QueryClient();
 
@@ -108,6 +112,8 @@ const App = () => (
                   <Route path="/guide/launch-plan-erstellen" element={<LaunchPlanErstellen />} />
                   <Route path="/guide/produktionsfehler-vermeiden" element={<ProduktionsfehlerVermeiden />} />
                   <Route path="/ueber-uns" element={<UeberUns />} />
+                  <Route path="/case-studies" element={<CaseStudies />} />
+                  <Route path="/community" element={<Community />} />
 
                   {/* Dashboard */}
                   <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
@@ -115,6 +121,8 @@ const App = () => (
                   <Route path="/dashboard/step/:stepNumber" element={<ProtectedRoute><StepPage /></ProtectedRoute>} />
                   <Route path="/dashboard/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
                   <Route path="/dashboard/pricing" element={<ProtectedRoute><DashboardPricing /></ProtectedRoute>} />
+                  <Route path="/dashboard/referrals" element={<ProtectedRoute><ReferralDashboard /></ProtectedRoute>} />
+                  <Route path="/dashboard/affiliate" element={<ProtectedRoute><AffiliateDashboard /></ProtectedRoute>} />
                   <Route path="/internal/analytics" element={<ProtectedRoute><InternalAnalytics /></ProtectedRoute>} />
                   <Route path="/admin/insights" element={<AdminInsights />} />
                   <Route path="/admin/dashboard" element={<AdminDashboard />} />
