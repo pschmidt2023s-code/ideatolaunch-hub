@@ -81,20 +81,22 @@ export function PricingSection() {
 
   const proFeatures: PlanFeature[] = isDE ? [
     { label: "Alles aus Builder", desc: "Vollständiger Zugang zu allen Builder-Features" },
-    { label: "Produktionsfehler vermeiden", desc: "Risiken vor der ersten Bestellung erkennen" },
-    { label: "Kapitalbindung kontrollieren", desc: "Wisse genau, wo dein Geld gebunden ist" },
-    { label: "Szenario-Simulation vor Investition", desc: "Verschiedene Mengen- und Preisszenarien durchspielen" },
-    { label: "Lieferanten-Vergleich", desc: "Konkrete Production + Packaging Matches" },
-    { label: "Datenbasierte Launch-Entscheidung", desc: "Adaptive Roadmap basierend auf deinen Daten" },
-    { label: "Execution Readiness Score", desc: "Wie launch-bereit ist deine Marke wirklich?" },
+    { label: "Capital Burn Predictor", desc: "12-Monats-Kostenprognose & Cash Runway" },
+    { label: "Supplier Risk Score", desc: "MOQ-, Länder-, Lieferzeit- & Abhängigkeitsrisiko" },
+    { label: "Szenario-Simulation", desc: "6-Monats-Outcome bei veränderten Parametern" },
+    { label: "Launch-Wahrscheinlichkeit", desc: "Datenbasierte Einschätzung deiner Launch-Chancen" },
+    { label: "KI-Strategie-Empfehlungen", desc: "Preis-, MOQ- & Budget-Optimierung per KI" },
+    { label: "Execution Score", desc: "Fortschritt messen & Verbesserungsvorschläge erhalten" },
+    { label: "Compliance Engine", desc: "Interaktiver Wizard für alle rechtlichen Anforderungen" },
   ] : [
     { label: "Everything in Builder", desc: "Full access to all Builder features" },
-    { label: "Avoid production mistakes", desc: "Spot risks before your first order" },
-    { label: "Control capital commitment", desc: "Know exactly where your money is tied up" },
-    { label: "Scenario simulation before investing", desc: "Test different quantity and pricing scenarios" },
-    { label: "Supplier comparison", desc: "Concrete production + packaging matches" },
-    { label: "Data-driven launch decisions", desc: "Adaptive roadmap based on your data" },
-    { label: "Execution Readiness Score", desc: "How launch-ready is your brand really?" },
+    { label: "Capital Burn Predictor", desc: "12-month cost forecast & cash runway" },
+    { label: "Supplier Risk Score", desc: "MOQ, country, lead time & dependency risk" },
+    { label: "Scenario Simulation", desc: "6-month outcomes with changed parameters" },
+    { label: "Launch Probability", desc: "Data-driven assessment of your launch chances" },
+    { label: "AI Strategy Recommendations", desc: "Price, MOQ & budget optimization via AI" },
+    { label: "Execution Score", desc: "Measure progress & get improvement suggestions" },
+    { label: "Compliance Engine", desc: "Interactive wizard for all legal requirements" },
   ];
 
   const plans = [
@@ -125,22 +127,22 @@ export function PricingSection() {
       anchor: null,
     },
     {
-      name: "Pro",
+      name: isDE ? "Pro – Strategic Intelligence" : "Pro – Strategic Intelligence",
       price: isDE ? "79 €" : "€79",
       period: "/ " + (isDE ? "Monat" : "month"),
       features: proFeatures,
       cta: loadingPro
         ? (isDE ? "Weiterleitung zu Stripe..." : "Redirecting to Stripe...")
-        : (isDE ? "Risiken absichern – Pro starten →" : "Secure risks – Start Pro →"),
+        : (isDE ? "Strategischen Vorteil sichern →" : "Secure strategic advantage →"),
       highlighted: false,
-      badge: "Early Access",
-      secondBadge: isDE ? "Für ambitionierte Gründer" : "For ambitious founders",
+      badge: "Strategic Intelligence",
+      secondBadge: isDE ? "Enterprise-Level Planning" : "Enterprise-Level Planning",
       onClick: () => handleCheckout("pro", setLoadingPro),
       loading: loadingPro,
       proStyle: true,
       anchor: isDE
-        ? "Eine falsche Produktionsentscheidung kostet oft 5.000 €+. Dieses Tool kostet 79 €."
-        : "One wrong production decision often costs €5,000+. This tool costs €79.",
+        ? "Vermeide €5.000–€20.000 teure Fehler. Datenbasierte Entscheidungen für 79 €/Monat."
+        : "Avoid €5,000–€20,000 in mistakes. Data-backed decisions for €79/month.",
     },
   ];
 

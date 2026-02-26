@@ -337,6 +337,71 @@ export type Database = {
           },
         ]
       }
+      compliance_scores: {
+        Row: {
+          agb_ready: boolean | null
+          brand_id: string
+          ce_marking_checked: boolean | null
+          created_at: string
+          datenschutz_ready: boolean | null
+          dsgvo_assessment: boolean | null
+          gewerbeanmeldung: boolean | null
+          id: string
+          impressum_ready: boolean | null
+          overall_score: number | null
+          product_labeling_done: boolean | null
+          recommendations: Json | null
+          risk_flags: Json | null
+          updated_at: string
+          verpackg_registered: boolean | null
+          widerruf_ready: boolean | null
+        }
+        Insert: {
+          agb_ready?: boolean | null
+          brand_id: string
+          ce_marking_checked?: boolean | null
+          created_at?: string
+          datenschutz_ready?: boolean | null
+          dsgvo_assessment?: boolean | null
+          gewerbeanmeldung?: boolean | null
+          id?: string
+          impressum_ready?: boolean | null
+          overall_score?: number | null
+          product_labeling_done?: boolean | null
+          recommendations?: Json | null
+          risk_flags?: Json | null
+          updated_at?: string
+          verpackg_registered?: boolean | null
+          widerruf_ready?: boolean | null
+        }
+        Update: {
+          agb_ready?: boolean | null
+          brand_id?: string
+          ce_marking_checked?: boolean | null
+          created_at?: string
+          datenschutz_ready?: boolean | null
+          dsgvo_assessment?: boolean | null
+          gewerbeanmeldung?: boolean | null
+          id?: string
+          impressum_ready?: boolean | null
+          overall_score?: number | null
+          product_labeling_done?: boolean | null
+          recommendations?: Json | null
+          risk_flags?: Json | null
+          updated_at?: string
+          verpackg_registered?: boolean | null
+          widerruf_ready?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "compliance_scores_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: true
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       documents: {
         Row: {
           brand_id: string
@@ -657,6 +722,77 @@ export type Database = {
         }
         Relationships: []
       }
+      referral_validations: {
+        Row: {
+          admin_override: boolean | null
+          admin_override_by: string | null
+          admin_override_reason: string | null
+          behavioral_similarity: number | null
+          created_at: string
+          device_fingerprint: string | null
+          email_similarity_score: number | null
+          fraud_score: number
+          id: string
+          ip_hash: string | null
+          referral_id: string
+          referred_user_id: string
+          risk_factors: Json | null
+          shared_payment_flag: boolean | null
+          signup_velocity_flag: boolean | null
+          status: string
+          stripe_card_fingerprint: string | null
+          updated_at: string
+        }
+        Insert: {
+          admin_override?: boolean | null
+          admin_override_by?: string | null
+          admin_override_reason?: string | null
+          behavioral_similarity?: number | null
+          created_at?: string
+          device_fingerprint?: string | null
+          email_similarity_score?: number | null
+          fraud_score?: number
+          id?: string
+          ip_hash?: string | null
+          referral_id: string
+          referred_user_id: string
+          risk_factors?: Json | null
+          shared_payment_flag?: boolean | null
+          signup_velocity_flag?: boolean | null
+          status?: string
+          stripe_card_fingerprint?: string | null
+          updated_at?: string
+        }
+        Update: {
+          admin_override?: boolean | null
+          admin_override_by?: string | null
+          admin_override_reason?: string | null
+          behavioral_similarity?: number | null
+          created_at?: string
+          device_fingerprint?: string | null
+          email_similarity_score?: number | null
+          fraud_score?: number
+          id?: string
+          ip_hash?: string | null
+          referral_id?: string
+          referred_user_id?: string
+          risk_factors?: Json | null
+          shared_payment_flag?: boolean | null
+          signup_velocity_flag?: boolean | null
+          status?: string
+          stripe_card_fingerprint?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_validations_referral_id_fkey"
+            columns: ["referral_id"]
+            isOneToOne: false
+            referencedRelation: "referrals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       referrals: {
         Row: {
           created_at: string
@@ -719,6 +855,56 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      strategic_scores: {
+        Row: {
+          ai_recommendations: Json | null
+          brand_id: string
+          capital_burn_monthly: number | null
+          cash_runway_months: number | null
+          created_at: string
+          execution_score: number | null
+          id: string
+          launch_probability: number | null
+          scenario_snapshots: Json | null
+          supplier_risk_score: number | null
+          updated_at: string
+        }
+        Insert: {
+          ai_recommendations?: Json | null
+          brand_id: string
+          capital_burn_monthly?: number | null
+          cash_runway_months?: number | null
+          created_at?: string
+          execution_score?: number | null
+          id?: string
+          launch_probability?: number | null
+          scenario_snapshots?: Json | null
+          supplier_risk_score?: number | null
+          updated_at?: string
+        }
+        Update: {
+          ai_recommendations?: Json | null
+          brand_id?: string
+          capital_burn_monthly?: number | null
+          cash_runway_months?: number | null
+          created_at?: string
+          execution_score?: number | null
+          id?: string
+          launch_probability?: number | null
+          scenario_snapshots?: Json | null
+          supplier_risk_score?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "strategic_scores_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: true
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       subscriptions: {
         Row: {
