@@ -1,6 +1,6 @@
 import { Helmet } from "react-helmet-async";
 
-const SITE_URL = "https://ideatolaunch-hub.lovable.app";
+const SITE_URL = "https://brand.aldenairperfumes.de";
 const SITE_NAME = "BuildYourBrand";
 const DEFAULT_OG_IMAGE = "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/3df431bc-fe9a-403d-a050-b60012790536/id-preview-da3749dc--b937d4ec-1d78-48b9-bb4d-ab44d9c298c7.lovable.app-1771978657390.png";
 

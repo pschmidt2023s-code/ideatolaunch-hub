@@ -31,6 +31,11 @@ const DebugGating = lazy(() => import("./pages/debug/Gating"));
 const Impressum = lazy(() => import("./pages/Impressum"));
 const Datenschutz = lazy(() => import("./pages/Datenschutz"));
 const AGB = lazy(() => import("./pages/AGB"));
+const Product = lazy(() => import("./pages/Product"));
+const Blog = lazy(() => import("./pages/Blog"));
+const MinimalistischerArbeitsplatz = lazy(() => import("./pages/blog/MinimalistischerArbeitsplatz"));
+const ProduktivitaetHomeOffice = lazy(() => import("./pages/blog/ProduktivitaetHomeOffice"));
+const SchreibtischSetupGuide = lazy(() => import("./pages/blog/SchreibtischSetupGuide"));
 
 const queryClient = new QueryClient();
 
@@ -61,6 +66,11 @@ const App = () => (
                   <Route path="/impressum" element={<Impressum />} />
                   <Route path="/datenschutz" element={<Datenschutz />} />
                   <Route path="/agb" element={<AGB />} />
+                  <Route path="/product" element={<Product />} />
+                  <Route path="/blog" element={<Blog />} />
+                  <Route path="/blog/minimalistischer-arbeitsplatz" element={<MinimalistischerArbeitsplatz />} />
+                  <Route path="/blog/produktivitaet-home-office" element={<ProduktivitaetHomeOffice />} />
+                  <Route path="/blog/schreibtisch-setup-guide" element={<SchreibtischSetupGuide />} />
                   <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                   <Route path="/dashboard/insights" element={<ProtectedRoute><InsightsPage /></ProtectedRoute>} />
                   <Route path="/dashboard/step/:stepNumber" element={<ProtectedRoute><StepPage /></ProtectedRoute>} />
