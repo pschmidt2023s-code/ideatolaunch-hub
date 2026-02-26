@@ -67,6 +67,11 @@ const VsExcel = lazy(() => import("./pages/comparisons/VsExcel"));
 const VsNotion = lazy(() => import("./pages/comparisons/VsNotion"));
 const BestTools = lazy(() => import("./pages/comparisons/BestTools"));
 
+// Compliance & Strategic
+const CompliancePage = lazy(() => import("./pages/CompliancePage"));
+const StrategicPage = lazy(() => import("./pages/StrategicPage"));
+const AdminFraud = lazy(() => import("./pages/admin/FraudPage"));
+
 const queryClient = new QueryClient();
 
 function LazyFallback() {
@@ -139,9 +144,12 @@ const App = () => (
                   <Route path="/dashboard/pricing" element={<ProtectedRoute><DashboardPricing /></ProtectedRoute>} />
                   <Route path="/dashboard/referrals" element={<ProtectedRoute><ReferralDashboard /></ProtectedRoute>} />
                   <Route path="/dashboard/affiliate" element={<ProtectedRoute><AffiliateDashboard /></ProtectedRoute>} />
+                  <Route path="/dashboard/compliance" element={<ProtectedRoute><CompliancePage /></ProtectedRoute>} />
+                  <Route path="/dashboard/strategic" element={<ProtectedRoute><StrategicPage /></ProtectedRoute>} />
                   <Route path="/internal/analytics" element={<ProtectedRoute><InternalAnalytics /></ProtectedRoute>} />
                   <Route path="/admin/insights" element={<AdminInsights />} />
                   <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                  <Route path="/admin/fraud" element={<AdminFraud />} />
                   <Route path="/debug/gating" element={<DebugGating />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
