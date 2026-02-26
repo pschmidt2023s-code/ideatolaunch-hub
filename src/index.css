@@ -1,5 +1,4 @@
-/* Fonts loaded via index.html preload + lazy load for non-critical weights */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap');
+/* Fonts loaded via index.html – no blocking @import */
 
 @tailwind base;
 @tailwind components;
