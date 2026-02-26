@@ -5,7 +5,7 @@ export function Footer() {
   const { t } = useTranslation();
 
   return (
-    <footer className="border-t px-4 py-12">
+    <footer className="border-t px-4 py-12" role="contentinfo">
       <div className="container mx-auto max-w-5xl flex flex-col items-center gap-6">
         <div className="flex items-center gap-2">
           <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary">
