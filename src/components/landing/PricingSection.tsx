@@ -222,6 +222,83 @@ export function PricingSection() {
           ))}
         </div>
 
+        {/* Feature Comparison Table */}
+        <div className="mt-16">
+          <h3 className="text-2xl font-bold text-center mb-2">
+            {isDE ? "Feature-Vergleich" : "Feature Comparison"}
+          </h3>
+          <p className="text-center text-sm text-muted-foreground mb-8">
+            {isDE ? "BuildYourBrand vs. Excel, Notion & manuelle Planung" : "BuildYourBrand vs. Excel, Notion & manual planning"}
+          </p>
+          <div className="overflow-x-auto rounded-xl border">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b bg-muted/50">
+                  <th className="px-4 py-3 text-left font-semibold">{isDE ? "Feature" : "Feature"}</th>
+                  <th className="px-4 py-3 text-center font-semibold">Free</th>
+                  <th className="px-4 py-3 text-center font-semibold text-accent">Builder</th>
+                  <th className="px-4 py-3 text-center font-semibold">Pro</th>
+                  <th className="px-4 py-3 text-center font-semibold text-muted-foreground">Excel / Notion</th>
+                </tr>
+              </thead>
+              <tbody className="text-muted-foreground">
+                {(isDE ? [
+                  ["Kosten-Kalkulator", "Einfach", "Voll", "Voll + Szenarien", "Manuell"],
+                  ["Break-Even Analyse", "—", "✓", "✓ + Simulation", "Manuell"],
+                  ["KI-Risikoanalyse", "—", "✓", "✓ + Priorisierung", "—"],
+                  ["Budget-Optimierung", "—", "✓", "✓", "—"],
+                  ["Lieferanten-Matching", "—", "—", "✓ + Bewertung", "—"],
+                  ["Szenario-Simulation", "—", "—", "✓", "—"],
+                  ["Launch-Roadmap", "Statisch", "30-Tage Plan", "Adaptiv + KI", "Manuell"],
+                  ["PDF-Export", "—", "✓", "✓ Investor-Ready", "Manuell"],
+                  ["Execution Score", "—", "—", "✓", "—"],
+                  ["Compliance-Check", "—", "Vorlagen", "Voll", "—"],
+                ] : [
+                  ["Cost Calculator", "Basic", "Full", "Full + Scenarios", "Manual"],
+                  ["Break-Even Analysis", "—", "✓", "✓ + Simulation", "Manual"],
+                  ["AI Risk Analysis", "—", "✓", "✓ + Prioritization", "—"],
+                  ["Budget Optimization", "—", "✓", "✓", "—"],
+                  ["Supplier Matching", "—", "—", "✓ + Scoring", "—"],
+                  ["Scenario Simulation", "—", "—", "✓", "—"],
+                  ["Launch Roadmap", "Static", "30-Day Plan", "Adaptive + AI", "Manual"],
+                  ["PDF Export", "—", "✓", "✓ Investor-Ready", "Manual"],
+                  ["Execution Score", "—", "—", "✓", "—"],
+                  ["Compliance Check", "—", "Templates", "Full", "—"],
+                ]).map(([feature, free, builder, pro, manual]) => (
+                  <tr key={feature} className="border-b last:border-b-0">
+                    <td className="px-4 py-2.5 font-medium text-foreground">{feature}</td>
+                    <td className="px-4 py-2.5 text-center">{free}</td>
+                    <td className="px-4 py-2.5 text-center font-medium text-accent">{builder}</td>
+                    <td className="px-4 py-2.5 text-center">{pro}</td>
+                    <td className="px-4 py-2.5 text-center text-muted-foreground/60">{manual}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Trust elements */}
+        <div className="mt-12 grid gap-4 sm:grid-cols-3">
+          {(isDE ? [
+            { emoji: "🔒", label: "DSGVO-konform", desc: "Daten in der EU gehostet" },
+            { emoji: "⚡", label: "Sofort starten", desc: "Kein Setup, keine Wartezeit" },
+            { emoji: "🎯", label: "Made in Germany", desc: "Für den deutschen Markt optimiert" },
+          ] : [
+            { emoji: "🔒", label: "GDPR Compliant", desc: "Data hosted in the EU" },
+            { emoji: "⚡", label: "Start instantly", desc: "No setup, no waiting" },
+            { emoji: "🎯", label: "Made in Germany", desc: "Optimized for the German market" },
+          ]).map(({ emoji, label, desc }) => (
+            <div key={label} className="flex items-center gap-3 rounded-lg border bg-card p-4">
+              <span className="text-2xl">{emoji}</span>
+              <div>
+                <p className="font-semibold text-sm">{label}</p>
+                <p className="text-xs text-muted-foreground">{desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
         {/* Stripe disclosure */}
         <div className="mt-10 text-center space-y-2">
           <p className="text-xs text-muted-foreground leading-relaxed">
