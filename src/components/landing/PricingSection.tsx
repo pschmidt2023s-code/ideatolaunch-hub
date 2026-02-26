@@ -99,6 +99,7 @@ export function PricingSection() {
     { label: "Launch Probability Score", desc: "Datenbasierte Einschätzung deiner Launch-Chancen" },
     { label: "Szenarien speichern & vergleichen", desc: "Verschiedene Strategien nebeneinander bewerten" },
     { label: "Investor-Ready Report", desc: "Professioneller Export für Investoren & Partner" },
+    { label: "Business Recovery Mode", desc: "Krisenfrüherkennung, Recovery-Pläne & Survival Score" },
     { label: "Priority KI-Insights", desc: "Priorisierte Empfehlungen basierend auf deinem Risikoprofil" },
   ] : [
     { label: "Everything in Builder", desc: "Full access to all Builder features" },
@@ -114,6 +115,7 @@ export function PricingSection() {
     { label: "Launch Probability Score", desc: "Data-driven assessment of your launch chances" },
     { label: "Save & Compare Scenarios", desc: "Evaluate different strategies side by side" },
     { label: "Investor-Ready Report", desc: "Professional export for investors & partners" },
+    { label: "Business Recovery Mode", desc: "Crisis detection, recovery plans & survival score" },
     { label: "Priority AI Insights", desc: "Prioritized recommendations based on your risk profile" },
   ];
 
@@ -319,6 +321,7 @@ export function PricingSection() {
                   ["Budget-Optimierung", "—", "✓", "✓", "—"],
                   ["Compliance Wizard", "—", "Checklisten", "Voll + KI", "—"],
                   ["Kosten-Kalkulator", "Einfach", "Voll", "Voll + Szenarien", "Manuell"],
+                  ["Business Recovery Mode", "—", "—", "✓ Voll", "—"],
                 ] : [
                   ["Market Reality Engine", "—", "Basic Demand", "Full + Benchmark", "—"],
                   ["Competitor Intelligence", "—", "Overview", "Positioning Score", "—"],
@@ -333,6 +336,7 @@ export function PricingSection() {
                   ["Budget Optimization", "—", "✓", "✓", "—"],
                   ["Compliance Wizard", "—", "Checklists", "Full + AI", "—"],
                   ["Cost Calculator", "Basic", "Full", "Full + Scenarios", "Manual"],
+                  ["Business Recovery Mode", "—", "—", "✓ Full", "—"],
                 ]).map(([feature, free, builder, pro, manual]) => (
                   <tr key={feature} className="border-b last:border-b-0">
                     <td className="px-4 py-2.5 font-medium text-foreground">{feature}</td>
