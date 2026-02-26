@@ -13,8 +13,9 @@ import { toast } from "sonner";
 
 export default function SettingsPage() {
   const { user } = useAuth();
-  const { isFree } = useSubscription();
-  const { t } = useTranslation();
+  const { isFree, plan } = useSubscription();
+  const { t, i18n } = useTranslation();
+  const isDE = i18n.language === "de";
   const navigate = useNavigate();
 
   const [firstName, setFirstName] = useState("");
@@ -122,18 +123,20 @@ export default function SettingsPage() {
           <p className="text-sm text-muted-foreground">
             {t("settings.currentPlan")}:{" "}
             <span className="font-semibold text-foreground">
-              {isFree ? "Free" : "Builder"}
+              {plan === "pro" ? "Pro" : plan === "builder" ? "Builder" : "Free"}
             </span>
           </p>
-          {isFree && (
-            <Button
-              variant="outline"
-              className="mt-4 gap-2"
-              onClick={() => navigate("/dashboard/pricing")}
-            >
-              {t("upgrade.cta")}
-            </Button>
-          )}
+          <Button
+            variant="outline"
+            className="mt-4 gap-2"
+            onClick={() => navigate("/dashboard/pricing")}
+          >
+            {isFree
+              ? t("upgrade.cta")
+              : isDE
+              ? "Abo verwalten"
+              : "Manage subscription"}
+          </Button>
         </div>
       </div>
     </DashboardLayout>

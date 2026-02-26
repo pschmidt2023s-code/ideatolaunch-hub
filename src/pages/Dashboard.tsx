@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { useAuth } from "@/hooks/useAuth";
 import { useBrand } from "@/hooks/useBrand";
@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { trackEvent, logError } from "@/lib/analytics";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import {
   Dialog,
@@ -62,12 +63,40 @@ export default function Dashboard() {
   const { isFree } = useSubscription();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
 
   const [renameOpen, setRenameOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [editingBrand, setEditingBrand] = useState<{ id: string; name: string } | null>(null);
   const [newName, setNewName] = useState("");
   const [guidedOpen, setGuidedOpen] = useState(false);
+
+  const { data: profileData } = useQuery({
+    queryKey: ["profile-starter", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("completed_starter_mode")
+        .eq("user_id", user!.id)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!user,
+  });
+
+  const showGuidedStarter = !profileData?.completed_starter_mode;
+
+  const handleGuidedClose = async (open: boolean) => {
+    setGuidedOpen(open);
+    if (!open && user) {
+      // Mark as completed so it doesn't show again
+      await supabase
+        .from("profiles")
+        .update({ completed_starter_mode: true })
+        .eq("user_id", user.id);
+      queryClient.invalidateQueries({ queryKey: ["profile-starter", user.id] });
+    }
+  };
 
   const stepKeys = ["s1", "s2", "s3", "s4", "s5", "s6", "s7"];
 
@@ -152,7 +181,7 @@ export default function Dashboard() {
           </Button>
         </div>
 
-        {currentBrand && (
+        {currentBrand && showGuidedStarter && (
           <Button
             variant="outline"
             onClick={() => setGuidedOpen(true)}
@@ -352,7 +381,7 @@ export default function Dashboard() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-      <GuidedStarterDialog open={guidedOpen} onOpenChange={setGuidedOpen} />
+      <GuidedStarterDialog open={guidedOpen} onOpenChange={handleGuidedClose} />
     </DashboardLayout>
   );
 }
