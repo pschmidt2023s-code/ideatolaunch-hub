@@ -1,11 +1,17 @@
 import { useEffect } from "react";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
+import { SEO } from "@/components/SEO";
 
 export default function Impressum() {
   useEffect(() => { window.scrollTo(0, 0); }, []);
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <SEO
+        title="Impressum"
+        description="Impressum und Anbieterkennzeichnung gemäß § 5 TMG für BuildYourBrand – Patric-Maurice Schmidt, Lichtenfels, Deutschland."
+        path="/impressum"
+      />
       <Navbar />
       <main className="flex-1 pt-24 pb-16 px-4">
         <div className="container mx-auto max-w-2xl prose prose-sm dark:prose-invert">
