@@ -3,6 +3,7 @@ import { HeroSection } from "@/components/landing/HeroSection";
 import { FeaturesSection } from "@/components/landing/FeaturesSection";
 import { WhyUsSection } from "@/components/landing/WhyUsSection";
 import { PricingSection } from "@/components/landing/PricingSection";
+import { TrustSection } from "@/components/landing/TrustSection";
 import { Footer } from "@/components/landing/Footer";
 import { SEO } from "@/components/SEO";
 import { LeadMagnetPopup, useLeadMagnet } from "@/components/LeadMagnetPopup";
@@ -220,6 +221,7 @@ const Index = () => {
         <FeaturesSection />
         <WhyUsSection />
         <PricingSection />
+        <TrustSection />
       </main>
       <Footer />
       {showPopup && (

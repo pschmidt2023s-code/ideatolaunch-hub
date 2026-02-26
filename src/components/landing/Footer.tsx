@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+import { ShieldCheck, Lock, Server } from "lucide-react";
 
 export function Footer() {
   const { t, i18n } = useTranslation();
@@ -8,6 +9,22 @@ export function Footer() {
   return (
     <footer className="border-t px-4 py-12" role="contentinfo">
       <div className="container mx-auto max-w-5xl">
+        {/* Trust Bar */}
+        <div className="flex flex-wrap items-center justify-center gap-6 mb-10 pb-8 border-b">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <ShieldCheck className="h-4 w-4 text-accent" />
+            <span>{isDE ? "256-bit SSL-Verschlüsselung" : "256-bit SSL encryption"}</span>
+          </div>
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <Lock className="h-4 w-4 text-accent" />
+            <span>{isDE ? "DSGVO-konform" : "GDPR compliant"}</span>
+          </div>
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <Server className="h-4 w-4 text-accent" />
+            <span>{isDE ? "EU-Hosting · Made in Germany" : "EU hosting · Made in Germany"}</span>
+          </div>
+        </div>
+
         <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-4 mb-8">
           {/* Brand */}
           <div>
@@ -34,9 +51,6 @@ export function Footer() {
               <Link to="/pricing" className="hover:text-foreground transition-colors">
                 {t("nav.pricing")}
               </Link>
-              <Link to="/ueber-uns" className="hover:text-foreground transition-colors">
-                {isDE ? "Über uns" : "About"}
-              </Link>
               <Link to="/case-studies" className="hover:text-foreground transition-colors">
                 Case Studies
               </Link>
@@ -62,12 +76,15 @@ export function Footer() {
               <Link to="/tools/break-even-rechner" className="hover:text-foreground transition-colors">
                 {isDE ? "Break-Even Rechner" : "Break-Even Calculator"}
               </Link>
+              <Link to="/ueber-uns" className="hover:text-foreground transition-colors">
+                {isDE ? "Über uns" : "About"}
+              </Link>
             </nav>
           </div>
 
-          {/* Legal */}
+          {/* Legal & Security */}
           <div>
-            <h3 className="font-semibold text-sm mb-3">{isDE ? "Rechtliches" : "Legal"}</h3>
+            <h3 className="font-semibold text-sm mb-3">{isDE ? "Rechtliches & Sicherheit" : "Legal & Security"}</h3>
             <nav className="flex flex-col gap-2 text-sm text-muted-foreground">
               <Link to="/impressum" className="hover:text-foreground transition-colors">
                 Impressum
@@ -79,6 +96,11 @@ export function Footer() {
                 {isDE ? "Nutzungsbedingungen" : "Terms"}
               </Link>
             </nav>
+            <p className="text-xs text-muted-foreground mt-3 leading-relaxed">
+              {isDE
+                ? "Deine Daten werden verschlüsselt in der EU gespeichert. Keine Weitergabe an Dritte."
+                : "Your data is encrypted and stored in the EU. No third-party sharing."}
+            </p>
           </div>
         </div>
 

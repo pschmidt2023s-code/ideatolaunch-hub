@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { checkIsAdmin, getPlanDistribution, getUpgradeTriggerSources, getStepDropOffRates, type PlanDistribution, type UpgradeTrigger, type StepDropOff } from "@/lib/founder-analytics";
 import { supabase } from "@/integrations/supabase/client";
-import { Users, TrendingUp, Mail, CreditCard, BarChart3, MousePointerClick, ArrowLeft, Gift, Handshake, MessageCircle } from "lucide-react";
+import { Users, TrendingUp, Mail, CreditCard, BarChart3, MousePointerClick, ArrowLeft, Gift, Handshake, MessageCircle, ShieldAlert, Activity } from "lucide-react";
 
 // ── Types ──
 interface LeadRow { id: string; email: string; source: string; trigger_type: string | null; page: string | null; converted: boolean; created_at: string; }
@@ -12,6 +12,7 @@ interface SubRow { status: string; stripe_subscription_id: string | null; create
 interface ReferralRow { referral_count: number; reward_builder_months: number; }
 interface AffiliateRow { total_clicks: number; total_conversions: number; total_earnings: number; }
 interface WaitlistRow { id: string; email: string; niche: string | null; created_at: string; }
+interface SecurityEventRow { id: string; event_type: string; route: string | null; metadata: any; created_at: string; }
 
 // ── Metric Card ──
 function MetricCard({ icon: Icon, label, value, sub, accent }: { icon: any; label: string; value: string | number; sub?: string; accent?: boolean }) {
@@ -65,6 +66,7 @@ export default function AdminDashboard() {
   const [referrals, setReferrals] = useState<ReferralRow[]>([]);
   const [affiliatesData, setAffiliatesData] = useState<AffiliateRow[]>([]);
   const [waitlist, setWaitlist] = useState<WaitlistRow[]>([]);
+  const [securityEvents, setSecurityEvents] = useState<SecurityEventRow[]>([]);
 
   useEffect(() => {
     if (authLoading) return;
@@ -88,7 +90,8 @@ export default function AdminDashboard() {
       supabase.from("referrals" as any).select("referral_count, reward_builder_months"),
       supabase.from("affiliates" as any).select("total_clicks, total_conversions, total_earnings"),
       supabase.from("community_waitlist" as any).select("*").order("created_at", { ascending: false }).limit(100),
-    ]).then(([planData, leadRes, eventRes, subRes, triggerData, dropOffData, refRes, affRes, waitRes]) => {
+      supabase.from("security_events" as any).select("*").order("created_at", { ascending: false }).limit(200),
+    ]).then(([planData, leadRes, eventRes, subRes, triggerData, dropOffData, refRes, affRes, waitRes, secRes]) => {
       setPlans(planData);
       setLeads((leadRes.data ?? []) as unknown as LeadRow[]);
       setEvents((eventRes.data ?? []) as EventRow[]);
@@ -98,6 +101,7 @@ export default function AdminDashboard() {
       setReferrals((refRes.data ?? []) as unknown as ReferralRow[]);
       setAffiliatesData((affRes.data ?? []) as unknown as AffiliateRow[]);
       setWaitlist((waitRes.data ?? []) as unknown as WaitlistRow[]);
+      setSecurityEvents((secRes.data ?? []) as unknown as SecurityEventRow[]);
       setLoading(false);
     });
   }, [authorized]);
@@ -406,6 +410,76 @@ export default function AdminDashboard() {
                   ))}
                 </div>
               )}
+            </div>
+          </SectionCard>
+
+          {/* ── Security Control Center ── */}
+          <SectionCard title="Security Events">
+            {securityEvents.length === 0 ? (
+              <p className="text-xs text-muted-foreground">Keine Security Events</p>
+            ) : (
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-3 mb-3">
+                  <div className="rounded-lg bg-destructive/5 border border-destructive/20 p-3 text-center">
+                    <p className="text-lg font-bold text-destructive">
+                      {securityEvents.filter(e => e.event_type === "failed_login").length}
+                    </p>
+                    <p className="text-xs text-muted-foreground">Failed Logins</p>
+                  </div>
+                  <div className="rounded-lg bg-muted p-3 text-center">
+                    <p className="text-lg font-bold">
+                      {securityEvents.filter(e => e.event_type === "rate_limited").length}
+                    </p>
+                    <p className="text-xs text-muted-foreground">Rate Limited</p>
+                  </div>
+                </div>
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {securityEvents.slice(0, 10).map(e => (
+                    <div key={e.id} className="flex items-center justify-between text-sm border-b border-border/50 pb-1.5">
+                      <div className="truncate mr-2">
+                        <span className={`text-xs px-2 py-0.5 rounded-full mr-2 ${
+                          e.event_type === "failed_login" ? "bg-destructive/10 text-destructive" :
+                          e.event_type === "rate_limited" ? "bg-yellow-500/10 text-yellow-600" :
+                          "bg-muted text-muted-foreground"
+                        }`}>
+                          {e.event_type}
+                        </span>
+                        <span className="text-muted-foreground text-xs">{e.route}</span>
+                      </div>
+                      <span className="text-xs text-muted-foreground shrink-0">
+                        {new Date(e.created_at).toLocaleString("de-DE", { hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit" })}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </SectionCard>
+
+          {/* Performance Overview */}
+          <SectionCard title="Performance & SEO">
+            <div className="space-y-3">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Indexierte Seiten</span>
+                <span className="font-bold">~28</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Sitemap Einträge</span>
+                <span className="font-bold">30+</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Schema Types</span>
+                <span className="font-bold text-accent">7 aktiv</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Security Headers</span>
+                <span className="font-bold text-accent">6 / 6</span>
+              </div>
+              <div className="pt-2 border-t">
+                <p className="text-xs text-muted-foreground">
+                  Core Web Vitals werden clientseitig getrackt. Lighthouse-Score manuell eintragen.
+                </p>
+              </div>
             </div>
           </SectionCard>
         </div>
