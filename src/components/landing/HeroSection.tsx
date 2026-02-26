@@ -8,7 +8,7 @@ export function HeroSection() {
   const { t } = useTranslation();
 
   return (
-    <section className="relative overflow-hidden px-4 pt-32 pb-20 md:pt-40 md:pb-32">
+    <section className="relative overflow-hidden px-4 pt-32 pb-20 md:pt-40 md:pb-32" aria-label="Hero">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--accent)/0.06),transparent_70%)]" />
       <div className="container relative mx-auto max-w-5xl text-center">
         <div className="mb-6 inline-flex items-center gap-2 rounded-full border bg-card px-4 py-1.5 text-sm text-muted-foreground shadow-card">
