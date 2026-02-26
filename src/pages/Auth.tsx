@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { SEO } from "@/components/SEO";
 
 export default function Auth() {
   const [searchParams] = useSearchParams();
@@ -45,6 +46,11 @@ export default function Auth() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
+      <SEO
+        title="Anmelden"
+        description="Melde dich bei BuildYourBrand an oder erstelle ein kostenloses Konto, um deine Marke strukturiert aufzubauen."
+        path="/auth"
+      />
       <button
         onClick={() => navigate("/")}
         className="absolute left-6 top-6 flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
