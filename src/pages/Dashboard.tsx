@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { BrandHealthCard } from "@/components/dashboard/BrandHealthCard";
 import { UpgradeBanner } from "@/components/UpgradeBanner";
+import BlueprintExport from "@/components/BlueprintExport";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -178,6 +179,7 @@ export default function Dashboard() {
         ) : (
           <div className="space-y-6">
             {currentBrand && <BrandHealthCard />}
+            {currentBrand && <BlueprintExport />}
 
             {currentBrand && (
               <div className="rounded-xl border bg-card p-6 shadow-card">
