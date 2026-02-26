@@ -8,6 +8,7 @@ import { TrendingUp, TrendingDown, Minus, Target, BarChart3, AlertTriangle, Zap 
 import { analyzeMarket, type MarketInput, type MarketRealityResult } from "@/lib/market-reality-engine";
 import { useSubscription } from "@/hooks/useSubscription";
 import { LockedOverlay } from "@/components/LockedOverlay";
+import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 
 export function MarketRealityCard() {
   const { plan } = useSubscription();
@@ -162,6 +163,7 @@ export function MarketRealityCard() {
           </ul>
         </div>
       )}
+      <LegalDisclaimer type="market" />
     </div>
   );
 

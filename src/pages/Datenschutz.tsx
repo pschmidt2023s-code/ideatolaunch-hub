@@ -108,7 +108,53 @@ export default function Datenschutz() {
             </p>
           </Section>
 
-          <Section title="9. Sicherheitsereignisse">
+          <Section title="9. KI-gestützte Funktionen und Datenverarbeitung">
+            <p>
+              Die Plattform bietet KI-gestützte Analysen und Empfehlungen, darunter:
+            </p>
+            <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
+              <li>AI Founder Copilot – kontextbezogene Strategieberatung</li>
+              <li>Market Reality Engine – Nachfrage- und Wettbewerbsanalyse</li>
+              <li>Cashflow Survival Engine – Liquiditätsprognosen und Stress-Tests</li>
+              <li>KI-Risikoanalysen und Strategie-Empfehlungen</li>
+              <li>Szenario-Simulationen mit KI-Bewertung</li>
+            </ul>
+            <p>
+              Bei der Nutzung dieser Funktionen werden Ihre eingegebenen Geschäftsdaten
+              (Produktbeschreibung, Preise, Zielgruppe, Kostendaten, Marktdaten) an einen
+              KI-Dienst übermittelt, um personalisierte Ergebnisse zu generieren. Es werden
+              <strong> keine personenbezogenen Daten</strong> (Name, E-Mail, Adresse) an den
+              KI-Dienst weitergegeben – ausschließlich anonymisierte Geschäftsdaten.
+            </p>
+            <p>
+              Die KI-Verarbeitung erfolgt auf Cloud-Infrastruktur. Die übermittelten Daten
+              werden nicht zum Training von KI-Modellen verwendet. Die Verarbeitung erfolgt
+              auf Grundlage von Art. 6 Abs. 1 lit. b DSGVO (Vertragserfüllung).
+            </p>
+          </Section>
+
+          <Section title="10. Betrugs- und Missbrauchserkennung">
+            <p>
+              Zum Schutz des Empfehlungs- und Affiliate-Programms setzen wir
+              automatisierte Betrugserkennungsmaßnahmen ein. Dabei werden folgende Daten
+              verarbeitet:
+            </p>
+            <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
+              <li>Anonymisierte IP-Hashes (keine vollständigen IP-Adressen)</li>
+              <li>Geräte-Fingerprints zur Erkennung von Multi-Account-Missbrauch</li>
+              <li>Registrierungsmuster und -geschwindigkeit</li>
+              <li>E-Mail-Ähnlichkeitsanalyse (zur Erkennung von Fake-Accounts)</li>
+              <li>Verhaltensanalysen zur Mustererkennung</li>
+            </ul>
+            <p>
+              Diese Verarbeitung erfolgt auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO
+              (berechtigtes Interesse am Schutz vor Betrug). Es werden keine
+              automatisierten Einzelentscheidungen getroffen – auffällige Fälle werden
+              manuell durch einen Administrator überprüft.
+            </p>
+          </Section>
+
+          <Section title="11. Sicherheitsereignisse">
             <p>
               Zum Schutz der Plattform protokollieren wir sicherheitsrelevante Ereignisse
               wie fehlgeschlagene Anmeldeversuche und Rate-Limit-Überschreitungen. Dabei
@@ -118,7 +164,7 @@ export default function Datenschutz() {
             </p>
           </Section>
 
-          <Section title="10. Analysedaten">
+          <Section title="12. Analysedaten">
             <p>
               Wir nutzen anonymisierte, interne Analysedaten zur Verbesserung des Produkts.
               Diese Daten werden nur nach ausdrücklicher Einwilligung erhoben (Art. 6 Abs. 1
@@ -133,28 +179,17 @@ export default function Datenschutz() {
             </p>
           </Section>
 
-          <Section title="11. KI-gestützte Funktionen">
-            <p>
-              Die Plattform bietet KI-gestützte Analysen (Risikoanalyse, Marktnamen-
-              Vorschläge, Insights). Dabei werden Ihre eingegebenen Geschäftsdaten an einen
-              KI-Dienst übermittelt, um personalisierte Ergebnisse zu generieren. Es werden
-              keine personenbezogenen Daten (Name, E-Mail) an den KI-Dienst weitergegeben –
-              ausschließlich anonymisierte Geschäftsdaten (Produktbeschreibung, Preise,
-              Zielgruppe).
-            </p>
-          </Section>
-
-          <Section title="12. Zweckbindung">
+          <Section title="13. Zweckbindung">
             <p>
               Personenbezogene Daten werden nur für den Zweck verwendet, für den sie
               erhoben wurden: Bereitstellung des Dienstes, Abrechnung, Empfehlungs- und
-              Affiliate-Programm und Verbesserung des Produkts. Eine Weitergabe an Dritte
-              erfolgt nur, soweit dies zur Vertragserfüllung erforderlich ist (z.B.
-              Zahlungsabwicklung über Stripe).
+              Affiliate-Programm, Betrugsschutz und Verbesserung des Produkts. Eine
+              Weitergabe an Dritte erfolgt nur, soweit dies zur Vertragserfüllung
+              erforderlich ist (z.B. Zahlungsabwicklung über Stripe).
             </p>
           </Section>
 
-          <Section title="13. Ihre Rechte (Art. 15–21 DSGVO)">
+          <Section title="14. Ihre Rechte (Art. 15–21 DSGVO)">
             <p>Sie haben das Recht auf:</p>
             <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
               <li><strong>Auskunft</strong> (Art. 15 DSGVO) über Ihre gespeicherten Daten</li>
@@ -170,7 +205,7 @@ export default function Datenschutz() {
             </p>
           </Section>
 
-          <Section title="14. Datenspeicherung und Löschung">
+          <Section title="15. Datenspeicherung und Löschung">
             <p>
               Ihre Daten werden gespeichert, solange Ihr Konto aktiv ist. Nach Löschung
               Ihres Kontos werden personenbezogene Daten innerhalb von 30 Tagen gelöscht,
@@ -180,7 +215,7 @@ export default function Datenschutz() {
             </p>
           </Section>
 
-          <Section title="15. Kontakt">
+          <Section title="16. Kontakt">
             <p>
               Bei Fragen zum Datenschutz wenden Sie sich bitte an:{" "}
               <span className="text-accent">support@buildyourbrand.de</span>

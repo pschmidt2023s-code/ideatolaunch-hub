@@ -7,6 +7,7 @@ import { Bot, Send, User, Zap, AlertTriangle, Target, DollarSign, Rocket, Shield
 import { generateRecommendations, type CopilotContext, type CopilotRecommendation } from "@/lib/copilot-engine";
 import { useSubscription } from "@/hooks/useSubscription";
 import { LockedOverlay } from "@/components/LockedOverlay";
+import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 import { useBrand } from "@/hooks/useBrand";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
@@ -235,6 +236,7 @@ export function FounderCopilot() {
           </Button>
         </div>
       </div>
+      <LegalDisclaimer type="copilot" />
     </div>
   );
 
