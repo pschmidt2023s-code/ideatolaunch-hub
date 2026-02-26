@@ -134,8 +134,10 @@ export function PricingSection() {
         : (isDE ? "Risiken absichern" : "Secure against risks"),
       highlighted: false,
       badge: "Early Access",
+      secondBadge: isDE ? "Für ambitionierte Gründer" : "For ambitious founders",
       onClick: () => handleCheckout("pro", setLoadingPro),
       loading: loadingPro,
+      proStyle: true,
       anchor: isDE
         ? "Eine falsche Produktionsentscheidung kostet oft 5.000 €+. Dieses Tool kostet 79 €."
         : "One wrong production decision often costs €5,000+. This tool costs €79.",
@@ -168,10 +170,17 @@ export function PricingSection() {
                 <div className={`absolute -top-3 left-6 rounded-full px-3 py-0.5 text-xs font-semibold flex items-center gap-1 ${
                   plan.highlighted
                     ? "bg-accent text-accent-foreground"
-                    : "bg-primary text-primary-foreground"
+                    : plan.proStyle
+                      ? "bg-gradient-to-r from-amber-600 to-yellow-500 text-white"
+                      : "bg-primary text-primary-foreground"
                 }`}>
-                  {plan.name === "Pro" && <Star className="h-3 w-3" />}
+                  {plan.proStyle && <Star className="h-3 w-3" />}
                   {plan.badge}
+                </div>
+              )}
+              {plan.secondBadge && (
+                <div className="absolute -top-3 right-6 rounded-full bg-amber-900/90 px-3 py-0.5 text-xs font-semibold text-amber-100">
+                  {plan.secondBadge}
                 </div>
               )}
               <h3 className="text-lg font-semibold leading-snug">{plan.name}</h3>
@@ -194,9 +203,11 @@ export function PricingSection() {
                 className={`mt-8 w-full ${
                   plan.highlighted
                     ? "bg-accent text-accent-foreground hover:bg-accent/90"
-                    : ""
+                    : plan.proStyle
+                      ? "bg-gradient-to-r from-amber-600 to-yellow-500 text-white hover:from-amber-700 hover:to-yellow-600 shadow-md border-0"
+                      : ""
                 }`}
-                variant={plan.highlighted ? "default" : "outline"}
+                variant={plan.highlighted || plan.proStyle ? "default" : "outline"}
                 onClick={plan.onClick}
                 disabled={plan.loading}
               >
