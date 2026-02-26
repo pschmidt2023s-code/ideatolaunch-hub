@@ -57,24 +57,30 @@ export function Footer() {
               <Link to="/community" className="hover:text-foreground transition-colors">
                 Community
               </Link>
+              <Link to="/press" className="hover:text-foreground transition-colors">
+                {isDE ? "Presse" : "Press"}
+              </Link>
             </nav>
           </div>
 
-          {/* Guides */}
+          {/* Resources */}
           <div>
-            <h3 className="font-semibold text-sm mb-3">{isDE ? "Guides" : "Guides"}</h3>
+            <h3 className="font-semibold text-sm mb-3">{isDE ? "Ressourcen" : "Resources"}</h3>
             <nav className="flex flex-col gap-2 text-sm text-muted-foreground">
+              <Link to="/academy" className="hover:text-foreground transition-colors">
+                Academy
+              </Link>
+              <Link to="/research" className="hover:text-foreground transition-colors">
+                Research
+              </Link>
               <Link to="/guide/eigenmarke-gruenden" className="hover:text-foreground transition-colors">
                 {isDE ? "Eigenmarke gründen" : "Start your brand"}
               </Link>
-              <Link to="/guide/lieferanten-finden" className="hover:text-foreground transition-colors">
-                {isDE ? "Lieferanten finden" : "Find suppliers"}
-              </Link>
-              <Link to="/guide/kapitalbedarf-berechnen" className="hover:text-foreground transition-colors">
-                {isDE ? "Kapitalbedarf berechnen" : "Capital planning"}
-              </Link>
               <Link to="/tools/break-even-rechner" className="hover:text-foreground transition-colors">
                 {isDE ? "Break-Even Rechner" : "Break-Even Calculator"}
+              </Link>
+              <Link to="/best-private-label-tools" className="hover:text-foreground transition-colors">
+                {isDE ? "Tool-Vergleich" : "Tool Comparison"}
               </Link>
               <Link to="/ueber-uns" className="hover:text-foreground transition-colors">
                 {isDE ? "Über uns" : "About"}
