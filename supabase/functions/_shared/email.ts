@@ -4,8 +4,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 const RESEND_API_URL = "https://api.resend.com/emails";
 
 // TODO: Replace YOURDOMAIN with your verified Resend domain
-const FROM_EMAIL = "BrandOS <no-reply@buildyourbrand.de>";
-const REPLY_TO = "support@buildyourbrand.de";
+const FROM_EMAIL = "BuildYourBrand <no-reply@aldenairperfumes.de>";
+const REPLY_TO = "support@aldenairperfumes.de";
 
 export interface SendEmailParams {
   to: string;
