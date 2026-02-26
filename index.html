@@ -6,6 +6,15 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://jzbruehoejyxqbjqglhm.supabase.co" />
+    <!-- Preload hero font (LCP text) with high priority -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800&display=swap" media="print" onload="this.media='all'" />
+    <!-- Inline critical above-the-fold CSS -->
+    <style>
+      body{margin:0;font-family:Inter,system-ui,-apple-system,sans-serif;background:hsl(0 0% 98.5%);color:hsl(220 20% 10%);-webkit-font-smoothing:antialiased}
+      #root{min-height:100vh}
+      .dark body{background:hsl(220 20% 7%);color:hsl(220 14% 90%)}
+    </style>
     <title>BuildYourBrand – Deine Marke systematisch aufbauen</title>
     <meta name="description" content="BuildYourBrand hilft dir, deine eigene Marke Schritt für Schritt aufzubauen – von der Idee bis zum Launch. Strukturiert, datengetrieben, made in Germany.">
     <link rel="canonical" href="https://ideatolaunch-hub.lovable.app/" />
