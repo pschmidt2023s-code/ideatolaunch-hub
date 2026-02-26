@@ -81,21 +81,23 @@ export function PricingSection() {
 
   const proFeatures: PlanFeature[] = isDE ? [
     { label: "Alles aus Builder", desc: "Vollständiger Zugang zu allen Builder-Features" },
-    { label: "Capital Burn Predictor", desc: "12-Monats-Kostenprognose & Cash Runway" },
-    { label: "Supplier Risk Score", desc: "MOQ-, Länder-, Lieferzeit- & Abhängigkeitsrisiko" },
+    { label: "AI Founder Copilot", desc: "KI-gestützter Strategieberater mit kontextbezogenen Empfehlungen" },
+    { label: "Market Reality Engine", desc: "Demand Index, Price Benchmarking & Launch-Wahrscheinlichkeit" },
+    { label: "Cashflow Survival Engine", desc: "12-Monats-Cashflow mit Stress-Test & Liquiditäts-Alerts" },
     { label: "Szenario-Simulation", desc: "6-Monats-Outcome bei veränderten Parametern" },
-    { label: "Launch-Wahrscheinlichkeit", desc: "Datenbasierte Einschätzung deiner Launch-Chancen" },
+    { label: "Supplier Risk Score", desc: "MOQ-, Länder-, Lieferzeit- & Abhängigkeitsrisiko" },
+    { label: "Launch Probability Score", desc: "Datenbasierte Einschätzung deiner Launch-Chancen" },
     { label: "KI-Strategie-Empfehlungen", desc: "Preis-, MOQ- & Budget-Optimierung per KI" },
-    { label: "Execution Score", desc: "Fortschritt messen & Verbesserungsvorschläge erhalten" },
     { label: "Compliance Engine", desc: "Interaktiver Wizard für alle rechtlichen Anforderungen" },
   ] : [
     { label: "Everything in Builder", desc: "Full access to all Builder features" },
-    { label: "Capital Burn Predictor", desc: "12-month cost forecast & cash runway" },
-    { label: "Supplier Risk Score", desc: "MOQ, country, lead time & dependency risk" },
+    { label: "AI Founder Copilot", desc: "AI-powered strategy advisor with context-aware recommendations" },
+    { label: "Market Reality Engine", desc: "Demand index, price benchmarking & launch probability" },
+    { label: "Cashflow Survival Engine", desc: "12-month cashflow with stress testing & liquidity alerts" },
     { label: "Scenario Simulation", desc: "6-month outcomes with changed parameters" },
-    { label: "Launch Probability", desc: "Data-driven assessment of your launch chances" },
+    { label: "Supplier Risk Score", desc: "MOQ, country, lead time & dependency risk" },
+    { label: "Launch Probability Score", desc: "Data-driven assessment of your launch chances" },
     { label: "AI Strategy Recommendations", desc: "Price, MOQ & budget optimization via AI" },
-    { label: "Execution Score", desc: "Measure progress & get improvement suggestions" },
     { label: "Compliance Engine", desc: "Interactive wizard for all legal requirements" },
   ];
 
@@ -127,7 +129,7 @@ export function PricingSection() {
       anchor: null,
     },
     {
-      name: isDE ? "Pro – Strategic Intelligence" : "Pro – Strategic Intelligence",
+      name: isDE ? "Pro – Founder Intelligence" : "Pro – Founder Intelligence",
       price: isDE ? "79 €" : "€79",
       period: "/ " + (isDE ? "Monat" : "month"),
       features: proFeatures,
@@ -135,8 +137,8 @@ export function PricingSection() {
         ? (isDE ? "Weiterleitung zu Stripe..." : "Redirecting to Stripe...")
         : (isDE ? "Strategischen Vorteil sichern →" : "Secure strategic advantage →"),
       highlighted: false,
-      badge: "Strategic Intelligence",
-      secondBadge: isDE ? "Enterprise-Level Planning" : "Enterprise-Level Planning",
+      badge: "Founder Intelligence",
+      secondBadge: isDE ? "Decision Intelligence" : "Decision Intelligence",
       onClick: () => handleCheckout("pro", setLoadingPro),
       loading: loadingPro,
       proStyle: true,

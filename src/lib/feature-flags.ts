@@ -14,7 +14,12 @@ export type FeatureKey =
   | "executionReadiness"
   | "riskDashboard"
   | "fullRealityCheck"
-  | "unboxingScore";
+  | "unboxingScore"
+  | "capitalBurnPredictor"
+  | "aiStrategyRecommendations"
+  | "marketReality"
+  | "cashflowEngine"
+  | "founderCopilot";
 
 // ─── Capability Map ─────────────────────────────────────────────
 
@@ -76,6 +81,11 @@ export function getFeatureAccess(feature: FeatureKey, plan: string): FeatureAcce
     riskDashboard: "canUseRiskDashboard",
     fullRealityCheck: "canSeeFullRisks",
     unboxingScore: "canUseUnboxingScore",
+    capitalBurnPredictor: "canUseScenarioSimulator",
+    aiStrategyRecommendations: "canUseScenarioSimulator",
+    marketReality: "canUseScenarioSimulator",
+    cashflowEngine: "canUseScenarioSimulator",
+    founderCopilot: "canUseScenarioSimulator",
   };
 
   const capKey = featureCapMap[feature];
@@ -103,6 +113,11 @@ export function getRequiredPlan(feature: FeatureKey): "builder" | "pro" {
     "executionReadiness",
     "riskDashboard",
     "unboxingScore",
+    "capitalBurnPredictor",
+    "aiStrategyRecommendations",
+    "marketReality",
+    "cashflowEngine",
+    "founderCopilot",
   ];
   return proOnly.includes(feature) ? "pro" : "builder";
 }
@@ -234,6 +249,26 @@ const upgradeMessages: Record<FeatureKey, UpgradeMessage> = {
       de: "Optimiere dein Unboxing-Erlebnis mit konkreten Empfehlungen und einem Score von 0–100.",
       en: "Optimize your unboxing experience with actionable recommendations and a 0–100 score.",
     },
+  },
+  capitalBurnPredictor: {
+    title: { de: "Capital Burn Predictor freischalten", en: "Unlock Capital Burn Predictor" },
+    desc: { de: "12-Monats-Kostenprognose und Cash Runway für dein Unternehmen.", en: "12-month cost forecast and cash runway for your business." },
+  },
+  aiStrategyRecommendations: {
+    title: { de: "KI-Strategieempfehlungen freischalten", en: "Unlock AI Strategy Recommendations" },
+    desc: { de: "Erhalte datenbasierte Empfehlungen zu Preis, MOQ und Budget.", en: "Get data-driven recommendations on price, MOQ, and budget." },
+  },
+  marketReality: {
+    title: { de: "Market Reality Engine freischalten", en: "Unlock Market Reality Engine" },
+    desc: { de: "Marktvalidierung mit Demand Index, Price Benchmarking und Launch-Wahrscheinlichkeit.", en: "Market validation with demand index, price benchmarking, and launch probability." },
+  },
+  cashflowEngine: {
+    title: { de: "Cashflow Survival Engine freischalten", en: "Unlock Cashflow Survival Engine" },
+    desc: { de: "12-Monats Cashflow-Prognose mit Stress-Test und Liquiditäts-Alerts.", en: "12-month cashflow forecast with stress testing and liquidity alerts." },
+  },
+  founderCopilot: {
+    title: { de: "Founder Copilot freischalten", en: "Unlock Founder Copilot" },
+    desc: { de: "KI-gestützter Strategieberater mit kontextbezogenen Empfehlungen.", en: "AI-powered strategy advisor with context-aware recommendations." },
   },
 };
 
