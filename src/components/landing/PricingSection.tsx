@@ -153,8 +153,7 @@ export function PricingSection() {
         ? (isDE ? "Weiterleitung zu Stripe..." : "Redirecting to Stripe...")
         : (isDE ? "Strategischen Vorteil sichern →" : "Secure strategic advantage →"),
       highlighted: false,
-      badge: "Founder Intelligence",
-      secondBadge: isDE ? "Decision Intelligence" : "Decision Intelligence",
+      badge: "Early Access",
       onClick: () => handleCheckout("pro", setLoadingPro),
       loading: loadingPro,
       proStyle: true,
@@ -237,11 +236,6 @@ export function PricingSection() {
                 }`}>
                   {plan.proStyle && <Star className="h-3 w-3" />}
                   {plan.badge}
-                </div>
-              )}
-              {plan.secondBadge && (
-                <div className="absolute -top-8 right-6 rounded-full bg-amber-900/90 px-3 py-0.5 text-xs font-semibold text-amber-100">
-                  {plan.secondBadge}
                 </div>
               )}
               <h3 className="text-lg font-semibold leading-snug">{plan.name}</h3>
