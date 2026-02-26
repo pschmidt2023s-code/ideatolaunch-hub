@@ -11,7 +11,11 @@ const faqJsonLd = { "@context": "https://schema.org", "@type": "FAQPage", "mainE
 
 export default function ProduktionsfehlerVermeiden() {
   return (
-    <GuideLayout title="Produktionsfehler vermeiden" seoTitle="Produktionsfehler vermeiden – Die 10 teuersten Fehler" seoDescription="Vermeide die 10 teuersten Produktionsfehler bei Eigenmarken. Lerne, wie du Qualität sicherst und dein Kapital schützt." path="/guide/produktionsfehler-vermeiden" breadcrumbs={[{ name: "Home", href: "/" }, { name: "Guide", href: "/guide/eigenmarke-gruenden" }, { name: "Produktionsfehler", href: "/guide/produktionsfehler-vermeiden" }]} jsonLd={faqJsonLd}>
+    <GuideLayout title="Produktionsfehler vermeiden" seoTitle="Produktionsfehler vermeiden – Die 10 teuersten Fehler" seoDescription="Vermeide die 10 teuersten Produktionsfehler bei Eigenmarken. Lerne, wie du Qualität sicherst und dein Kapital schützt." path="/guide/produktionsfehler-vermeiden" breadcrumbs={[{ name: "Home", href: "/" }, { name: "Guide", href: "/guide/eigenmarke-gruenden" }, { name: "Produktionsfehler", href: "/guide/produktionsfehler-vermeiden" }]} jsonLd={faqJsonLd} recommendedLinks={[
+      { href: "/guide/lieferanten-finden", label: "Lieferanten finden", desc: "Finde einen zuverlässigen Hersteller – EU vs. Asien." },
+      { href: "/guide/moq-berechnen", label: "MOQ richtig berechnen", desc: "Minimiere dein Kapitalrisiko bei der Erstbestellung." },
+      { href: "/tools/produktionskosten-rechner", label: "Produktionskosten berechnen", desc: "Kalkuliere deine Stückkosten sofort." },
+    ]}>
       <h1 className="text-3xl font-bold tracking-tight md:text-5xl mb-6">Produktionsfehler vermeiden – <span className="text-gradient">Die 10 teuersten Fehler</span></h1>
       <p className="text-lg text-muted-foreground leading-relaxed mb-8">Ein einziger Produktionsfehler kann 5.000 €+ kosten. Hier lernst du, welche Fehler am häufigsten passieren und wie du sie systematisch vermeidest.</p>
 

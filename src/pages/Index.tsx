@@ -1,9 +1,11 @@
 import { Navbar } from "@/components/landing/Navbar";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { FeaturesSection } from "@/components/landing/FeaturesSection";
+import { WhyUsSection } from "@/components/landing/WhyUsSection";
 import { PricingSection } from "@/components/landing/PricingSection";
 import { Footer } from "@/components/landing/Footer";
 import { SEO } from "@/components/SEO";
+import { LeadMagnetPopup, useLeadMagnet } from "@/components/LeadMagnetPopup";
 
 const faqJsonLd = {
   "@context": "https://schema.org",
@@ -202,6 +204,8 @@ const softwareJsonLd = {
 };
 
 const Index = () => {
+  const { showPopup, trigger, setShowPopup } = useLeadMagnet();
+
   return (
     <div className="min-h-screen bg-background">
       <SEO
@@ -214,9 +218,13 @@ const Index = () => {
       <main>
         <HeroSection />
         <FeaturesSection />
+        <WhyUsSection />
         <PricingSection />
       </main>
       <Footer />
+      {showPopup && (
+        <LeadMagnetPopup trigger={trigger} onClose={() => setShowPopup(false)} />
+      )}
     </div>
   );
 };

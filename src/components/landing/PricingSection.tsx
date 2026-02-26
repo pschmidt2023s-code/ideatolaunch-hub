@@ -103,7 +103,7 @@ export function PricingSection() {
       price: isDE ? "0 €" : "€0",
       period: isDE ? "für immer" : "forever",
       features: freePlanFeatures,
-      cta: isDE ? "Kostenlos starten" : "Start for free",
+      cta: isDE ? "Gratis testen – kein Risiko" : "Try free – no risk",
       highlighted: false,
       badge: null,
       onClick: () => navigate("/auth"),
@@ -117,7 +117,7 @@ export function PricingSection() {
       features: builderFeatures,
       cta: loadingBuilder
         ? (isDE ? "Weiterleitung zu Stripe..." : "Redirecting to Stripe...")
-        : (isDE ? "Strukturiert starten" : "Start structured"),
+        : (isDE ? "Jetzt strukturiert starten →" : "Start structured now →"),
       highlighted: true,
       badge: isDE ? "Beliebt" : "Popular",
       onClick: () => handleCheckout("builder", setLoadingBuilder),
@@ -131,7 +131,7 @@ export function PricingSection() {
       features: proFeatures,
       cta: loadingPro
         ? (isDE ? "Weiterleitung zu Stripe..." : "Redirecting to Stripe...")
-        : (isDE ? "Risiken absichern" : "Secure against risks"),
+        : (isDE ? "Risiken absichern – Pro starten →" : "Secure risks – Start Pro →"),
       highlighted: false,
       badge: "Early Access",
       secondBadge: isDE ? "Für ambitionierte Gründer" : "For ambitious founders",
@@ -149,10 +149,12 @@ export function PricingSection() {
       <div className="container mx-auto max-w-6xl">
         <div className="mb-16 text-center">
           <h2 className="text-3xl font-bold md:text-4xl">
-            {isDE ? "Einfache Preise" : "Simple pricing"}
+            {isDE ? "Investiere in Klarheit – nicht in Fehler" : "Invest in clarity – not mistakes"}
           </h2>
-          <p className="mt-4 text-lg text-muted-foreground">
-            {isDE ? "Starte kostenlos. Upgrade wenn du bereit bist." : "Start for free. Upgrade when you're ready."}
+          <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
+            {isDE
+              ? "Die meisten Gründer verlieren 3.000–10.000 € durch vermeidbare Produktionsfehler. BuildYourBrand kostet einen Bruchteil davon."
+              : "Most founders lose €3,000–10,000 on avoidable production mistakes. BuildYourBrand costs a fraction of that."}
           </p>
         </div>
 
@@ -299,24 +301,20 @@ export function PricingSection() {
           ))}
         </div>
 
-        {/* Stripe disclosure */}
-        <div className="mt-10 text-center space-y-2">
-          <p className="text-xs text-muted-foreground leading-relaxed">
+        {/* Risk reversal + microcopy */}
+        <div className="mt-10 text-center space-y-3">
+          <div className="inline-flex items-center gap-2 rounded-full border bg-card px-4 py-2 text-sm font-medium">
+            {isDE ? "🎯 Builder = Die beste Wahl für 90% der Gründer" : "🎯 Builder = The best choice for 90% of founders"}
+          </div>
+          <p className="text-xs text-muted-foreground leading-relaxed max-w-lg mx-auto">
             {isDE
-              ? "Zahlung wird über Stripe abgewickelt. Abonnement verlängert sich automatisch, kündbar jederzeit im Kundenportal."
-              : "Payment is processed via Stripe. Subscription renews automatically, cancel anytime in the customer portal."}
+              ? "Keine Mindestlaufzeit. Kündbar jederzeit im Kundenportal. Keine Zahlungsdaten auf dieser Plattform. Zahlung über Stripe."
+              : "No minimum term. Cancel anytime in customer portal. No payment data stored here. Powered by Stripe."}
           </p>
-          <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
-            <span>
-              {isDE
-                ? "🔒 Keine Zahlungsdaten auf dieser Plattform gespeichert"
-                : "🔒 No payment data stored on this platform"}
-            </span>
-            <span>
-              {isDE
-                ? "✓ Kein Risiko – jederzeit kündbar"
-                : "✓ No risk – cancel anytime"}
-            </span>
+          <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground">
+            <span>🔒 {isDE ? "DSGVO-konform" : "GDPR compliant"}</span>
+            <span>✓ {isDE ? "14 Tage testen" : "14-day trial"}</span>
+            <span>⚡ {isDE ? "Sofort starten" : "Start instantly"}</span>
           </div>
         </div>
       </div>

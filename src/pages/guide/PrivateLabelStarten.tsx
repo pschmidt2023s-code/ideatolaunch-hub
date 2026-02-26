@@ -18,6 +18,11 @@ export default function PrivateLabelStarten() {
       path="/guide/private-label-starten"
       breadcrumbs={[{ name: "Home", href: "/" }, { name: "Guide", href: "/guide/eigenmarke-gruenden" }, { name: "Private Label starten", href: "/guide/private-label-starten" }]}
       jsonLd={faqJsonLd}
+      recommendedLinks={[
+        { href: "/guide/lieferanten-finden", label: "Lieferanten finden", desc: "EU vs. Asien – den richtigen Hersteller wählen." },
+        { href: "/guide/produktionskosten-kalkulieren", label: "Produktionskosten kalkulieren", desc: "Verstehe alle Kostenfaktoren im Detail." },
+        { href: "/guide/eigenmarke-gruenden", label: "Eigenmarke gründen – Pillar Guide", desc: "Der komplette 7-Schritte-Prozess." },
+      ]}
     >
       <h1 className="text-3xl font-bold tracking-tight md:text-5xl mb-6">Private Label starten – <span className="text-gradient">Komplettanleitung 2026</span></h1>
       <p className="text-lg text-muted-foreground leading-relaxed mb-8">Private Label ist der profitabelste Weg, eine eigene Marke aufzubauen. Du kontrollierst Produkt, Branding und Marge – ohne eigene Produktion. Dieser Guide zeigt dir den kompletten Weg.</p>

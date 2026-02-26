@@ -34,24 +34,27 @@ export function Footer() {
               <Link to="/pricing" className="hover:text-foreground transition-colors">
                 {t("nav.pricing")}
               </Link>
-              <Link to="/product" className="hover:text-foreground transition-colors">
-                {isDE ? "Premium Desk Mat" : "Premium Desk Mat"}
+              <Link to="/ueber-uns" className="hover:text-foreground transition-colors">
+                {isDE ? "Über uns" : "About"}
               </Link>
             </nav>
           </div>
 
-          {/* Resources */}
+          {/* Guides */}
           <div>
-            <h3 className="font-semibold text-sm mb-3">{isDE ? "Ressourcen" : "Resources"}</h3>
+            <h3 className="font-semibold text-sm mb-3">{isDE ? "Guides" : "Guides"}</h3>
             <nav className="flex flex-col gap-2 text-sm text-muted-foreground">
-              <Link to="/blog" className="hover:text-foreground transition-colors">
-                Blog
+              <Link to="/guide/eigenmarke-gruenden" className="hover:text-foreground transition-colors">
+                {isDE ? "Eigenmarke gründen" : "Start your brand"}
               </Link>
-              <Link to="/blog/minimalistischer-arbeitsplatz" className="hover:text-foreground transition-colors">
-                {isDE ? "Workspace Guide" : "Workspace Guide"}
+              <Link to="/guide/lieferanten-finden" className="hover:text-foreground transition-colors">
+                {isDE ? "Lieferanten finden" : "Find suppliers"}
               </Link>
-              <Link to="/blog/produktivitaet-home-office" className="hover:text-foreground transition-colors">
-                {isDE ? "Produktivität" : "Productivity"}
+              <Link to="/guide/kapitalbedarf-berechnen" className="hover:text-foreground transition-colors">
+                {isDE ? "Kapitalbedarf berechnen" : "Capital planning"}
+              </Link>
+              <Link to="/tools/break-even-rechner" className="hover:text-foreground transition-colors">
+                {isDE ? "Break-Even Rechner" : "Break-Even Calculator"}
               </Link>
             </nav>
           </div>
