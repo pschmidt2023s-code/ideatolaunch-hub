@@ -1,6 +1,6 @@
-import { Check, Star } from "lucide-react";
+import { Check, Star, AlertTriangle, TrendingUp, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -119,7 +119,7 @@ export function PricingSection() {
         ? (isDE ? "Weiterleitung zu Stripe..." : "Redirecting to Stripe...")
         : (isDE ? "Jetzt strukturiert starten →" : "Start structured now →"),
       highlighted: true,
-      badge: isDE ? "Beliebt" : "Popular",
+      badge: isDE ? "90% wählen Builder" : "90% choose Builder",
       onClick: () => handleCheckout("builder", setLoadingBuilder),
       loading: loadingBuilder,
       anchor: null,
@@ -158,13 +158,52 @@ export function PricingSection() {
           </p>
         </div>
 
+        {/* ── ROI Calculator ── */}
+        <div className="mb-16 rounded-2xl border bg-card p-8 md:p-10">
+          <div className="flex items-center gap-3 mb-6">
+            <AlertTriangle className="h-5 w-5 text-destructive" />
+            <h3 className="text-xl font-bold">{isDE ? "Was kostet dich ein Produktionsfehler?" : "What does a production mistake cost you?"}</h3>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-3 mb-6">
+            <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-5 text-center">
+              <p className="text-2xl font-bold text-destructive">3.200 €</p>
+              <p className="text-xs text-muted-foreground mt-1">{isDE ? "∅ Kosten eines Produktionsfehlers" : "Avg. cost of one production mistake"}</p>
+            </div>
+            <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-5 text-center">
+              <p className="text-2xl font-bold text-destructive">8.500 €</p>
+              <p className="text-xs text-muted-foreground mt-1">{isDE ? "Falsche MOQ + Überproduktion" : "Wrong MOQ + overproduction"}</p>
+            </div>
+            <div className="rounded-xl border border-accent/20 bg-accent/5 p-5 text-center">
+              <p className="text-2xl font-bold text-accent">29 €</p>
+              <p className="text-xs text-muted-foreground mt-1">{isDE ? "BuildYourBrand Builder / Monat" : "BuildYourBrand Builder / month"}</p>
+            </div>
+          </div>
+          <p className="text-sm text-muted-foreground text-center">
+            {isDE
+              ? "→ Ein einziger vermiedener Fehler spart dir 9+ Monate Builder-Kosten."
+              : "→ One avoided mistake saves you 9+ months of Builder costs."}
+          </p>
+        </div>
+
+        {/* ── Social Proof ── */}
+        <div className="mb-12 flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground">
+          <span className="flex items-center gap-1.5 rounded-full border px-3 py-1.5">
+            <TrendingUp className="h-3.5 w-3.5 text-accent" />
+            {isDE ? "Gründer aus DE, AT & CH" : "Founders from DE, AT & CH"}
+          </span>
+          <Link to="/case-studies" className="flex items-center gap-1.5 rounded-full border px-3 py-1.5 hover:border-accent/40 transition-colors">
+            <Star className="h-3.5 w-3.5 text-accent" />
+            {isDE ? "Case Studies lesen →" : "Read case studies →"}
+          </Link>
+        </div>
+
         <div className="grid gap-6 md:grid-cols-3">
           {plans.map((plan) => (
             <div
               key={plan.name}
               className={`relative rounded-xl border p-8 ${
                 plan.highlighted
-                  ? "border-accent bg-card shadow-lg ring-1 ring-accent/20"
+                  ? "border-accent bg-card shadow-lg ring-1 ring-accent/20 scale-[1.02]"
                   : "bg-card shadow-card"
               }`}
             >
@@ -190,6 +229,14 @@ export function PricingSection() {
                 <span className="text-4xl font-bold">{plan.price}</span>
                 <span className="text-muted-foreground">{plan.period}</span>
               </div>
+
+              {/* Savings comparison for Builder */}
+              {plan.highlighted && (
+                <p className="mt-2 text-xs text-accent font-medium">
+                  {isDE ? "= 0,97 €/Tag · Spart ∅ 3.200 € Fehlerkosten" : "= €0.97/day · Saves avg. €3,200 in mistakes"}
+                </p>
+              )}
+
               <ul className="mt-8 space-y-3">
                 {plan.features.map((f) => (
                   <li key={f.label} className="flex items-start gap-3 text-sm">
@@ -301,21 +348,28 @@ export function PricingSection() {
           ))}
         </div>
 
-        {/* Risk reversal + microcopy */}
+        {/* Risk reversal */}
         <div className="mt-10 text-center space-y-3">
           <div className="inline-flex items-center gap-2 rounded-full border bg-card px-4 py-2 text-sm font-medium">
             {isDE ? "🎯 Builder = Die beste Wahl für 90% der Gründer" : "🎯 Builder = The best choice for 90% of founders"}
           </div>
+          <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1.5 rounded-full border px-3 py-1.5">
+              <ShieldCheck className="h-3 w-3 text-accent" />
+              {isDE ? "14 Tage Geld-zurück-Garantie" : "14-day money-back guarantee"}
+            </span>
+            <span className="flex items-center gap-1.5 rounded-full border px-3 py-1.5">
+              ✓ {isDE ? "Jederzeit kündbar" : "Cancel anytime"}
+            </span>
+            <span className="flex items-center gap-1.5 rounded-full border px-3 py-1.5">
+              🔒 {isDE ? "Transparente Preise" : "Transparent pricing"}
+            </span>
+          </div>
           <p className="text-xs text-muted-foreground leading-relaxed max-w-lg mx-auto">
             {isDE
-              ? "Keine Mindestlaufzeit. Kündbar jederzeit im Kundenportal. Keine Zahlungsdaten auf dieser Plattform. Zahlung über Stripe."
-              : "No minimum term. Cancel anytime in customer portal. No payment data stored here. Powered by Stripe."}
+              ? "Keine Mindestlaufzeit. Keine versteckten Kosten. Zahlung über Stripe. Wenn du nicht zufrieden bist, bekommst du innerhalb von 14 Tagen dein Geld zurück."
+              : "No minimum term. No hidden costs. Powered by Stripe. If you're not satisfied, get your money back within 14 days."}
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground">
-            <span>🔒 {isDE ? "DSGVO-konform" : "GDPR compliant"}</span>
-            <span>✓ {isDE ? "14 Tage testen" : "14-day trial"}</span>
-            <span>⚡ {isDE ? "Sofort starten" : "Start instantly"}</span>
-          </div>
         </div>
       </div>
     </section>

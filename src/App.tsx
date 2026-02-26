@@ -59,6 +59,14 @@ const Community = lazy(() => import("./pages/Community"));
 const ReferralDashboard = lazy(() => import("./pages/ReferralDashboard"));
 const AffiliateDashboard = lazy(() => import("./pages/AffiliateDashboard"));
 
+// Backlink & Authority Pages
+const Research = lazy(() => import("./pages/Research"));
+const Press = lazy(() => import("./pages/Press"));
+const Academy = lazy(() => import("./pages/Academy"));
+const VsExcel = lazy(() => import("./pages/comparisons/VsExcel"));
+const VsNotion = lazy(() => import("./pages/comparisons/VsNotion"));
+const BestTools = lazy(() => import("./pages/comparisons/BestTools"));
+
 const queryClient = new QueryClient();
 
 function LazyFallback() {
@@ -114,6 +122,14 @@ const App = () => (
                   <Route path="/ueber-uns" element={<UeberUns />} />
                   <Route path="/case-studies" element={<CaseStudies />} />
                   <Route path="/community" element={<Community />} />
+
+                  {/* Backlink & Authority */}
+                  <Route path="/research" element={<Research />} />
+                  <Route path="/press" element={<Press />} />
+                  <Route path="/academy" element={<Academy />} />
+                  <Route path="/buildyourbrand-vs-excel" element={<VsExcel />} />
+                  <Route path="/buildyourbrand-vs-notion" element={<VsNotion />} />
+                  <Route path="/best-private-label-tools" element={<BestTools />} />
 
                   {/* Dashboard */}
                   <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
