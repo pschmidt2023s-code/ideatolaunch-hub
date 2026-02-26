@@ -222,7 +222,7 @@ export function PricingSection() {
                 </div>
               )}
               {plan.secondBadge && (
-                <div className="absolute -top-3 right-6 rounded-full bg-amber-900/90 px-3 py-0.5 text-xs font-semibold text-amber-100">
+                <div className="absolute -top-8 right-6 rounded-full bg-amber-900/90 px-3 py-0.5 text-xs font-semibold text-amber-100">
                   {plan.secondBadge}
                 </div>
               )}
