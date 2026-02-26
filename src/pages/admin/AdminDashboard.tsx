@@ -1,0 +1,331 @@
+import { useEffect, useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
+import { checkIsAdmin, getPlanDistribution, getUpgradeTriggerSources, getStepDropOffRates, type PlanDistribution, type UpgradeTrigger, type StepDropOff } from "@/lib/founder-analytics";
+import { supabase } from "@/integrations/supabase/client";
+import { Users, TrendingUp, Mail, CreditCard, BarChart3, MousePointerClick, ArrowLeft } from "lucide-react";
+
+// ── Types ──
+interface LeadRow { id: string; email: string; source: string; trigger_type: string | null; page: string | null; converted: boolean; created_at: string; }
+interface EventRow { event_name: string; metadata: any; created_at: string; }
+interface SubRow { status: string; stripe_subscription_id: string | null; created_at: string; current_period_end: string | null; }
+
+// ── Metric Card ──
+function MetricCard({ icon: Icon, label, value, sub, accent }: { icon: any; label: string; value: string | number; sub?: string; accent?: boolean }) {
+  return (
+    <div className={`rounded-xl border p-5 ${accent ? "bg-accent/5 border-accent/20" : "bg-card"}`}>
+      <div className="flex items-center gap-2 mb-2">
+        <Icon className={`h-4 w-4 ${accent ? "text-accent" : "text-muted-foreground"}`} />
+        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{label}</span>
+      </div>
+      <p className="text-2xl font-bold">{value}</p>
+      {sub && <p className="text-xs text-muted-foreground mt-1">{sub}</p>}
+    </div>
+  );
+}
+
+function BarRow({ label, value, max }: { label: string; value: number; max: number }) {
+  const pct = max > 0 ? Math.round((value / max) * 100) : 0;
+  return (
+    <div className="flex items-center gap-3 py-1.5">
+      <span className="text-xs w-32 shrink-0 truncate">{label}</span>
+      <div className="flex-1 h-3 rounded-full bg-muted overflow-hidden">
+        <div className="h-full rounded-full bg-accent transition-all" style={{ width: `${pct}%` }} />
+      </div>
+      <span className="text-xs font-bold w-10 text-right">{value}</span>
+    </div>
+  );
+}
+
+function SectionCard({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border bg-card p-5">
+      <h3 className="text-xs font-semibold uppercase text-muted-foreground tracking-wide mb-4">{title}</h3>
+      {children}
+    </div>
+  );
+}
+
+export default function AdminDashboard() {
+  const { user, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
+  const [authorized, setAuthorized] = useState<boolean | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // Data
+  const [plans, setPlans] = useState<PlanDistribution[]>([]);
+  const [leads, setLeads] = useState<LeadRow[]>([]);
+  const [events, setEvents] = useState<EventRow[]>([]);
+  const [subscriptions, setSubscriptions] = useState<SubRow[]>([]);
+  const [triggers, setTriggers] = useState<UpgradeTrigger[]>([]);
+  const [dropOffs, setDropOffs] = useState<StepDropOff[]>([]);
+
+  useEffect(() => {
+    if (authLoading) return;
+    if (!user) { navigate("/auth"); return; }
+    checkIsAdmin(user.id).then((isAdmin) => {
+      if (!isAdmin) { navigate("/dashboard"); return; }
+      setAuthorized(true);
+    });
+  }, [user, authLoading, navigate]);
+
+  useEffect(() => {
+    if (!authorized) return;
+    setLoading(true);
+    Promise.all([
+      getPlanDistribution(),
+      supabase.from("leads" as any).select("*").order("created_at", { ascending: false }).limit(500),
+      supabase.from("analytics_events").select("event_name, metadata, created_at").order("created_at", { ascending: false }).limit(1000),
+      supabase.from("subscriptions").select("status, stripe_subscription_id, created_at, current_period_end"),
+      getUpgradeTriggerSources(),
+      getStepDropOffRates(),
+    ]).then(([planData, leadRes, eventRes, subRes, triggerData, dropOffData]) => {
+      setPlans(planData);
+      setLeads((leadRes.data ?? []) as unknown as LeadRow[]);
+      setEvents((eventRes.data ?? []) as EventRow[]);
+      setSubscriptions((subRes.data ?? []) as SubRow[]);
+      setTriggers(triggerData);
+      setDropOffs(dropOffData);
+      setLoading(false);
+    });
+  }, [authorized]);
+
+  if (authLoading || authorized === null || loading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-background text-muted-foreground">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      </div>
+    );
+  }
+
+  // ── Computed metrics ──
+  const totalUsers = plans.reduce((s, p) => s + p.count, 0);
+  const freeUsers = plans.find(p => p.plan === "free")?.count ?? 0;
+  const builderUsers = plans.find(p => ["builder", "active"].includes(p.plan))?.count ?? 0;
+  const proUsers = plans.find(p => p.plan === "pro")?.count ?? 0;
+  const paidUsers = builderUsers + proUsers;
+
+  // Conversion rates
+  const freeToBuilder = freeUsers + builderUsers > 0 ? Math.round((builderUsers / (freeUsers + builderUsers)) * 100) : 0;
+  const builderToPro = builderUsers + proUsers > 0 ? Math.round((proUsers / (builderUsers + proUsers)) * 100) : 0;
+
+  // Leads
+  const totalLeads = leads.length;
+  const convertedLeads = leads.filter(l => l.converted).length;
+  const leadsBySource: Record<string, number> = {};
+  leads.forEach(l => { const s = l.trigger_type || l.source; leadsBySource[s] = (leadsBySource[s] || 0) + 1; });
+  const leadsByPage: Record<string, number> = {};
+  leads.forEach(l => { const p = l.page || "unknown"; leadsByPage[p] = (leadsByPage[p] || 0) + 1; });
+
+  // Stripe / Revenue
+  const activeSubs = subscriptions.filter(s => s.stripe_subscription_id);
+  const mrr = builderUsers * 29 + proUsers * 79;
+
+  // Events
+  const eventCounts: Record<string, number> = {};
+  events.forEach(e => { eventCounts[e.event_name] = (eventCounts[e.event_name] || 0) + 1; });
+  const toolEvents = events.filter(e => ["calculated_price", "entered_business_calculator", "scenario_simulation_used"].includes(e.event_name)).length;
+  const pricingClicks = eventCounts["pricing_viewed"] ?? 0;
+  const upgradeAttempts = (eventCounts["upgrade_clicked"] ?? 0) + (eventCounts["clicked_upgrade"] ?? 0);
+
+  // Top pages (from events metadata)
+  const pageVisits: Record<string, number> = {};
+  events.forEach(e => {
+    const page = (e.metadata as any)?.page || (e.metadata as any)?.url;
+    if (page) pageVisits[page] = (pageVisits[page] || 0) + 1;
+  });
+
+  const maxTrigger = Math.max(...triggers.map(t => t.count), 1);
+  const maxLeadSource = Math.max(...Object.values(leadsBySource), 1);
+  const maxLeadPage = Math.max(...Object.values(leadsByPage), 1);
+
+  return (
+    <div className="min-h-screen bg-background p-4 sm:p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+            <p className="text-sm text-muted-foreground">Übersicht über Nutzer, Leads, Revenue und Events</p>
+          </div>
+          <button onClick={() => navigate("/dashboard")} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <ArrowLeft className="h-4 w-4" /> Dashboard
+          </button>
+        </div>
+
+        {/* KPIs Row */}
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6 mb-8">
+          <MetricCard icon={Users} label="Total Users" value={totalUsers} />
+          <MetricCard icon={Users} label="Paid Users" value={paidUsers} accent sub={`${freeToBuilder}% Conversion`} />
+          <MetricCard icon={Mail} label="Total Leads" value={totalLeads} sub={`${convertedLeads} converted`} />
+          <MetricCard icon={CreditCard} label="MRR (est.)" value={`${mrr} €`} accent />
+          <MetricCard icon={MousePointerClick} label="Pricing Clicks" value={pricingClicks} />
+          <MetricCard icon={TrendingUp} label="Upgrade Attempts" value={upgradeAttempts} />
+        </div>
+
+        {/* Main Grid */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {/* User Distribution */}
+          <SectionCard title="Nutzer nach Plan">
+            {plans.length === 0 ? (
+              <p className="text-xs text-muted-foreground">Keine Daten</p>
+            ) : (
+              <div className="space-y-3">
+                {plans.map(p => (
+                  <div key={p.plan} className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className={`h-3 w-3 rounded-full ${p.plan === "free" ? "bg-muted-foreground" : p.plan === "pro" ? "bg-accent" : "bg-primary"}`} />
+                      <span className="text-sm capitalize">{p.plan}</span>
+                    </div>
+                    <span className="text-sm font-bold">{p.count} <span className="text-muted-foreground font-normal">({totalUsers > 0 ? Math.round((p.count / totalUsers) * 100) : 0}%)</span></span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </SectionCard>
+
+          {/* Conversion Metrics */}
+          <SectionCard title="Conversion Rates">
+            <div className="space-y-4">
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm">Free → Builder</span>
+                  <span className="text-sm font-bold">{freeToBuilder}%</span>
+                </div>
+                <div className="h-2 rounded-full bg-muted overflow-hidden">
+                  <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${freeToBuilder}%` }} />
+                </div>
+              </div>
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm">Builder → Pro</span>
+                  <span className="text-sm font-bold">{builderToPro}%</span>
+                </div>
+                <div className="h-2 rounded-full bg-muted overflow-hidden">
+                  <div className="h-full rounded-full bg-accent transition-all" style={{ width: `${builderToPro}%` }} />
+                </div>
+              </div>
+              <div className="pt-2 border-t">
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>Tool Usage Events</span>
+                  <span className="font-bold text-foreground">{toolEvents}</span>
+                </div>
+              </div>
+            </div>
+          </SectionCard>
+
+          {/* Revenue */}
+          <SectionCard title="Stripe / Revenue">
+            <div className="space-y-3">
+              <div className="flex justify-between">
+                <span className="text-sm text-muted-foreground">Active Subscriptions</span>
+                <span className="text-sm font-bold">{activeSubs.length}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-muted-foreground">Est. MRR</span>
+                <span className="text-sm font-bold text-accent">{mrr} €</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-muted-foreground">Builder Users</span>
+                <span className="text-sm font-bold">{builderUsers}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-muted-foreground">Pro Users</span>
+                <span className="text-sm font-bold">{proUsers}</span>
+              </div>
+            </div>
+          </SectionCard>
+
+          {/* Lead Overview */}
+          <SectionCard title="Lead-Quellen">
+            {Object.keys(leadsBySource).length === 0 ? (
+              <p className="text-xs text-muted-foreground">Keine Leads bisher</p>
+            ) : (
+              Object.entries(leadsBySource)
+                .sort(([, a], [, b]) => b - a)
+                .map(([source, count]) => (
+                  <BarRow key={source} label={source} value={count} max={maxLeadSource} />
+                ))
+            )}
+          </SectionCard>
+
+          {/* Leads by Page */}
+          <SectionCard title="Leads nach Seite">
+            {Object.keys(leadsByPage).length === 0 ? (
+              <p className="text-xs text-muted-foreground">Keine Daten</p>
+            ) : (
+              Object.entries(leadsByPage)
+                .sort(([, a], [, b]) => b - a)
+                .slice(0, 8)
+                .map(([page, count]) => (
+                  <BarRow key={page} label={page} value={count} max={maxLeadPage} />
+                ))
+            )}
+          </SectionCard>
+
+          {/* Upgrade Triggers */}
+          <SectionCard title="Upgrade-Trigger Quellen">
+            {triggers.length === 0 ? (
+              <p className="text-xs text-muted-foreground">Keine Daten</p>
+            ) : (
+              triggers.slice(0, 8).map(t => (
+                <BarRow key={t.source} label={t.source} value={t.count} max={maxTrigger} />
+              ))
+            )}
+          </SectionCard>
+
+          {/* Event Tracking */}
+          <SectionCard title="Top Events">
+            {Object.keys(eventCounts).length === 0 ? (
+              <p className="text-xs text-muted-foreground">Keine Events</p>
+            ) : (
+              <div className="space-y-2 max-h-64 overflow-y-auto">
+                {Object.entries(eventCounts)
+                  .sort(([, a], [, b]) => b - a)
+                  .slice(0, 15)
+                  .map(([name, count]) => (
+                    <div key={name} className="flex justify-between text-sm">
+                      <span className="text-muted-foreground truncate mr-2">{name}</span>
+                      <span className="font-bold shrink-0">{count}</span>
+                    </div>
+                  ))}
+              </div>
+            )}
+          </SectionCard>
+
+          {/* Step Drop-Off */}
+          <SectionCard title="Step Drop-Off %">
+            {dropOffs.length === 0 ? (
+              <p className="text-xs text-muted-foreground">Keine Daten</p>
+            ) : (
+              dropOffs.map(d => (
+                <BarRow key={d.step} label={`Step ${d.step}`} value={d.dropOffPct} max={Math.max(...dropOffs.map(x => x.dropOffPct), 1)} />
+              ))
+            )}
+          </SectionCard>
+
+          {/* Recent Leads */}
+          <SectionCard title="Neueste Leads">
+            {leads.length === 0 ? (
+              <p className="text-xs text-muted-foreground">Keine Leads</p>
+            ) : (
+              <div className="space-y-2 max-h-64 overflow-y-auto">
+                {leads.slice(0, 10).map(l => (
+                  <div key={l.id} className="flex items-center justify-between text-sm border-b border-border/50 pb-1.5">
+                    <div className="truncate mr-2">
+                      <span className="text-foreground">{l.email}</span>
+                      <span className="text-xs text-muted-foreground ml-2">{l.trigger_type || l.source}</span>
+                    </div>
+                    <span className="text-xs text-muted-foreground shrink-0">
+                      {new Date(l.created_at).toLocaleDateString("de-DE")}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </SectionCard>
+        </div>
+      </div>
+    </div>
+  );
+}

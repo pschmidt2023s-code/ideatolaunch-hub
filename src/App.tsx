@@ -27,6 +27,7 @@ const SettingsPage = lazy(() => import("./pages/Settings"));
 const DashboardPricing = lazy(() => import("./pages/DashboardPricing"));
 const InternalAnalytics = lazy(() => import("./pages/internal/Analytics"));
 const AdminInsights = lazy(() => import("./pages/admin/Insights"));
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const DebugGating = lazy(() => import("./pages/debug/Gating"));
 const Impressum = lazy(() => import("./pages/Impressum"));
 const Datenschutz = lazy(() => import("./pages/Datenschutz"));
@@ -116,6 +117,7 @@ const App = () => (
                   <Route path="/dashboard/pricing" element={<ProtectedRoute><DashboardPricing /></ProtectedRoute>} />
                   <Route path="/internal/analytics" element={<ProtectedRoute><InternalAnalytics /></ProtectedRoute>} />
                   <Route path="/admin/insights" element={<AdminInsights />} />
+                  <Route path="/admin/dashboard" element={<AdminDashboard />} />
                   <Route path="/debug/gating" element={<DebugGating />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
