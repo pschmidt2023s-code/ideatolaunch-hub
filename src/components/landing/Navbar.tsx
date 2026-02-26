@@ -32,6 +32,9 @@ export function Navbar() {
           <a href="#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
             {t("nav.pricing")}
           </a>
+          <a href="/blog" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            Blog
+          </a>
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
@@ -80,6 +83,13 @@ export function Navbar() {
               className="rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
             >
               {t("nav.pricing")}
+            </a>
+            <a
+              href="/blog"
+              onClick={() => setMenuOpen(false)}
+              className="rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+            >
+              Blog
             </a>
           </nav>
           <div className="mt-3 flex flex-col gap-2 border-t pt-3">

@@ -3,6 +3,8 @@ import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const articles = [
   {
@@ -26,11 +28,13 @@ const articles = [
 ];
 
 export default function Blog() {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen bg-background">
       <SEO
-        title="Blog – Workspace & Produktivität"
-        description="Tipps und Guides für deinen perfekten Workspace: Minimalismus, Produktivität, Schreibtisch-Setups und mehr."
+        title="Blog – Markenaufbau & Workspace Tipps"
+        description="Guides, Strategien und Insider-Tipps für Gründer: Markenaufbau, Produktivität, Workspace-Design. Kostenlos lesen."
         path="/blog"
       />
       <Navbar />
@@ -56,6 +60,25 @@ export default function Blog() {
                 </span>
               </Link>
             ))}
+          </div>
+
+          {/* CTA to pricing */}
+          <div className="mt-16 rounded-xl border bg-card p-8 text-center">
+            <h2 className="text-xl font-bold mb-2">Bereit, deine Marke zu starten?</h2>
+            <p className="text-muted-foreground mb-6 text-sm">
+              Von der Idee zum Launch – strukturiert und datengetrieben.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+              <Button
+                className="gap-2 bg-accent text-accent-foreground hover:bg-accent/90"
+                onClick={() => navigate("/auth?tab=signup")}
+              >
+                Kostenlos starten <ArrowRight className="h-4 w-4" />
+              </Button>
+              <Button variant="outline" onClick={() => navigate("/pricing")}>
+                Preise ansehen
+              </Button>
+            </div>
           </div>
         </div>
       </main>
