@@ -52,6 +52,7 @@ const BreakEvenGuide = lazy(() => import("./pages/guide/BreakEvenGuide"));
 const KapitalbedarfBerechnen = lazy(() => import("./pages/guide/KapitalbedarfBerechnen"));
 const LaunchPlanErstellen = lazy(() => import("./pages/guide/LaunchPlanErstellen"));
 const ProduktionsfehlerVermeiden = lazy(() => import("./pages/guide/ProduktionsfehlerVermeiden"));
+const UeberUns = lazy(() => import("./pages/UeberUns"));
 
 const queryClient = new QueryClient();
 
@@ -105,6 +106,7 @@ const App = () => (
                   <Route path="/guide/kapitalbedarf-berechnen" element={<KapitalbedarfBerechnen />} />
                   <Route path="/guide/launch-plan-erstellen" element={<LaunchPlanErstellen />} />
                   <Route path="/guide/produktionsfehler-vermeiden" element={<ProduktionsfehlerVermeiden />} />
+                  <Route path="/ueber-uns" element={<UeberUns />} />
 
                   {/* Dashboard */}
                   <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />

@@ -11,6 +11,12 @@ interface BreadcrumbItem {
   href: string;
 }
 
+interface RecommendedLink {
+  href: string;
+  label: string;
+  desc: string;
+}
+
 interface GuideLayoutProps {
   title: string;
   seoTitle: string;
@@ -18,10 +24,11 @@ interface GuideLayoutProps {
   path: string;
   breadcrumbs: BreadcrumbItem[];
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  recommendedLinks?: RecommendedLink[];
   children: ReactNode;
 }
 
-export function GuideLayout({ title, seoTitle, seoDescription, path, breadcrumbs, jsonLd, children }: GuideLayoutProps) {
+export function GuideLayout({ title, seoTitle, seoDescription, path, breadcrumbs, jsonLd, recommendedLinks, children }: GuideLayoutProps) {
   const navigate = useNavigate();
 
   const breadcrumbJsonLd = {
@@ -62,6 +69,28 @@ export function GuideLayout({ title, seoTitle, seoDescription, path, breadcrumbs
           </nav>
 
           {children}
+
+          {/* Recommended next steps */}
+          {recommendedLinks && recommendedLinks.length > 0 && (
+            <section className="mt-16 mb-8">
+              <h2 className="text-2xl font-bold mb-6">Empfohlene nächste Schritte</h2>
+              <div className="grid gap-4">
+                {recommendedLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    to={link.href}
+                    className="group flex items-center justify-between rounded-xl border bg-card p-5 hover:border-accent/40 hover:shadow-card transition-all"
+                  >
+                    <div>
+                      <span className="font-semibold group-hover:text-accent transition-colors">{link.label}</span>
+                      <p className="text-sm text-muted-foreground mt-0.5">{link.desc}</p>
+                    </div>
+                    <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-accent shrink-0 transition-colors" />
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* Bottom CTA */}
           <section className="mt-16 rounded-2xl border bg-card p-8 text-center md:p-12">

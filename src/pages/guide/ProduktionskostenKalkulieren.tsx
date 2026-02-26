@@ -19,7 +19,11 @@ export default function ProduktionskostenKalkulieren() {
   const faqJsonLd = { "@context": "https://schema.org", "@type": "FAQPage", "mainEntity": faq.map(f => ({ "@type": "Question", "name": f.q, "acceptedAnswer": { "@type": "Answer", "text": f.a } })) };
 
   return (
-    <GuideLayout title={p.title} seoTitle={p.seoTitle} seoDescription={p.desc} path={p.path} breadcrumbs={[{ name: "Home", href: "/" }, { name: "Guide", href: "/guide/eigenmarke-gruenden" }, { name: p.title, href: p.path }]} jsonLd={faqJsonLd}>
+    <GuideLayout title={p.title} seoTitle={p.seoTitle} seoDescription={p.desc} path={p.path} breadcrumbs={[{ name: "Home", href: "/" }, { name: "Guide", href: "/guide/eigenmarke-gruenden" }, { name: p.title, href: p.path }]} jsonLd={faqJsonLd} recommendedLinks={[
+      { href: "/tools/produktionskosten-rechner", label: "Produktionskosten-Rechner", desc: "Berechne deine Stückkosten sofort – kostenlos." },
+      { href: "/guide/break-even-rechner", label: "Break-Even verstehen", desc: "Ab wann wird dein Produkt profitabel?" },
+      { href: "/guide/moq-berechnen", label: "MOQ berechnen", desc: "Mindestbestellmengen richtig einschätzen." },
+    ]}>
       <h1 className="text-3xl font-bold tracking-tight md:text-5xl mb-6">{p.title} – <span className="text-gradient">Vollständiger Guide</span></h1>
       {p.content}
       <section><h2 className="text-2xl font-bold mb-6">FAQ</h2><div className="space-y-4">{faq.map(({ q, a }) => <details key={q} className="group rounded-xl border bg-card p-4"><summary className="cursor-pointer font-semibold list-none flex items-center justify-between">{q}<span className="text-muted-foreground group-open:rotate-45 transition-transform text-xl">+</span></summary><p className="mt-3 text-muted-foreground leading-relaxed text-sm">{a}</p></details>)}</div></section>
