@@ -1,11 +1,52 @@
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Lightbulb, GraduationCap } from "lucide-react";
+import { Lightbulb, GraduationCap, Loader2 } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 export default function Onboarding() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { user } = useAuth();
+
+  const { data: profile, isLoading } = useQuery({
+    queryKey: ["profile-starter", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("completed_starter_mode")
+        .eq("user_id", user!.id)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!user,
+  });
+
+  // If already completed onboarding, skip directly to dashboard
+  useEffect(() => {
+    if (!isLoading && profile?.completed_starter_mode) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [isLoading, profile, navigate]);
+
+  const markCompleted = async () => {
+    if (!user) return;
+    await supabase
+      .from("profiles")
+      .update({ completed_starter_mode: true })
+      .eq("user_id", user.id);
+  };
+
+  if (isLoading || profile?.completed_starter_mode) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
@@ -18,7 +59,8 @@ export default function Onboarding() {
 
         <div className="mt-10 grid gap-4 sm:grid-cols-2">
           <button
-            onClick={() => {
+            onClick={async () => {
+              await markCompleted();
               trackEvent("onboarding_finished", { path: "experienced" });
               navigate("/dashboard");
             }}
@@ -32,7 +74,8 @@ export default function Onboarding() {
           </button>
 
           <button
-            onClick={() => {
+            onClick={async () => {
+              await markCompleted();
               trackEvent("onboarding_finished", { path: "beginner" });
               navigate("/starter");
             }}
