@@ -187,9 +187,14 @@ export default function AdminDashboard() {
             <h1 className="text-2xl font-bold">Admin Dashboard</h1>
             <p className="text-sm text-muted-foreground">Übersicht über Nutzer, Leads, Revenue und Events</p>
           </div>
-          <button onClick={() => navigate("/dashboard")} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
-            <ArrowLeft className="h-4 w-4" /> Dashboard
-          </button>
+          <div className="flex items-center gap-3">
+            <button onClick={() => navigate("/admin/monetization")} className="flex items-center gap-1.5 text-sm font-medium text-accent hover:text-accent/80 transition-colors rounded-lg border border-accent/20 px-3 py-1.5">
+              💰 Monetization
+            </button>
+            <button onClick={() => navigate("/dashboard")} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <ArrowLeft className="h-4 w-4" /> Dashboard
+            </button>
+          </div>
         </div>
 
         {/* KPIs Row */}

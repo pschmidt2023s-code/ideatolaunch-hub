@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_audit_log: {
+        Row: {
+          action_type: string
+          admin_id: string
+          affected_user_id: string | null
+          created_at: string
+          details: Json | null
+          id: string
+        }
+        Insert: {
+          action_type: string
+          admin_id: string
+          affected_user_id?: string | null
+          created_at?: string
+          details?: Json | null
+          id?: string
+        }
+        Update: {
+          action_type?: string
+          admin_id?: string
+          affected_user_id?: string | null
+          created_at?: string
+          details?: Json | null
+          id?: string
+        }
+        Relationships: []
+      }
       admin_users: {
         Row: {
           created_at: string
@@ -402,6 +429,54 @@ export type Database = {
           },
         ]
       }
+      discount_codes: {
+        Row: {
+          active: boolean
+          applicable_plans: string[]
+          code: string
+          created_at: string
+          created_by: string | null
+          current_usage: number
+          discount_type: string
+          discount_value: number
+          expiration_date: string | null
+          id: string
+          internal_notes: string | null
+          updated_at: string
+          usage_limit: number | null
+        }
+        Insert: {
+          active?: boolean
+          applicable_plans?: string[]
+          code: string
+          created_at?: string
+          created_by?: string | null
+          current_usage?: number
+          discount_type: string
+          discount_value: number
+          expiration_date?: string | null
+          id?: string
+          internal_notes?: string | null
+          updated_at?: string
+          usage_limit?: number | null
+        }
+        Update: {
+          active?: boolean
+          applicable_plans?: string[]
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          current_usage?: number
+          discount_type?: string
+          discount_value?: number
+          expiration_date?: string | null
+          id?: string
+          internal_notes?: string | null
+          updated_at?: string
+          usage_limit?: number | null
+        }
+        Relationships: []
+      }
       documents: {
         Row: {
           brand_id: string
@@ -473,6 +548,36 @@ export type Database = {
           session_id?: string | null
           stack?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      feature_flag_overrides: {
+        Row: {
+          enabled: boolean
+          feature_key: string
+          id: string
+          modified_at: string
+          modified_by: string | null
+          override_type: string
+          target_value: string | null
+        }
+        Insert: {
+          enabled?: boolean
+          feature_key: string
+          id?: string
+          modified_at?: string
+          modified_by?: string | null
+          override_type: string
+          target_value?: string | null
+        }
+        Update: {
+          enabled?: boolean
+          feature_key?: string
+          id?: string
+          modified_at?: string
+          modified_by?: string | null
+          override_type?: string
+          target_value?: string | null
         }
         Relationships: []
       }
