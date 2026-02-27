@@ -28,6 +28,7 @@ import {
   Target,
   TrendingDown,
   TrendingUp,
+  Sparkles,
   Zap,
 } from "lucide-react";
 
@@ -589,6 +590,82 @@ export default function ExecutionOSDashboard() {
               })}
             </TabsContent>
           </Tabs>
+        </div>
+
+        {/* Execution OS Roadmap */}
+        <div className="mt-8 rounded-2xl border border-amber-500/20 bg-card/80 backdrop-blur-sm p-6 shadow-lg">
+          <div className="flex items-center justify-between mb-1">
+            <h2 className="text-lg font-bold flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-amber-500" />
+              Execution OS Roadmap – What's Next
+            </h2>
+            <Badge className="bg-amber-500/10 text-amber-500 border-amber-500/30 text-[10px]">Coming Soon</Badge>
+          </div>
+          <p className="text-sm text-muted-foreground mb-6">Execution evolves continuously. These features are in development.</p>
+
+          {/* Timeline */}
+          <div className="flex items-center gap-1 mb-6 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+            <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-500">Q2</span>
+            <div className="flex-1 h-px bg-border" />
+            <span className="px-2 py-0.5 rounded bg-muted">Q3</span>
+            <div className="flex-1 h-px bg-border" />
+            <span className="px-2 py-0.5 rounded bg-muted">Q4</span>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            {[
+              {
+                title: "Failure Simulator",
+                tag: "Growth Engine",
+                release: "Q2",
+                desc: "Simulate 3 typical founder mistakes in seconds. See how wrong MOQ, pricing, or return rates impact your capital. Know the cost before you make the mistake.",
+                cta: "Execution Members get early access.",
+              },
+              {
+                title: "Founder Risk Profile",
+                tag: "Personalization",
+                release: "Q2",
+                desc: "Choose your founder risk style: conservative, balanced, aggressive. Execution OS adapts recommendations, alerts and capital strategy to your profile.",
+                cta: "Personalized strategy layer.",
+              },
+              {
+                title: "Protection Layer",
+                tag: "Risk Shield",
+                release: "Q3",
+                desc: "Production contract checklist. Quality control reminders. Payment condition negotiation guidance.",
+                cta: "Enterprise-level protection for founders.",
+              },
+              {
+                title: "Working Capital Engine",
+                tag: "Capital Intelligence",
+                release: "Q4",
+                desc: "Capital binding analysis. Reorder timing optimizer. Liquidity gap forecasting. Know exactly when to reorder without killing cashflow.",
+                cta: "Advanced capital forecasting system.",
+              },
+            ].map((item, i) => (
+              <div
+                key={i}
+                className={`rounded-xl border p-5 space-y-3 transition-all ${
+                  isExecution
+                    ? "border-amber-500/20 bg-amber-500/[0.03] shadow-sm"
+                    : "border-border/50 bg-card/50"
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <Badge variant="outline" className="text-[10px] border-amber-500/30 text-amber-600">{item.tag}</Badge>
+                  <span className="text-[10px] font-semibold text-muted-foreground">{item.release}</span>
+                </div>
+                <h3 className="font-semibold text-sm">{item.title}</h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
+                <p className="text-[10px] font-medium text-amber-600">{item.cta}</p>
+              </div>
+            ))}
+          </div>
+
+          <p className="mt-6 text-[11px] text-muted-foreground text-center leading-relaxed">
+            Execution OS is built for serious founders.<br />
+            We continuously upgrade it to reduce capital risk.
+          </p>
         </div>
       </div>
     </DashboardLayout>
