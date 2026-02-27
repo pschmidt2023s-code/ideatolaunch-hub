@@ -116,13 +116,38 @@ function getBenchmarkPercentile(value: number, type: "margin" | "runway" | "risk
   return 90;
 }
 
-function getAIRecommendations(kpi: WeeklyKPI): { title: string; description: string; priority: "high" | "medium" }[] {
-  const recs: { title: string; description: string; priority: "high" | "medium" }[] = [];
-  if (kpi.margin < 40) recs.push({ title: "Margenoptimierung priorisieren", description: "Verhandele Einkaufspreise neu oder erhöhe den Verkaufspreis um 5-8%.", priority: "high" });
-  if (kpi.cashRunwayMonths < 4) recs.push({ title: "Cashflow-Puffer aufbauen", description: "Reduziere Lagerbestand oder sichere kurzfristige Finanzierung.", priority: "high" });
-  if (kpi.conversionRate < 2.5) recs.push({ title: "Conversion Rate steigern", description: "Trust-Elemente und Produktbewertungen auf der Produktseite ergänzen.", priority: "medium" });
-  if (kpi.returnRate > 10) recs.push({ title: "Retourenquote senken", description: "Produktbeschreibungen präzisieren und QC verschärfen.", priority: "medium" });
-  if (recs.length === 0) recs.push({ title: "Skalierung vorbereiten", description: "Deine KPIs sind solide. Fokussiere auf kontrolliertes Wachstum.", priority: "medium" });
+function getAIRecommendations(kpi: WeeklyKPI): { title: string; description: string; priority: "high" | "medium"; category: string }[] {
+  const recs: { title: string; description: string; priority: "high" | "medium"; category: string }[] = [];
+
+  // Crisis recs
+  if (kpi.margin < 40) recs.push({ title: "Margenoptimierung priorisieren", description: "Verhandele Einkaufspreise neu oder erhöhe den Verkaufspreis um 5-8%.", priority: "high", category: "Optimierung" });
+  if (kpi.cashRunwayMonths < 4) recs.push({ title: "Cashflow-Puffer aufbauen", description: "Reduziere Lagerbestand oder sichere kurzfristige Finanzierung.", priority: "high", category: "Liquidität" });
+  if (kpi.conversionRate < 2.5) recs.push({ title: "Conversion Rate steigern", description: "Trust-Elemente und Produktbewertungen auf der Produktseite ergänzen.", priority: "medium", category: "Optimierung" });
+  if (kpi.returnRate > 10) recs.push({ title: "Retourenquote senken", description: "Produktbeschreibungen präzisieren und QC verschärfen.", priority: "medium", category: "Optimierung" });
+
+  // Scaling Mode recs
+  const monthsOfStock = kpi.inventoryValue / (kpi.revenue * 0.6 || 1);
+  const profitPerMonth = kpi.revenue * (kpi.margin / 100) - kpi.monthlyCosts;
+
+  if (kpi.margin >= 40 && kpi.conversionRate >= 2.5 && kpi.cashRunwayMonths >= 4) {
+    recs.push({ title: "🚀 Scaling: Ads-Budget erhöhen", description: `Deine Marge (${kpi.margin}%) und Conversion (${kpi.conversionRate}%) sind stabil. Erhöhe Ads schrittweise um 15-20% pro Woche und tracke den ROAS.`, priority: "medium", category: "Skalierung" });
+  }
+
+  if (monthsOfStock < 2 && kpi.conversionRate >= 2) {
+    recs.push({ title: "🚀 Scaling: Jetzt nachbestellen", description: `Lagerreichweite nur ${monthsOfStock.toFixed(1)} Monate bei aktuellem Absatz. Nachbestellung jetzt auslösen, um Stockouts zu vermeiden.`, priority: "high", category: "Skalierung" });
+  } else if (monthsOfStock > 5) {
+    recs.push({ title: "⚠️ NICHT nachproduzieren", description: `Lagerreichweite ${monthsOfStock.toFixed(1)} Monate. Warte mit Nachbestellung und fokussiere auf Abverkauf der bestehenden Ware.`, priority: "high", category: "Skalierung" });
+  }
+
+  if (kpi.cashRunwayMonths < 3 && profitPerMonth < 0) {
+    recs.push({ title: "🔒 Liquidität sichern", description: `Monatlicher Verlust: ${Math.abs(profitPerMonth).toFixed(0)} €. Reduziere variable Kosten sofort und stoppe alle nicht-essentiellen Ausgaben.`, priority: "high", category: "Liquidität" });
+  }
+
+  if (kpi.conversionRate >= 3 && kpi.margin >= 45) {
+    recs.push({ title: "🚀 Scaling: Neuen Kanal testen", description: "Deine Unit Economics sind solide. Teste einen zusätzlichen Verkaufskanal (Marketplace, B2B, Retail).", priority: "medium", category: "Skalierung" });
+  }
+
+  if (recs.length === 0) recs.push({ title: "Skalierung vorbereiten", description: "Deine KPIs sind solide. Fokussiere auf kontrolliertes Wachstum.", priority: "medium", category: "Skalierung" });
   return recs;
 }
 
@@ -521,36 +546,47 @@ export default function ExecutionOSDashboard() {
               </Card>
             </TabsContent>
 
-            {/* Advanced AI Copilot */}
+            {/* Advanced AI Copilot + Scaling Mode */}
             <TabsContent value="copilot" className="space-y-4">
               <h2 className="text-lg font-semibold flex items-center gap-2">
                 <Brain className="h-5 w-5 text-accent" />
-                Advanced AI Copilot
+                Advanced AI Copilot & Scaling Mode
               </h2>
-              <p className="text-sm text-muted-foreground">CEO-Level Empfehlungen basierend auf deinen aktuellen KPIs.</p>
-              <div className="space-y-3">
-                {aiRecs.map((rec, i) => (
-                  <Card key={i} className="border-border/50">
-                    <CardContent className="flex items-start gap-3 p-4">
-                      <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
-                        rec.priority === "high" ? "bg-destructive/10" : "bg-accent/10"
-                      }`}>
-                        {rec.priority === "high" ? <Zap className="h-4 w-4 text-destructive" /> : <Target className="h-4 w-4 text-accent" />}
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="font-semibold text-sm">{rec.title}</p>
-                          <Badge variant="outline" className="text-[10px]">
-                            {rec.priority === "high" ? "Priorität 1" : "Empfehlung"}
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground mt-1">{rec.description}</p>
-                      </div>
-                      <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0 mt-1" />
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+              <p className="text-sm text-muted-foreground">CEO-Level Empfehlungen + Skalierungsentscheidungen basierend auf deinen KPIs.</p>
+
+              {/* Group by category */}
+              {["Skalierung", "Optimierung", "Liquidität"].map((cat) => {
+                const catRecs = aiRecs.filter((r) => r.category === cat);
+                if (catRecs.length === 0) return null;
+                return (
+                  <div key={cat} className="space-y-2">
+                    <h3 className="text-xs font-semibold uppercase text-muted-foreground tracking-wide flex items-center gap-2">
+                      {cat === "Skalierung" ? "🚀" : cat === "Liquidität" ? "🔒" : "⚡"} {cat}
+                    </h3>
+                    {catRecs.map((rec, i) => (
+                      <Card key={i} className="border-border/50">
+                        <CardContent className="flex items-start gap-3 p-4">
+                          <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
+                            rec.priority === "high" ? "bg-destructive/10" : "bg-accent/10"
+                          }`}>
+                            {rec.priority === "high" ? <Zap className="h-4 w-4 text-destructive" /> : <Target className="h-4 w-4 text-accent" />}
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <p className="font-semibold text-sm">{rec.title}</p>
+                              <Badge variant="outline" className="text-[10px]">
+                                {rec.priority === "high" ? "Priorität 1" : "Empfehlung"}
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-muted-foreground mt-1">{rec.description}</p>
+                          </div>
+                          <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0 mt-1" />
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                );
+              })}
             </TabsContent>
           </Tabs>
         </div>
