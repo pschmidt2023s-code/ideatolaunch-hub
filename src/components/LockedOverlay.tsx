@@ -33,7 +33,9 @@ export function LockedOverlay({ children, feature, message, requiredPlan }: Lock
   const title = message || (isDE ? upgradeMsg.title.de : upgradeMsg.title.en);
   const desc = isDE ? upgradeMsg.desc.de : upgradeMsg.desc.en;
 
-  const ctaLabel = plan === "pro"
+  const ctaLabel = plan === "execution"
+    ? (isDE ? "Upgrade auf Execution OS" : "Upgrade to Execution OS")
+    : plan === "pro"
     ? (isDE ? "Upgrade auf Pro" : "Upgrade to Pro")
     : (isDE ? "Upgrade auf Builder" : "Upgrade to Builder");
 
