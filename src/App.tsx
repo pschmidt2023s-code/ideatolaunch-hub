@@ -28,6 +28,7 @@ const DashboardPricing = lazy(() => import("./pages/DashboardPricing"));
 const InternalAnalytics = lazy(() => import("./pages/internal/Analytics"));
 const AdminInsights = lazy(() => import("./pages/admin/Insights"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const MonetizationAdmin = lazy(() => import("./pages/admin/MonetizationAdmin"));
 const DebugGating = lazy(() => import("./pages/debug/Gating"));
 const Impressum = lazy(() => import("./pages/Impressum"));
 const Datenschutz = lazy(() => import("./pages/Datenschutz"));
@@ -156,6 +157,7 @@ const App = () => (
                   <Route path="/admin/insights" element={<AdminInsights />} />
                   <Route path="/admin/dashboard" element={<AdminDashboard />} />
                   <Route path="/admin/fraud" element={<AdminFraud />} />
+                  <Route path="/admin/monetization" element={<MonetizationAdmin />} />
                   <Route path="/debug/gating" element={<DebugGating />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
