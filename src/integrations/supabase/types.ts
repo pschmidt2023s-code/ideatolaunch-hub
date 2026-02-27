@@ -1105,6 +1105,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      increment_referral_count: {
+        Args: { _referral_id: string }
+        Returns: undefined
+      }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       owns_brand: { Args: { _brand_id: string }; Returns: boolean }
     }
