@@ -11,7 +11,7 @@ import { LockedOverlay } from "@/components/LockedOverlay";
 import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 
 export function CashflowSurvivalCard() {
-  const { plan } = useSubscription();
+  const { plan, isPro } = useSubscription();
   const [activeStress, setActiveStress] = useState<number | null>(null);
   const [inputs, setInputs] = useState<CashflowInput>({
     totalCapital: 15000,
@@ -182,7 +182,7 @@ export function CashflowSurvivalCard() {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        {plan === "pro" ? content : (
+        {isPro ? content : (
           <LockedOverlay feature="capitalBurnPredictor" requiredPlan="pro">
             {content}
           </LockedOverlay>

@@ -11,7 +11,7 @@ import { LockedOverlay } from "@/components/LockedOverlay";
 import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 
 export function MarketRealityCard() {
-  const { plan } = useSubscription();
+  const { plan, isPro } = useSubscription();
   const [inputs, setInputs] = useState<MarketInput>({
     productCategory: "skincare",
     targetPrice: 24.90,
@@ -176,7 +176,7 @@ export function MarketRealityCard() {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        {plan === "pro" ? content : (
+        {isPro ? content : (
           <LockedOverlay feature="scenarioSimulator" requiredPlan="pro">
             {content}
           </LockedOverlay>

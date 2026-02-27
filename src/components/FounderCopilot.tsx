@@ -30,7 +30,7 @@ const PRIORITY_COLORS: Record<string, string> = {
 };
 
 export function FounderCopilot() {
-  const { plan } = useSubscription();
+  const { plan, isPro } = useSubscription();
   const { activeBrand } = useBrand();
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
@@ -249,7 +249,7 @@ export function FounderCopilot() {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        {plan === "pro" ? content : (
+        {isPro ? content : (
           <LockedOverlay feature="aiStrategyRecommendations" requiredPlan="pro">
             {content}
           </LockedOverlay>
