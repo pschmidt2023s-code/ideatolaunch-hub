@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
+import { useState, useEffect, useCallback, useMemo, forwardRef, useImperativeHandle } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -93,6 +93,24 @@ export const StepSales = forwardRef<StepHandle>(function StepSales(_, ref) {
 
   useImperativeHandle(ref, () => ({ save: () => saveToDb(false) }), [saveToDb]);
 
+  const [returnRate, setReturnRate] = useState("10");
+  const [shippingCost, setShippingCost] = useState("4.90");
+  const [avgPrice, setAvgPrice] = useState("29.99");
+  const [unitCost, setUnitCost] = useState("12");
+
+  const marginAfterReturns = useMemo(() => {
+    const price = parseFloat(avgPrice) || 0;
+    const cost = parseFloat(unitCost) || 0;
+    const ship = parseFloat(shippingCost) || 0;
+    const ret = parseFloat(returnRate) || 0;
+    if (price <= 0) return null;
+    const grossMargin = price - cost - ship;
+    const returnLoss = (ret / 100) * (cost + ship + ship); // lost unit + double shipping
+    const effectiveMargin = grossMargin - returnLoss;
+    const effectiveMarginPct = (effectiveMargin / price) * 100;
+    return { effectiveMargin: effectiveMargin.toFixed(2), effectiveMarginPct: effectiveMarginPct.toFixed(1), returnLoss: returnLoss.toFixed(2) };
+  }, [avgPrice, unitCost, shippingCost, returnRate]);
+
   return (
     <div className="space-y-8">
       <div className="rounded-xl border bg-card p-6 shadow-card">
@@ -132,6 +150,59 @@ export const StepSales = forwardRef<StepHandle>(function StepSales(_, ref) {
             </Select>
           </div>
         </div>
+      </div>
+
+      {/* Versandstrategie */}
+      <div className="rounded-xl border bg-card p-6 shadow-card">
+        <h2 className="mb-4 text-lg font-semibold">📦 Versand- & Retourenstrategie</h2>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="space-y-1.5">
+            <Label className="text-xs">Ø Verkaufspreis (€)</Label>
+            <Input type="number" step="0.01" value={avgPrice} onChange={(e) => setAvgPrice(e.target.value)} />
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs">Stückkosten (€)</Label>
+            <Input type="number" step="0.01" value={unitCost} onChange={(e) => setUnitCost(e.target.value)} />
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs">Versandkosten / Bestellung (€)</Label>
+            <Input type="number" step="0.1" value={shippingCost} onChange={(e) => setShippingCost(e.target.value)} />
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs">Erwartete Retourenquote (%)</Label>
+            <Input type="number" step="1" value={returnRate} onChange={(e) => setReturnRate(e.target.value)} />
+          </div>
+        </div>
+
+        {marginAfterReturns && (
+          <div className="mt-4 grid gap-3 sm:grid-cols-3">
+            <div className="rounded-lg border p-4 text-center">
+              <p className="text-xs text-muted-foreground">Effektive Marge / Stück</p>
+              <p className={`text-2xl font-bold ${parseFloat(marginAfterReturns.effectiveMarginPct) >= 30 ? "text-green-600" : parseFloat(marginAfterReturns.effectiveMarginPct) >= 15 ? "text-amber-600" : "text-destructive"}`}>
+                {marginAfterReturns.effectiveMarginPct}%
+              </p>
+              <p className="text-[10px] text-muted-foreground mt-1">{marginAfterReturns.effectiveMargin} € pro Einheit</p>
+            </div>
+            <div className="rounded-lg border p-4 text-center">
+              <p className="text-xs text-muted-foreground">Retourenverlust / Stück</p>
+              <p className="text-2xl font-bold text-destructive">{marginAfterReturns.returnLoss} €</p>
+              <p className="text-[10px] text-muted-foreground mt-1">bei {returnRate}% Retourenquote</p>
+            </div>
+            <div className="rounded-lg border p-4 text-center">
+              <p className="text-xs text-muted-foreground">Marge nach Retouren</p>
+              <p className={`text-2xl font-bold ${parseFloat(marginAfterReturns.effectiveMarginPct) >= 30 ? "text-green-600" : "text-amber-600"}`}>
+                {parseFloat(marginAfterReturns.effectiveMarginPct) >= 30 ? "✅ Gesund" : parseFloat(marginAfterReturns.effectiveMarginPct) >= 15 ? "⚠️ Grenzwertig" : "🚨 Kritisch"}
+              </p>
+              <p className="text-[10px] text-muted-foreground mt-1">Zielwert: ≥30%</p>
+            </div>
+          </div>
+        )}
+
+        {parseFloat(returnRate) > 12 && (
+          <div className="mt-3 rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-xs text-destructive">
+            <strong>⚠️ Retourenquote über 12%:</strong> Prüfe Produktbeschreibungen, Größentabellen, QC-Standards und Verpackungsqualität. Hohe Retouren vernichten deine Marge.
+          </div>
+        )}
       </div>
 
       <div className="rounded-xl border bg-card p-6 shadow-card">
