@@ -1,4 +1,5 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from "jsr:@supabase/supabase-js@2";
 
 const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 
@@ -20,6 +21,21 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // ── Auth check ──
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return jsonResponse({ error: "Not authenticated" }, 401);
+    }
+    const supabaseClient = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+      { global: { headers: { Authorization: authHeader } } }
+    );
+    const { data, error: claimsError } = await supabaseClient.auth.getClaims(authHeader.replace("Bearer ", ""));
+    if (claimsError || !data?.claims) {
+      return jsonResponse({ error: "Not authenticated" }, 401);
+    }
+
     if (!LOVABLE_API_KEY) {
       console.error("LOVABLE_API_KEY not configured");
       return jsonResponse({ error: "AI service not configured" }, 500);
@@ -95,8 +111,8 @@ Antworte NUR mit einem JSON-Objekt (kein Markdown, kein Code-Block) mit genau di
       return jsonResponse({ error: "AI analysis failed" }, 500);
     }
 
-    const data = await response.json();
-    const content = data.choices?.[0]?.message?.content || "";
+    const aiData = await response.json();
+    const content = aiData.choices?.[0]?.message?.content || "";
 
     let result;
     try {

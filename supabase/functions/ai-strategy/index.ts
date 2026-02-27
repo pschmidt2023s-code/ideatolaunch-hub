@@ -1,9 +1,17 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from "jsr:@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
+
+function jsonResponse(body: Record<string, unknown>, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
 
 interface StrategyInput {
   margin: number;
@@ -17,14 +25,29 @@ interface StrategyInput {
   productCategory: string;
 }
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    // ── Auth check ──
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return jsonResponse({ error: "Not authenticated" }, 401);
+    }
+    const supabaseClient = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+      { global: { headers: { Authorization: authHeader } } }
+    );
+    const { data, error: claimsError } = await supabaseClient.auth.getClaims(authHeader.replace("Bearer ", ""));
+    if (claimsError || !data?.claims) {
+      return jsonResponse({ error: "Not authenticated" }, 401);
+    }
+
     const apiKey = Deno.env.get("LOVABLE_API_KEY");
-    if (!apiKey) throw new Error("LOVABLE_API_KEY not configured");
+    if (!apiKey) return jsonResponse({ error: "LOVABLE_API_KEY not configured" }, 500);
 
     const input: StrategyInput = await req.json();
 
@@ -96,24 +119,18 @@ Format: Jede Empfehlung als JSON-Objekt mit "category", "title", "description", 
 
     if (!response.ok) {
       if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "Rate limit – bitte versuche es in einer Minute erneut." }), {
-          status: 429,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        return jsonResponse({ error: "Rate limit – bitte versuche es in einer Minute erneut." }, 429);
       }
       if (response.status === 402) {
-        return new Response(JSON.stringify({ error: "AI-Credits aufgebraucht." }), {
-          status: 402,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        return jsonResponse({ error: "AI-Credits aufgebraucht." }, 402);
       }
       const text = await response.text();
       console.error("AI gateway error:", response.status, text);
-      throw new Error("AI gateway error");
+      return jsonResponse({ error: "AI gateway error" }, 500);
     }
 
-    const data = await response.json();
-    const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
+    const aiData = await response.json();
+    const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
     
     let recommendations = [];
     if (toolCall?.function?.arguments) {
@@ -121,14 +138,9 @@ Format: Jede Empfehlung als JSON-Objekt mit "category", "title", "description", 
       recommendations = parsed.recommendations || [];
     }
 
-    return new Response(JSON.stringify({ recommendations }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return jsonResponse({ recommendations });
   } catch (err) {
     console.error("[ai-strategy]", err);
-    return new Response(JSON.stringify({ error: err instanceof Error ? err.message : "Unknown error" }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return jsonResponse({ error: "Internal server error" }, 500);
   }
 });
