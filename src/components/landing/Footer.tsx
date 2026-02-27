@@ -1,13 +1,14 @@
+import { forwardRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { ShieldCheck, Lock, Server } from "lucide-react";
 
-export function Footer() {
+export const Footer = forwardRef<HTMLElement>(function Footer(_, ref) {
   const { t, i18n } = useTranslation();
   const isDE = i18n.language === "de";
 
   return (
-    <footer className="border-t px-4 py-12" role="contentinfo">
+    <footer ref={ref} className="border-t px-4 py-12" role="contentinfo">
       <div className="container mx-auto max-w-5xl">
         {/* Trust Bar */}
         <div className="flex flex-wrap items-center justify-center gap-6 mb-10 pb-8 border-b">
@@ -118,4 +119,4 @@ export function Footer() {
       </div>
     </footer>
   );
-}
+});
