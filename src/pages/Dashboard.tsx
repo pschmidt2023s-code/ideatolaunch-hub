@@ -94,8 +94,7 @@ export default function Dashboard() {
       // Mark as completed so it doesn't show again
       await supabase
         .from("profiles")
-        .update({ completed_starter_mode: true })
-        .eq("user_id", user.id);
+        .upsert({ user_id: user.id, completed_starter_mode: true }, { onConflict: "user_id" });
       queryClient.invalidateQueries({ queryKey: ["profile-starter", user.id] });
     }
   };
