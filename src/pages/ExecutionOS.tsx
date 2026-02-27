@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useBrand } from "@/hooks/useBrand";
@@ -352,6 +353,8 @@ function WeeklyCheckIn({ kpis, onKPIUpdate, healthScore }: { kpis: WeeklyKPI; on
 export default function ExecutionOSDashboard() {
   const { plan } = useSubscription();
   const { activeBrand } = useBrand();
+  const { i18n } = useTranslation();
+  const isDE = i18n.language === "de";
   const isExecution = plan === "execution";
   const isPro = plan === "pro" || isExecution;
 
@@ -813,11 +816,11 @@ export default function ExecutionOSDashboard() {
           <div className="flex items-center justify-between mb-1">
             <h2 className="text-lg font-bold flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-amber-500" />
-              Execution OS Roadmap – What's Next
+              {isDE ? "Execution OS Roadmap – Was kommt als Nächstes" : "Execution OS Roadmap – What's Next"}
             </h2>
-            <Badge className="bg-amber-500/10 text-amber-500 border-amber-500/30 text-[10px]">Coming Soon</Badge>
+            <Badge className="bg-amber-500/10 text-amber-500 border-amber-500/30 text-[10px]">{isDE ? "Demnächst" : "Coming Soon"}</Badge>
           </div>
-          <p className="text-sm text-muted-foreground mb-6">Execution evolves continuously. These features are in development.</p>
+          <p className="text-sm text-muted-foreground mb-6">{isDE ? "Execution OS entwickelt sich kontinuierlich weiter. Diese Features sind in Entwicklung." : "Execution evolves continuously. These features are in development."}</p>
 
           <div className="flex items-center gap-1 mb-6 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
             <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-500">Q2</span>
@@ -829,10 +832,10 @@ export default function ExecutionOSDashboard() {
 
           <div className="grid gap-4 md:grid-cols-2">
             {[
-              { title: "Failure Simulator", tag: "Growth Engine", release: "Q2", desc: "Simulate 3 typical founder mistakes in seconds. See how wrong MOQ, pricing, or return rates impact your capital.", cta: "Execution Members get early access." },
-              { title: "Founder Risk Profile", tag: "Personalization", release: "Q2", desc: "Choose your founder risk style: conservative, balanced, aggressive. Execution OS adapts recommendations to your profile.", cta: "Personalized strategy layer." },
-              { title: "Protection Layer", tag: "Risk Shield", release: "Q3", desc: "Production contract checklist. Quality control reminders. Payment condition negotiation guidance.", cta: "Enterprise-level protection for founders." },
-              { title: "Working Capital Engine", tag: "Capital Intelligence", release: "Q4", desc: "Capital binding analysis. Reorder timing optimizer. Liquidity gap forecasting.", cta: "Advanced capital forecasting system." },
+              { title: isDE ? "Fehler-Simulator" : "Failure Simulator", tag: isDE ? "Wachstumsmotor" : "Growth Engine", release: "Q2", desc: isDE ? "Simuliere 3 typische Gründerfehler in Sekunden. Sieh, wie falsche MOQ, Preise oder Retourenquoten dein Kapital beeinflussen." : "Simulate 3 typical founder mistakes in seconds. See how wrong MOQ, pricing, or return rates impact your capital.", cta: isDE ? "Execution-Mitglieder erhalten frühen Zugang." : "Execution Members get early access." },
+              { title: isDE ? "Gründer-Risikoprofil" : "Founder Risk Profile", tag: isDE ? "Personalisierung" : "Personalization", release: "Q2", desc: isDE ? "Wähle deinen Gründer-Risikostil: konservativ, ausgewogen, aggressiv. Execution OS passt Empfehlungen an dein Profil an." : "Choose your founder risk style: conservative, balanced, aggressive. Execution OS adapts recommendations to your profile.", cta: isDE ? "Personalisierte Strategie-Ebene." : "Personalized strategy layer." },
+              { title: isDE ? "Schutzschicht" : "Protection Layer", tag: isDE ? "Risiko-Schutzschild" : "Risk Shield", release: "Q3", desc: isDE ? "Produktionsvertrag-Checkliste. Qualitätskontroll-Erinnerungen. Verhandlungshilfe für Zahlungsbedingungen." : "Production contract checklist. Quality control reminders. Payment condition negotiation guidance.", cta: isDE ? "Enterprise-Level Schutz für Gründer." : "Enterprise-level protection for founders." },
+              { title: isDE ? "Working Capital Engine" : "Working Capital Engine", tag: isDE ? "Kapital-Intelligenz" : "Capital Intelligence", release: "Q4", desc: isDE ? "Kapitalbindungsanalyse. Nachbestellungs-Optimierer. Liquiditätslücken-Prognose." : "Capital binding analysis. Reorder timing optimizer. Liquidity gap forecasting.", cta: isDE ? "Fortgeschrittenes Kapitalprognose-System." : "Advanced capital forecasting system." },
             ].map((item, i) => (
               <div key={i} className={`rounded-xl border p-5 space-y-3 transition-all ${isExecution ? "border-amber-500/20 bg-amber-500/[0.03] shadow-sm" : "border-border/50 bg-card/50"}`}>
                 <div className="flex items-center justify-between">
@@ -848,8 +851,8 @@ export default function ExecutionOSDashboard() {
 
           {/* ═══ PART 6: COMMITMENT FOOTER ═══ */}
           <p className="mt-6 text-[11px] text-muted-foreground text-center leading-relaxed">
-            Execution OS is built for serious founders.<br />
-            Execution OS continuously evolves to protect your capital.
+            {isDE ? "Execution OS ist für ambitionierte Gründer gebaut." : "Execution OS is built for serious founders."}<br />
+            {isDE ? "Execution OS entwickelt sich kontinuierlich weiter, um dein Kapital zu schützen." : "Execution OS continuously evolves to protect your capital."}
           </p>
         </div>
       </div>
