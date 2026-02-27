@@ -51,8 +51,7 @@ export default function Onboarding() {
     if (!user) return;
     await supabase
       .from("profiles")
-      .update({ completed_starter_mode: true })
-      .eq("user_id", user.id);
+      .upsert({ user_id: user.id, completed_starter_mode: true }, { onConflict: "user_id" });
     trackEvent("onboarding_finished", { path, experience, productType, budget, goal });
   };
 

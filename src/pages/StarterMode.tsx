@@ -22,8 +22,7 @@ export default function StarterMode() {
     if (user) {
       await supabase
         .from("profiles")
-        .update({ completed_starter_mode: true } as any)
-        .eq("user_id", user.id);
+        .upsert({ user_id: user.id, completed_starter_mode: true }, { onConflict: "user_id" });
     }
     navigate("/dashboard");
   };
