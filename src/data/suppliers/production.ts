@@ -65,4 +65,12 @@ export const productionSuppliers: ProductionSupplier[] = [
   { name: "Shenzhen Circuit Works", region: "Asia", categories: ["electronics"], estimatedMOQ: 500, estimatedUnitCostRange: [3, 15], leadTimeDays: 35, positioning: "mid", notes: "PCB Assembly, IoT-Geräte" },
   { name: "Dongguan Electronics OEM", region: "Asia", categories: ["electronics"], estimatedMOQ: 1000, estimatedUnitCostRange: [1.5, 8], leadTimeDays: 40, positioning: "budget", notes: "Consumer Electronics, Bulk" },
   { name: "TechForm Europe (CZ)", region: "EU", categories: ["electronics"], estimatedMOQ: 100, estimatedUnitCostRange: [8, 30], leadTimeDays: 28, positioning: "premium", notes: "Prototypen, Kleinserien, CE-konform" },
+
+  // ── Print / Art ──
+  { name: "Printful", region: "EU", categories: ["print_art"], estimatedMOQ: 1, estimatedUnitCostRange: [8, 25], leadTimeDays: 5, positioning: "mid", notes: "Print-on-Demand, Poster, Leinwände, T-Shirts", website: "https://www.printful.com" },
+  { name: "Gelato", region: "EU", categories: ["print_art"], estimatedMOQ: 1, estimatedUnitCostRange: [6, 20], leadTimeDays: 5, positioning: "mid", notes: "Globaler Print-on-Demand, lokale Produktion", website: "https://www.gelato.com" },
+  { name: "WHCC (White House Custom Colour)", region: "EU", categories: ["print_art"], estimatedMOQ: 1, estimatedUnitCostRange: [12, 50], leadTimeDays: 7, positioning: "premium", notes: "Fine Art Prints, Museum-Qualität", website: "https://www.whcc.com" },
+  { name: "Hahnemühle FineArt", region: "EU", categories: ["print_art"], estimatedMOQ: 10, estimatedUnitCostRange: [15, 60], leadTimeDays: 14, positioning: "premium", notes: "Premium Fine Art Druckpapiere & Prints", website: "https://www.hahnemuehle.com" },
+  { name: "Prodigi", region: "EU", categories: ["print_art"], estimatedMOQ: 1, estimatedUnitCostRange: [5, 18], leadTimeDays: 5, positioning: "budget", notes: "Print-on-Demand API, Wandbilder, Poster", website: "https://www.prodigi.com" },
+  { name: "Shenzhen Canvas Factory", region: "Asia", categories: ["print_art"], estimatedMOQ: 50, estimatedUnitCostRange: [3, 12], leadTimeDays: 25, positioning: "budget", notes: "Bulk-Leinwände, gerahmte Drucke", website: undefined },
 ];

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Lightbulb, GraduationCap, Loader2, ArrowRight, ArrowLeft, Package, DollarSign, Target, ShieldAlert, Zap, Heart, RefreshCw } from "lucide-react";
+import { Lightbulb, GraduationCap, Loader2, ArrowRight, ArrowLeft, Package, DollarSign, Target, ShieldAlert, Zap, Heart, AlertTriangle, Monitor, Briefcase, Box } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,19 +11,18 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
+import { Checkbox } from "@/components/ui/checkbox";
+import { CATEGORIES } from "@/lib/categories";
+import { RISK_FLAGS, getDefaultRiskFlags, type ProductType } from "@/lib/product-intelligence";
 
-type Step = "welcome" | "experience" | "product" | "budget" | "archetype" | "done";
+type Step = "welcome" | "experience" | "product_type" | "product_category" | "risk_flags" | "product" | "budget" | "archetype" | "done";
 
-const STEPS: Step[] = ["welcome", "experience", "product", "budget", "archetype", "done"];
+const STEPS: Step[] = ["welcome", "experience", "product_type", "product_category", "risk_flags", "product", "budget", "archetype", "done"];
 
 function determineArchetype(goal: string, riskTolerance: string, budget: string): string {
-  // Recovery founder: low budget + survival goal
   if (goal === "survival" || (budget === "under1k" && riskTolerance === "low")) return "recovery_founder";
-  // Aggressive scaler: high risk + scale goal
   if (goal === "scale" || riskTolerance === "high") return "aggressive_scaler";
-  // Brand perfectionist: mid-high budget + launch/profitability + low-medium risk
   if ((goal === "launch" || goal === "profitability") && riskTolerance !== "high" && (budget === "5k-15k" || budget === "15k-50k" || budget === "50k+")) return "brand_perfectionist";
-  // Default: conservative planner
   return "conservative_planner";
 }
 
@@ -35,6 +34,9 @@ export default function Onboarding() {
 
   const [step, setStep] = useState<Step>("welcome");
   const [experience, setExperience] = useState("");
+  const [productTypeChoice, setProductTypeChoice] = useState<ProductType | "">("");
+  const [productCategory, setProductCategory] = useState("");
+  const [riskFlagSelections, setRiskFlagSelections] = useState<string[]>([]);
   const [productType, setProductType] = useState("");
   const [budget, setBudget] = useState("");
   const [goal, setGoal] = useState("");
@@ -59,6 +61,13 @@ export default function Onboarding() {
     }
   }, [isLoading, profile, navigate]);
 
+  // Auto-set risk flags when category changes
+  useEffect(() => {
+    if (productCategory) {
+      setRiskFlagSelections(getDefaultRiskFlags(productCategory));
+    }
+  }, [productCategory]);
+
   const markCompleted = async (path: string) => {
     if (!user) return;
     const archetype = determineArchetype(goal, riskTolerance, budget);
@@ -68,7 +77,7 @@ export default function Onboarding() {
         { user_id: user.id, completed_starter_mode: true, archetype, risk_tolerance: riskTolerance } as any,
         { onConflict: "user_id" }
       );
-    trackEvent("onboarding_finished", { path, experience, productType, budget, goal, riskTolerance, archetype });
+    trackEvent("onboarding_finished", { path, experience, productType: productCategory, budget, goal, riskTolerance, archetype, productTypeChoice, riskFlags: riskFlagSelections });
   };
 
   const currentIdx = STEPS.indexOf(step);
@@ -76,10 +85,20 @@ export default function Onboarding() {
 
   const goNext = () => {
     const idx = STEPS.indexOf(step);
+    // Skip product_category and risk_flags for non-physical products
+    if (step === "product_type" && productTypeChoice !== "physical") {
+      setStep("product");
+      return;
+    }
     if (idx < STEPS.length - 1) setStep(STEPS[idx + 1]);
   };
   const goBack = () => {
     const idx = STEPS.indexOf(step);
+    // Skip back over product_category/risk_flags for non-physical
+    if (step === "product" && productTypeChoice !== "physical") {
+      setStep("product_type");
+      return;
+    }
     if (idx > 0) setStep(STEPS[idx - 1]);
   };
 
@@ -90,6 +109,8 @@ export default function Onboarding() {
       </div>
     );
   }
+
+  const physicalCategories = CATEGORIES.filter(c => c.id !== "other");
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
@@ -182,47 +203,158 @@ export default function Onboarding() {
           </div>
         )}
 
-        {/* Step: Product Type */}
-        {step === "product" && (
+        {/* Step: Product Type (Physical / Digital / Service) */}
+        {step === "product_type" && (
           <div className="animate-fade-in space-y-6">
             <div className="text-center">
               <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
-                <Package className="h-6 w-6 text-accent" />
+                <Box className="h-6 w-6 text-accent" />
               </div>
-              <h2 className="text-xl font-bold">{isDE ? "Was willst du launchen?" : "What do you want to launch?"}</h2>
-              <p className="text-sm text-muted-foreground mt-1">{isDE ? "Wähle deine Produktkategorie." : "Choose your product category."}</p>
+              <h2 className="text-xl font-bold">{isDE ? "Was ist dein Produkttyp?" : "What's your product type?"}</h2>
+              <p className="text-sm text-muted-foreground mt-1">{isDE ? "Dies bestimmt deine Checklisten, Compliance und Lieferantenempfehlungen." : "This determines your checklists, compliance, and supplier recommendations."}</p>
             </div>
-            <Select value={productType} onValueChange={setProductType}>
-              <SelectTrigger><SelectValue placeholder={isDE ? "Kategorie auswählen…" : "Select category…"} /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="skincare">Skincare / {isDE ? "Kosmetik" : "Cosmetics"}</SelectItem>
-                <SelectItem value="food">Food / {isDE ? "Nahrungsergänzung" : "Supplements"}</SelectItem>
-                <SelectItem value="fashion">Fashion / {isDE ? "Textilien" : "Textiles"}</SelectItem>
-                <SelectItem value="home">Home & Living</SelectItem>
-                <SelectItem value="pet">Pet / {isDE ? "Haustiere" : "Pets"}</SelectItem>
-                <SelectItem value="tech">Tech-{isDE ? "Zubehör" : "Accessories"}</SelectItem>
-                <SelectItem value="other">{isDE ? "Sonstiges" : "Other"}</SelectItem>
-              </SelectContent>
-            </Select>
-            <div className="space-y-2">
-              <Label className="text-sm">{isDE ? "Was ist dein Ziel?" : "What is your goal?"}</Label>
-              <Select value={goal} onValueChange={setGoal}>
-                <SelectTrigger><SelectValue placeholder={isDE ? "Hauptziel auswählen…" : "Select primary goal…"} /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="validate">{isDE ? "Idee validieren" : "Validate idea"}</SelectItem>
-                  <SelectItem value="launch">{isDE ? "Ersten Launch planen" : "Plan first launch"}</SelectItem>
-                  <SelectItem value="profitability">{isDE ? "Profitabilität steigern" : "Increase profitability"}</SelectItem>
-                  <SelectItem value="scale">{isDE ? "Skalieren" : "Scale"}</SelectItem>
-                  <SelectItem value="survival">{isDE ? "Überleben sichern" : "Secure survival"}</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="space-y-3">
+              {[
+                { value: "physical" as const, icon: Package, label: isDE ? "Physisches Produkt" : "Physical product", desc: isDE ? "Kosmetik, Textilien, Food, Elektronik, Print etc." : "Cosmetics, textiles, food, electronics, print etc." },
+                { value: "digital" as const, icon: Monitor, label: isDE ? "Digitales Produkt" : "Digital product", desc: isDE ? "E-Books, Kurse, Templates, Software" : "E-books, courses, templates, software" },
+                { value: "service" as const, icon: Briefcase, label: isDE ? "Dienstleistung" : "Service", desc: isDE ? "Beratung, Coaching, Agentur" : "Consulting, coaching, agency" },
+              ].map((opt) => (
+                <button
+                  key={opt.value}
+                  onClick={() => { setProductTypeChoice(opt.value); goNext(); }}
+                  className={`w-full text-left rounded-xl border p-4 transition-all hover:border-accent/40 hover:shadow-sm flex items-center gap-4 ${
+                    productTypeChoice === opt.value ? "border-accent bg-accent/5" : "bg-card"
+                  }`}
+                >
+                  <opt.icon className="h-5 w-5 shrink-0 text-accent" />
+                  <div>
+                    <p className="font-semibold text-sm">{opt.label}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{opt.desc}</p>
+                  </div>
+                </button>
+              ))}
             </div>
             <div className="flex justify-between">
               <Button variant="ghost" size="sm" onClick={goBack} className="gap-1.5">
                 <ArrowLeft className="h-3.5 w-3.5" /> {isDE ? "Zurück" : "Back"}
               </Button>
-              <Button size="sm" onClick={goNext} disabled={!productType} className="gap-1.5">
+            </div>
+          </div>
+        )}
+
+        {/* Step: Product Category (Physical only) */}
+        {step === "product_category" && (
+          <div className="animate-fade-in space-y-6">
+            <div className="text-center">
+              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
+                <Package className="h-6 w-6 text-accent" />
+              </div>
+              <h2 className="text-xl font-bold">{isDE ? "Welche Produktkategorie?" : "Which product category?"}</h2>
+              <p className="text-sm text-muted-foreground mt-1">{isDE ? "Deine Checklisten, Compliance und Lieferanten werden darauf angepasst." : "Your checklists, compliance, and suppliers will be tailored to this."}</p>
+            </div>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {physicalCategories.map((cat) => (
+                <button
+                  key={cat.id}
+                  onClick={() => { setProductCategory(cat.id); setProductType(cat.id); goNext(); }}
+                  className={`text-left rounded-xl border p-4 transition-all hover:border-accent/40 hover:shadow-sm ${
+                    productCategory === cat.id ? "border-accent bg-accent/5" : "bg-card"
+                  }`}
+                >
+                  <p className="font-semibold text-sm">{isDE ? cat.labelDe : cat.labelEn}</p>
+                </button>
+              ))}
+              <button
+                onClick={() => { setProductCategory("other"); setProductType("other"); goNext(); }}
+                className={`text-left rounded-xl border p-4 transition-all hover:border-accent/40 hover:shadow-sm ${
+                  productCategory === "other" ? "border-accent bg-accent/5" : "bg-card"
+                }`}
+              >
+                <p className="font-semibold text-sm">{isDE ? "Sonstiges" : "Other"}</p>
+              </button>
+            </div>
+            <div className="flex justify-between">
+              <Button variant="ghost" size="sm" onClick={goBack} className="gap-1.5">
+                <ArrowLeft className="h-3.5 w-3.5" /> {isDE ? "Zurück" : "Back"}
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Step: Risk Flags (Physical only) */}
+        {step === "risk_flags" && (
+          <div className="animate-fade-in space-y-6">
+            <div className="text-center">
+              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
+                <AlertTriangle className="h-6 w-6 text-destructive" />
+              </div>
+              <h2 className="text-xl font-bold">{isDE ? "Risiko-Flags prüfen" : "Review risk flags"}</h2>
+              <p className="text-sm text-muted-foreground mt-1">{isDE ? "Basierend auf deiner Kategorie – passe an, was auf dein Produkt zutrifft." : "Based on your category – adjust what applies to your product."}</p>
+            </div>
+            <div className="space-y-3">
+              {RISK_FLAGS.map((flag) => (
+                <label
+                  key={flag.id}
+                  className={`flex items-center gap-3 cursor-pointer rounded-xl border p-4 transition-all hover:border-accent/40 ${
+                    riskFlagSelections.includes(flag.id) ? "border-accent bg-accent/5" : "bg-card"
+                  }`}
+                >
+                  <Checkbox
+                    checked={riskFlagSelections.includes(flag.id)}
+                    onCheckedChange={(checked) => {
+                      setRiskFlagSelections(prev =>
+                        checked ? [...prev, flag.id] : prev.filter(f => f !== flag.id)
+                      );
+                    }}
+                  />
+                  <span className="text-sm font-medium">{isDE ? flag.labelDe : flag.labelEn}</span>
+                </label>
+              ))}
+            </div>
+            <div className="flex justify-between">
+              <Button variant="ghost" size="sm" onClick={goBack} className="gap-1.5">
+                <ArrowLeft className="h-3.5 w-3.5" /> {isDE ? "Zurück" : "Back"}
+              </Button>
+              <Button size="sm" onClick={goNext} className="gap-1.5">
                 {isDE ? "Weiter" : "Next"} <ArrowRight className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Step: Goal */}
+        {step === "product" && (
+          <div className="animate-fade-in space-y-6">
+            <div className="text-center">
+              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
+                <Target className="h-6 w-6 text-accent" />
+              </div>
+              <h2 className="text-xl font-bold">{isDE ? "Was ist dein Ziel?" : "What is your goal?"}</h2>
+              <p className="text-sm text-muted-foreground mt-1">{isDE ? "Das bestimmt deine Dashboard-Prioritäten." : "This determines your dashboard priorities."}</p>
+            </div>
+            <div className="space-y-3">
+              {[
+                { value: "validate", label: isDE ? "Idee validieren" : "Validate idea", desc: isDE ? "Herausfinden, ob mein Produkt Potenzial hat" : "Find out if my product has potential" },
+                { value: "launch", label: isDE ? "Ersten Launch planen" : "Plan first launch", desc: isDE ? "Strukturiert zum ersten Produkt" : "Structured path to first product" },
+                { value: "profitability", label: isDE ? "Profitabilität steigern" : "Increase profitability", desc: isDE ? "Margen verbessern und Kosten senken" : "Improve margins and reduce costs" },
+                { value: "scale", label: isDE ? "Skalieren" : "Scale", desc: isDE ? "Umsatz und Volumen steigern" : "Increase revenue and volume" },
+                { value: "survival", label: isDE ? "Überleben sichern" : "Secure survival", desc: isDE ? "Cashflow stabilisieren und Risiken senken" : "Stabilize cashflow and reduce risks" },
+              ].map((opt) => (
+                <button
+                  key={opt.value}
+                  onClick={() => { setGoal(opt.value); goNext(); }}
+                  className={`w-full text-left rounded-xl border p-4 transition-all hover:border-accent/40 hover:shadow-sm ${
+                    goal === opt.value ? "border-accent bg-accent/5" : "bg-card"
+                  }`}
+                >
+                  <p className="font-semibold text-sm">{opt.label}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{opt.desc}</p>
+                </button>
+              ))}
+            </div>
+            <div className="flex justify-between">
+              <Button variant="ghost" size="sm" onClick={goBack} className="gap-1.5">
+                <ArrowLeft className="h-3.5 w-3.5" /> {isDE ? "Zurück" : "Back"}
               </Button>
             </div>
           </div>
@@ -300,10 +432,10 @@ export default function Onboarding() {
                   {(() => {
                     const arch = determineArchetype(goal, riskTolerance, budget);
                     const labels: Record<string, string> = {
-                      conservative_planner: isDE ? "🛡️ Conservative Planner" : "🛡️ Conservative Planner",
-                      aggressive_scaler: isDE ? "🚀 Aggressive Scaler" : "🚀 Aggressive Scaler",
-                      brand_perfectionist: isDE ? "💎 Brand Perfectionist" : "💎 Brand Perfectionist",
-                      recovery_founder: isDE ? "🔄 Recovery Founder" : "🔄 Recovery Founder",
+                      conservative_planner: "🛡️ Conservative Planner",
+                      aggressive_scaler: "🚀 Aggressive Scaler",
+                      brand_perfectionist: "💎 Brand Perfectionist",
+                      recovery_founder: "🔄 Recovery Founder",
                     };
                     return labels[arch] || arch;
                   })()}

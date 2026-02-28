@@ -17,9 +17,11 @@ import { SupplierExperienceCard } from "@/components/SupplierExperienceCard";
 import { UnboxingScoreCard } from "@/components/UnboxingScoreCard";
 import { CATEGORIES, normalizeCategoryId } from "@/lib/categories";
 import { trackEvent } from "@/lib/analytics";
+import { getProductionChecklistForCategory } from "@/lib/product-intelligence";
 import type { PackagingType, UnboxingInput } from "@/lib/unboxing-score-engine";
 
-const checklist = [
+// Dynamic checklist - will be computed based on category
+const defaultChecklist = [
   "Produktspezifikationen definiert",
   "Materialanforderungen festgelegt",
   "Qualitätsstandards dokumentiert",
@@ -219,8 +221,13 @@ export const StepProduction = forwardRef<StepHandle>(function StepProduction(_, 
 
       <div className="rounded-xl border bg-card p-6 shadow-card">
         <h2 className="mb-4 text-lg font-semibold">{t("step4.checklist")}</h2>
+        {category && category !== "" && (
+          <div className="mb-3 rounded-lg border border-accent/20 bg-accent/5 px-3 py-2 text-xs text-accent font-medium">
+            Checkliste angepasst an: <span className="font-bold capitalize">{category.replace("_", " / ")}</span>
+          </div>
+        )}
         <div className="space-y-3">
-          {checklist.map((item) => (
+          {getProductionChecklistForCategory(category || "other").map((item) => (
             <label key={item} className="flex items-center gap-3 cursor-pointer">
               <Checkbox
                 checked={!!checked[item]}
