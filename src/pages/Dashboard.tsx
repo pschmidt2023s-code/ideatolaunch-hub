@@ -10,6 +10,7 @@ import { Progress } from "@/components/ui/progress";
 import { BrandHealthCard } from "@/components/dashboard/BrandHealthCard";
 import { UpgradeBanner } from "@/components/UpgradeBanner";
 import BlueprintExport from "@/components/BlueprintExport";
+import { WeeklyCEOReviewCard, MomentumScoreCard, DecisionTimeline, RetentionUpgradeTrigger } from "@/components/dashboard/RetentionWidgets";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -242,6 +243,17 @@ export default function Dashboard() {
               </div>
             )}
             {currentBrand && <BrandHealthCard />}
+            
+            {/* Retention Engine Widgets */}
+            {currentBrand && (
+              <div className="grid gap-4 sm:grid-cols-2">
+                <WeeklyCEOReviewCard />
+                <MomentumScoreCard />
+              </div>
+            )}
+            {currentBrand && <RetentionUpgradeTrigger />}
+            {currentBrand && <DecisionTimeline />}
+            
             {currentBrand && <BlueprintExport />}
 
             {currentBrand && (
