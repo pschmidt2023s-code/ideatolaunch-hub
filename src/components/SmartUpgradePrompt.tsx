@@ -13,31 +13,49 @@ interface TriggerContext {
   warningCount: number;
   breakEvenHigh: boolean;
   moqPressure: boolean;
+  lowMargin: boolean;
+  lowRunway: boolean;
 }
 
 function getUpgradeCopy(ctx: TriggerContext, isDE: boolean): { title: string; desc: string } | null {
+  if (ctx.lowMargin) {
+    return {
+      title: isDE ? "Marge unter 35% — Kapitalrisiko" : "Margin below 35% — capital at risk",
+      desc: isDE
+        ? "Execution OS schützt dein Kapital mit Echtzeit-Margen-Überwachung und strategischen Alerts."
+        : "Execution OS protects your capital with real-time margin monitoring and strategic alerts.",
+    };
+  }
+  if (ctx.lowRunway) {
+    return {
+      title: isDE ? "Cash Runway unter 3 Monaten" : "Cash runway under 3 months",
+      desc: isDE
+        ? "Execution OS erkennt Liquiditätsrisiken und gibt dir Kapitalschutz-Alerts, bevor es kritisch wird."
+        : "Execution OS detects liquidity risks and gives you capital protection alerts before it's critical.",
+    };
+  }
   if (ctx.moqPressure) {
     return {
       title: isDE ? "Dein MOQ frisst dein Budget" : "Your MOQ is eating your budget",
       desc: isDE
-        ? "Wisse genau, wie du dein Budget auf Produktion, Marketing und Reserve verteilst — mit dem Budget-Planer."
-        : "Know exactly how to allocate your budget across production, marketing, and reserves — with the Budget Planner.",
+        ? "Wisse genau, wie du dein Budget auf Produktion, Marketing und Reserve verteilst."
+        : "Know exactly how to allocate your budget across production, marketing, and reserves.",
     };
   }
   if (ctx.breakEvenHigh) {
     return {
       title: isDE ? "Langer Weg bis zum Break-Even" : "Long road to break-even",
       desc: isDE
-        ? "Die meisten Gründer simulieren Szenarien, bevor sie Kapital binden. Finde die optimale Menge und Preisstrategie."
-        : "Most founders simulate scenarios before committing capital. Find the optimal quantity and pricing strategy.",
+        ? "Simuliere Szenarien, bevor du Kapital bindest. Finde die optimale Menge und Preisstrategie."
+        : "Simulate scenarios before committing capital. Find the optimal quantity and pricing strategy.",
     };
   }
   if (ctx.warningCount >= 2) {
     return {
       title: isDE ? "Mehrere Risiken erkannt" : "Multiple risks detected",
       desc: isDE
-        ? "Erkenne alle Risiken und erhalte konkrete Lösungsvorschläge — schalte die volle Risikoanalyse und den Budget-Planer frei."
-        : "Identify all risks and get concrete fix suggestions — unlock full risk analysis and budget planning.",
+        ? "Erkenne alle Risiken und erhalte konkrete Lösungsvorschläge — Kapitalschutz für deinen Launch."
+        : "Identify all risks and get concrete fix suggestions — capital protection for your launch.",
     };
   }
   return null;
@@ -83,18 +101,21 @@ export function SmartUpgradePrompt() {
     const moqRatio = moqCost / (budgetValue || 1);
 
     let warningCount = 0;
-    if (margin < 35) warningCount++;
+    const lowMargin = margin < 35;
+    if (lowMargin) warningCount++;
     if (breakEvenUnits > 300) warningCount++;
     if (moqRatio > 0.5) warningCount++;
     if ((financial.marketing_budget ?? 0) <= 0) warningCount++;
 
-    const shouldShow = warningCount >= 2 || breakEvenUnits > 300 || moqRatio > 0.6;
+    const shouldShow = warningCount >= 2 || breakEvenUnits > 300 || moqRatio > 0.6 || lowMargin;
     if (!shouldShow) return null;
 
     return {
       warningCount,
       breakEvenHigh: breakEvenUnits > 300,
       moqPressure: moqRatio > 0.6,
+      lowMargin,
+      lowRunway: false,
     };
   }, [financial, profile, isFree]);
 
@@ -110,7 +131,7 @@ export function SmartUpgradePrompt() {
     : Rocket;
   const Icon = icon;
 
-  const triggerType = trigger.moqPressure ? "moq" : trigger.breakEvenHigh ? "breakeven" : "warnings";
+  const triggerType = trigger.lowMargin ? "low_margin" : trigger.lowRunway ? "low_runway" : trigger.moqPressure ? "moq" : trigger.breakEvenHigh ? "breakeven" : "warnings";
 
   return (
     <div className="rounded-xl border border-accent/30 bg-accent/5 p-5">

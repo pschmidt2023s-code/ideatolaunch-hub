@@ -7,6 +7,9 @@ export function HeroSection() {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
+  const { i18n } = useTranslation();
+  const isDE = i18n.language === "de";
+
   return (
     <section className="relative overflow-hidden px-4 pt-32 pb-20 md:pt-40 md:pb-32" aria-label="Hero">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--accent)/0.06),transparent_70%)]" />
@@ -17,13 +20,14 @@ export function HeroSection() {
         </div>
 
         <h1 className="mx-auto max-w-4xl text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl">
-          {t("hero.title1")}{" "}
-          <span className="text-gradient">{t("hero.title2")}</span>{" "}
-          {t("hero.title3")}
+          {isDE ? "Schütze dein Kapital." : "Protect Your Capital."}{" "}
+          <span className="text-gradient">{isDE ? "Launche mit Intelligenz." : "Launch With Intelligence."}</span>
         </h1>
 
         <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground md:text-xl">
-          {t("hero.subtitle")}
+          {isDE
+            ? "Das Founder Operating System für produktbasierte Unternehmer. Kapitalschutz, Execution-Disziplin und datengetriebener Launch."
+            : "The Founder Operating System for product-based entrepreneurs. Capital protection, execution discipline, and data-driven launch."}
         </p>
 
         <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
@@ -47,9 +51,9 @@ export function HeroSection() {
 
         <div className="mx-auto mt-20 grid max-w-3xl grid-cols-1 gap-6 sm:grid-cols-3">
           {[
-            { icon: Target, label: t("hero.steps"), desc: t("hero.stepsDesc") },
-            { icon: Layers, label: t("hero.structured"), desc: t("hero.structuredDesc") },
-            { icon: TrendingUp, label: t("hero.data"), desc: t("hero.dataDesc") },
+            { icon: Target, label: isDE ? "Kapitalschutz" : "Capital Protection", desc: isDE ? "Erkenne Risiken vor dem Kapitalverlust" : "Detect risks before capital loss" },
+            { icon: Layers, label: isDE ? "Execution-Disziplin" : "Execution Discipline", desc: isDE ? "Strukturierter Launch mit Daten" : "Structured, data-driven launch" },
+            { icon: TrendingUp, label: isDE ? "Strategisches Scaling" : "Strategic Scaling", desc: isDE ? "Datenbasierte Wachstumsentscheidungen" : "Data-backed growth decisions" },
           ].map(({ icon: Icon, label, desc }) => (
             <div key={label} className="flex flex-col items-center gap-2 rounded-lg border bg-card p-6 shadow-card animate-fade-in">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10">

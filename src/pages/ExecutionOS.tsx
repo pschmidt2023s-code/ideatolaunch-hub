@@ -409,11 +409,11 @@ export default function ExecutionOSDashboard() {
           </div>
           <div>
             <h1 className="text-2xl font-bold flex items-center gap-2">
-              Execution OS
+              {isDE ? "Execution OS — Das Founder Operating System" : "Execution OS — The Founder Operating System"}
               {isExecution && <Crown className="h-4 w-4 text-amber-500" />}
             </h1>
             <p className="text-sm text-muted-foreground">
-              {isExecution ? "For founders with real capital at risk." : "Founder Operating System – Run your business like a CEO"}
+              {isDE ? "Führe dein Business wie ein CEO. Schütze dein Kapital." : "Run your business like a CEO. Protect your capital."}
             </p>
           </div>
           {isExecution && (
