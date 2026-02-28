@@ -6,19 +6,19 @@
     "signup": "Registrieren"
   },
   "hero": {
-    "badge": "Von der Idee zur fertigen Marke",
-    "title1": "Deine Marke.",
-    "title2": "Strukturiert",
-    "title3": "aufgebaut.",
-    "subtitle": "BuildYourBrand führt dich Schritt für Schritt von der Geschäftsidee zur startbereiten Marke — mit strukturierten Workflows, Kalkulationen und KI-Unterstützung.",
-    "cta": "Kostenlos starten",
-    "learn": "Mehr erfahren",
-    "steps": "7 Schritte",
-    "stepsDesc": "Vom Konzept zum Launch",
-    "structured": "Alles strukturiert",
-    "structuredDesc": "Nie wieder Chaos",
-    "data": "Datengetrieben",
-    "dataDesc": "Kalkulation & Analyse"
+    "badge": "Private Label Gründer verlieren ∅ 5.000 € durch vermeidbare Fehler",
+    "title1": "Vermeide teure",
+    "title2": "Produktionsfehler",
+    "title3": "bevor sie passieren.",
+    "subtitle": "BuildYourBrand erkennt Risiken in Kalkulation, Produktion und Launch — bevor du Kapital verbrennst. Datenbasiert, strukturiert, KI-gestützt.",
+    "cta": "Gratis starten – Fehler vermeiden",
+    "learn": "Wie es funktioniert",
+    "steps": "Risiko-Check",
+    "stepsDesc": "Erkenne Fehler vor dem Launch",
+    "structured": "Kalkulations-Engine",
+    "structuredDesc": "Break-Even, Marge & Cashflow",
+    "data": "KI-Copilot",
+    "dataDesc": "Strategische Empfehlungen"
   },
   "features": {
     "title": "7 Schritte zur fertigen Marke",

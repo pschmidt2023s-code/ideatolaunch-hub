@@ -6,19 +6,19 @@
     "signup": "Sign up"
   },
   "hero": {
-    "badge": "From idea to finished brand",
-    "title1": "Your brand.",
-    "title2": "Structured",
-    "title3": "from scratch.",
-    "subtitle": "BuildYourBrand guides you step by step from business idea to launch-ready brand — with structured workflows, calculations, and AI support.",
-    "cta": "Start for free",
-    "learn": "Learn more",
-    "steps": "7 Steps",
-    "stepsDesc": "From concept to launch",
-    "structured": "Fully structured",
-    "structuredDesc": "No more chaos",
-    "data": "Data-driven",
-    "dataDesc": "Calculation & analysis"
+    "badge": "Private label founders lose avg. €5,000 on avoidable mistakes",
+    "title1": "Avoid costly",
+    "title2": "production mistakes",
+    "title3": "before they happen.",
+    "subtitle": "BuildYourBrand detects risks in pricing, production, and launch — before you burn capital. Data-driven, structured, AI-powered.",
+    "cta": "Start free – avoid mistakes",
+    "learn": "How it works",
+    "steps": "Risk Check",
+    "stepsDesc": "Detect mistakes before launch",
+    "structured": "Calculation Engine",
+    "structuredDesc": "Break-even, margin & cashflow",
+    "data": "AI Copilot",
+    "dataDesc": "Strategic recommendations"
   },
   "features": {
     "title": "7 Steps to a finished brand",

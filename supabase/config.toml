@@ -5,3 +5,18 @@ verify_jwt = false
 
 [functions.stripe-webhook]
 verify_jwt = false
+
+[functions.ai-copilot]
+verify_jwt = false
+
+[functions.ai-analyze]
+verify_jwt = false
+
+[functions.ai-brand-names]
+verify_jwt = false
+
+[functions.ai-strategy]
+verify_jwt = false
+
+[functions.ai-brand-intelligence]
+verify_jwt = false

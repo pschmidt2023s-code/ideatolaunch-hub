@@ -1,10 +1,10 @@
 // ─── Shared HTML email layout for BrandOS ────────────────────────────
 // To rename the brand, change BRAND_NAME below.
 
-const BRAND_NAME = "BrandOS";
+const BRAND_NAME = "BuildYourBrand";
 
 const APP_URL = "https://ideatolaunch-hub.lovable.app";
-const SUPPORT_EMAIL = "support@buildyourbrand.de"; // TODO: replace with final domain
+const SUPPORT_EMAIL = "support@aldenairperfumes.de";
 const LEGAL_URLS = {
   impressum: `${APP_URL}/impressum`,
   datenschutz: `${APP_URL}/datenschutz`,

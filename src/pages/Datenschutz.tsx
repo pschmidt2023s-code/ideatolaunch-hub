@@ -1,11 +1,18 @@
 import { useEffect } from "react";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
+import { SEO } from "@/components/SEO";
 
 export default function Datenschutz() {
   useEffect(() => { window.scrollTo(0, 0); }, []);
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <SEO
+        title="Datenschutzerklärung"
+        description="Datenschutzerklärung für BuildYourBrand gemäß DSGVO. Informationen zur Datenverarbeitung, Cookies, Empfehlungsprogramm, Affiliate-Tracking und Ihren Rechten."
+        path="/datenschutz"
+        breadcrumbs={[{ name: "Home", url: "/" }, { name: "Datenschutz", url: "/datenschutz" }]}
+      />
       <Navbar />
       <main className="flex-1 pt-24 pb-16 px-4">
         <div className="container mx-auto max-w-2xl prose prose-sm dark:prose-invert">
@@ -30,17 +37,19 @@ export default function Datenschutz() {
           <Section title="3. Registrierung und Nutzerkonto">
             <p>
               Bei der Registrierung erheben wir Ihre E-Mail-Adresse und ein Passwort.
-              Diese Daten werden ausschließlich zur Bereitstellung Ihres Nutzerkontos
-              verwendet und nicht an Dritte weitergegeben.
+              Optional können Sie Ihren Namen und Firmennamen hinterlegen. Diese Daten
+              werden ausschließlich zur Bereitstellung Ihres Nutzerkontos verwendet und
+              nicht an Dritte weitergegeben.
             </p>
           </Section>
 
           <Section title="4. Hosting und Infrastruktur">
             <p>
-              Diese Plattform wird auf Cloud-Infrastruktur betrieben. Dabei können
-              Server-Logdaten (IP-Adresse, Zeitpunkt des Zugriffs, aufgerufene Seite)
-              automatisch erfasst werden. Diese Daten dienen der Sicherstellung des
-              Betriebs und werden nicht zur Identifikation einzelner Nutzer verwendet.
+              Diese Plattform wird auf Cloud-Infrastruktur in der Europäischen Union
+              betrieben. Dabei können Server-Logdaten (IP-Adresse, Zeitpunkt des Zugriffs,
+              aufgerufene Seite) automatisch erfasst werden. Diese Daten dienen der
+              Sicherstellung des Betriebs und werden nicht zur Identifikation einzelner
+              Nutzer verwendet.
             </p>
           </Section>
 
@@ -49,7 +58,8 @@ export default function Datenschutz() {
               Für die Abwicklung von Zahlungen nutzen wir den Dienst Stripe (Stripe, Inc.,
               510 Townsend Street, San Francisco, CA 94103, USA). Bei einem Kauf werden
               Ihre Zahlungsdaten direkt an Stripe übermittelt. Wir haben keinen Zugriff auf
-              vollständige Zahlungsdaten. Es gilt die{" "}
+              vollständige Zahlungsdaten. Stripe verarbeitet Daten auch in den USA auf
+              Grundlage von Standardvertragsklauseln (SCC). Es gilt die{" "}
               <a
                 href="https://stripe.com/de/privacy"
                 target="_blank"
@@ -62,7 +72,99 @@ export default function Datenschutz() {
             </p>
           </Section>
 
-          <Section title="6. Analysedaten">
+          <Section title="6. Empfehlungsprogramm (Referral)">
+            <p>
+              Wenn Sie am Empfehlungsprogramm teilnehmen, speichern wir Ihren persönlichen
+              Empfehlungscode, die Anzahl erfolgreicher Empfehlungen und den Status Ihrer
+              Prämien. Der Empfehlungslink enthält Ihren Code als URL-Parameter
+              (<code>?ref=CODE</code>). Wenn sich ein neuer Nutzer über Ihren Link
+              registriert, wird die Zuordnung gespeichert.
+            </p>
+            <p>
+              Die Verarbeitung erfolgt auf Grundlage von Art. 6 Abs. 1 lit. b DSGVO
+              (Vertragserfüllung des Empfehlungsprogramms).
+            </p>
+          </Section>
+
+          <Section title="7. Affiliate-Programm">
+            <p>
+              Affiliates erhalten einen Tracking-Link mit persönlichem Affiliate-Code.
+              Wir speichern: Klickzahlen, Conversion-Daten, Provisionshöhe, Auszahlungsstatus
+              und die Zuordnung zu Stripe-Abonnements. Diese Daten werden ausschließlich
+              zur Abwicklung des Affiliate-Programms verwendet.
+            </p>
+            <p>
+              Die Verarbeitung erfolgt auf Grundlage von Art. 6 Abs. 1 lit. b DSGVO
+              (Vertragserfüllung).
+            </p>
+          </Section>
+
+          <Section title="8. Community & Waitlist">
+            <p>
+              Wenn Sie sich für die Community-Warteliste eintragen, speichern wir Ihre
+              E-Mail-Adresse, Ihren aktuellen Plan und Ihre Nische. Diese Daten werden
+              ausschließlich zur Verwaltung der Warteliste und Einladung zur Community
+              verwendet. Sie können Ihre Daten jederzeit löschen lassen.
+            </p>
+          </Section>
+
+          <Section title="9. KI-gestützte Funktionen und Datenverarbeitung">
+            <p>
+              Die Plattform bietet KI-gestützte Analysen und Empfehlungen, darunter:
+            </p>
+            <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
+              <li>AI Founder Copilot – kontextbezogene Strategieberatung</li>
+              <li>Market Reality Engine – Nachfrage- und Wettbewerbsanalyse</li>
+              <li>Cashflow Survival Engine – Liquiditätsprognosen und Stress-Tests</li>
+              <li>KI-Risikoanalysen und Strategie-Empfehlungen</li>
+              <li>Szenario-Simulationen mit KI-Bewertung</li>
+            </ul>
+            <p>
+              Bei der Nutzung dieser Funktionen werden Ihre eingegebenen Geschäftsdaten
+              (Produktbeschreibung, Preise, Zielgruppe, Kostendaten, Marktdaten) an einen
+              KI-Dienst übermittelt, um personalisierte Ergebnisse zu generieren. Es werden
+              <strong> keine personenbezogenen Daten</strong> (Name, E-Mail, Adresse) an den
+              KI-Dienst weitergegeben – ausschließlich anonymisierte Geschäftsdaten.
+            </p>
+            <p>
+              Die KI-Verarbeitung erfolgt auf Cloud-Infrastruktur. Die übermittelten Daten
+              werden nicht zum Training von KI-Modellen verwendet. Die Verarbeitung erfolgt
+              auf Grundlage von Art. 6 Abs. 1 lit. b DSGVO (Vertragserfüllung).
+            </p>
+          </Section>
+
+          <Section title="10. Betrugs- und Missbrauchserkennung">
+            <p>
+              Zum Schutz des Empfehlungs- und Affiliate-Programms setzen wir
+              automatisierte Betrugserkennungsmaßnahmen ein. Dabei werden folgende Daten
+              verarbeitet:
+            </p>
+            <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
+              <li>Anonymisierte IP-Hashes (keine vollständigen IP-Adressen)</li>
+              <li>Geräte-Fingerprints zur Erkennung von Multi-Account-Missbrauch</li>
+              <li>Registrierungsmuster und -geschwindigkeit</li>
+              <li>E-Mail-Ähnlichkeitsanalyse (zur Erkennung von Fake-Accounts)</li>
+              <li>Verhaltensanalysen zur Mustererkennung</li>
+            </ul>
+            <p>
+              Diese Verarbeitung erfolgt auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO
+              (berechtigtes Interesse am Schutz vor Betrug). Es werden keine
+              automatisierten Einzelentscheidungen getroffen – auffällige Fälle werden
+              manuell durch einen Administrator überprüft.
+            </p>
+          </Section>
+
+          <Section title="11. Sicherheitsereignisse">
+            <p>
+              Zum Schutz der Plattform protokollieren wir sicherheitsrelevante Ereignisse
+              wie fehlgeschlagene Anmeldeversuche und Rate-Limit-Überschreitungen. Dabei
+              werden Zeitstempel, Event-Typ und – soweit verfügbar – ein anonymisierter
+              IP-Hinweis gespeichert. Diese Daten dienen ausschließlich dem Schutz vor
+              Missbrauch (Art. 6 Abs. 1 lit. f DSGVO – berechtigtes Interesse).
+            </p>
+          </Section>
+
+          <Section title="12. Analysedaten">
             <p>
               Wir nutzen anonymisierte, interne Analysedaten zur Verbesserung des Produkts.
               Diese Daten werden nur nach ausdrücklicher Einwilligung erhoben (Art. 6 Abs. 1
@@ -70,18 +172,24 @@ export default function Datenschutz() {
               die Analyse-Cookies in Ihrem Browser ablehnen oder löschen.
             </p>
             <p>Es werden keine Daten an externe Analyse-Dienste übermittelt.</p>
-          </Section>
-
-          <Section title="7. Zweckbindung">
             <p>
-              Personenbezogene Daten werden nur für den Zweck verwendet, für den sie
-              erhoben wurden: Bereitstellung des Dienstes, Abrechnung und Verbesserung des
-              Produkts. Eine Weitergabe an Dritte erfolgt nur, soweit dies zur
-              Vertragserfüllung erforderlich ist (z.B. Zahlungsabwicklung über Stripe).
+              Zusätzlich erfassen wir anonymisierte Web-Vitals-Daten (LCP, CLS, INP) zur
+              Performance-Optimierung. Diese Daten enthalten keine personenbezogenen
+              Informationen.
             </p>
           </Section>
 
-          <Section title="8. Ihre Rechte (Art. 15–21 DSGVO)">
+          <Section title="13. Zweckbindung">
+            <p>
+              Personenbezogene Daten werden nur für den Zweck verwendet, für den sie
+              erhoben wurden: Bereitstellung des Dienstes, Abrechnung, Empfehlungs- und
+              Affiliate-Programm, Betrugsschutz und Verbesserung des Produkts. Eine
+              Weitergabe an Dritte erfolgt nur, soweit dies zur Vertragserfüllung
+              erforderlich ist (z.B. Zahlungsabwicklung über Stripe).
+            </p>
+          </Section>
+
+          <Section title="14. Ihre Rechte (Art. 15–21 DSGVO)">
             <p>Sie haben das Recht auf:</p>
             <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
               <li><strong>Auskunft</strong> (Art. 15 DSGVO) über Ihre gespeicherten Daten</li>
@@ -91,9 +199,23 @@ export default function Datenschutz() {
               <li><strong>Datenübertragbarkeit</strong> (Art. 20 DSGVO)</li>
               <li><strong>Widerspruch</strong> (Art. 21 DSGVO) gegen die Verarbeitung</li>
             </ul>
+            <p>
+              Darüber hinaus haben Sie das Recht, sich bei einer Datenschutz-Aufsichtsbehörde
+              zu beschweren.
+            </p>
           </Section>
 
-          <Section title="9. Kontakt">
+          <Section title="15. Datenspeicherung und Löschung">
+            <p>
+              Ihre Daten werden gespeichert, solange Ihr Konto aktiv ist. Nach Löschung
+              Ihres Kontos werden personenbezogene Daten innerhalb von 30 Tagen gelöscht,
+              sofern keine gesetzlichen Aufbewahrungspflichten bestehen.
+              Abrechnungsbezogene Daten werden gemäß steuerrechtlicher Vorgaben
+              10 Jahre aufbewahrt.
+            </p>
+          </Section>
+
+          <Section title="16. Kontakt">
             <p>
               Bei Fragen zum Datenschutz wenden Sie sich bitte an:{" "}
               <span className="text-accent">support@buildyourbrand.de</span>

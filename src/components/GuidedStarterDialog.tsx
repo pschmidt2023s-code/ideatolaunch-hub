@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, forwardRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useBrand } from "@/hooks/useBrand";
 import { supabase } from "@/integrations/supabase/client";
@@ -93,7 +93,7 @@ const questions: QuestionDef[] = [
   },
 ];
 
-export function GuidedStarterDialog({ open, onOpenChange }: GuidedStarterDialogProps) {
+export const GuidedStarterDialog = forwardRef<HTMLDivElement, GuidedStarterDialogProps>(function GuidedStarterDialog({ open, onOpenChange }, _ref) {
   const { i18n } = useTranslation();
   const { activeBrand } = useBrand();
   const queryClient = useQueryClient();
@@ -306,4 +306,4 @@ export function GuidedStarterDialog({ open, onOpenChange }: GuidedStarterDialogP
       </DialogContent>
     </Dialog>
   );
-}
+});

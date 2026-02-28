@@ -17,9 +17,11 @@ import { SupplierExperienceCard } from "@/components/SupplierExperienceCard";
 import { UnboxingScoreCard } from "@/components/UnboxingScoreCard";
 import { CATEGORIES, normalizeCategoryId } from "@/lib/categories";
 import { trackEvent } from "@/lib/analytics";
+import { getProductionChecklistForCategory } from "@/lib/product-intelligence";
 import type { PackagingType, UnboxingInput } from "@/lib/unboxing-score-engine";
 
-const checklist = [
+// Dynamic checklist - will be computed based on category
+const defaultChecklist = [
   "Produktspezifikationen definiert",
   "Materialanforderungen festgelegt",
   "Qualitätsstandards dokumentiert",
@@ -219,8 +221,13 @@ export const StepProduction = forwardRef<StepHandle>(function StepProduction(_, 
 
       <div className="rounded-xl border bg-card p-6 shadow-card">
         <h2 className="mb-4 text-lg font-semibold">{t("step4.checklist")}</h2>
+        {category && category !== "" && (
+          <div className="mb-3 rounded-lg border border-accent/20 bg-accent/5 px-3 py-2 text-xs text-accent font-medium">
+            Checkliste angepasst an: <span className="font-bold capitalize">{category.replace("_", " / ")}</span>
+          </div>
+        )}
         <div className="space-y-3">
-          {checklist.map((item) => (
+          {getProductionChecklistForCategory(category || "other").map((item) => (
             <label key={item} className="flex items-center gap-3 cursor-pointer">
               <Checkbox
                 checked={!!checked[item]}
@@ -336,6 +343,54 @@ export const StepProduction = forwardRef<StepHandle>(function StepProduction(_, 
           targetPositioning: supplierSegment,
         }}
       />
+
+      {/* Kapitalbindung & Working Capital Gap */}
+      {Number(supplierBudget) > 0 && Number(supplierQty) > 0 && (
+        <div className="rounded-xl border bg-card p-6 shadow-card space-y-4">
+          <h2 className="text-lg font-semibold flex items-center gap-2">
+            💰 Kapitalbindung & Working Capital
+          </h2>
+          <div className="grid gap-4 sm:grid-cols-3">
+            {(() => {
+              const capitalLock = Number(supplierBudget);
+              const qty = Number(supplierQty);
+              const unitCost = capitalLock / (qty || 1);
+              // Assume avg 3 months until first sale
+              const avgSellMonths = 3;
+              const shippingMonths = region === "asia" ? 2 : 0.5;
+              const totalLockMonths = avgSellMonths + shippingMonths;
+              const workingCapitalGap = capitalLock; // until first revenue comes in
+
+              return (
+                <>
+                  <div className="rounded-lg border p-4 text-center">
+                    <p className="text-xs text-muted-foreground">Kapitalbindung</p>
+                    <p className="text-2xl font-bold text-destructive">{capitalLock.toLocaleString("de-DE")} €</p>
+                    <p className="text-[10px] text-muted-foreground mt-1">Gebunden für ≈{totalLockMonths.toFixed(0)} Monate</p>
+                  </div>
+                  <div className="rounded-lg border p-4 text-center">
+                    <p className="text-xs text-muted-foreground">Stückkosten</p>
+                    <p className="text-2xl font-bold">{unitCost.toFixed(2)} €</p>
+                    <p className="text-[10px] text-muted-foreground mt-1">pro Einheit ({qty} Stück)</p>
+                  </div>
+                  <div className="rounded-lg border p-4 text-center">
+                    <p className="text-xs text-muted-foreground">Working Capital Gap</p>
+                    <p className="text-2xl font-bold text-amber-600">{totalLockMonths.toFixed(1)} Mo.</p>
+                    <p className="text-[10px] text-muted-foreground mt-1">
+                      {region === "asia" ? "Inkl. ≈2 Mo. Shipping" : "Inkl. ≈2 Wo. Shipping"}
+                    </p>
+                  </div>
+                </>
+              );
+            })()}
+          </div>
+          <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 text-xs text-amber-700 dark:text-amber-400">
+            <strong>⚠️ Hinweis:</strong> Dein Kapital ist vom Zeitpunkt der Bestellung bis zum ersten Verkauf gebunden.
+            {region === "asia" && " Bei Produktion in Asien kommen ≈6-8 Wochen Shipping + Zoll hinzu."}
+            {" "}Plane einen Cash-Puffer ein, um laufende Kosten zu decken.
+          </div>
+        </div>
+      )}
     </div>
   );
 });

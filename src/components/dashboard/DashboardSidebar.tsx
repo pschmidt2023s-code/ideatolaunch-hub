@@ -1,7 +1,7 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useTranslation } from "react-i18next";
-import { Globe } from "lucide-react";
+import { Globe, Sparkles, HeartPulse, Crown, Map, Zap } from "lucide-react";
 import {
   LayoutDashboard,
   Lightbulb,
@@ -14,6 +14,7 @@ import {
   LogOut,
   Settings,
   Brain,
+  Gift,
 } from "lucide-react";
 
 interface DashboardSidebarProps {
@@ -47,6 +48,12 @@ export function DashboardSidebar({ onNavigate }: DashboardSidebarProps) {
     { icon: Shield, label: t("steps.s5"), path: "/dashboard/step/5" },
     { icon: ShoppingBag, label: t("steps.s6"), path: "/dashboard/step/6" },
     { icon: Rocket, label: t("steps.s7"), path: "/dashboard/step/7" },
+    { icon: Gift, label: "Empfehlungen", path: "/dashboard/referrals" },
+    { icon: Sparkles, label: "Intelligence Suite", path: "/dashboard/intelligence" },
+    { icon: HeartPulse, label: "Recovery Mode", path: "/dashboard/recovery" },
+    { icon: Crown, label: "Execution OS", path: "/dashboard/execution" },
+    { icon: Zap, label: "Revenue Activation", path: "/dashboard/revenue" },
+    { icon: Map, label: "Product Evolution", path: "/dashboard/evolution" },
   ];
 
   return (

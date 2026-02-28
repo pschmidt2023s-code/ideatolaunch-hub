@@ -7,37 +7,77 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { trackEvent } from "@/lib/analytics";
-import { Rocket, AlertTriangle, TrendingUp } from "lucide-react";
+import { AlertTriangle, Shield, TrendingDown, Zap } from "lucide-react";
 
 interface TriggerContext {
   warningCount: number;
   breakEvenHigh: boolean;
   moqPressure: boolean;
+  lowMargin: boolean;
+  lowRunway: boolean;
+  highCapitalExposure: boolean;
+  triggerType: string;
 }
 
-function getUpgradeCopy(ctx: TriggerContext, isDE: boolean): { title: string; desc: string } | null {
+function getUpgradeCopy(ctx: TriggerContext, isDE: boolean): { risk: string; framing: string; benefit: string; cta: string } | null {
+  if (ctx.lowRunway) {
+    return {
+      risk: isDE ? "Niedriger Runway erkannt." : "Low runway detected.",
+      framing: isDE
+        ? "Gründer in dieser Situation verlieren durchschnittlich 3.000–12.000 € durch unkontrolliertes Scaling."
+        : "Founders in this range often lose €3,000–€12,000 due to miscalculated scaling.",
+      benefit: isDE
+        ? "Execution OS liefert Echtzeit-Kapitalschutz-Alerts, bevor es kritisch wird."
+        : "Execution OS provides real-time capital protection alerts before it's critical.",
+      cta: isDE ? "Kapital schützen" : "Protect Capital",
+    };
+  }
+  if (ctx.lowMargin) {
+    return {
+      risk: isDE ? "Marge unter 35% — Kapitalrisiko." : "Margin below 35% — capital at risk.",
+      framing: isDE
+        ? "Bei dieser Marge reicht ein Retourenanstieg von 5%, um Verluste auszulösen."
+        : "At this margin, a 5% return rate increase can trigger losses.",
+      benefit: isDE
+        ? "Execution OS überwacht deine Marge und warnt bei kritischen Schwellenwerten."
+        : "Execution OS monitors your margin and warns at critical thresholds.",
+      cta: isDE ? "Marge absichern" : "Secure Margin",
+    };
+  }
+  if (ctx.highCapitalExposure) {
+    return {
+      risk: isDE ? "Hohe Kapitalbindung erkannt." : "High capital exposure detected.",
+      framing: isDE
+        ? "Execution OS schützt dein Kapital vor Überproduktion und Lagerrisiken."
+        : "Execution OS protects your capital from overproduction and inventory risk.",
+      benefit: isDE
+        ? "Kapitalschutz-Alerts + Runway-Überwachung in Echtzeit."
+        : "Capital protection alerts + runway monitoring in real-time.",
+      cta: isDE ? "Kapital schützen" : "Protect Capital",
+    };
+  }
   if (ctx.moqPressure) {
     return {
-      title: isDE ? "Dein MOQ frisst dein Budget" : "Your MOQ is eating your budget",
-      desc: isDE
-        ? "Wisse genau, wie du dein Budget auf Produktion, Marketing und Reserve verteilst — mit dem Budget-Planer."
-        : "Know exactly how to allocate your budget across production, marketing, and reserves — with the Budget Planner.",
+      risk: isDE ? "Dein MOQ bindet zu viel Kapital." : "Your MOQ locks too much capital.",
+      framing: isDE
+        ? "1 falscher MOQ-Entscheid kann 5.000–15.000 € kosten."
+        : "1 wrong MOQ decision can cost €5,000–€15,000.",
+      benefit: isDE
+        ? "Optimiere dein Budget mit datenbasierter Kapitalplanung."
+        : "Optimize your budget with data-driven capital planning.",
+      cta: isDE ? "Budget optimieren" : "Optimize Budget",
     };
   }
-  if (ctx.breakEvenHigh) {
+  if (ctx.breakEvenHigh || ctx.warningCount >= 2) {
     return {
-      title: isDE ? "Langer Weg bis zum Break-Even" : "Long road to break-even",
-      desc: isDE
-        ? "Die meisten Gründer simulieren Szenarien, bevor sie Kapital binden. Finde die optimale Menge und Preisstrategie."
-        : "Most founders simulate scenarios before committing capital. Find the optimal quantity and pricing strategy.",
-    };
-  }
-  if (ctx.warningCount >= 2) {
-    return {
-      title: isDE ? "Mehrere Risiken erkannt" : "Multiple risks detected",
-      desc: isDE
-        ? "Erkenne alle Risiken und erhalte konkrete Lösungsvorschläge — schalte die volle Risikoanalyse und den Budget-Planer frei."
-        : "Identify all risks and get concrete fix suggestions — unlock full risk analysis and budget planning.",
+      risk: isDE ? "Mehrere Risiken erkannt." : "Multiple risks detected.",
+      framing: isDE
+        ? "Gründer mit ähnlichem Profil vermeiden 3.000–10.000 € Verlust durch Szenario-Simulation."
+        : "Founders with similar profiles avoid €3,000–€10,000 in losses with scenario simulation.",
+      benefit: isDE
+        ? "Simuliere Szenarien, bevor du Kapital bindest."
+        : "Simulate scenarios before committing capital.",
+      cta: isDE ? "Plan upgraden" : "Upgrade Plan",
     };
   }
   return null;
@@ -83,19 +123,19 @@ export function SmartUpgradePrompt() {
     const moqRatio = moqCost / (budgetValue || 1);
 
     let warningCount = 0;
-    if (margin < 35) warningCount++;
+    const lowMargin = margin < 35;
+    if (lowMargin) warningCount++;
     if (breakEvenUnits > 300) warningCount++;
     if (moqRatio > 0.5) warningCount++;
     if ((financial.marketing_budget ?? 0) <= 0) warningCount++;
 
-    const shouldShow = warningCount >= 2 || breakEvenUnits > 300 || moqRatio > 0.6;
+    const highCapitalExposure = moqRatio > 0.7;
+    const shouldShow = warningCount >= 2 || breakEvenUnits > 300 || moqRatio > 0.6 || lowMargin || highCapitalExposure;
     if (!shouldShow) return null;
 
-    return {
-      warningCount,
-      breakEvenHigh: breakEvenUnits > 300,
-      moqPressure: moqRatio > 0.6,
-    };
+    const triggerType = lowMargin ? "low_margin" : highCapitalExposure ? "capital_exposure" : moqRatio > 0.6 ? "moq" : breakEvenUnits > 300 ? "breakeven" : "warnings";
+
+    return { warningCount, breakEvenHigh: breakEvenUnits > 300, moqPressure: moqRatio > 0.6, lowMargin, lowRunway: false, highCapitalExposure, triggerType };
   }, [financial, profile, isFree]);
 
   if (!trigger) return null;
@@ -103,38 +143,42 @@ export function SmartUpgradePrompt() {
   const copy = getUpgradeCopy(trigger, isDE);
   if (!copy) return null;
 
-  const icon = trigger.moqPressure
-    ? AlertTriangle
-    : trigger.breakEvenHigh
-    ? TrendingUp
-    : Rocket;
-  const Icon = icon;
-
-  const triggerType = trigger.moqPressure ? "moq" : trigger.breakEvenHigh ? "breakeven" : "warnings";
+  const Icon = trigger.lowRunway || trigger.lowMargin ? AlertTriangle : trigger.highCapitalExposure ? Shield : TrendingDown;
 
   return (
-    <div className="rounded-xl border border-accent/30 bg-accent/5 p-5">
-      <div className="flex items-start gap-4">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent/10">
-          <Icon className="h-5 w-5 text-accent" />
+    <div className="rounded-xl border border-destructive/20 bg-destructive/[0.03] p-5 space-y-3">
+      {/* 1. Risk Statement */}
+      <div className="flex items-start gap-3">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-destructive/10">
+          <Icon className="h-5 w-5 text-destructive" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold">{copy.title}</p>
-          <p className="text-xs text-muted-foreground mt-1">{copy.desc}</p>
-          <Button
-            size="sm"
-            className="mt-3 gap-2 bg-accent text-accent-foreground hover:bg-accent/90"
-            onClick={() => {
-              trackEvent("clicked_smart_upgrade", {
-                source: "reality_check",
-                trigger: triggerType,
-              });
-              navigate("/dashboard/pricing");
-            }}
-          >
-            {isDE ? "Plan upgraden" : "Upgrade Plan"}
-          </Button>
+          <p className="text-sm font-bold text-destructive">{copy.risk}</p>
         </div>
+      </div>
+
+      {/* 2. Financial Framing */}
+      <p className="text-xs text-muted-foreground pl-[52px]">{copy.framing}</p>
+
+      {/* 3. Benefit */}
+      <div className="flex items-center gap-2 pl-[52px]">
+        <Zap className="h-3.5 w-3.5 text-accent shrink-0" />
+        <p className="text-xs font-medium">{copy.benefit}</p>
+      </div>
+
+      {/* 4. CTA */}
+      <div className="pl-[52px]">
+        <Button
+          size="sm"
+          className="gap-2 bg-accent text-accent-foreground hover:bg-accent/90"
+          onClick={() => {
+            trackEvent("clicked_smart_upgrade", { source: "psychological", trigger: trigger.triggerType });
+            navigate("/dashboard/pricing");
+          }}
+        >
+          <Shield className="h-3.5 w-3.5" />
+          {copy.cta}
+        </Button>
       </div>
     </div>
   );

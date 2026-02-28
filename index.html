@@ -1,27 +1,84 @@
 <!doctype html>
-<html lang="en">
+<html lang="de">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- TODO: Set the document title to the name of your application -->
-    <title>test</title>
-    <meta name="description" content="Test project">
-    <meta name="author" content="Lovable" />
+    <!-- Security Headers (meta-level) -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+    <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://jzbruehoejyxqbjqglhm.supabase.co" />
+    <!-- Preload hero font (LCP text) with high priority -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800&display=swap" fetchpriority="high" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800&display=swap" media="print" onload="this.media='all'" />
+    <!-- Non-critical font weights loaded async -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" /></noscript>
+    <!-- Inline critical above-the-fold CSS -->
+    <style>
+      body{margin:0;font-family:Inter,system-ui,-apple-system,sans-serif;background:hsl(0 0% 98.5%);color:hsl(220 20% 10%);-webkit-font-smoothing:antialiased}
+      #root{min-height:100vh}
+      .dark body{background:hsl(220 20% 7%);color:hsl(220 14% 90%)}
+    </style>
+    <title>Eigene Marke gründen – BuildYourBrand 2026</title>
+    <meta name="description" content="Baue deine Marke in 7 Schritten: Idee, Kalkulation, Produktion, Launch. Kostenlos starten. Datengetrieben & made in Germany.">
+    <link rel="canonical" href="https://brand.aldenairperfumes.de/" />
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
+    <meta name="author" content="BuildYourBrand" />
+    <meta name="robots" content="index, follow" />
+    <meta name="google-site-verification" content="wZd8Gd9yG6Q3mGw3HC5TPplMgPUG-WRsxrKIpKzhQgo" />
 
-    <!-- TODO: Update og:title to match your application name -->
-    
-    
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="BuildYourBrand" />
+    <meta property="og:title" content="Eigene Marke gründen – BuildYourBrand 2026">
+    <meta property="og:description" content="Baue deine Marke in 7 Schritten: Idee, Kalkulation, Produktion, Launch. Kostenlos starten.">
     <meta property="og:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/3df431bc-fe9a-403d-a050-b60012790536/id-preview-da3749dc--b937d4ec-1d78-48b9-bb4d-ab44d9c298c7.lovable.app-1771978657390.png">
+    <meta property="og:url" content="https://brand.aldenairperfumes.de/">
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@Lovable" />
+    <meta name="twitter:title" content="Eigene Marke gründen – BuildYourBrand 2026">
+    <meta name="twitter:description" content="Baue deine Marke in 7 Schritten: Idee, Kalkulation, Produktion, Launch. Kostenlos starten.">
     <meta name="twitter:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/3df431bc-fe9a-403d-a050-b60012790536/id-preview-da3749dc--b937d4ec-1d78-48b9-bb4d-ab44d9c298c7.lovable.app-1771978657390.png">
-    <meta property="og:title" content="test">
-  <meta name="twitter:title" content="test">
-  <meta property="og:description" content="Test project">
-  <meta name="twitter:description" content="Test project">
-</head>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "BuildYourBrand",
+      "url": "https://brand.aldenairperfumes.de",
+      "logo": "https://brand.aldenairperfumes.de/favicon.ico",
+      "description": "SaaS-Plattform für den systematischen Markenaufbau – von der Idee bis zum Launch.",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Lichtenfels",
+        "addressCountry": "DE"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "support@buildyourbrand.de",
+        "contactType": "customer service"
+      },
+      "sameAs": []
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "BuildYourBrand",
+      "url": "https://brand.aldenairperfumes.de",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://brand.aldenairperfumes.de/guide/eigenmarke-gruenden?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+  </head>
 
   <body>
     <div id="root"></div>

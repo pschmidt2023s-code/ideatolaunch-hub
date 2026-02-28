@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useBrand } from "@/hooks/useBrand";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
+import { BrandNameIntelligence } from "@/components/BrandNameIntelligence";
 import type { StepHandle } from "./StepIdeaFoundation";
 
 const toneOptions = ["Luxuriös", "Minimal", "Bold", "Verspielt", "Professionell", "Natürlich"];
@@ -195,6 +196,16 @@ export const StepBrandStructure = forwardRef<StepHandle>(function StepBrandStruc
             />
           </div>
         </div>
+      </div>
+
+      {/* Brand Name Intelligence */}
+      <div className="rounded-xl border bg-card p-6 shadow-card">
+        <BrandNameIntelligence
+          brandName={brandName}
+          category={identity?.brand_name ? undefined : undefined}
+          tone={tone}
+          onSelectName={(name) => setBrandName(name)}
+        />
       </div>
     </div>
   );

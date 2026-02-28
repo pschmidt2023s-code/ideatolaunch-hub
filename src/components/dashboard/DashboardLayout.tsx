@@ -1,5 +1,6 @@
 import { ReactNode, useState } from "react";
 import { DashboardSidebar } from "./DashboardSidebar";
+import { Footer } from "@/components/landing/Footer";
 import { Menu, X } from "lucide-react";
 
 export function DashboardLayout({ children }: { children: ReactNode }) {
@@ -42,6 +43,8 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
         <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
           {children}
         </div>
+
+        <Footer />
       </main>
     </div>
   );
