@@ -62,6 +62,11 @@ export default function StepPage() {
       navigate("/dashboard", { replace: true });
       return;
     }
+    // Scroll the main container to top on step change
+    const mainEl = document.querySelector("main");
+    if (mainEl) mainEl.scrollTo(0, 0);
+    window.scrollTo(0, 0);
+
     trackEvent("step_viewed", ctx);
     if (step === 3) trackEvent("entered_business_calculator", ctx);
     startStepTimer(step);
