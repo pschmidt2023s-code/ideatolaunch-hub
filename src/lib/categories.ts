@@ -15,6 +15,7 @@ export const CATEGORIES: Category[] = [
   { id: "food", labelDe: "Food / FMCG", labelEn: "Food / FMCG" },
   { id: "home", labelDe: "Home & Living", labelEn: "Home & Living" },
   { id: "electronics", labelDe: "Elektronik", labelEn: "Electronics" },
+  { id: "print_art", labelDe: "Print / Kunst", labelEn: "Print / Art" },
   { id: "other", labelDe: "Sonstiges", labelEn: "Other" },
 ];
 
@@ -31,6 +32,7 @@ export function normalizeCategoryId(freeText: string): string {
     food: ["food", "fmcg", "lebensmittel", "snack", "getränk", "drink"],
     home: ["home", "living", "wohnen", "kerze", "candle", "haushalt", "household"],
     electronics: ["elektro", "electronic", "tech", "gadget"],
+    print_art: ["print", "kunst", "art", "poster", "druck", "bild", "leinwand", "canvas", "fine art"],
   };
 
   for (const [id, keywords] of Object.entries(mapping)) {

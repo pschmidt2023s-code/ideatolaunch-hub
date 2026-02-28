@@ -11,30 +11,50 @@ import { toast } from "sonner";
 import { generateBrandReport } from "@/lib/pdf-export";
 import { useNavigate } from "react-router-dom";
 import type { StepHandle } from "./StepIdeaFoundation";
-
-const labelChecklist = [
-  "Produktname & Beschreibung",
-  "Inhaltsstoffe / INCI-Liste",
-  "Nettofüllmenge",
-  "Hersteller- / Importeuradresse",
-  "Mindesthaltbarkeitsdatum / PAO",
-  "Chargennummer / Batch-Code",
-  "Verwendungshinweise",
-  "Warnhinweise",
-  "Recycling-Symbole",
-  "CE-Kennzeichnung (falls zutreffend)",
-];
+import { getLabelChecklistForCategory } from "@/lib/product-intelligence";
 
 export const StepCompliance = forwardRef<StepHandle>(function StepCompliance(_, ref) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { activeBrand } = useBrand();
   const { isFree } = useSubscription();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const brandId = activeBrand?.id;
+  const lang = (i18n.language === "de" ? "de" : "en") as "de" | "en";
 
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const [saving, setSaving] = useState(false);
+
+  // Load brand profile to get product category
+  const { data: brandProfile } = useQuery({
+    queryKey: ["brand_profile_category", brandId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("brand_profiles")
+        .select("product_category")
+        .eq("brand_id", brandId!)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!brandId,
+  });
+
+  // Also check production_plans for category fallback
+  const { data: prodPlan } = useQuery({
+    queryKey: ["production_plan_category", brandId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("production_plans")
+        .select("product_category")
+        .eq("brand_id", brandId!)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!brandId,
+  });
+
+  const categoryId = brandProfile?.product_category || prodPlan?.product_category || "other";
+  const labelChecklist = getLabelChecklistForCategory(categoryId, lang);
   const completedCount = Object.values(checked).filter(Boolean).length;
 
   const { data: plan } = useQuery({
@@ -96,6 +116,16 @@ export const StepCompliance = forwardRef<StepHandle>(function StepCompliance(_, 
 
   return (
     <div className="space-y-8">
+      {/* Category indicator */}
+      {categoryId && categoryId !== "other" && (
+        <div className="rounded-lg border border-accent/20 bg-accent/5 px-4 py-2.5 flex items-center gap-2">
+          <span className="text-xs text-accent font-medium">
+            {lang === "de" ? "Checkliste angepasst an:" : "Checklist adapted for:"}
+          </span>
+          <span className="text-xs font-bold text-accent capitalize">{categoryId.replace("_", " / ")}</span>
+        </div>
+      )}
+
       <div className="rounded-xl border bg-card p-6 shadow-card">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-lg font-semibold">{t("step5.labelChecklist")}</h2>

@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, MapPin, Clock, Package, Factory, Gift, TrendingUp, Info, Shield, Zap } from "lucide-react";
+import { AlertTriangle, MapPin, Clock, Package, Factory, Gift, TrendingUp, Info, Shield, Zap, ExternalLink } from "lucide-react";
 import { useSubscription } from "@/hooks/useSubscription";
 import { LockedOverlay } from "@/components/LockedOverlay";
 import { getFeatureAccess } from "@/lib/feature-flags";
@@ -58,6 +58,17 @@ function SupplierRow({ supplier, budget }: { supplier: AnySupplier; budget: numb
         Kapitalbedarf: {capitalMin.toLocaleString("de-DE")} – {capitalMax.toLocaleString("de-DE")} €
         {isRisky && " ⚠️ >60% Budget"}
       </div>
+      {supplier.website && (
+        <a
+          href={supplier.website}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 rounded-md border bg-background px-2.5 py-1 text-xs font-medium text-accent hover:bg-accent/10 transition-colors"
+        >
+          <ExternalLink className="h-3 w-3" />
+          Partner besuchen
+        </a>
+      )}
     </div>
   );
 }

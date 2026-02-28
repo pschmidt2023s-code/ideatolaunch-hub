@@ -41,6 +41,10 @@ export const packagingSuppliers: PackagingSupplier[] = [
   { name: "SafeShip Packaging (DE)", region: "EU", categories: ["electronics"], estimatedMOQ: 200, estimatedUnitCostRange: [0.8, 2.5], leadTimeDays: 14, positioning: "premium", notes: "ESD-sicher, Schaumstoff-Inlays" },
   { name: "Shenzhen Box Works", region: "Asia", categories: ["electronics"], estimatedMOQ: 1500, estimatedUnitCostRange: [0.1, 0.6], leadTimeDays: 25, positioning: "budget", notes: "Printed Boxes, Blister Packs" },
 
+  // ── Print / Art ──
+  { name: "Rahmenwerk (DE)", region: "EU", categories: ["print_art"], estimatedMOQ: 10, estimatedUnitCostRange: [2, 8], leadTimeDays: 10, positioning: "premium", notes: "Custom-Rahmen, Passepartouts, Versandkartons für Kunst", website: "https://www.rahmenwerk.de" },
+  { name: "ArtShip Packaging (NL)", region: "EU", categories: ["print_art"], estimatedMOQ: 50, estimatedUnitCostRange: [1, 3.5], leadTimeDays: 8, positioning: "mid", notes: "Flatpack-Versandkartons, Kunsttransport-sicher" },
+
   // ── Cross-category / General ──
-  { name: "MultiPack (DE)", region: "EU", categories: ["cosmetics", "supplements", "accessories", "food", "home", "electronics", "apparel", "other"], estimatedMOQ: 250, estimatedUnitCostRange: [0.5, 2], leadTimeDays: 14, positioning: "mid", notes: "Breites Sortiment, schnelle Lieferung, Custom Print" },
+  { name: "MultiPack (DE)", region: "EU", categories: ["cosmetics", "supplements", "accessories", "food", "home", "electronics", "apparel", "print_art", "other"], estimatedMOQ: 250, estimatedUnitCostRange: [0.5, 2], leadTimeDays: 14, positioning: "mid", notes: "Breites Sortiment, schnelle Lieferung, Custom Print" },
 ];

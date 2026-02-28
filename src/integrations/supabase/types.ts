@@ -181,7 +181,10 @@ export type Database = {
           market_angle: string | null
           positioning_statement: string | null
           price_level: string | null
+          product_category: string | null
           product_description: string | null
+          product_type: string | null
+          risk_flags: string[] | null
           target_audience: string | null
           timeline: string | null
           updated_at: string
@@ -197,7 +200,10 @@ export type Database = {
           market_angle?: string | null
           positioning_statement?: string | null
           price_level?: string | null
+          product_category?: string | null
           product_description?: string | null
+          product_type?: string | null
+          risk_flags?: string[] | null
           target_audience?: string | null
           timeline?: string | null
           updated_at?: string
@@ -213,7 +219,10 @@ export type Database = {
           market_angle?: string | null
           positioning_statement?: string | null
           price_level?: string | null
+          product_category?: string | null
           product_description?: string | null
+          product_type?: string | null
+          risk_flags?: string[] | null
           target_audience?: string | null
           timeline?: string | null
           updated_at?: string
