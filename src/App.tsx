@@ -75,6 +75,7 @@ const AdminFraud = lazy(() => import("./pages/admin/FraudPage"));
 const FounderIntelligencePage = lazy(() => import("./pages/FounderIntelligencePage"));
 const RecoveryMode = lazy(() => import("./pages/RecoveryMode"));
 const ExecutionOS = lazy(() => import("./pages/ExecutionOS"));
+const ProductEvolution = lazy(() => import("./pages/ProductEvolution"));
 
 const queryClient = new QueryClient();
 
@@ -153,6 +154,7 @@ const App = () => (
                   <Route path="/dashboard/intelligence" element={<ProtectedRoute><FounderIntelligencePage /></ProtectedRoute>} />
                   <Route path="/dashboard/recovery" element={<ProtectedRoute><RecoveryMode /></ProtectedRoute>} />
                   <Route path="/dashboard/execution" element={<ProtectedRoute><ExecutionOS /></ProtectedRoute>} />
+                  <Route path="/dashboard/evolution" element={<ProtectedRoute><ProductEvolution /></ProtectedRoute>} />
                   <Route path="/internal/analytics" element={<ProtectedRoute><InternalAnalytics /></ProtectedRoute>} />
                   <Route path="/admin/insights" element={<AdminInsights />} />
                   <Route path="/admin/dashboard" element={<AdminDashboard />} />
