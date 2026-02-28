@@ -1,4 +1,4 @@
-import { Check, Star, AlertTriangle, TrendingUp, ShieldCheck, Crown } from "lucide-react";
+import { Check, Star, AlertTriangle, TrendingUp, ShieldCheck, Crown, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -20,7 +20,9 @@ export function PricingSection() {
   const [loadingBuilder, setLoadingBuilder] = useState(false);
   const [loadingPro, setLoadingPro] = useState(false);
   const [loadingExecution, setLoadingExecution] = useState(false);
+  const [billingCycle, setBillingCycle] = useState<"yearly" | "monthly">("yearly");
   const isDE = i18n.language === "de";
+  const isYearly = billingCycle === "yearly";
 
   const handleCheckout = async (tier: "builder" | "pro" | "execution", setLoading: (v: boolean) => void) => {
     if (!user) {
@@ -29,7 +31,7 @@ export function PricingSection() {
     }
 
     setLoading(true);
-    trackEvent("clicked_upgrade", { source: "pricing_section", tier });
+    trackEvent("clicked_upgrade", { source: "pricing_section", tier, billing: billingCycle });
     try {
       const data = await withPerfTracking("stripe_checkout", async () => {
         const { data, error } = await supabase.functions.invoke("stripe-checkout", {
@@ -49,6 +51,18 @@ export function PricingSection() {
       setLoading(false);
     }
   };
+
+  const monthlyPrices = { builder: 29, pro: 79, execution: 159 };
+  const yearlyPrices = {
+    builder: Math.round(29 * 0.85),
+    pro: Math.round(79 * 0.85),
+    execution: Math.round(159 * 0.85),
+  };
+
+  const getPrice = (tier: "builder" | "pro" | "execution") =>
+    isYearly ? yearlyPrices[tier] : monthlyPrices[tier];
+
+  const formatPrice = (amount: number) => isDE ? `${amount} €` : `€${amount}`;
 
   const freePlanFeatures: PlanFeature[] = isDE ? [
     { label: "1 Marke erstellen", desc: "Teste deine Idee komplett kostenlos" },
@@ -108,20 +122,20 @@ export function PricingSection() {
 
   const executionFeatures: PlanFeature[] = isDE ? [
     { label: "Alles aus Pro", desc: "Vollständiger Zugang zu allen Pro-Features" },
-    { label: "Founder Operating Dashboard", desc: "Wöchentliches KPI-Tracking mit Revenue, Margin & Cashflow" },
-    { label: "Survival Monitoring System", desc: "Echtzeit-Alerts bei Cash-, Margen- und Conversion-Drops" },
-    { label: "Benchmark Engine", desc: "Anonymer Vergleich deiner KPIs mit anderen Gründern" },
+    { label: "Wöchentliche KPI-Kontrolle", desc: "Revenue, Marge & Cashflow in Echtzeit überwachen" },
+    { label: "Kapitalschutz-Alerts", desc: "Echtzeit-Warnungen bei Cash-, Margen- und Conversion-Drops" },
+    { label: "Strategische Benchmark Intelligence", desc: "Anonymer KPI-Vergleich mit anderen Gründern" },
+    { label: "Investor-Ready Übersicht", desc: "Professionelle Finanz-Zusammenfassung für Investoren" },
     { label: "Execution Planner", desc: "Wöchentliche Aufgabenplanung mit Accountability Score" },
-    { label: "Investor Mode", desc: "Investor-Ready Summary, Financial Overview & Health Report" },
-    { label: "Advanced AI Copilot", desc: "CEO-Level Empfehlungen & Next-Best-Action Vorschläge" },
+    { label: "Advanced AI Copilot", desc: "CEO-Level Empfehlungen & Next-Best-Action" },
   ] : [
     { label: "Everything in Pro", desc: "Full access to all Pro features" },
-    { label: "Founder Operating Dashboard", desc: "Weekly KPI tracking with revenue, margin & cashflow" },
-    { label: "Survival Monitoring System", desc: "Real-time alerts on cash, margin & conversion drops" },
-    { label: "Benchmark Engine", desc: "Anonymous KPI comparison with other founders" },
+    { label: "Weekly KPI control", desc: "Monitor revenue, margin & cashflow in real-time" },
+    { label: "Capital protection alerts", desc: "Real-time warnings on cash, margin & conversion drops" },
+    { label: "Strategic benchmark intelligence", desc: "Anonymous KPI comparison with other founders" },
+    { label: "Investor-ready overview", desc: "Professional financial summary for investors" },
     { label: "Execution Planner", desc: "Weekly task planning with accountability score" },
-    { label: "Investor Mode", desc: "Investor-ready summary, financial overview & health report" },
-    { label: "Advanced AI Copilot", desc: "CEO-level recommendations & next-best-action suggestions" },
+    { label: "Advanced AI Copilot", desc: "CEO-level recommendations & next-best-action" },
   ];
 
   const plans = [
@@ -129,6 +143,7 @@ export function PricingSection() {
       name: "Free",
       price: isDE ? "0 €" : "€0",
       period: isDE ? "für immer" : "forever",
+      tagline: "",
       features: freePlanFeatures,
       cta: isDE ? "Gratis testen – kein Risiko" : "Try free – no risk",
       highlighted: false,
@@ -137,11 +152,13 @@ export function PricingSection() {
       loading: false,
       anchor: null as string | null,
       tier: "free" as const,
+      roiText: null as string | null,
     },
     {
       name: "Builder",
-      price: isDE ? "29 €" : "€29",
+      price: formatPrice(getPrice("builder")),
       period: "/ " + (isDE ? "Monat" : "month"),
+      tagline: isDE ? "Für den strukturierten Launch." : "For structured launch.",
       features: builderFeatures,
       cta: loadingBuilder
         ? (isDE ? "Weiterleitung zu Stripe..." : "Redirecting to Stripe...")
@@ -152,11 +169,15 @@ export function PricingSection() {
       loading: loadingBuilder,
       anchor: null as string | null,
       tier: "builder" as const,
+      roiText: isDE
+        ? "1 vermiedener Produktionsfehler = 3.000–10.000 € gespart."
+        : "1 prevented production mistake = €3,000–€10,000 saved.",
     },
     {
       name: isDE ? "Pro – Founder Intelligence" : "Pro – Founder Intelligence",
-      price: isDE ? "79 €" : "€79",
+      price: formatPrice(getPrice("pro")),
       period: "/ " + (isDE ? "Monat" : "month"),
+      tagline: isDE ? "Für strategische Entscheidungen." : "For strategic decision-making.",
       features: proFeatures,
       cta: loadingPro
         ? (isDE ? "Weiterleitung zu Stripe..." : "Redirecting to Stripe...")
@@ -167,25 +188,30 @@ export function PricingSection() {
       loading: loadingPro,
       tier: "pro" as const,
       anchor: isDE
-        ? "Vermeide €5.000–€20.000 teure Fehler. Datenbasierte Entscheidungen für 79 €/Monat."
-        : "Avoid €5,000–€20,000 in mistakes. Data-backed decisions for €79/month.",
+        ? "Vermeide €5.000–€20.000 teure Fehler. Datenbasierte Entscheidungen."
+        : "Avoid €5,000–€20,000 in mistakes. Data-backed decisions.",
+      roiText: isDE
+        ? "1 vermiedener Produktionsfehler = 3.000–10.000 € gespart."
+        : "1 prevented production mistake = €3,000–€10,000 saved.",
     },
     {
       name: "Execution OS",
-      price: isDE ? "159 €" : "€159",
+      price: formatPrice(getPrice("execution")),
       period: "/ " + (isDE ? "Monat" : "month"),
+      tagline: isDE ? "Für kapitalgeschützte Business-Führung." : "For capital-protected business leadership.",
       features: executionFeatures,
       cta: loadingExecution
         ? (isDE ? "Weiterleitung zu Stripe..." : "Redirecting to Stripe...")
         : (isDE ? "Business wie ein CEO führen →" : "Run your business like a CEO →"),
       highlighted: false,
-      badge: isDE ? "Für ambitionierte Gründer" : "For ambitious founders",
+      badge: isDE ? "Für Gründer mit echtem Risiko" : "For founders managing real risk",
       onClick: () => handleCheckout("execution", setLoadingExecution),
       loading: loadingExecution,
       tier: "execution" as const,
-      anchor: isDE
-        ? "Eine falsche Produktionsentscheidung: €8.000–€20.000. Execution OS: €159/Monat."
-        : "One wrong production decision: €8,000–€20,000. Execution OS: €159/month.",
+      anchor: null as string | null,
+      roiText: isDE
+        ? "Eine falsche Produktionsentscheidung kann 8.000–20.000 € kosten."
+        : "One wrong production decision can cost €8,000–€20,000.",
     },
   ];
 
@@ -200,6 +226,38 @@ export function PricingSection() {
             {isDE
               ? "Die meisten Gründer verlieren 3.000–10.000 € durch vermeidbare Produktionsfehler. BuildYourBrand kostet einen Bruchteil davon."
               : "Most founders lose €3,000–10,000 on avoidable production mistakes. BuildYourBrand costs a fraction of that."}
+          </p>
+        </div>
+
+        {/* ── Billing Toggle ── */}
+        <div className="mb-10 flex flex-col items-center gap-3">
+          <div className="flex items-center gap-1 rounded-full border bg-card p-1 shadow-card">
+            <button
+              className={`rounded-full px-5 py-2 text-sm font-medium transition-all ${
+                billingCycle === "monthly"
+                  ? "bg-accent text-accent-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+              onClick={() => setBillingCycle("monthly")}
+            >
+              {isDE ? "Monatlich" : "Monthly"}
+            </button>
+            <button
+              className={`rounded-full px-5 py-2 text-sm font-medium transition-all ${
+                billingCycle === "yearly"
+                  ? "bg-accent text-accent-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+              onClick={() => setBillingCycle("yearly")}
+            >
+              {isDE ? "Jährlich" : "Yearly"}
+              <span className="ml-1.5 rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-semibold text-emerald-600">
+                -15%
+              </span>
+            </button>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            {isDE ? "Die meisten ambitionierten Gründer wählen jährlich." : "Most serious founders choose annual."}
           </p>
         </div>
 
@@ -219,12 +277,12 @@ export function PricingSection() {
               <p className="text-xs text-muted-foreground mt-1">{isDE ? "Falsche MOQ + Überproduktion" : "Wrong MOQ + overproduction"}</p>
             </div>
             <div className="rounded-xl border border-accent/20 bg-accent/5 p-5 text-center">
-              <p className="text-2xl font-bold text-accent">29 €</p>
+              <p className="text-2xl font-bold text-accent">{formatPrice(getPrice("builder"))}</p>
               <p className="text-xs text-muted-foreground mt-1">{isDE ? "BuildYourBrand Builder / Monat" : "BuildYourBrand Builder / month"}</p>
             </div>
             <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-5 text-center">
-              <p className="text-2xl font-bold text-amber-600">159 €</p>
-              <p className="text-xs text-muted-foreground mt-1">{isDE ? "Execution OS / Monat" : "Execution OS / month"}</p>
+              <p className="text-2xl font-bold text-amber-600">{formatPrice(getPrice("execution"))}</p>
+              <p className="text-xs text-muted-foreground mt-1">Execution OS / {isDE ? "Monat" : "month"}</p>
             </div>
           </div>
           <p className="text-sm text-muted-foreground text-center">
@@ -277,9 +335,12 @@ export function PricingSection() {
                   </div>
                 )}
                 <h3 className="text-lg font-semibold leading-snug">{plan.name}</h3>
+                {plan.tagline && (
+                  <p className="text-xs text-muted-foreground mt-0.5">{plan.tagline}</p>
+                )}
                 {isExecutionTier && (
-                  <p className="text-xs text-muted-foreground mt-0.5 italic">
-                    {isDE ? "Founder Operating System" : "Founder Operating System"}
+                  <p className="text-xs text-amber-600/80 mt-0.5 italic">
+                    {isDE ? "Für Gründer, die echtes Kapital und echtes Risiko managen." : "For founders managing real capital and real risk."}
                   </p>
                 )}
                 <div className="mt-4 flex items-baseline gap-1">
@@ -287,15 +348,21 @@ export function PricingSection() {
                   <span className="text-muted-foreground">{plan.period}</span>
                 </div>
 
+                {isYearly && plan.tier !== "free" && (
+                  <p className="mt-1 text-xs text-emerald-600 font-medium">
+                    {isDE ? "15% gespart vs. monatlich" : "Save 15% vs. monthly"}
+                  </p>
+                )}
+
                 {plan.highlighted && (
                   <p className="mt-2 text-xs text-accent font-medium">
-                    {isDE ? "= 0,97 €/Tag · Spart ∅ 3.200 € Fehlerkosten" : "= €0.97/day · Saves avg. €3,200 in mistakes"}
+                    {isDE ? `= ${(getPrice("builder") / 30).toFixed(2).replace(".", ",")} €/Tag · Spart ∅ 3.200 € Fehlerkosten` : `= €${(getPrice("builder") / 30).toFixed(2)}/day · Saves avg. €3,200 in mistakes`}
                   </p>
                 )}
 
                 {isExecutionTier && (
                   <p className="mt-2 text-xs text-amber-600 font-medium">
-                    {isDE ? "= 5,30 €/Tag · Für Gründer mit echtem Kapitalrisiko" : "= €5.30/day · For founders with real capital at risk"}
+                    {isDE ? `= ${(getPrice("execution") / 30).toFixed(2).replace(".", ",")} €/Tag · Kapitalschutz für echte Gründer` : `= €${(getPrice("execution") / 30).toFixed(2)}/day · Capital protection for real founders`}
                   </p>
                 )}
 
@@ -326,8 +393,13 @@ export function PricingSection() {
                 >
                   {plan.cta}
                 </Button>
+                {plan.roiText && (
+                  <p className="mt-3 text-[11px] text-center text-muted-foreground leading-relaxed">
+                    {plan.roiText}
+                  </p>
+                )}
                 {plan.anchor && (
-                  <p className="mt-3 text-xs text-center text-muted-foreground italic">
+                  <p className="mt-2 text-xs text-center text-muted-foreground italic">
                     {plan.anchor}
                   </p>
                 )}
@@ -363,10 +435,10 @@ export function PricingSection() {
                   ["AI Founder Copilot", "—", "3 Empfehlungen", "Voll + Chat", "Advanced CEO-Level"],
                   ["Business Recovery Mode", "—", "—", "✓ Voll", "✓ Voll"],
                   ["Kosten-Kalkulator", "Einfach", "Voll", "Voll + Szenarien", "✓ Voll"],
-                  ["Survival Monitoring", "—", "—", "—", "✓ Echtzeit-Alerts"],
-                  ["Benchmark Engine", "—", "—", "—", "✓ Anonymer Vergleich"],
+                  ["Kapitalschutz-Alerts", "—", "—", "—", "✓ Echtzeit"],
+                  ["Benchmark Intelligence", "—", "—", "—", "✓ Anonymer Vergleich"],
                   ["Execution Planner", "—", "—", "—", "✓ Wöchentlich"],
-                  ["Investor Mode", "—", "—", "—", "✓ Reports"],
+                  ["Investor-Ready Reports", "—", "—", "—", "✓ Reports"],
                   ["Advanced Copilot", "—", "—", "—", "✓ CEO-Level"],
                 ] : [
                   ["Market Reality Engine", "—", "Basic Demand", "Full + Benchmark", "✓ Full"],
@@ -375,10 +447,10 @@ export function PricingSection() {
                   ["AI Founder Copilot", "—", "3 Suggestions", "Full + Chat", "Advanced CEO-Level"],
                   ["Business Recovery Mode", "—", "—", "✓ Full", "✓ Full"],
                   ["Cost Calculator", "Basic", "Full", "Full + Scenarios", "✓ Full"],
-                  ["Survival Monitoring", "—", "—", "—", "✓ Real-time Alerts"],
-                  ["Benchmark Engine", "—", "—", "—", "✓ Anonymous Comparison"],
+                  ["Capital Protection Alerts", "—", "—", "—", "✓ Real-time"],
+                  ["Benchmark Intelligence", "—", "—", "—", "✓ Anonymous Comparison"],
                   ["Execution Planner", "—", "—", "—", "✓ Weekly"],
-                  ["Investor Mode", "—", "—", "—", "✓ Reports"],
+                  ["Investor-Ready Reports", "—", "—", "—", "✓ Reports"],
                   ["Advanced Copilot", "—", "—", "—", "✓ CEO-Level"],
                 ]).map(([feature, free, builder, pro, execution]) => (
                   <tr key={feature} className="border-b last:border-b-0">
@@ -400,14 +472,37 @@ export function PricingSection() {
           <h3 className="text-xl font-bold mb-2">
             {isDE ? "Execution OS – Für Gründer mit echtem Kapitalrisiko" : "Execution OS – For founders with real capital at risk"}
           </h3>
-          <div className="flex flex-wrap items-center justify-center gap-6 mt-4 text-sm">
+          <p className="text-sm text-muted-foreground mb-4 max-w-lg mx-auto">
+            {isDE
+              ? "Für Gründer, die echtes Kapital und echtes Risiko managen."
+              : "For founders managing real capital and real risk."}
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-3 mb-6 text-xs">
+            {(isDE ? [
+              "Wöchentliche KPI-Kontrolle",
+              "Kapitalschutz-Alerts",
+              "Strategische Benchmark Intelligence",
+              "Investor-Ready Übersicht",
+            ] : [
+              "Weekly KPI control",
+              "Capital protection alerts",
+              "Strategic benchmark intelligence",
+              "Investor-ready overview",
+            ]).map((bullet) => (
+              <span key={bullet} className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/5 px-3 py-1.5 text-amber-700">
+                <Shield className="h-3 w-3" />
+                {bullet}
+              </span>
+            ))}
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-6 text-sm">
             <div className="text-center">
               <p className="text-2xl font-bold text-destructive">€8.000–€20.000</p>
               <p className="text-xs text-muted-foreground mt-1">{isDE ? "Eine falsche Produktionsentscheidung" : "One wrong production decision"}</p>
             </div>
             <span className="text-2xl text-muted-foreground">vs.</span>
             <div className="text-center">
-              <p className="text-2xl font-bold text-amber-600">€159<span className="text-base font-normal text-muted-foreground">/Mo.</span></p>
+              <p className="text-2xl font-bold text-amber-600">{formatPrice(getPrice("execution"))}<span className="text-base font-normal text-muted-foreground">/{isDE ? "Mo." : "mo."}</span></p>
               <p className="text-xs text-muted-foreground mt-1">Execution OS</p>
             </div>
           </div>
