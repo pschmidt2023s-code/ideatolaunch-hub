@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.ai-strategy]
 verify_jwt = false
+
+[functions.ai-brand-intelligence]
+verify_jwt = false

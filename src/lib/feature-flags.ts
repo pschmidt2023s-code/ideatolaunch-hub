@@ -25,7 +25,8 @@ export type FeatureKey =
   | "benchmarkEngine"
   | "executionPlanner"
   | "investorMode"
-  | "advancedCopilot";
+  | "advancedCopilot"
+  | "brandNameIntelligence";
 
 // ─── Capability Map ─────────────────────────────────────────────
 
@@ -57,6 +58,7 @@ export interface CapabilityFlags {
   canUseExecutionPlanner: boolean;
   canUseInvestorMode: boolean;
   canUseAdvancedCopilot: boolean;
+  canUseBrandNameIntelligence: boolean;
 }
 
 export function getCapabilities(plan: string): CapabilityFlags {
@@ -92,6 +94,7 @@ export function getCapabilities(plan: string): CapabilityFlags {
     canUseExecutionPlanner: isExecution,
     canUseInvestorMode: isExecution,
     canUseAdvancedCopilot: isExecution,
+    canUseBrandNameIntelligence: isPro,
   };
 }
 
@@ -127,6 +130,7 @@ export function getFeatureAccess(feature: FeatureKey, plan: string): FeatureAcce
     executionPlanner: "canUseExecutionPlanner",
     investorMode: "canUseInvestorMode",
     advancedCopilot: "canUseAdvancedCopilot",
+    brandNameIntelligence: "canUseBrandNameIntelligence",
   };
 
   const capKey = featureCapMap[feature];
@@ -169,6 +173,7 @@ export function getRequiredPlan(feature: FeatureKey): "builder" | "pro" | "execu
     "marketReality",
     "cashflowEngine",
     "founderCopilot",
+    "brandNameIntelligence",
   ];
   return proOnly.includes(feature) ? "pro" : "builder";
 }
@@ -272,6 +277,10 @@ const upgradeMessages: Record<FeatureKey, UpgradeMessage> = {
   advancedCopilot: {
     title: { de: "Advanced AI Copilot freischalten", en: "Unlock Advanced AI Copilot" },
     desc: { de: "CEO-Level Empfehlungen, strategische Priorisierung und Next-Best-Action.", en: "CEO-level recommendations, strategic prioritization, and next-best-action." },
+  },
+  brandNameIntelligence: {
+    title: { de: "Brand Name Intelligence freischalten", en: "Unlock Brand Name Intelligence" },
+    desc: { de: "Domain-Check, Social-Handle-Verfügbarkeit, Markenrecht-Risiko und SEO-Analyse für deinen Markennamen.", en: "Domain check, social handle availability, trademark risk, and SEO analysis for your brand name." },
   },
 };
 
