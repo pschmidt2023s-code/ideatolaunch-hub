@@ -673,6 +673,53 @@ export type Database = {
         }
         Relationships: []
       }
+      founder_decisions: {
+        Row: {
+          brand_id: string
+          created_at: string
+          decision_type: string
+          description: string | null
+          id: string
+          impact_label: string | null
+          new_value: string | null
+          old_value: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          brand_id: string
+          created_at?: string
+          decision_type: string
+          description?: string | null
+          id?: string
+          impact_label?: string | null
+          new_value?: string | null
+          old_value?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          brand_id?: string
+          created_at?: string
+          decision_type?: string
+          description?: string | null
+          id?: string
+          impact_label?: string | null
+          new_value?: string | null
+          old_value?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "founder_decisions_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       launch_plans: {
         Row: {
           brand_id: string
@@ -1151,6 +1198,71 @@ export type Database = {
             foreignKeyName: "unboxing_profiles_brand_id_fkey"
             columns: ["brand_id"]
             isOneToOne: true
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      weekly_reviews: {
+        Row: {
+          brand_id: string
+          confirmed: boolean
+          confirmed_at: string | null
+          created_at: string
+          id: string
+          inventory_exposure: number | null
+          key_opportunity: string | null
+          key_risk: string | null
+          launch_score_change: number | null
+          margin_trend: number | null
+          momentum_score: number
+          runway_trend: number | null
+          streak_count: number
+          user_id: string
+          week_number: number
+          year: number
+        }
+        Insert: {
+          brand_id: string
+          confirmed?: boolean
+          confirmed_at?: string | null
+          created_at?: string
+          id?: string
+          inventory_exposure?: number | null
+          key_opportunity?: string | null
+          key_risk?: string | null
+          launch_score_change?: number | null
+          margin_trend?: number | null
+          momentum_score?: number
+          runway_trend?: number | null
+          streak_count?: number
+          user_id: string
+          week_number: number
+          year: number
+        }
+        Update: {
+          brand_id?: string
+          confirmed?: boolean
+          confirmed_at?: string | null
+          created_at?: string
+          id?: string
+          inventory_exposure?: number | null
+          key_opportunity?: string | null
+          key_risk?: string | null
+          launch_score_change?: number | null
+          margin_trend?: number | null
+          momentum_score?: number
+          runway_trend?: number | null
+          streak_count?: number
+          user_id?: string
+          week_number?: number
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "weekly_reviews_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
             referencedRelation: "brands"
             referencedColumns: ["id"]
           },
