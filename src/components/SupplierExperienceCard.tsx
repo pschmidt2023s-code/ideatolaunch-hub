@@ -34,15 +34,38 @@ const riskLevelColor: Record<string, string> = {
 
 const riskLevelLabel: Record<string, string> = { low: "Low", medium: "Medium", high: "High", critical: "Critical" };
 
+function buildSupplierUrl(url: string): string {
+  try {
+    const u = new URL(url);
+    u.searchParams.set("ref", "brandos");
+    return u.toString();
+  } catch {
+    return url;
+  }
+}
+
 function SupplierRow({ supplier, budget }: { supplier: AnySupplier; budget: number }) {
   const capitalMin = supplier.estimatedMOQ * supplier.estimatedUnitCostRange[0];
   const capitalMax = supplier.estimatedMOQ * supplier.estimatedUnitCostRange[1];
   const isRisky = capitalMin > budget * 0.6;
+  const href = supplier.website ? buildSupplierUrl(supplier.website) : undefined;
 
   return (
-    <div className="rounded-lg border bg-muted/30 p-3 space-y-2">
+    <div className="group rounded-lg border bg-muted/30 p-3 space-y-2 transition-all hover:shadow-md hover:border-accent/30">
       <div className="flex items-start justify-between gap-2">
-        <div className="font-medium text-sm">{supplier.name}</div>
+        {href ? (
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-sm text-foreground hover:text-accent transition-colors inline-flex items-center gap-1.5 cursor-pointer"
+          >
+            {supplier.name}
+            <ExternalLink className="h-3 w-3 opacity-50 group-hover:opacity-100 transition-opacity" />
+          </a>
+        ) : (
+          <div className="font-medium text-sm">{supplier.name}</div>
+        )}
         <div className="flex items-center gap-1.5 shrink-0">
           <Badge variant="outline" className="text-xs"><MapPin className="h-3 w-3 mr-1" />{supplier.region}</Badge>
           <Badge variant="secondary" className="text-[10px] capitalize">{supplier.positioning}</Badge>
@@ -58,15 +81,15 @@ function SupplierRow({ supplier, budget }: { supplier: AnySupplier; budget: numb
         Kapitalbedarf: {capitalMin.toLocaleString("de-DE")} – {capitalMax.toLocaleString("de-DE")} €
         {isRisky && " ⚠️ >60% Budget"}
       </div>
-      {supplier.website && (
+      {href && (
         <a
-          href={supplier.website}
+          href={href}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 rounded-md border bg-background px-2.5 py-1 text-xs font-medium text-accent hover:bg-accent/10 transition-colors"
+          className="inline-flex items-center gap-1.5 rounded-md border bg-background px-2.5 py-1.5 text-xs font-medium text-accent hover:bg-accent/10 transition-colors"
         >
           <ExternalLink className="h-3 w-3" />
-          Partner besuchen
+          Zum Anbieter
         </a>
       )}
     </div>
