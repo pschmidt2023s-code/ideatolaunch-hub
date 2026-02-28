@@ -78,6 +78,7 @@ const ExecutionOS = lazy(() => import("./pages/ExecutionOS"));
 const ProductEvolution = lazy(() => import("./pages/ProductEvolution"));
 const RevenueActivation = lazy(() => import("./pages/RevenueActivation"));
 const GrowthEngine = lazy(() => import("./pages/admin/GrowthEngine"));
+const PartnerDashboard = lazy(() => import("./pages/admin/PartnerDashboard"));
 
 const queryClient = new QueryClient();
 
@@ -164,6 +165,7 @@ const App = () => (
                   <Route path="/admin/fraud" element={<AdminFraud />} />
                   <Route path="/admin/monetization" element={<MonetizationAdmin />} />
                   <Route path="/admin/growth" element={<GrowthEngine />} />
+                  <Route path="/admin/partners" element={<PartnerDashboard />} />
                   <Route path="/debug/gating" element={<DebugGating />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
