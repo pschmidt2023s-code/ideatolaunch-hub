@@ -1059,6 +1059,47 @@ export type Database = {
         }
         Relationships: []
       }
+      supplier_clicks: {
+        Row: {
+          affiliate: boolean
+          brand_id: string | null
+          category: string | null
+          created_at: string
+          id: string
+          supplier_id: string
+          supplier_name: string
+          user_id: string
+        }
+        Insert: {
+          affiliate?: boolean
+          brand_id?: string | null
+          category?: string | null
+          created_at?: string
+          id?: string
+          supplier_id: string
+          supplier_name: string
+          user_id: string
+        }
+        Update: {
+          affiliate?: boolean
+          brand_id?: string | null
+          category?: string | null
+          created_at?: string
+          id?: string
+          supplier_id?: string
+          supplier_name?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "supplier_clicks_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       unboxing_profiles: {
         Row: {
           brand_id: string
