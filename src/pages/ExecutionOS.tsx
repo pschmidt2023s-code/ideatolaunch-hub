@@ -19,6 +19,7 @@ import {
   Crown, DollarSign, FileText, Flame, Gauge, HeartPulse, ListTodo,
   Percent, Shield, Sparkles, Target, TrendingDown, TrendingUp, Zap,
 } from "lucide-react";
+import { generateBenchmarkAnalysis, type BenchmarkResult } from "@/lib/benchmark-story-engine";
 
 // ─── KPI Types ──────────────────────────────────────────────────
 
@@ -368,7 +369,10 @@ export default function ExecutionOSDashboard() {
   const actionAlerts = useMemo(() => generateActionAlerts(kpis), [kpis]);
   const aiRecs = useMemo(() => getAIRecommendations(kpis), [kpis]);
   const benchmarkStories = useMemo(() => getBenchmarkStories(kpis, healthScore), [kpis, healthScore]);
-
+  const benchmarkAnalysis = useMemo<BenchmarkResult>(() => generateBenchmarkAnalysis({
+    margin: kpis.margin, cashRunwayMonths: kpis.cashRunwayMonths,
+    conversionRate: kpis.conversionRate, returnRate: kpis.returnRate, healthScore,
+  }), [kpis, healthScore]);
   const marginPercentile = useMemo(() => getBenchmarkPercentile(kpis.margin, "margin"), [kpis.margin]);
   const runwayPercentile = useMemo(() => getBenchmarkPercentile(kpis.cashRunwayMonths, "runway"), [kpis.cashRunwayMonths]);
 
