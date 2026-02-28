@@ -793,6 +793,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          archetype: string | null
           company_name: string | null
           completed_starter_mode: boolean
           created_at: string
@@ -800,10 +801,12 @@ export type Database = {
           id: string
           last_name: string | null
           referred_by: string | null
+          risk_tolerance: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          archetype?: string | null
           company_name?: string | null
           completed_starter_mode?: boolean
           created_at?: string
@@ -811,10 +814,12 @@ export type Database = {
           id?: string
           last_name?: string | null
           referred_by?: string | null
+          risk_tolerance?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          archetype?: string | null
           company_name?: string | null
           completed_starter_mode?: boolean
           created_at?: string
@@ -822,6 +827,7 @@ export type Database = {
           id?: string
           last_name?: string | null
           referred_by?: string | null
+          risk_tolerance?: string | null
           updated_at?: string
           user_id?: string
         }

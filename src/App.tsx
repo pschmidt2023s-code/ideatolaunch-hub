@@ -76,6 +76,8 @@ const FounderIntelligencePage = lazy(() => import("./pages/FounderIntelligencePa
 const RecoveryMode = lazy(() => import("./pages/RecoveryMode"));
 const ExecutionOS = lazy(() => import("./pages/ExecutionOS"));
 const ProductEvolution = lazy(() => import("./pages/ProductEvolution"));
+const RevenueActivation = lazy(() => import("./pages/RevenueActivation"));
+const GrowthEngine = lazy(() => import("./pages/admin/GrowthEngine"));
 
 const queryClient = new QueryClient();
 
@@ -155,11 +157,13 @@ const App = () => (
                   <Route path="/dashboard/recovery" element={<ProtectedRoute><RecoveryMode /></ProtectedRoute>} />
                   <Route path="/dashboard/execution" element={<ProtectedRoute><ExecutionOS /></ProtectedRoute>} />
                   <Route path="/dashboard/evolution" element={<ProtectedRoute><ProductEvolution /></ProtectedRoute>} />
+                  <Route path="/dashboard/revenue" element={<ProtectedRoute><RevenueActivation /></ProtectedRoute>} />
                   <Route path="/internal/analytics" element={<ProtectedRoute><InternalAnalytics /></ProtectedRoute>} />
                   <Route path="/admin/insights" element={<AdminInsights />} />
                   <Route path="/admin/dashboard" element={<AdminDashboard />} />
                   <Route path="/admin/fraud" element={<AdminFraud />} />
                   <Route path="/admin/monetization" element={<MonetizationAdmin />} />
+                  <Route path="/admin/growth" element={<GrowthEngine />} />
                   <Route path="/debug/gating" element={<DebugGating />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
