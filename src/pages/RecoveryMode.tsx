@@ -61,7 +61,8 @@ export default function RecoveryMode() {
   const { activeBrand } = useBrand();
   const { health } = useBrandHealth();
   const caps = getCapabilities(plan);
-  const isPro = plan === "pro";
+  const isPro = plan === "pro" || plan === "execution";
+  const isExecution = plan === "execution";
 
   const [metrics, setMetrics] = useState<BusinessMetrics>(() => {
     return defaultMetrics;
@@ -106,13 +107,13 @@ export default function RecoveryMode() {
           </div>
         </div>
 
-        {!isPro && (
+        {plan === "free" && (
           <LockedOverlay feature="scenarioSimulator">
             <div />
           </LockedOverlay>
         )}
 
-        <div className={isPro ? "" : "pointer-events-none opacity-50 blur-[2px]"}>
+        <div className={plan === "free" ? "pointer-events-none opacity-50 blur-[2px]" : ""}>
           {/* Metrics Input */}
           <Card className="mb-6">
             <CardHeader>
