@@ -26,7 +26,10 @@ export type FeatureKey =
   | "executionPlanner"
   | "investorMode"
   | "advancedCopilot"
-  | "brandNameIntelligence";
+  | "brandNameIntelligence"
+  | "roadmap"
+  | "legalMap"
+  | "recoveryMode";
 
 // ─── Capability Map ─────────────────────────────────────────────
 
@@ -59,6 +62,9 @@ export interface CapabilityFlags {
   canUseInvestorMode: boolean;
   canUseAdvancedCopilot: boolean;
   canUseBrandNameIntelligence: boolean;
+  canUseRoadmap: boolean;
+  canUseLegalMap: boolean;
+  canUseRecoveryMode: boolean;
 }
 
 export function getCapabilities(plan: string): CapabilityFlags {
@@ -95,6 +101,9 @@ export function getCapabilities(plan: string): CapabilityFlags {
     canUseInvestorMode: isExecution,
     canUseAdvancedCopilot: isExecution,
     canUseBrandNameIntelligence: isPro,
+    canUseRoadmap: isPro,
+    canUseLegalMap: isPro,
+    canUseRecoveryMode: isPro,
   };
 }
 
@@ -131,6 +140,9 @@ export function getFeatureAccess(feature: FeatureKey, plan: string): FeatureAcce
     investorMode: "canUseInvestorMode",
     advancedCopilot: "canUseAdvancedCopilot",
     brandNameIntelligence: "canUseBrandNameIntelligence",
+    roadmap: "canUseRoadmap",
+    legalMap: "canUseLegalMap",
+    recoveryMode: "canUseRecoveryMode",
   };
 
   const capKey = featureCapMap[feature];
@@ -174,6 +186,9 @@ export function getRequiredPlan(feature: FeatureKey): "builder" | "pro" | "execu
     "cashflowEngine",
     "founderCopilot",
     "brandNameIntelligence",
+    "roadmap",
+    "legalMap",
+    "recoveryMode",
   ];
   return proOnly.includes(feature) ? "pro" : "builder";
 }
@@ -281,6 +296,18 @@ const upgradeMessages: Record<FeatureKey, UpgradeMessage> = {
   brandNameIntelligence: {
     title: { de: "Brand Name Intelligence freischalten", en: "Unlock Brand Name Intelligence" },
     desc: { de: "Domain-Check, Social-Handle-Verfügbarkeit, Markenrecht-Risiko und SEO-Analyse für deinen Markennamen.", en: "Domain check, social handle availability, trademark risk, and SEO analysis for your brand name." },
+  },
+  roadmap: {
+    title: { de: "Personalisierte Roadmap freischalten", en: "Unlock Personalized Roadmap" },
+    desc: { de: "Deine Launch-Roadmap wird dynamisch an dein Profil, Budget und Risiken angepasst.", en: "Your launch roadmap adapts dynamically to your profile, budget, and risks." },
+  },
+  legalMap: {
+    title: { de: "Personalisierte Legal Map freischalten", en: "Unlock Personalized Legal Map" },
+    desc: { de: "Compliance-Anforderungen basierend auf deinem Produkt, Markt und Geschäftsmodell.", en: "Compliance requirements based on your product, market, and business model." },
+  },
+  recoveryMode: {
+    title: { de: "Recovery Mode freischalten", en: "Unlock Recovery Mode" },
+    desc: { de: "Krisenfrüherkennung, Recovery-Pläne und Überlebensstrategien für dein Business.", en: "Crisis detection, recovery plans, and survival strategies for your business." },
   },
 };
 

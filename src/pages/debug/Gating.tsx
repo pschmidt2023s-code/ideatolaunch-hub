@@ -6,6 +6,7 @@ const ALL_FEATURES: FeatureKey[] = [
   "insights", "pdfExport", "budgetPlanner", "scenarioSimulator",
   "supplierMatching", "supplierInsights", "guidedFounderMode",
   "adaptiveRoadmap", "executionReadiness", "riskDashboard", "fullRealityCheck",
+  "roadmap", "legalMap", "recoveryMode",
 ];
 
 export default function DebugGating() {
