@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { SEO } from "@/components/SEO";
+import { ExternalLink } from "@/components/ExternalLink";
 
 export default function Impressum() {
   useEffect(() => { window.scrollTo(0, 0); }, []);
@@ -71,14 +72,12 @@ export default function Impressum() {
             <p className="text-muted-foreground text-sm leading-relaxed">
               Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung
               (OS) bereit:{" "}
-              <a
+              <ExternalLink
                 href="https://ec.europa.eu/consumers/odr"
-                target="_blank"
-                rel="noopener noreferrer"
                 className="text-accent underline"
               >
                 https://ec.europa.eu/consumers/odr
-              </a>
+              </ExternalLink>
               . Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor
               einer Verbraucherschlichtungsstelle teilzunehmen.
             </p>

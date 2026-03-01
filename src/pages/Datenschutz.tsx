@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { SEO } from "@/components/SEO";
+import { ExternalLink } from "@/components/ExternalLink";
 
 export default function Datenschutz() {
   useEffect(() => { window.scrollTo(0, 0); }, []);
@@ -60,14 +61,12 @@ export default function Datenschutz() {
               Ihre Zahlungsdaten direkt an Stripe übermittelt. Wir haben keinen Zugriff auf
               vollständige Zahlungsdaten. Stripe verarbeitet Daten auch in den USA auf
               Grundlage von Standardvertragsklauseln (SCC). Es gilt die{" "}
-              <a
+              <ExternalLink
                 href="https://stripe.com/de/privacy"
-                target="_blank"
-                rel="noopener noreferrer"
                 className="text-accent underline"
               >
                 Datenschutzerklärung von Stripe
-              </a>
+              </ExternalLink>
               .
             </p>
           </Section>
