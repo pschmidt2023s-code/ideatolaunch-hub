@@ -1,63 +1,48 @@
 import { Checkbox } from "@/components/ui/checkbox";
-import { useState, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
-import { FileText, Save, Loader2 } from "lucide-react";
+import { useState, useEffect, useCallback, useMemo, forwardRef, useImperativeHandle } from "react";
+import { FileText, Save, Loader2, Shield, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "react-i18next";
 import { useBrand } from "@/hooks/useBrand";
 import { useSubscription } from "@/hooks/useSubscription";
+import { useBrandProfile } from "@/hooks/useBrandProfile";
+import { getCapabilities } from "@/lib/feature-flags";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { generateBrandReport } from "@/lib/pdf-export";
 import { useNavigate } from "react-router-dom";
 import type { StepHandle } from "./StepIdeaFoundation";
-import { getLabelChecklistForCategory } from "@/lib/product-intelligence";
+import { generateLabelChecklist, type ChecklistEntry } from "@/lib/checklist-generators";
+
+const RISK_LABELS: Record<string, string> = { low: "Niedrig", medium: "Mittel", high: "Hoch", critical: "Kritisch" };
 
 export const StepCompliance = forwardRef<StepHandle>(function StepCompliance(_, ref) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { activeBrand } = useBrand();
-  const { isFree } = useSubscription();
+  const { plan } = useSubscription();
+  const { brandProfile: bp } = useBrandProfile();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const brandId = activeBrand?.id;
-  const lang = (i18n.language === "de" ? "de" : "en") as "de" | "en";
+
+  const caps = getCapabilities(plan);
+  const isPro = caps.canUseLegalMap;
+  const isExecution = plan === "execution";
 
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const [saving, setSaving] = useState(false);
 
-  // Load brand profile to get product category
-  const { data: brandProfile } = useQuery({
-    queryKey: ["brand_profile_category", brandId],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("brand_profiles")
-        .select("product_category")
-        .eq("brand_id", brandId!)
-        .maybeSingle();
-      return data;
-    },
-    enabled: !!brandId,
-  });
+  // Dynamic label checklist from BrandProfile
+  const labelChecklist: ChecklistEntry[] = useMemo(() => {
+    if (!bp) return [];
+    return generateLabelChecklist(bp, plan);
+  }, [bp, plan]);
 
-  // Also check production_plans for category fallback
-  const { data: prodPlan } = useQuery({
-    queryKey: ["production_plan_category", brandId],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("production_plans")
-        .select("product_category")
-        .eq("brand_id", brandId!)
-        .maybeSingle();
-      return data;
-    },
-    enabled: !!brandId,
-  });
+  const completedCount = labelChecklist.filter(item => checked[item.id]).length;
 
-  const categoryId = brandProfile?.product_category || prodPlan?.product_category || "other";
-  const labelChecklist = getLabelChecklistForCategory(categoryId, lang);
-  const completedCount = Object.values(checked).filter(Boolean).length;
-
-  const { data: plan } = useQuery({
+  const { data: compliancePlan } = useQuery({
     queryKey: ["compliance_plan", brandId],
     queryFn: async () => {
       const { data } = await supabase
@@ -71,12 +56,12 @@ export const StepCompliance = forwardRef<StepHandle>(function StepCompliance(_, 
   });
 
   useEffect(() => {
-    if (plan && Array.isArray(plan.label_checklist)) {
+    if (compliancePlan && Array.isArray(compliancePlan.label_checklist)) {
       const c: Record<string, boolean> = {};
-      (plan.label_checklist as string[]).forEach((item) => { c[item] = true; });
+      (compliancePlan.label_checklist as string[]).forEach((item) => { c[item] = true; });
       setChecked(c);
     }
-  }, [plan]);
+  }, [compliancePlan]);
 
   const saveToDb = useCallback(async (showToast = true) => {
     if (!brandId) return;
@@ -86,8 +71,8 @@ export const StepCompliance = forwardRef<StepHandle>(function StepCompliance(_, 
       label_checklist: Object.entries(checked).filter(([, v]) => v).map(([k]) => k),
     };
 
-    const { error } = plan
-      ? await supabase.from("compliance_plans").update(payload).eq("id", plan.id)
+    const { error } = compliancePlan
+      ? await supabase.from("compliance_plans").update(payload).eq("id", compliancePlan.id)
       : await supabase.from("compliance_plans").insert(payload);
 
     setSaving(false);
@@ -97,35 +82,55 @@ export const StepCompliance = forwardRef<StepHandle>(function StepCompliance(_, 
       if (showToast) toast.success(t("steps.saved"));
       queryClient.invalidateQueries({ queryKey: ["compliance_plan", brandId] });
     }
-  }, [brandId, checked, plan, queryClient, t]);
+  }, [brandId, checked, compliancePlan, queryClient, t]);
 
   useImperativeHandle(ref, () => ({ save: () => saveToDb(false) }), [saveToDb]);
 
   const handleExportPdf = () => {
-    if (isFree) {
+    if (!caps.canExportPDF) {
       toast.error(t("upgrade.pdfLocked"));
       navigate("/dashboard/pricing");
       return;
     }
     generateBrandReport({
       brandName: activeBrand?.name || "Brand",
-      complianceChecklist: labelChecklist.map((item) => ({ item, checked: !!checked[item] })),
+      complianceChecklist: labelChecklist.map((item) => ({ item: item.label, checked: !!checked[item.id] })),
     });
     toast.success(t("pdf.exportSuccess"));
   };
 
+  // Group by category
+  const categories = [...new Set(labelChecklist.map(i => i.category))];
+
+  const CATEGORY_LABELS: Record<string, string> = {
+    label: "Pflichtangaben",
+    cosmetics: "Kosmetik-Kennzeichnung",
+    supplements: "Nahrungsergänzung",
+    food: "Lebensmittel",
+    apparel: "Textil-Kennzeichnung",
+    electronics: "Elektronik",
+    eu: "EU-Markt",
+    barcode: "Barcode / EAN",
+    brand: "Markenpositionierung",
+    packaging: "Verpackung",
+  };
+
   return (
     <div className="space-y-8">
-      {/* Category indicator */}
-      {categoryId && categoryId !== "other" && (
+      {/* Profile indicator */}
+      {bp && bp.categoryId && (
         <div className="rounded-lg border border-accent/20 bg-accent/5 px-4 py-2.5 flex items-center gap-2">
+          <Shield className="h-3.5 w-3.5 text-accent" />
           <span className="text-xs text-accent font-medium">
-            {lang === "de" ? "Checkliste angepasst an:" : "Checklist adapted for:"}
+            Checkliste personalisiert für:
           </span>
-          <span className="text-xs font-bold text-accent capitalize">{categoryId.replace("_", " / ")}</span>
+          <span className="text-xs font-bold text-accent capitalize">{bp.categoryId.replace("_", " / ")}</span>
+          {bp.targetRegion && <Badge variant="outline" className="text-[10px] ml-1">{bp.targetRegion}</Badge>}
+          {bp.priceSegment && <Badge variant="outline" className="text-[10px] ml-1">{bp.priceSegment}</Badge>}
         </div>
       )}
 
+      {/* Score summary */}
       <div className="rounded-xl border bg-card p-6 shadow-card">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-lg font-semibold">{t("step5.labelChecklist")}</h2>
@@ -139,17 +144,48 @@ export const StepCompliance = forwardRef<StepHandle>(function StepCompliance(_, 
             </Button>
           </div>
         </div>
-        <div className="space-y-3">
-          {labelChecklist.map((item) => (
-            <label key={item} className="flex items-center gap-3 cursor-pointer">
-              <Checkbox
-                checked={!!checked[item]}
-                onCheckedChange={(v) => setChecked((p) => ({ ...p, [item]: !!v }))}
-              />
-              <span className={`text-sm ${checked[item] ? "line-through text-muted-foreground" : ""}`}>{item}</span>
-            </label>
-          ))}
-        </div>
+
+        {/* Grouped checklists */}
+        {categories.map(cat => {
+          const catItems = labelChecklist.filter(i => i.category === cat);
+          return (
+            <div key={cat} className="mb-6 last:mb-0">
+              <h3 className="text-sm font-semibold text-muted-foreground mb-3">{CATEGORY_LABELS[cat] || cat}</h3>
+              <div className="space-y-3">
+                {catItems.map((item) => (
+                  <label key={item.id} className="flex items-start gap-3 rounded-lg border p-3 cursor-pointer hover:bg-muted/50 transition-colors">
+                    <Checkbox
+                      checked={!!checked[item.id]}
+                      onCheckedChange={(v) => setChecked((p) => ({ ...p, [item.id]: !!v }))}
+                      className="mt-0.5"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className={`text-sm font-medium ${checked[item.id] ? "line-through text-muted-foreground" : ""}`}>
+                          {item.riskLevel === "critical" && <AlertTriangle className="mr-1 inline h-3.5 w-3.5 text-destructive" />}
+                          {item.label}
+                        </span>
+                        {item.required && <Badge variant="outline" className="text-[10px] px-1.5 py-0">Pflicht</Badge>}
+                        {(isPro || isExecution) && item.riskLevel && (
+                          <Badge variant={item.riskLevel === "critical" ? "destructive" : "secondary"} className="text-[10px] px-1.5 py-0">
+                            {RISK_LABELS[item.riskLevel]}
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-0.5">{item.description}</p>
+                      {isExecution && (item.estimatedFine || item.auditProbability) && (
+                        <div className="flex gap-4 mt-1 text-[10px] text-muted-foreground">
+                          {item.estimatedFine && <span className="text-destructive">Exposure: {item.estimatedFine}</span>}
+                          {item.auditProbability !== undefined && <span>Audit-Wahrscheinlichkeit: {item.auditProbability}%</span>}
+                        </div>
+                      )}
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       <div className="rounded-xl border bg-card p-6 shadow-card">
