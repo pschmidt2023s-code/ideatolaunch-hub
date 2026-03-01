@@ -7,8 +7,9 @@ import { Label } from "@/components/ui/label";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   AlertTriangle, MapPin, Clock, Package, Factory, Gift, TrendingUp,
-  Info, Shield, Zap, ExternalLink, Filter, Star, ChevronDown, ChevronUp,
+  Info, Shield, Zap, ExternalLink as ExternalLinkIcon, Filter, Star, ChevronDown, ChevronUp,
 } from "lucide-react";
+import { openExternal } from "@/lib/openExternal";
 import { useSubscription } from "@/hooks/useSubscription";
 import { LockedOverlay } from "@/components/LockedOverlay";
 import { getFeatureAccess } from "@/lib/feature-flags";
@@ -101,24 +102,33 @@ function SupplierRow({
     onClickTrack(supplier);
   };
 
+  const handleCardClick = () => {
+    handleClick();
+    if (href) openExternal(href);
+  };
+
+  const handleCardKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      handleCardClick();
+    }
+  };
+
   return (
-    <div className="group rounded-lg border bg-muted/30 p-4 space-y-3 transition-all hover:shadow-md hover:border-accent/30 hover:-translate-y-0.5">
+    <div
+      className={`group rounded-lg border bg-muted/30 p-4 space-y-3 transition-all hover:shadow-md hover:border-accent/30 hover:-translate-y-0.5 ${href ? "cursor-pointer" : ""}`}
+      role={href ? "link" : undefined}
+      tabIndex={href ? 0 : undefined}
+      onClick={href ? handleCardClick : undefined}
+      onKeyDown={href ? handleCardKeyDown : undefined}
+      aria-label={href ? `${supplier.name} – Website besuchen` : undefined}
+    >
       <div className="flex items-start justify-between gap-2">
         <div className="space-y-0.5">
-          {href ? (
-            <a
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-semibold text-sm text-foreground hover:text-accent transition-colors inline-flex items-center gap-1.5 cursor-pointer"
-              onClick={handleClick}
-            >
-              {supplier.name}
-              <ExternalLink className="h-3 w-3 opacity-50 group-hover:opacity-100 transition-opacity" />
-            </a>
-          ) : (
-            <div className="font-semibold text-sm">{supplier.name}</div>
-          )}
+          <div className="font-semibold text-sm text-foreground hover:text-accent transition-colors inline-flex items-center gap-1.5">
+            {supplier.name}
+            {href && <ExternalLinkIcon className="h-3 w-3 opacity-50 group-hover:opacity-100 transition-opacity" />}
+          </div>
           {fitLabel && (
             <div className="flex items-center gap-1.5 text-[11px] font-medium text-accent">
               <Star className="h-3 w-3" />
@@ -203,16 +213,10 @@ function SupplierRow({
       {/* CTA */}
       {href && (
         <div className="flex items-center gap-2">
-          <a
-            href={href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-md border bg-background px-3 py-1.5 text-xs font-medium text-accent hover:bg-accent/10 transition-colors"
-            onClick={handleClick}
-          >
-            <ExternalLink className="h-3 w-3" />
+          <span className="inline-flex items-center gap-1.5 rounded-md border bg-background px-3 py-1.5 text-xs font-medium text-accent hover:bg-accent/10 transition-colors">
+            <ExternalLinkIcon className="h-3 w-3" />
             Website besuchen
-          </a>
+          </span>
         </div>
       )}
     </div>
