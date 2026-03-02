@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect, useRef } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -90,7 +90,23 @@ function LazyFallback() {
   );
 }
 
-const App = () => (
+const App = () => {
+  const updateChecked = useRef(false);
+
+  useEffect(() => {
+    if (updateChecked.current) return;
+    if (import.meta.env.DEV) return;
+    updateChecked.current = true;
+    const t = setTimeout(async () => {
+      try {
+        const { checkForUpdate } = await import("./updateWebsite");
+        await checkForUpdate();
+      } catch {}
+    }, 1500);
+    return () => clearTimeout(t);
+  }, []);
+
+  return (
   <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
@@ -177,6 +193,7 @@ const App = () => (
       </AuthProvider>
     </QueryClientProvider>
   </ErrorBoundary>
-);
+  );
+};
 
 export default App;
