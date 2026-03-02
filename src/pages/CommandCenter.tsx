@@ -10,8 +10,10 @@ import { FailureCostCards } from "@/components/dashboard/FailureCostCards";
 import { PhaseStepper } from "@/components/dashboard/PhaseStepper";
 import { ExplainabilityPanel } from "@/components/dashboard/ExplainabilityPanel";
 import { SEO } from "@/components/SEO";
-import { getMockData, type ScenarioMode } from "@/lib/command-center-types";
+import { useCommandCenterData } from "@/hooks/useCommandCenterData";
+import type { ScenarioMode } from "@/lib/command-center-types";
 import { cn } from "@/lib/utils";
+import { AlertTriangle, Database } from "lucide-react";
 
 const MODES: { value: ScenarioMode; label: string }[] = [
   { value: "optimistic", label: "Optimistisch" },
@@ -21,7 +23,7 @@ const MODES: { value: ScenarioMode; label: string }[] = [
 
 export default function CommandCenter() {
   const [mode, setMode] = useState<ScenarioMode>("realistic");
-  const data = getMockData(mode);
+  const data = useCommandCenterData(mode);
 
   return (
     <DashboardLayout>
@@ -36,56 +38,87 @@ export default function CommandCenter() {
           description="Dein strategisches Cockpit – alle kritischen Kennzahlen auf einen Blick."
         />
 
-        {/* Status Bar – 5 metrics */}
-        <StatusBar status={data.status} />
-
-        {/* Reality Mode Toggle */}
-        <div className="flex items-center gap-3">
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Reality Mode</span>
-          <div className="inline-flex rounded-lg bg-muted p-1">
-            {MODES.map(({ value, label }) => (
-              <button
-                key={value}
-                onClick={() => setMode(value)}
-                className={cn(
-                  "rounded-md px-4 py-1.5 text-xs font-medium transition-all",
-                  mode === value
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                {label}
-              </button>
-            ))}
+        {/* No brand or insufficient data */}
+        {(!data.ready || !data.sufficient) && (
+          <div className="flex items-center gap-3 rounded-lg border border-warning/30 bg-warning/5 p-4">
+            <AlertTriangle className="h-5 w-5 text-warning shrink-0" />
+            <div>
+              <p className="text-sm font-medium">Nicht genügend Daten</p>
+              <p className="text-xs text-muted-foreground">
+                Fülle mindestens die Finanzkalkulation oder dein Markenprofil aus, um Live-Daten zu sehen.
+              </p>
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* Top 3 Cards */}
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          <MoneyCard data={data.money} />
-          <RiskCard risks={data.risks} />
-          <ExecutionCard actions={data.actions} />
-        </div>
+        {data.ready && data.sufficient && (
+          <>
+            {/* Live data badge */}
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Database className="h-3 w-3" />
+              <span>Berechnet aus deinen Daten</span>
+              <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
+            </div>
 
-        <ExplainabilityPanel
-          reasoning="Die Werte basieren auf deinem aktuellen Brand-Profil, Finanzdaten und Lieferantenstatus. Mock-Daten werden verwendet, bis echte Daten vorliegen."
-          dataUsed={["Brand-Profil", "Financial Model", "Supplier Risk Score", "Compliance Score"]}
-          confidence={data.status.riskLevel}
-        />
+            {/* Status Bar – 6 metrics */}
+            <StatusBar status={data.status} />
 
-        {/* Phase Stepper */}
-        <section className="space-y-3">
-          <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Founder Journey
-          </h2>
-          <PhaseStepper />
-        </section>
+            {/* Reality Mode Toggle */}
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Reality Mode</span>
+              <div className="inline-flex rounded-lg bg-muted p-1">
+                {MODES.map(({ value, label }) => (
+                  <button
+                    key={value}
+                    onClick={() => setMode(value)}
+                    className={cn(
+                      "rounded-md px-4 py-1.5 text-xs font-medium transition-all",
+                      mode === value
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-        {/* Decision Simulator */}
-        <DecisionSimulator />
+            {/* Top 3 Cards */}
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              <MoneyCard data={data.money} />
+              <RiskCard risks={data.risks} />
+              <ExecutionCard actions={data.actions} />
+            </div>
 
-        {/* Failure Cost Cards */}
-        <FailureCostCards />
+            <ExplainabilityPanel
+              reasoning="Alle Werte werden live aus deinem Markenprofil, Finanzmodell, Compliance- und Produktionsdaten berechnet. Kein Demo – echte Zahlen."
+              dataUsed={[
+                data.input.hasFinancialModel ? "✓ Finanzkalkulation" : "✗ Finanzkalkulation",
+                data.input.hasBrandProfile ? "✓ Markenprofil" : "✗ Markenprofil",
+                data.input.hasProductionPlan ? "✓ Produktionsplan" : "✗ Produktionsplan",
+                data.input.hasCompliancePlan ? "✓ Compliance" : "✗ Compliance",
+                data.input.hasLaunchPlan ? "✓ Launch-Plan" : "✗ Launch-Plan",
+                data.input.hasBrandIdentity ? "✓ Markenidentität" : "✗ Markenidentität",
+              ]}
+              confidence={data.status.riskLevel}
+            />
+
+            {/* Phase Stepper */}
+            <section className="space-y-3">
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Founder Journey
+              </h2>
+              <PhaseStepper />
+            </section>
+
+            {/* Decision Simulator */}
+            <DecisionSimulator />
+
+            {/* Failure Cost Cards */}
+            <FailureCostCards />
+          </>
+        )}
       </div>
     </DashboardLayout>
   );
