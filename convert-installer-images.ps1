@@ -1,10 +1,40 @@
-# BrandOS Installer Image Converter
-# Converts PNG source images to BMP format for NSIS installer
+# BrandOS Installer/Image Converter
+# Converts icon + installer source images for Tauri/NSIS
 # Run: powershell -ExecutionPolicy Bypass -File convert-installer-images.ps1
 
 Add-Type -AssemblyName System.Drawing
+Add-Type @"
+using System;
+using System.Runtime.InteropServices;
+public static class IconCleanup {
+  [DllImport("user32.dll", CharSet = CharSet.Auto)]
+  public static extern bool DestroyIcon(IntPtr handle);
+}
+"@
 
 $iconsDir = Join-Path $PSScriptRoot "src-tauri\icons"
+
+# --- App Icon (PNG -> ICO) ---
+$iconSource = Join-Path $iconsDir "icon.png"
+$iconTarget = Join-Path $iconsDir "icon.ico"
+
+if (Test-Path $iconSource) {
+    $bmp = New-Object System.Drawing.Bitmap($iconSource)
+    $hIcon = $bmp.GetHicon()
+    $icon = [System.Drawing.Icon]::FromHandle($hIcon)
+
+    $fs = [System.IO.File]::Open($iconTarget, [System.IO.FileMode]::Create)
+    $icon.Save($fs)
+    $fs.Close()
+
+    $icon.Dispose()
+    $bmp.Dispose()
+    [IconCleanup]::DestroyIcon($hIcon) | Out-Null
+
+    Write-Host "icon.ico erstellt" -ForegroundColor Green
+} else {
+    Write-Host "icon.png nicht gefunden!" -ForegroundColor Red
+}
 
 # --- Sidebar Image (164x314) ---
 $sidebarSource = Join-Path $iconsDir "sidebar-source.png"
@@ -44,4 +74,6 @@ if (Test-Path $headerSource) {
     Write-Host "header-source.png nicht gefunden!" -ForegroundColor Red
 }
 
-Write-Host "`nFertig! Jetzt 'npm run tauri build' ausfuehren." -ForegroundColor Cyan
+Write-Host "`nFertig! Jetzt nacheinander ausführen:" -ForegroundColor Cyan
+Write-Host "1) powershell -ExecutionPolicy Bypass -File convert-installer-images.ps1" -ForegroundColor Cyan
+Write-Host "2) npm run tauri build" -ForegroundColor Cyan
