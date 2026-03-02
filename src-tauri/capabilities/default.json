@@ -8,6 +8,21 @@
   "permissions": [
     "core:default",
     "opener:default",
-    "dialog:default"
+    "dialog:default",
+    "fs:default",
+    "fs:allow-download-write",
+    "fs:allow-download-read",
+    {
+      "identifier": "shell:allow-execute",
+      "allow": [
+        {
+          "name": "cmd",
+          "cmd": "cmd",
+          "args": ["/c", "start", "", { "validator": ".*" }]
+        }
+      ]
+    },
+    "shell:allow-open",
+    "process:default"
   ]
 }
