@@ -77,6 +77,7 @@ const ProductEvolution = lazy(() => import("./pages/ProductEvolution"));
 const RevenueActivation = lazy(() => import("./pages/RevenueActivation"));
 const GrowthEngine = lazy(() => import("./pages/admin/GrowthEngine"));
 const PartnerDashboard = lazy(() => import("./pages/admin/PartnerDashboard"));
+const Download = lazy(() => import("./pages/Download"));
 
 const queryClient = new QueryClient();
 
@@ -143,6 +144,7 @@ const App = () => {
                       <Route path="/datenschutz" element={<Datenschutz />} />
                       <Route path="/agb" element={<AGB />} />
                       <Route path="/product" element={<Product />} />
+                      <Route path="/download" element={<Download />} />
 
                       {/* Blog */}
                       <Route path="/blog" element={<Blog />} />
