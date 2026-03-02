@@ -1,24 +1,30 @@
-; BrandOS NSIS Installer Hooks
-; Custom installation steps for BrandOS
+; BrandOS Custom NSIS Installer Hooks
+; BuildYourBrand, Deutschland
+; https://brand.aldenairperfumes.de/#/datenschutz
+
+; ============================================
+; Custom Colors for Welcome & Finish Pages
+; Dark navy theme matching BrandOS branding
+; ============================================
+!define MUI_BGCOLOR "0B1628"
+!define MUI_TEXTCOLOR "FFFFFF"
+
+; Custom branding text at the bottom of the installer
+!define MUI_ABORTWARNING
+!define MUI_ABORTWARNING_TEXT "Möchten Sie die Installation von BrandOS wirklich abbrechen?"
 
 !macro NSIS_HOOK_PREINSTALL
-  ; Check if a previous version is running and close it
+  ; Close running BrandOS instance before installing
   nsExec::ExecToLog 'taskkill /f /im "BrandOS.exe"'
   Sleep 500
 !macroend
 
 !macro NSIS_HOOK_POSTINSTALL
-  ; Create desktop shortcut
-  CreateShortCut "$DESKTOP\BrandOS.lnk" "$INSTDIR\BrandOS.exe" "" "$INSTDIR\BrandOS.exe" 0
-
-  ; Create Start Menu folder and shortcuts
-  CreateDirectory "$SMPROGRAMS\BrandOS"
-  CreateShortCut "$SMPROGRAMS\BrandOS\BrandOS.lnk" "$INSTDIR\BrandOS.exe" "" "$INSTDIR\BrandOS.exe" 0
-  CreateShortCut "$SMPROGRAMS\BrandOS\BrandOS deinstallieren.lnk" "$INSTDIR\uninstall.exe"
-
-  ; Write additional registry info
-  WriteRegStr HKCU "Software\BrandOS" "InstallPath" "$INSTDIR"
-  WriteRegStr HKCU "Software\BrandOS" "Version" "${VERSION}"
+  ; Write BuildYourBrand info to registry
+  WriteRegStr SHCTX "Software\BuildYourBrand\BrandOS" "Publisher" "BuildYourBrand"
+  WriteRegStr SHCTX "Software\BuildYourBrand\BrandOS" "Country" "Deutschland"
+  WriteRegStr SHCTX "Software\BuildYourBrand\BrandOS" "Website" "https://brand.aldenairperfumes.de"
+  WriteRegStr SHCTX "Software\BuildYourBrand\BrandOS" "Privacy" "https://brand.aldenairperfumes.de/#/datenschutz"
 !macroend
 
 !macro NSIS_HOOK_PREUNINSTALL
@@ -28,14 +34,7 @@
 !macroend
 
 !macro NSIS_HOOK_POSTUNINSTALL
-  ; Remove desktop shortcut
-  Delete "$DESKTOP\BrandOS.lnk"
-
-  ; Remove Start Menu entries
-  Delete "$SMPROGRAMS\BrandOS\BrandOS.lnk"
-  Delete "$SMPROGRAMS\BrandOS\BrandOS deinstallieren.lnk"
-  RMDir "$SMPROGRAMS\BrandOS"
-
-  ; Clean registry
-  DeleteRegKey HKCU "Software\BrandOS"
+  ; Clean up BuildYourBrand registry entries
+  DeleteRegKey SHCTX "Software\BuildYourBrand\BrandOS"
+  DeleteRegKey /ifempty SHCTX "Software\BuildYourBrand"
 !macroend
