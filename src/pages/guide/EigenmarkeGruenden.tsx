@@ -20,17 +20,15 @@ const faqJsonLd = {
 const howToJsonLd = {
   "@context": "https://schema.org",
   "@type": "HowTo",
-  "name": "Eigenmarke gründen in 7 Schritten",
+  "name": "Eigenmarke gründen in 5 Phasen",
   "description": "Komplette Anleitung zum Aufbau einer eigenen Marke – von der Idee über Produktion und Compliance bis zum Launch.",
   "totalTime": "P90D",
   "step": [
-    { "@type": "HowToStep", "position": 1, "name": "Idee validieren & Markt analysieren", "text": "Definiere deine Nische, analysiere Wettbewerber und validiere die Nachfrage." },
-    { "@type": "HowToStep", "position": 2, "name": "Markenidentität entwickeln", "text": "Erstelle Name, Logo, Tonalität und Brand Story." },
-    { "@type": "HowToStep", "position": 3, "name": "Kosten kalkulieren", "text": "Berechne Produktionskosten, Verpackung, Versand und plane dein Budget." },
-    { "@type": "HowToStep", "position": 4, "name": "Lieferanten finden & Produktion planen", "text": "Recherchiere Hersteller, verhandle MOQ und bestelle Samples." },
-    { "@type": "HowToStep", "position": 5, "name": "Compliance sicherstellen", "text": "Gewerbeanmeldung, Produktkennzeichnung, CE-Markierung und rechtliche Absicherung." },
-    { "@type": "HowToStep", "position": 6, "name": "Vertriebskanal aufbauen", "text": "Online-Shop erstellen, Marktplatz-Listing oder Social Commerce." },
-    { "@type": "HowToStep", "position": 7, "name": "Launch durchführen", "text": "Pre-Launch Kampagne, erste Bestellungen und 30-Tage Optimierung." },
+    { "@type": "HowToStep", "position": 1, "name": "Validierung & Marke", "text": "Definiere Nische, Positionierung und Markenidentität." },
+    { "@type": "HowToStep", "position": 2, "name": "Finanzielle Klarheit", "text": "Berechne Produktionskosten, Preise, Margen und Break-even." },
+    { "@type": "HowToStep", "position": 3, "name": "Produktion & Sourcing", "text": "Finde Lieferanten, verhandle MOQ und bestelle Samples." },
+    { "@type": "HowToStep", "position": 4, "name": "Compliance & Vertrieb", "text": "Rechtliche Absicherung und Vertriebskanal aufbauen." },
+    { "@type": "HowToStep", "position": 5, "name": "Launch & Optimierung", "text": "30-Tage Roadmap, KPI-Tracking und Iteration." },
   ]
 };
 
@@ -78,7 +76,7 @@ export default function EigenmarkeGruenden() {
         <ol className="space-y-2 text-sm">
           {[
             "Warum eine Eigenmarke gründen?",
-            "Die 7 Schritte zum Markenaufbau",
+            "Die 5 Phasen zum Markenaufbau",
             "Idee & Positionierung",
             "Markenidentität aufbauen",
             "Kalkulation & Business Model",
@@ -118,19 +116,17 @@ export default function EigenmarkeGruenden() {
 
       {/* Section 2 */}
       <section className="mb-14">
-        <h2 className="text-2xl font-bold mb-4 md:text-3xl">Die 7 Schritte zum Markenaufbau</h2>
+        <h2 className="text-2xl font-bold mb-4 md:text-3xl">Die 5 Phasen zum Markenaufbau</h2>
         <p className="text-muted-foreground leading-relaxed mb-6">
-          Unser bewährtes 7-Schritte-System deckt den kompletten Markenaufbau ab:
+          Unser bewährtes 5-Phasen-System deckt den kompletten Markenaufbau ab:
         </p>
         <div className="space-y-3">
           {[
-            { step: "01", title: "Idee & Positionierung", desc: "Zielgruppe definieren, USP entwickeln, Marktanalyse" },
-            { step: "02", title: "Markenidentität", desc: "Name, Logo, Tonalität, Brand Values" },
-            { step: "03", title: "Kalkulation", desc: "Produktionskosten, Preisgestaltung, Break-Even" },
-            { step: "04", title: "Produktion", desc: "Lieferanten finden, MOQ verhandeln, Qualitätskontrolle" },
-            { step: "05", title: "Compliance", desc: "Gewerbeanmeldung, Kennzeichnung, Rechtliches" },
-            { step: "06", title: "Vertrieb", desc: "Eigener Shop, Marktplätze, Social Commerce" },
-            { step: "07", title: "Launch", desc: "Pre-Launch, 30-Tage-Plan, Optimierung" },
+            { step: "01", title: "Validierung & Marke", desc: "Zielgruppe, USP, Positionierung und Markenidentität" },
+            { step: "02", title: "Finanzielle Klarheit", desc: "Produktionskosten, Preisgestaltung, Break-Even, Kapitalbedarf" },
+            { step: "03", title: "Produktion & Sourcing", desc: "Lieferanten finden, MOQ verhandeln, Qualitätskontrolle" },
+            { step: "04", title: "Compliance & Vertrieb", desc: "Kennzeichnung, Rechtliches, Vertriebskanäle" },
+            { step: "05", title: "Launch & Optimierung", desc: "30-Tage-Plan, KPI-Tracking, Iteration" },
           ].map(({ step, title, desc }) => (
             <div key={step} className="flex items-start gap-4 rounded-lg border bg-card p-4">
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground text-sm font-mono font-medium">
