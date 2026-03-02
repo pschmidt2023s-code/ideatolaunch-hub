@@ -68,56 +68,24 @@ export async function downloadInstaller(
   url: string,
   onProgress: (p: UpdateProgress) => void
 ): Promise<string> {
-  const { writeFile, mkdir, BaseDirectory } = await import(
-    "@tauri-apps/plugin-fs"
-  );
+  const { writeFile, BaseDirectory } = await import("@tauri-apps/plugin-fs");
   const { downloadDir } = await import("@tauri-apps/api/path");
+  const { fetch: tauriFetch } = await import("@tauri-apps/plugin-http");
 
-  // Extract filename from URL
   const filename = url.split("/").pop() || "BrandOS-setup.exe";
   const dirPath = await downloadDir();
   const fullPath = `${dirPath}${filename}`;
 
-  // Fetch with streaming to report progress
-  const res = await fetch(url);
+  // Use Tauri's native HTTP client to bypass CORS
+  const res = await tauriFetch(url, { method: "GET" });
   if (!res.ok) throw new Error(`Download failed: HTTP ${res.status}`);
 
-  const contentLength = Number(res.headers.get("content-length") || 0);
-  const reader = res.body?.getReader();
-  if (!reader) throw new Error("ReadableStream not supported");
+  const buffer = await res.arrayBuffer();
+  const data = new Uint8Array(buffer);
 
-  const chunks: Uint8Array[] = [];
-  let downloaded = 0;
+  onProgress({ downloaded: data.byteLength, total: data.byteLength, percent: 100 });
 
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    chunks.push(value);
-    downloaded += value.byteLength;
-    onProgress({
-      downloaded,
-      total: contentLength,
-      percent: contentLength > 0 ? Math.round((downloaded / contentLength) * 100) : 0,
-    });
-  }
-
-  // Merge chunks into single Uint8Array
-  const merged = new Uint8Array(downloaded);
-  let offset = 0;
-  for (const chunk of chunks) {
-    merged.set(chunk, offset);
-    offset += chunk.byteLength;
-  }
-
-  // Ensure downloads dir exists (it should, but just in case)
-  try {
-    await mkdir("", { baseDir: BaseDirectory.Download, recursive: true });
-  } catch {
-    // already exists
-  }
-
-  // Write file
-  await writeFile(filename, merged, { baseDir: BaseDirectory.Download });
+  await writeFile(filename, data, { baseDir: BaseDirectory.Download });
 
   return fullPath;
 }
