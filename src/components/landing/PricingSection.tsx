@@ -62,7 +62,8 @@ export function PricingSection() {
       if (!data?.url) throw new Error("Stripe URL fehlt");
 
       trackEvent("checkout_started", { tier });
-      await openExternal(data.url);
+      const opened = await openExternal(data.url);
+      if (!opened) throw new Error("Checkout-Link konnte nicht geöffnet werden.");
     } catch (err: any) {
       toast.error(err?.message || "Fehler beim Starten des Checkouts");
       logError(err?.message || "Checkout failed", { errorType: "api", metadata: { tier } });
@@ -190,8 +191,8 @@ export function PricingSection() {
           ? "Weiterleitung zu Stripe..."
           : "Redirecting to Stripe..."
         : isDE
-          ? "Jetzt strukturiert starten →"
-          : "Start structured now →",
+          ? "Jetzt starten"
+          : "Start now",
       highlighted: true,
       badge: isDE ? "90% wählen Builder" : "90% choose Builder",
       onClick: () => handleCheckout("builder", setLoadingBuilder),
@@ -211,8 +212,8 @@ export function PricingSection() {
           ? "Weiterleitung zu Stripe..."
           : "Redirecting to Stripe..."
         : isDE
-          ? "Strategischen Vorteil sichern →"
-          : "Secure strategic advantage →",
+          ? "Pro starten"
+          : "Start Pro",
       highlighted: false,
       badge: "Early Access",
       onClick: () => handleCheckout("pro", setLoadingPro),
@@ -234,8 +235,8 @@ export function PricingSection() {
           ? "Weiterleitung zu Stripe..."
           : "Redirecting to Stripe..."
         : isDE
-          ? "Business wie ein CEO führen →"
-          : "Run your business like a CEO →",
+          ? "Execution starten"
+          : "Start Execution",
       highlighted: false,
       badge: isDE ? "Für Gründer mit echtem Risiko" : "For founders managing real risk",
       onClick: () => handleCheckout("execution", setLoadingExecution),
@@ -430,7 +431,7 @@ export function PricingSection() {
                 </ul>
 
                 <Button
-                  className={`mt-6 w-full h-auto py-3 whitespace-normal leading-snug text-sm ${
+                  className={`mt-6 w-full h-auto py-3 px-4 whitespace-normal break-words text-center leading-snug text-sm ${
                     plan.highlighted
                       ? "bg-accent text-accent-foreground hover:bg-accent/90"
                       : isExecutionTier
