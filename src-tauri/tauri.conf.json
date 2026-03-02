@@ -43,6 +43,8 @@
         "displayLanguageSelector": true,
         "languages": ["German", "English"],
         "installerIcon": "icons/icon.ico",
+        "headerImage": "icons/header.bmp",
+        "sidebarImage": "icons/sidebar.bmp",
         "installMode": "both",
         "installerHooks": "./windows/hooks.nsh",
         "startMenuFolder": "BrandOS"
