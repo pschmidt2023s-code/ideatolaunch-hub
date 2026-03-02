@@ -40,9 +40,7 @@
       "nsis": {
         "displayLanguageSelector": true,
         "languages": ["German", "English"],
-        "installerIcon": "icons/icon.ico",
-        "headerImage": "icons/icon.png",
-        "sidebarImage": "icons/icon.png"
+        "installerIcon": "icons/icon.ico"
       }
     }
   }
