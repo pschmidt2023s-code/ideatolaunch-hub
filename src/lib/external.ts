@@ -40,6 +40,7 @@ export const ALLOWED_EXTERNAL_DOMAINS: string[] = [
   "stripe.com",
   "www.stripe.com",
   "checkout.stripe.com",
+  "billing.stripe.com",
   // EU ODR
   "ec.europa.eu",
   // GitHub (releases / updates)

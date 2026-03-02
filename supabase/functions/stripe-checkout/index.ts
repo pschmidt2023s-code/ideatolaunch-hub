@@ -28,6 +28,12 @@ const PLAN_CONFIG: Record<string, { name: string; description: string; amount: n
     amount: 7900,
     metaPlan: "pro",
   },
+  execution: {
+    name: "BrandOS Execution OS",
+    description: "Everything in Pro + Weekly KPI Control, Capital Protection Alerts, Strategic Benchmark Intelligence",
+    amount: 15900,
+    metaPlan: "execution",
+  },
 };
 
 serve(async (req) => {

@@ -10,7 +10,9 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 import SplashScreen from "@/components/SplashScreen";
-import { runSimpleUpdateCheck } from "@/updateChecker";
+import { checkUpdateAvailable } from "@/update/updateService";
+import type { UpdateCheckResult } from "@/update/updateService";
+import { UpdateModal } from "@/update/UpdateModal";
 import "@/i18n";
 
 // Critical path: keep eager
@@ -89,24 +91,32 @@ function LazyFallback() {
   );
 }
 
-/** Simple update trigger – production only, once, after splash */
+/** Update trigger – production only, once, after splash. Shows UpdateModal with progress. */
 function UpdaterBootstrap({ enabled }: { enabled: boolean }) {
   const ranRef = useRef(false);
+  const [updateInfo, setUpdateInfo] = useState<UpdateCheckResult | null>(null);
 
   useEffect(() => {
     if (!enabled || ranRef.current) return;
     ranRef.current = true;
 
-    const timer = window.setTimeout(() => {
-      runSimpleUpdateCheck().catch((e) =>
-        console.error("[UPDATER] failed:", e)
-      );
+    const timer = window.setTimeout(async () => {
+      try {
+        const result = await checkUpdateAvailable();
+        if (result.available) {
+          setUpdateInfo(result);
+        }
+      } catch (e) {
+        console.error("[UPDATER] check failed:", e);
+      }
     }, 2000);
 
     return () => window.clearTimeout(timer);
   }, [enabled]);
 
-  return null;
+  if (!updateInfo) return null;
+
+  return <UpdateModal info={updateInfo} onDismiss={() => setUpdateInfo(null)} />;
 }
 
 const App = () => {

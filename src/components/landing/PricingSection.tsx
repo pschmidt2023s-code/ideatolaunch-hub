@@ -430,7 +430,7 @@ export function PricingSection() {
                 </ul>
 
                 <Button
-                  className={`mt-6 w-full ${
+                  className={`mt-6 w-full h-auto py-3 whitespace-normal leading-snug text-sm ${
                     plan.highlighted
                       ? "bg-accent text-accent-foreground hover:bg-accent/90"
                       : isExecutionTier
