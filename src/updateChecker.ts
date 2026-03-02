@@ -3,7 +3,7 @@
  * No custom modal, no background download.
  */
 
-const VERSION_URL = "https://MYDOMAIN.de/version.json";
+const VERSION_URL = "https://raw.githubusercontent.com/pschmidt2023s-code/ideatolaunch-hub/main/docs/version.json";
 
 function semverCompare(a: string, b: string): number {
   const pa = a.split(".").map(Number);
