@@ -1,4 +1,5 @@
 {
   "version": "0.2.0",
-  "url": "https://github.com/pschmidt2023s-code/ideatolaunch-hub/releases/download/2.0/BrandOS_0.2.0_x64-setup.exe"
+  "notes": "Bugfixes + improvements",
+  "windows": "https://github.com/pschmidt2023s-code/ideatolaunch-hub/releases/download/2.0/BrandOS_0.2.0_x64-setup.exe"
 }
