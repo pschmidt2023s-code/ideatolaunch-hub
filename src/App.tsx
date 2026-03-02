@@ -119,8 +119,10 @@ function UpdaterBootstrap({ enabled }: { enabled: boolean }) {
   return <UpdateModal info={updateInfo} onDismiss={() => setUpdateInfo(null)} />;
 }
 
+const isTauriEnv = typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
+
 const App = () => {
-  const [showSplash, setShowSplash] = useState(true);
+  const [showSplash, setShowSplash] = useState(isTauriEnv);
 
   const handleSplashFinished = () => {
     setShowSplash(false);
@@ -130,7 +132,7 @@ const App = () => {
 
   return (
     <>
-      {showSplash && <SplashScreen onFinished={handleSplashFinished} />}
+      {showSplash && isTauriEnv && <SplashScreen onFinished={handleSplashFinished} />}
 
       <ErrorBoundary>
         <QueryClientProvider client={queryClient}>
