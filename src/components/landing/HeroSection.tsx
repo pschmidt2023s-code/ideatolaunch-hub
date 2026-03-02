@@ -1,4 +1,4 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -9,39 +9,64 @@ export function HeroSection() {
   const isDE = i18n.language === "de";
 
   return (
-    <section className="relative overflow-hidden px-4 pt-32 pb-24 md:pt-44 md:pb-36" aria-label="Hero">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--accent)/0.06),transparent_70%)]" />
+    <section className="relative overflow-hidden px-4 pt-36 pb-28 md:pt-48 md:pb-40" aria-label="Hero">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--accent)/0.04),transparent_60%)]" />
       <div className="container relative mx-auto max-w-4xl text-center">
         {/* Badge */}
-        <div className="mb-8 inline-flex items-center gap-2 rounded-full border bg-card px-4 py-1.5 text-sm text-muted-foreground shadow-card">
+        <div className="mb-10 inline-flex items-center gap-2 rounded-full border bg-card/80 backdrop-blur px-4 py-1.5 text-sm text-muted-foreground shadow-sm">
           <span className="h-1.5 w-1.5 rounded-full bg-destructive animate-pulse" />
           {isDE
-            ? "Ø 5.000 € Verlust durch vermeidbare Produktionsfehler"
-            : "Avg. €5,000 lost to avoidable production mistakes"}
+            ? "Ø 5.000 € Verlust durch vermeidbare Fehler"
+            : "Avg. €5,000 lost to avoidable mistakes"}
         </div>
 
-        {/* Headline – outcome focused */}
-        <h1 className="mx-auto max-w-3xl text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl leading-[1.1]">
+        {/* Headline */}
+        <h1 className="mx-auto max-w-3xl text-5xl font-bold tracking-tight md:text-6xl lg:text-7xl leading-[1.08]">
           {isDE ? (
             <>
-              Vermeide <span className="text-gradient">5.000 € Produktionsfehler</span> – starte deine Eigenmarke datenbasiert.
+              Stoppe <span className="text-gradient">Kapitalverluste</span> bevor sie passieren.
             </>
           ) : (
             <>
-              Avoid <span className="text-gradient">€5,000 production mistakes</span> – launch your brand with data.
+              Stop <span className="text-gradient">capital losses</span> before they happen.
             </>
           )}
         </h1>
 
-        {/* Subheadline – concise */}
-        <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground md:text-xl leading-relaxed">
+        {/* Subheadline */}
+        <p className="mx-auto mt-8 max-w-xl text-lg text-muted-foreground md:text-xl leading-relaxed">
           {isDE
-            ? "Risiken erkennen, Kosten kalkulieren, strukturiert launchen. Das Founder Operating System für produktbasierte Unternehmer."
-            : "Detect risks, calculate costs, launch with structure. The Founder Operating System for product-based entrepreneurs."}
+            ? "Das Founder Operating System für produktbasierte Unternehmer. Risiken erkennen. Kapital schützen. Strukturiert launchen."
+            : "The Founder Operating System for product-based entrepreneurs. Detect risks. Protect capital. Launch with structure."}
         </p>
 
+        {/* Founder Risk Index Visual */}
+        <div className="mx-auto mt-12 max-w-sm">
+          <div className="rounded-2xl border bg-card/80 backdrop-blur p-6 shadow-card">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Shield className="h-4 w-4 text-accent" />
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Founder Risk Index
+                </span>
+              </div>
+              <span className="text-xs text-muted-foreground">Live Preview</span>
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-5xl font-bold tabular-nums text-warning">48</span>
+              <span className="text-lg text-muted-foreground">/ 100</span>
+            </div>
+            <div className="mt-3 h-2 rounded-full bg-muted">
+              <div className="h-2 rounded-full bg-warning transition-all" style={{ width: "48%" }} />
+            </div>
+            <p className="mt-3 text-xs text-muted-foreground">
+              {isDE ? "Mittleres Risiko · 9 Monate Runway · 3 offene Blocker" : "Medium risk · 9 months runway · 3 open blockers"}
+            </p>
+          </div>
+        </div>
+
         {/* CTAs */}
-        <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+        <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
           <Button
             size="lg"
             className="gap-2 bg-accent text-accent-foreground hover:bg-accent/90 shadow-md px-8 text-base"
@@ -60,11 +85,11 @@ export function HeroSection() {
           </Button>
         </div>
 
-        {/* Social proof micro-bar */}
-        <p className="mt-8 text-sm text-muted-foreground">
+        {/* Social proof */}
+        <p className="mt-10 text-sm text-muted-foreground">
           {isDE
-            ? "Bereits 2.400+ Gründer nutzen BuildYourBrand · Ø €3.200 gespart"
-            : "2,400+ founders use BuildYourBrand · Avg. €3,200 saved"}
+            ? "2.400+ Gründer nutzen BrandOS · Ø €3.200 gespart"
+            : "2,400+ founders use BrandOS · Avg. €3,200 saved"}
         </p>
       </div>
     </section>

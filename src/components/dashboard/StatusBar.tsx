@@ -4,7 +4,7 @@ import type { StatusMetrics } from "@/lib/command-center-types";
 
 export function StatusBar({ status }: { status: StatusMetrics }) {
   return (
-    <CardGrid cols={4} className="lg:grid-cols-5">
+    <CardGrid cols={3} className="lg:grid-cols-6">
       <MetricCard
         label="Founder Risk Index"
         value={status.founderRiskIndex}
@@ -26,6 +26,12 @@ export function StatusBar({ status }: { status: StatusMetrics }) {
         label="Runway"
         value={`${status.runwayMonths} Mo.`}
         level={status.runwayMonths >= 10 ? "low" : status.runwayMonths >= 5 ? "medium" : "high"}
+      />
+      <MetricCard
+        label="Capital Pressure"
+        value={status.capitalPressure}
+        sub="/ 100"
+        level={status.capitalPressure <= 30 ? "low" : status.capitalPressure <= 60 ? "medium" : "high"}
       />
       <MetricCard
         label="Break-even"

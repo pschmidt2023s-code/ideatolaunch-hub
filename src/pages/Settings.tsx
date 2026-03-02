@@ -8,8 +8,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Save, Loader2, User, CreditCard } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Save, Loader2, User, CreditCard, FlaskConical } from "lucide-react";
 import { toast } from "sonner";
+import { getClientMode, setClientMode, type ClientMode } from "@/lib/beta-client";
 
 export default function SettingsPage() {
   const { user } = useAuth();
@@ -137,6 +139,34 @@ export default function SettingsPage() {
               ? "Abo verwalten"
               : "Manage subscription"}
           </Button>
+        </div>
+
+        {/* Beta Client */}
+        <div className="rounded-xl border bg-card p-6 shadow-card">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent/10">
+              <FlaskConical className="h-5 w-5 text-accent" />
+            </div>
+            <h2 className="text-lg font-semibold">Beta Client</h2>
+          </div>
+          <p className="text-sm text-muted-foreground mb-4">
+            {isDE
+              ? "Aktiviere den Beta-Modus, um neue Features vorab zu testen. Erfordert einen Neustart der Seite."
+              : "Enable beta mode to test new features early. Requires a page reload."}
+          </p>
+          <div className="flex items-center gap-3">
+            <Switch
+              checked={getClientMode() === "beta"}
+              onCheckedChange={(checked) => {
+                setClientMode(checked ? "beta" : "production");
+                toast.info(isDE ? "Beta-Modus geändert. Seite wird neu geladen…" : "Beta mode changed. Reloading…");
+                setTimeout(() => window.location.reload(), 800);
+              }}
+            />
+            <span className="text-sm font-medium">
+              {getClientMode() === "beta" ? "Beta" : "Stable"}
+            </span>
+          </div>
         </div>
       </div>
     </DashboardLayout>
