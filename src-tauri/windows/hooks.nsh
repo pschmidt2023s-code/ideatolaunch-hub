@@ -5,8 +5,8 @@
 ; ============================================
 ; Custom Colors & Branding
 ; ============================================
-!define MUI_BGCOLOR "0B1628"
-!define MUI_TEXTCOLOR "FFFFFF"
+!define MUI_BGCOLOR "FFFFFF"
+!define MUI_TEXTCOLOR "0B1628"
 
 ; Abort warning in German
 !define MUI_ABORTWARNING
