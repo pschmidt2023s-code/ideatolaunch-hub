@@ -74,7 +74,8 @@ export async function downloadInstaller(
 
   const filename = url.split("/").pop() || "BrandOS-setup.exe";
   const dirPath = await downloadDir();
-  const fullPath = `${dirPath}${filename}`;
+  const separator = dirPath.includes("\\") ? "\\" : "/";
+  const fullPath = `${dirPath}${dirPath.endsWith("\\") || dirPath.endsWith("/") ? "" : separator}${filename}`;
 
   // Use Tauri's native HTTP client to bypass CORS
   const res = await tauriFetch(url, { method: "GET" });
