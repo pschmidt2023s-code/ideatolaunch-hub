@@ -21,22 +21,18 @@
     "dataDesc": "Strategische Empfehlungen"
   },
   "features": {
-    "title": "7 Schritte zur fertigen Marke",
+    "title": "5 Phasen zur fertigen Marke",
     "subtitle": "Ein strukturierter Workflow, der dich von der Idee bis zum Launch begleitet.",
-    "s1": "Ideen-Fundament",
-    "s1d": "Definiere dein Produkt, Zielgruppe und Positionierung.",
-    "s2": "Markenstruktur",
-    "s2d": "Name, Tonalität, visuelle Richtung und Tagline.",
-    "s3": "Business-Kalkulator",
-    "s3d": "Kosten, Preise, Margen und Break-even berechnen.",
-    "s4": "Produktionsplanung",
-    "s4d": "Checklisten, Lieferantenfragen und Risikoanalyse.",
-    "s5": "Verpackung & Compliance",
-    "s5d": "Labelanforderungen, rechtliche Hinweise, Barcode-Guide.",
-    "s6": "Vertriebsbasis",
-    "s6d": "Vertriebskanal, Logistik und Launch-Readiness.",
-    "s7": "Launch-Roadmap",
-    "s7d": "30-Tage-Plan mit Aufgaben, Content und Budget."
+    "s1": "Validierung & Marke",
+    "s1d": "Produkt, Zielgruppe, Positionierung und Markenidentität.",
+    "s2": "Finanzielle Klarheit",
+    "s2d": "Kosten, Preise, Margen, Break-even und Kapitalbedarf.",
+    "s3": "Produktion & Sourcing",
+    "s3d": "Lieferantenauswahl, Muster-Strategie und Risikoanalyse.",
+    "s4": "Compliance & Vertrieb",
+    "s4d": "Rechtliche Anforderungen, Vertriebskanal und Launch-Readiness.",
+    "s5": "Launch & Optimierung",
+    "s5d": "30-Tage-Plan, KPI-Tracking und Iterations-Logik."
   },
   "pricing": {
     "title": "Einfache Preise",

@@ -1,10 +1,8 @@
 import {
   Lightbulb,
-  Palette,
   Calculator,
   Factory,
   Shield,
-  ShoppingBag,
   Rocket,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -14,12 +12,10 @@ export function FeaturesSection() {
 
   const steps = [
     { icon: Lightbulb, step: "01", title: t("features.s1"), desc: t("features.s1d") },
-    { icon: Palette, step: "02", title: t("features.s2"), desc: t("features.s2d") },
-    { icon: Calculator, step: "03", title: t("features.s3"), desc: t("features.s3d") },
-    { icon: Factory, step: "04", title: t("features.s4"), desc: t("features.s4d") },
-    { icon: Shield, step: "05", title: t("features.s5"), desc: t("features.s5d") },
-    { icon: ShoppingBag, step: "06", title: t("features.s6"), desc: t("features.s6d") },
-    { icon: Rocket, step: "07", title: t("features.s7"), desc: t("features.s7d") },
+    { icon: Calculator, step: "02", title: t("features.s2"), desc: t("features.s2d") },
+    { icon: Factory, step: "03", title: t("features.s3"), desc: t("features.s3d") },
+    { icon: Shield, step: "04", title: t("features.s4"), desc: t("features.s4d") },
+    { icon: Rocket, step: "05", title: t("features.s5"), desc: t("features.s5d") },
   ];
 
   return (

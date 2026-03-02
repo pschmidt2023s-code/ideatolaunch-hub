@@ -18,8 +18,8 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEO
-        title="Eigene Marke gründen – BuildYourBrand 2026"
-        description="Vermeide 5.000 € Produktionsfehler. Starte deine Eigenmarke datenbasiert in 7 Schritten. Kostenlos starten."
+        title="Eigene Marke gründen in 5 Phasen – BuildYourBrand 2026"
+        description="Vermeide 5.000 € Produktionsfehler. Starte deine Eigenmarke datenbasiert in 5 Phasen. Kostenlos starten."
         path="/"
         jsonLd={[faqJsonLd, howToJsonLd, softwareJsonLd]}
       />

@@ -21,22 +21,18 @@
     "dataDesc": "Strategic recommendations"
   },
   "features": {
-    "title": "7 Steps to a finished brand",
+    "title": "5 Phases to a finished brand",
     "subtitle": "A structured workflow that guides you from idea to launch.",
-    "s1": "Idea Foundation",
-    "s1d": "Define your product, audience, and positioning.",
-    "s2": "Brand Structure",
-    "s2d": "Name, tone, visual direction, and tagline.",
-    "s3": "Business Calculator",
-    "s3d": "Costs, prices, margins, and break-even.",
-    "s4": "Production Planning",
-    "s4d": "Checklists, supplier questions, and risk analysis.",
-    "s5": "Packaging & Compliance",
-    "s5d": "Label requirements, legal notes, barcode guide.",
-    "s6": "Sales Foundation",
-    "s6d": "Sales channel, logistics, and launch readiness.",
-    "s7": "Launch Roadmap",
-    "s7d": "30-day plan with tasks, content, and budget."
+    "s1": "Validation & Brand",
+    "s1d": "Product, audience, positioning, and brand identity.",
+    "s2": "Financial Clarity",
+    "s2d": "Costs, prices, margins, break-even, and capital needs.",
+    "s3": "Production & Sourcing",
+    "s3d": "Supplier selection, sample strategy, and risk analysis.",
+    "s4": "Compliance & Sales",
+    "s4d": "Legal requirements, sales channel, and launch readiness.",
+    "s5": "Launch & Optimization",
+    "s5d": "30-day plan, KPI tracking, and iteration logic."
   },
   "pricing": {
     "title": "Simple pricing",

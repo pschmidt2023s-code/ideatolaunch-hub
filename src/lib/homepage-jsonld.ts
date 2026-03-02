@@ -48,18 +48,16 @@ export const faqJsonLd = {
 export const howToJsonLd = {
   "@context": "https://schema.org",
   "@type": "HowTo",
-  "name": "Eigene Marke gründen in 7 Schritten",
+  "name": "Eigene Marke gründen in 5 Phasen",
   "description": "Schritt-für-Schritt Anleitung zum Aufbau deiner eigenen Marke mit BuildYourBrand.",
   "totalTime": "P30D",
   "tool": { "@type": "HowToTool", "name": "BuildYourBrand SaaS-Plattform" },
   "step": [
-    { "@type": "HowToStep", "position": 1, "name": "Idee & Positionierung", "text": "Definiere deine Zielgruppe und analysiere den Markt." },
-    { "@type": "HowToStep", "position": 2, "name": "Markenidentität aufbauen", "text": "Entwickle Markennamen, Tonalität und visuelle Richtung." },
-    { "@type": "HowToStep", "position": 3, "name": "Kalkulation & Business Model", "text": "Berechne Produktionskosten, Preise und Margen." },
-    { "@type": "HowToStep", "position": 4, "name": "Produktion planen", "text": "Finde Lieferanten und plane Produktion mit Qualitätskontrolle." },
-    { "@type": "HowToStep", "position": 5, "name": "Compliance & Rechtliches", "text": "Produktkennzeichnung, Label-Checklisten und Regulatorik." },
-    { "@type": "HowToStep", "position": 6, "name": "Vertriebsstrategie", "text": "Wähle Verkaufskanäle und plane Go-to-Market." },
-    { "@type": "HowToStep", "position": 7, "name": "Launch & Go-to-Market", "text": "Starte mit 30-Tage Roadmap und Execution Readiness Score." },
+    { "@type": "HowToStep", "position": 1, "name": "Validierung & Marke", "text": "Definiere Zielgruppe, Positionierung und Markenidentität." },
+    { "@type": "HowToStep", "position": 2, "name": "Finanzielle Klarheit", "text": "Berechne Produktionskosten, Preise, Margen und Break-even." },
+    { "@type": "HowToStep", "position": 3, "name": "Produktion & Sourcing", "text": "Finde Lieferanten, plane Muster-Strategie und analysiere Risiken." },
+    { "@type": "HowToStep", "position": 4, "name": "Compliance & Vertrieb", "text": "Produktkennzeichnung, Vertriebskanal und Launch-Readiness." },
+    { "@type": "HowToStep", "position": 5, "name": "Launch & Optimierung", "text": "Starte mit 30-Tage Roadmap und KPI-Tracking." },
   ]
 };
 
@@ -76,6 +74,6 @@ export const softwareJsonLd = {
     { "@type": "Offer", "name": "Builder", "price": "29", "priceCurrency": "EUR", "billingIncrement": "P1M" },
     { "@type": "Offer", "name": "Pro", "price": "79", "priceCurrency": "EUR", "billingIncrement": "P1M" },
   ],
-  "featureList": "7-Schritte Markenaufbau, KI-Risikoanalyse, Break-even Rechner, Lieferanten-Matching, PDF-Exporte, Launch-Roadmap",
+  "featureList": "5-Phasen Markenaufbau, KI-Risikoanalyse, Break-even Rechner, Lieferanten-Matching, PDF-Exporte, Launch-Roadmap",
   "author": { "@type": "Organization", "name": "BuildYourBrand" }
 };
