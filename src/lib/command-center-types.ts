@@ -4,6 +4,7 @@ export type RiskLevel = "low" | "medium" | "high";
 export type ScenarioMode = "optimistic" | "realistic" | "worst-case";
 
 export interface StatusMetrics {
+  founderRiskIndex: number;
   confidenceScore: number;
   riskLevel: RiskLevel;
   runwayMonths: number;
@@ -17,6 +18,7 @@ export interface MoneySummary {
   cashflowMonthly: number;
   totalCapital: number;
   capitalUsed: number;
+  capitalDelta: number;
 }
 
 export interface RiskItem {
@@ -37,6 +39,7 @@ export interface SimulationResult {
   runwayDelta: number;
   breakEvenShift: number;
   profitDelta: number;
+  riskLevelChange: RiskLevel;
 }
 
 export interface FailureCost {
@@ -56,10 +59,29 @@ export interface BrandSuggestion {
   reasoning: string;
   dataUsed: string[];
   confidence: RiskLevel;
+  archetype: string;
+  targetEmotion: string;
+  pricePositioning: string;
+  marginCompatibility: string;
 }
 
-// ── Scenario-specific mock data ──
+export interface PhaseIntelligence {
+  riskImpact: string;
+  confidenceImpact: string;
+  capitalEffect: string;
+  riskLevel: RiskLevel;
+}
 
+// ── Phase Intelligence per step ──
+export const PHASE_INTELLIGENCE: Record<number, PhaseIntelligence> = {
+  1: { riskImpact: "Positionierungsfehler → -3.200 €", confidenceImpact: "+15 Punkte bei klarer Nische", capitalEffect: "Kein direkter Kapitaleinsatz", riskLevel: "medium" },
+  2: { riskImpact: "Kalkulationsfehler → -5.400 €", confidenceImpact: "+20 Punkte bei validiertem Break-even", capitalEffect: "Entscheidet über Kapitalbedarf", riskLevel: "high" },
+  3: { riskImpact: "Lieferantenausfall → -6.200 €", confidenceImpact: "+18 Punkte bei Backup-Supplier", capitalEffect: "-2.000 bis -8.000 € MOQ-Binding", riskLevel: "high" },
+  4: { riskImpact: "Compliance-Bußgeld → -8.500 €", confidenceImpact: "+12 Punkte bei vollständiger Compliance", capitalEffect: "-500 bis -2.000 € Zertifizierungen", riskLevel: "medium" },
+  5: { riskImpact: "Launch-Verzögerung → -1.800 €/Monat", confidenceImpact: "+10 Punkte bei Go-Live", capitalEffect: "Marketing-Budget aktiviert", riskLevel: "low" },
+};
+
+// ── Scenario-specific mock data ──
 const MOCK_DATA: Record<ScenarioMode, {
   status: StatusMetrics;
   money: MoneySummary;
@@ -67,8 +89,8 @@ const MOCK_DATA: Record<ScenarioMode, {
   actions: ExecutionAction[];
 }> = {
   optimistic: {
-    status: { confidenceScore: 82, riskLevel: "low", runwayMonths: 14, breakEvenDate: "Sep 2026", lastUpdated: "Heute" },
-    money: { margin: 42, breakEvenUnits: 320, cashflowMonthly: 2800, totalCapital: 15000, capitalUsed: 5200 },
+    status: { founderRiskIndex: 22, confidenceScore: 82, riskLevel: "low", runwayMonths: 14, breakEvenDate: "Sep 2026", lastUpdated: "Heute" },
+    money: { margin: 42, breakEvenUnits: 320, cashflowMonthly: 2800, totalCapital: 15000, capitalUsed: 5200, capitalDelta: 1200 },
     risks: [
       { id: "r1", title: "Lieferantenverzögerung", impact: 1200, level: "low" },
       { id: "r2", title: "Retourenquote > 5%", impact: 800, level: "low" },
@@ -80,8 +102,8 @@ const MOCK_DATA: Record<ScenarioMode, {
     ],
   },
   realistic: {
-    status: { confidenceScore: 68, riskLevel: "medium", runwayMonths: 9, breakEvenDate: "Jan 2027", lastUpdated: "Heute" },
-    money: { margin: 34, breakEvenUnits: 480, cashflowMonthly: 1400, totalCapital: 15000, capitalUsed: 7800 },
+    status: { founderRiskIndex: 48, confidenceScore: 68, riskLevel: "medium", runwayMonths: 9, breakEvenDate: "Jan 2027", lastUpdated: "Heute" },
+    money: { margin: 34, breakEvenUnits: 480, cashflowMonthly: 1400, totalCapital: 15000, capitalUsed: 7800, capitalDelta: -400 },
     risks: [
       { id: "r1", title: "Lieferantenverzögerung", impact: 2400, level: "medium" },
       { id: "r2", title: "Retourenquote > 5%", impact: 1600, level: "medium" },
@@ -94,8 +116,8 @@ const MOCK_DATA: Record<ScenarioMode, {
     ],
   },
   "worst-case": {
-    status: { confidenceScore: 41, riskLevel: "high", runwayMonths: 4, breakEvenDate: "Jul 2027", lastUpdated: "Heute" },
-    money: { margin: 18, breakEvenUnits: 920, cashflowMonthly: -600, totalCapital: 15000, capitalUsed: 12200 },
+    status: { founderRiskIndex: 78, confidenceScore: 41, riskLevel: "high", runwayMonths: 4, breakEvenDate: "Jul 2027", lastUpdated: "Heute" },
+    money: { margin: 18, breakEvenUnits: 920, cashflowMonthly: -600, totalCapital: 15000, capitalUsed: 12200, capitalDelta: -2800 },
     risks: [
       { id: "r1", title: "Lieferantenausfall", impact: 5800, level: "high" },
       { id: "r2", title: "Retourenquote > 12%", impact: 3400, level: "high" },
@@ -122,22 +144,52 @@ export const MOCK_FAILURE_COSTS: FailureCost[] = [
 ];
 
 export const MOCK_BRAND_SUGGESTIONS: BrandSuggestion[] = [
-  { name: "VORRA", score: 96, claim: "Ahead by design.", tonality: "Premium Minimal", colorSuggestion: "#1a1a2e / #e0a800", reasoning: "Kurz, international, klingt nach 'voran'. Premium-Feel.", dataUsed: ["Zielgruppe: Design-bewusst", "Kategorie: Lifestyle"], confidence: "low" },
-  { name: "NŌVA HAUS", score: 93, claim: "Neues Zuhause für deine Marke.", tonality: "Modern Warm", colorSuggestion: "#2d3436 / #fab005", reasoning: "Nova = Neu + Haus = Vertrauen. Deutsch-international.", dataUsed: ["Positionierung: EU-Markt", "Ton: Vertrauenswürdig"], confidence: "low" },
-  { name: "ELEVŌ", score: 91, claim: "Rise above ordinary.", tonality: "Bold Luxury", colorSuggestion: "#0d1b2a / #c9a227", reasoning: "Elevation + O-Endung. International aussprechbar.", dataUsed: ["Segment: Premium", "Audience: 25-40"], confidence: "medium" },
+  {
+    name: "VORRA", score: 96, claim: "Ahead by design.", tonality: "Premium Minimal",
+    colorSuggestion: "#1a1a2e / #e0a800",
+    reasoning: "Kurz, international, klingt nach 'voran'. Premium-Feel.",
+    dataUsed: ["Zielgruppe: Design-bewusst", "Kategorie: Lifestyle"],
+    confidence: "low",
+    archetype: "The Pioneer",
+    targetEmotion: "Vorsprung & Selbstbewusstsein",
+    pricePositioning: "Premium (€€€)",
+    marginCompatibility: "Optimal bei Margen ≥ 35%",
+  },
+  {
+    name: "NŌVA HAUS", score: 93, claim: "Neues Zuhause für deine Marke.", tonality: "Modern Warm",
+    colorSuggestion: "#2d3436 / #fab005",
+    reasoning: "Nova = Neu + Haus = Vertrauen. Deutsch-international.",
+    dataUsed: ["Positionierung: EU-Markt", "Ton: Vertrauenswürdig"],
+    confidence: "low",
+    archetype: "The Caregiver",
+    targetEmotion: "Geborgenheit & Neuanfang",
+    pricePositioning: "Mid-Premium (€€)",
+    marginCompatibility: "Funktioniert ab Marge ≥ 25%",
+  },
+  {
+    name: "ELEVŌ", score: 91, claim: "Rise above ordinary.", tonality: "Bold Luxury",
+    colorSuggestion: "#0d1b2a / #c9a227",
+    reasoning: "Elevation + O-Endung. International aussprechbar.",
+    dataUsed: ["Segment: Premium", "Audience: 25-40"],
+    confidence: "medium",
+    archetype: "The Hero",
+    targetEmotion: "Ambition & Exzellenz",
+    pricePositioning: "Luxury (€€€€)",
+    marginCompatibility: "Erfordert Margen ≥ 45%",
+  },
 ];
 
 export function simulateDecision(type: string): SimulationResult {
   switch (type) {
+    case "price_plus_10":
+      return { runwayDelta: 2, breakEvenShift: -30, profitDelta: 2200, riskLevelChange: "low" };
     case "ads_plus_20":
-      return { runwayDelta: -2, breakEvenShift: -45, profitDelta: 1800 };
+      return { runwayDelta: -2, breakEvenShift: -45, profitDelta: 1800, riskLevelChange: "medium" };
     case "delay_30_days":
-      return { runwayDelta: -1, breakEvenShift: 30, profitDelta: -2400 };
+      return { runwayDelta: -1, breakEvenShift: 30, profitDelta: -2400, riskLevelChange: "high" };
     case "returns_8_pct":
-      return { runwayDelta: -1.5, breakEvenShift: 60, profitDelta: -1600 };
-    case "price_minus_10":
-      return { runwayDelta: -3, breakEvenShift: 90, profitDelta: -3200 };
+      return { runwayDelta: -1.5, breakEvenShift: 60, profitDelta: -1600, riskLevelChange: "medium" };
     default:
-      return { runwayDelta: 0, breakEvenShift: 0, profitDelta: 0 };
+      return { runwayDelta: 0, breakEvenShift: 0, profitDelta: 0, riskLevelChange: "low" };
   }
 }
