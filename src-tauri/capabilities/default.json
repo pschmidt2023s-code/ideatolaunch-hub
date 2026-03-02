@@ -23,6 +23,7 @@
       ]
     },
     "shell:allow-open",
-    "process:default"
+    "process:default",
+    "http:default"
   ]
 }
