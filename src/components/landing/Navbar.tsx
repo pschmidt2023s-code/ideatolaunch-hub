@@ -7,7 +7,7 @@ import { Globe, Menu, X, ChevronDown } from "lucide-react";
 const navLinks = [
   { labelKey: "product", href: "/product" },
   { labelKey: "pricing", href: "#pricing" },
-  { labelKey: "tools", href: null }, // dropdown
+  { labelKey: "tools", href: null },
   { labelKey: "guide", href: "/guide/eigenmarke-gruenden" },
   { labelKey: "download", href: "/download" },
 ];
@@ -76,12 +76,12 @@ export function Navbar() {
                 </button>
                 {toolsOpen && (
                   <div className="absolute left-0 top-full pt-1 z-50">
-                    <div className="rounded-lg border bg-card p-2 shadow-lg min-w-[220px]">
+                    <div className="rounded-xl border bg-card p-1.5 shadow-lg min-w-[220px]">
                       {toolLinks.map((tool) => (
                         <a
                           key={tool.href}
                           href={tool.href}
-                          className="block rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                          className="block rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                         >
                           {isDE ? tool.labelDE : tool.labelEN}
                         </a>
@@ -125,35 +125,57 @@ export function Navbar() {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="border-t bg-background px-4 pb-4 pt-2 md:hidden animate-fade-in">
-          <nav className="flex flex-col gap-1">
-            <a href="/product" onClick={() => setMenuOpen(false)} className="rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
+        <div className="border-t bg-background px-4 pb-8 pt-3 md:hidden animate-fade-in">
+          {/* Main navigation */}
+          <nav className="flex flex-col gap-0.5">
+            <a href="/product" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-foreground hover:bg-muted transition-colors">
               {isDE ? "Produkt" : "Product"}
             </a>
-            <a href="#pricing" onClick={() => setMenuOpen(false)} className="rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
+            <a href="#pricing" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-foreground hover:bg-muted transition-colors">
               {t("nav.pricing")}
             </a>
+            <a href="/guide/eigenmarke-gruenden" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-foreground hover:bg-muted transition-colors">
+              Guide
+            </a>
+            <a href="/download" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-foreground hover:bg-muted transition-colors">
+              Download
+            </a>
+
+            {/* Tools sub-group */}
+            <div className="mt-1 mb-1 px-3">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-1">Tools</p>
+            </div>
             {toolLinks.map((tool) => (
-              <a key={tool.href} href={tool.href} onClick={() => setMenuOpen(false)} className="rounded-md px-3 py-2.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors pl-6">
+              <a
+                key={tool.href}
+                href={tool.href}
+                onClick={() => setMenuOpen(false)}
+                className="rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors pl-5"
+              >
                 {isDE ? tool.labelDE : tool.labelEN}
               </a>
             ))}
-            <a href="/guide/eigenmarke-gruenden" onClick={() => setMenuOpen(false)} className="rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">Guide</a>
-            <a href="/download" onClick={() => setMenuOpen(false)} className="rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">Download</a>
           </nav>
-          <div className="mt-3 flex flex-col gap-2 border-t pt-3">
+
+          {/* Divider + secondary actions */}
+          <div className="mt-4 flex flex-col gap-1.5 border-t pt-4">
             <button
               onClick={() => { toggleLang(); setMenuOpen(false); }}
-              className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+              className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
             >
               <Globe className="h-4 w-4" />
               {isDE ? "English" : "Deutsch"}
             </button>
-            <Button variant="ghost" className="justify-start" onClick={() => { navigate("/auth"); setMenuOpen(false); }}>
+            <Button variant="ghost" className="justify-start h-10" onClick={() => { navigate("/auth"); setMenuOpen(false); }}>
               {t("nav.login")}
             </Button>
+          </div>
+
+          {/* CTA with bottom safe area */}
+          <div className="mt-4 pb-safe">
             <Button
-              className="bg-accent text-accent-foreground hover:bg-accent/90"
+              variant="outline"
+              className="w-full h-11"
               onClick={() => { navigate("/auth?tab=signup"); setMenuOpen(false); }}
             >
               {isDE ? "Jetzt starten" : "Get started"}

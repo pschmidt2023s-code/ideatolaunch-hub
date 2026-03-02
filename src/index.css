@@ -34,7 +34,7 @@
     --input: 220 13% 91%;
     --ring: 220 18% 14%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
     --sidebar-background: 220 18% 14%;
     --sidebar-foreground: 220 14% 80%;
@@ -91,6 +91,8 @@
     --border: 220 16% 18%;
     --input: 220 16% 18%;
     --ring: 38 92% 50%;
+
+    --radius: 0.75rem;
   }
 }
 
@@ -101,10 +103,20 @@
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   h1, h2, h3, h4, h5, h6 {
     @apply font-semibold tracking-tight;
+  }
+}
+
+@layer components {
+  /* Global card refinement */
+  .card-premium {
+    @apply rounded-xl border bg-card text-card-foreground;
+    box-shadow: var(--shadow-card);
   }
 }
 
@@ -120,5 +132,19 @@
 
   .shadow-elevated {
     box-shadow: var(--shadow-lg);
+  }
+
+  /* Safe area for mobile bottom */
+  .pb-safe {
+    padding-bottom: max(2rem, env(safe-area-inset-bottom));
+  }
+
+  /* Smooth loading animation for progress bars */
+  .animate-bar-load {
+    animation: barLoad 0.8s ease-out forwards;
+  }
+
+  @keyframes barLoad {
+    from { width: 0; }
   }
 }
