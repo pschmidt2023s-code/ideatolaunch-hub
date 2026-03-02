@@ -9,6 +9,8 @@ import { BrandProvider } from "@/hooks/useBrand";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
+import { BetaBadge } from "@/components/BetaBadge";
+import { BetaFeedbackButton } from "@/components/BetaFeedbackButton";
 import SplashScreen from "@/components/SplashScreen";
 import "@/i18n";
 
@@ -78,6 +80,7 @@ const ProductEvolution = lazy(() => import("./pages/ProductEvolution"));
 const RevenueActivation = lazy(() => import("./pages/RevenueActivation"));
 const GrowthEngine = lazy(() => import("./pages/admin/GrowthEngine"));
 const PartnerDashboard = lazy(() => import("./pages/admin/PartnerDashboard"));
+const BetaDashboard = lazy(() => import("./pages/admin/BetaDashboard"));
 const Download = lazy(() => import("./pages/Download"));
 
 const queryClient = new QueryClient();
@@ -192,12 +195,15 @@ const App = () => {
                       <Route path="/admin/monetization" element={<MonetizationAdmin />} />
                       <Route path="/admin/growth" element={<GrowthEngine />} />
                       <Route path="/admin/partners" element={<PartnerDashboard />} />
+                      <Route path="/admin/beta" element={<BetaDashboard />} />
                       <Route path="/debug/gating" element={<DebugGating />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                   </Suspense>
 
                   <CookieConsentBanner />
+                  <BetaBadge />
+                  <BetaFeedbackButton />
                 </HashRouter>
               </TooltipProvider>
             </BrandProvider>

@@ -9,6 +9,7 @@ export interface StatusMetrics {
   riskLevel: RiskLevel;
   runwayMonths: number;
   breakEvenDate: string;
+  capitalPressure: number; // 0-100
   lastUpdated: string;
 }
 
@@ -89,7 +90,7 @@ const MOCK_DATA: Record<ScenarioMode, {
   actions: ExecutionAction[];
 }> = {
   optimistic: {
-    status: { founderRiskIndex: 22, confidenceScore: 82, riskLevel: "low", runwayMonths: 14, breakEvenDate: "Sep 2026", lastUpdated: "Heute" },
+    status: { founderRiskIndex: 22, confidenceScore: 82, riskLevel: "low", runwayMonths: 14, breakEvenDate: "Sep 2026", capitalPressure: 18, lastUpdated: "Heute" },
     money: { margin: 42, breakEvenUnits: 320, cashflowMonthly: 2800, totalCapital: 15000, capitalUsed: 5200, capitalDelta: 1200 },
     risks: [
       { id: "r1", title: "Lieferantenverzögerung", impact: 1200, level: "low" },
@@ -102,7 +103,7 @@ const MOCK_DATA: Record<ScenarioMode, {
     ],
   },
   realistic: {
-    status: { founderRiskIndex: 48, confidenceScore: 68, riskLevel: "medium", runwayMonths: 9, breakEvenDate: "Jan 2027", lastUpdated: "Heute" },
+    status: { founderRiskIndex: 48, confidenceScore: 68, riskLevel: "medium", runwayMonths: 9, breakEvenDate: "Jan 2027", capitalPressure: 52, lastUpdated: "Heute" },
     money: { margin: 34, breakEvenUnits: 480, cashflowMonthly: 1400, totalCapital: 15000, capitalUsed: 7800, capitalDelta: -400 },
     risks: [
       { id: "r1", title: "Lieferantenverzögerung", impact: 2400, level: "medium" },
@@ -116,7 +117,7 @@ const MOCK_DATA: Record<ScenarioMode, {
     ],
   },
   "worst-case": {
-    status: { founderRiskIndex: 78, confidenceScore: 41, riskLevel: "high", runwayMonths: 4, breakEvenDate: "Jul 2027", lastUpdated: "Heute" },
+    status: { founderRiskIndex: 78, confidenceScore: 41, riskLevel: "high", runwayMonths: 4, breakEvenDate: "Jul 2027", capitalPressure: 84, lastUpdated: "Heute" },
     money: { margin: 18, breakEvenUnits: 920, cashflowMonthly: -600, totalCapital: 15000, capitalUsed: 12200, capitalDelta: -2800 },
     risks: [
       { id: "r1", title: "Lieferantenausfall", impact: 5800, level: "high" },
