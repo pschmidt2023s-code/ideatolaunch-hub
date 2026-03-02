@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -88,29 +88,6 @@ function LazyFallback() {
   );
 }
 
-/** Auto-updater – production only, once, after splash. Fully automatic, no UI. */
-function UpdaterBootstrap({ enabled }: { enabled: boolean }) {
-  const ranRef = useRef(false);
-
-  useEffect(() => {
-    if (!enabled || ranRef.current) return;
-    ranRef.current = true;
-
-    const timer = window.setTimeout(async () => {
-      try {
-        const { runAutoUpdate } = await import("./update/autoUpdater");
-        await runAutoUpdate();
-      } catch (e) {
-        console.error("[AUTO-UPDATER] failed:", e);
-      }
-    }, 3000);
-
-    return () => window.clearTimeout(timer);
-  }, [enabled]);
-
-  return null;
-}
-
 const isTauriEnv = typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
 
 const App = () => {
@@ -119,8 +96,6 @@ const App = () => {
   const handleSplashFinished = () => {
     setShowSplash(false);
   };
-
-  const updaterEnabled = !showSplash && !import.meta.env.DEV;
 
   return (
     <>
@@ -135,7 +110,6 @@ const App = () => {
                 <Sonner />
 
                 <HashRouter>
-                  <UpdaterBootstrap enabled={updaterEnabled} />
 
                   <Suspense fallback={<LazyFallback />}>
                     <Routes>
