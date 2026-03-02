@@ -23,8 +23,6 @@
 ; ============================================
 !define MUI_FINISHPAGE_TITLE "Installation abgeschlossen"
 !define MUI_FINISHPAGE_TEXT "BrandOS wurde erfolgreich installiert.$\r$\n$\r$\nDein Founder Operating System ist bereit. Starte jetzt und baue deine Marke intelligent auf.$\r$\n$\r$\nKlicke auf Fertigstellen, um das Setup zu beenden."
-!define MUI_FINISHPAGE_RUN "$INSTDIR\BrandOS.exe"
-!define MUI_FINISHPAGE_RUN_TEXT "BrandOS jetzt starten"
 !define MUI_FINISHPAGE_LINK "BrandOS Website besuchen"
 !define MUI_FINISHPAGE_LINK_LOCATION "https://brand.aldenairperfumes.de"
 
