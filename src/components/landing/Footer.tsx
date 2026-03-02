@@ -61,6 +61,9 @@ export const Footer = forwardRef<HTMLElement>(function Footer(_, ref) {
               <Link to="/press" className="hover:text-foreground transition-colors">
                 {isDE ? "Presse" : "Press"}
               </Link>
+              <Link to="/download" className="hover:text-foreground transition-colors">
+                Download
+              </Link>
             </nav>
           </div>
 
