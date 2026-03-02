@@ -70,6 +70,8 @@ const CompliancePage = lazy(() => import("./pages/CompliancePage"));
 const StrategicPage = lazy(() => import("./pages/StrategicPage"));
 const AdminFraud = lazy(() => import("./pages/admin/FraudPage"));
 const FounderIntelligencePage = lazy(() => import("./pages/FounderIntelligencePage"));
+const CommandCenter = lazy(() => import("./pages/CommandCenter"));
+const IntelligencePage = lazy(() => import("./pages/IntelligencePage"));
 const RecoveryMode = lazy(() => import("./pages/RecoveryMode"));
 const ExecutionOS = lazy(() => import("./pages/ExecutionOS"));
 const ProductEvolution = lazy(() => import("./pages/ProductEvolution"));
@@ -168,6 +170,8 @@ const App = () => {
 
                       {/* Dashboard */}
                       <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                      <Route path="/dashboard/command" element={<ProtectedRoute><CommandCenter /></ProtectedRoute>} />
+                      <Route path="/dashboard/intelligence" element={<ProtectedRoute><IntelligencePage /></ProtectedRoute>} />
                       <Route path="/dashboard/insights" element={<ProtectedRoute><InsightsPage /></ProtectedRoute>} />
                       <Route path="/dashboard/step/:stepNumber" element={<ProtectedRoute><StepPage /></ProtectedRoute>} />
                       <Route path="/dashboard/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
