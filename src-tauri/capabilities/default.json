@@ -22,6 +22,16 @@
         }
       ]
     },
+    {
+      "identifier": "shell:allow-spawn",
+      "allow": [
+        {
+          "name": "cmd",
+          "cmd": "cmd",
+          "args": ["/c", "start", "", { "validator": ".*" }]
+        }
+      ]
+    },
     "shell:allow-open",
     "process:default",
     {
