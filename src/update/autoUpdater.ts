@@ -55,7 +55,7 @@ async function runSilentInstallerAndQuit(filePath: string): Promise<void> {
 
   // /S = NSIS silent install flag
   const cmd = Command.create("cmd", ["/c", "start", "", filePath, "/S"]);
-  await cmd.spawn();
+  await cmd.execute();
 
   // Give the OS a moment to launch the process, then quit
   await new Promise((r) => setTimeout(r, 1000));
