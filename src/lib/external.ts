@@ -18,6 +18,9 @@ export const ALLOWED_EXTERNAL_DOMAINS: string[] = [
   "checkout.stripe.com",
   // EU ODR
   "ec.europa.eu",
+  // GitHub (releases / updates)
+  "github.com",
+  "raw.githubusercontent.com",
   // General partner domains (add more as needed)
   "alibaba.com",
   "www.alibaba.com",

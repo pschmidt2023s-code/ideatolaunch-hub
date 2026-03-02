@@ -23,7 +23,7 @@ export type UpdateProgress = {
   percent: number;
 };
 
-const VERSION_URL = "https://MYDOMAIN.de/version.json";
+const VERSION_URL = "https://raw.githubusercontent.com/pschmidt2023s-code/ideatolaunch-hub/main/docs/version.json";
 
 /** Compare two semver strings. Returns -1 if a<b, 0 if equal, 1 if a>b */
 export function semverCompare(a: string, b: string): number {

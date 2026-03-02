@@ -40,11 +40,18 @@ export function PricingSection() {
     trackEvent("clicked_upgrade", { source: "pricing_section", tier, billing: billingCycle });
 
     try {
+      // In Tauri, window.location.origin is tauri://localhost which Stripe rejects.
+      // Use the published web URL as return target instead.
+      const isTauriEnv = typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
+      const returnUrl = isTauriEnv
+        ? "https://ideatolaunch-hub.lovable.app"
+        : window.location.origin;
+
       const data = await withPerfTracking(
         "stripe_checkout",
         async () => {
           const { data, error } = await supabase.functions.invoke("stripe-checkout", {
-            body: { return_url: window.location.origin, tier },
+            body: { return_url: returnUrl, tier },
           });
           if (error) throw error;
           return data;
