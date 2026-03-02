@@ -10,9 +10,6 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 import SplashScreen from "@/components/SplashScreen";
-import { checkUpdateAvailable } from "@/update/updateService";
-import type { UpdateCheckResult } from "@/update/updateService";
-import { UpdateModal } from "@/update/UpdateModal";
 import "@/i18n";
 
 // Critical path: keep eager
@@ -91,10 +88,9 @@ function LazyFallback() {
   );
 }
 
-/** Update trigger – production only, once, after splash. Shows UpdateModal with progress. */
+/** Auto-updater – production only, once, after splash. Fully automatic, no UI. */
 function UpdaterBootstrap({ enabled }: { enabled: boolean }) {
   const ranRef = useRef(false);
-  const [updateInfo, setUpdateInfo] = useState<UpdateCheckResult | null>(null);
 
   useEffect(() => {
     if (!enabled || ranRef.current) return;
@@ -102,21 +98,17 @@ function UpdaterBootstrap({ enabled }: { enabled: boolean }) {
 
     const timer = window.setTimeout(async () => {
       try {
-        const result = await checkUpdateAvailable();
-        if (result.available) {
-          setUpdateInfo(result);
-        }
+        const { runAutoUpdate } = await import("./update/autoUpdater");
+        await runAutoUpdate();
       } catch (e) {
-        console.error("[UPDATER] check failed:", e);
+        console.error("[AUTO-UPDATER] failed:", e);
       }
-    }, 2000);
+    }, 3000);
 
     return () => window.clearTimeout(timer);
   }, [enabled]);
 
-  if (!updateInfo) return null;
-
-  return <UpdateModal info={updateInfo} onDismiss={() => setUpdateInfo(null)} />;
+  return null;
 }
 
 const isTauriEnv = typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
