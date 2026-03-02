@@ -21,29 +21,18 @@ export interface TermDefinition {
 
 const stepGuidanceDE: Record<number, StepGuidance> = {
   1: {
-    what_is_this: "Hier definierst du die Grundlage deiner Marke: Produkt, Zielgruppe, Preissegment und Positionierung.",
-    why_it_matters: "Ohne klare Grundlage triffst du spätere Entscheidungen im Blindflug. Die Positionierung bestimmt Preis, Kommunikation und Vertriebskanal.",
+    what_is_this: "Hier definierst du Produkt, Zielgruppe, Positionierung UND deine Markenidentität — Name, Tonalität und visuelle Richtung.",
+    why_it_matters: "Positionierung und Markenidentität gehören zusammen. Sie bestimmen, wie Kunden dich wahrnehmen, was du verlangen kannst und wie du kommunizierst.",
     common_mistakes: [
       "Zu breite Zielgruppe definieren ('alle Frauen 18-65')",
-      "Produkt beschreiben statt den Kundennutzen",
       "Differenzierung vergessen — warum sollte jemand DEIN Produkt kaufen?",
+      "Markennamen nach persönlichem Geschmack statt nach Marktpositionierung wählen",
     ],
-    how_to_decide: "Frage dich: Für wen löse ich welches Problem besser als alle anderen? Wenn du das in einem Satz sagen kannst, hast du deine Positionierung.",
+    how_to_decide: "Frage dich: Für wen löse ich welches Problem besser als alle anderen? Der Markenname muss leicht merkbar und als Domain verfügbar sein.",
     confidence_tip: "Perfekt muss es nicht sein. Eine klare, testbare Hypothese ist besser als wochenlange Analyse.",
   },
   2: {
-    what_is_this: "Hier legst du den Markennamen, die Tonalität und die visuelle Richtung fest.",
-    why_it_matters: "Dein Markenname und deine visuelle Identität sind das Erste, was Kunden wahrnehmen. Konsistenz schafft Vertrauen.",
-    common_mistakes: [
-      "Zu kreativen Namen wählen, den niemand schreiben oder aussprechen kann",
-      "Tonalität nicht zur Zielgruppe passen lassen",
-      "Visuelle Richtung nach persönlichem Geschmack statt nach Marktpositionierung wählen",
-    ],
-    how_to_decide: "Der Name muss leicht merkbar, aussprechbar und als Domain verfügbar sein. Teste ihn mit 5 Personen aus deiner Zielgruppe.",
-    confidence_tip: "Ein guter-genug Name mit starker Positionierung schlägt einen perfekten Namen ohne Strategie.",
-  },
-  3: {
-    what_is_this: "Der Business-Kalkulator berechnet deine Stückkosten, empfiehlt einen Verkaufspreis und zeigt dir deinen Break-even.",
+    what_is_this: "Der Business-Kalkulator berechnet Stückkosten, empfiehlt einen Verkaufspreis und zeigt deinen Break-even.",
     why_it_matters: "Ohne realistische Kalkulation riskierst du, Geld zu verlieren. Die Marge entscheidet, ob du Marketing finanzieren kannst.",
     common_mistakes: [
       "Versandkosten vergessen oder unterschätzen",
@@ -53,8 +42,8 @@ const stepGuidanceDE: Record<number, StepGuidance> = {
     how_to_decide: "Dein Preis muss mindestens das 2,5-fache deiner Stückkosten betragen. Im Premium-Segment eher das 4-fache.",
     confidence_tip: "Starte mit konservativen Zahlen. Es ist besser, positiv überrascht zu werden als negativ.",
   },
-  4: {
-    what_is_this: "Hier planst du die Produktion: Region, Mindestbestellmenge (MOQ), Kategorie und Qualitätsstandards.",
+  3: {
+    what_is_this: "Hier planst du die Produktion: Region, MOQ, Kategorie, Qualitätsstandards und Lieferantenauswahl.",
     why_it_matters: "Produktionsfehler sind teuer und zeitraubend. Eine gute Vorbereitung schützt dein Kapital und deinen Zeitplan.",
     common_mistakes: [
       "Ohne Musterproduktion direkt in die volle Produktion gehen",
@@ -64,65 +53,43 @@ const stepGuidanceDE: Record<number, StepGuidance> = {
     how_to_decide: "Wenn dein Budget unter 10.000 € liegt, starte mit EU-Lieferanten und kleinen MOQs. Asien lohnt sich erst ab größeren Mengen.",
     confidence_tip: "Bestelle immer erst ein Muster. Kein seriöser Lieferant wird das ablehnen.",
   },
-  5: {
-    what_is_this: "Compliance umfasst Label-Anforderungen, rechtliche Pflichtangaben und Barcode-Registrierung.",
-    why_it_matters: "Fehlende oder falsche Angaben auf dem Label können zu Abmahnungen, Verkaufsstopps oder Bußgeldern führen.",
+  4: {
+    what_is_this: "Compliance (Label, Recht, Barcode) UND Vertriebsvorbereitung (Kanal, Fulfillment, operative Checkliste) in einer Phase.",
+    why_it_matters: "Fehlende Compliance kann zu Abmahnungen führen. Der falsche Vertriebskanal verschwendet Budget. Beides muss vor dem Launch stehen.",
     common_mistakes: [
       "Pflichtangaben wie Herstelleradresse oder Chargennummer vergessen",
-      "Inhaltsstoffe nicht korrekt listen",
-      "EU-Regulierungen ignorieren — besonders bei Kosmetik und Lebensmitteln",
-    ],
-    how_to_decide: "Gehe die Checkliste Punkt für Punkt durch. Im Zweifel: Rechtsanwalt fragen. Die Kosten sind deutlich niedriger als eine Abmahnung.",
-    confidence_tip: "Du musst kein Jurist sein. Die Checkliste deckt die wichtigsten Punkte ab.",
-  },
-  6: {
-    what_is_this: "Hier wählst du deinen Vertriebskanal, deine Launch-Menge und dein Fulfillment-Modell.",
-    why_it_matters: "Der falsche Kanal verschwendet Budget. Die falsche Launch-Menge bindet Kapital oder lässt dich ohne Ware dastehen.",
-    common_mistakes: [
       "Auf zu vielen Kanälen gleichzeitig starten",
-      "Launch-Menge zu hoch ansetzen ohne validierten Bedarf",
       "Fulfillment-Kosten nicht in die Kalkulation einbeziehen",
     ],
-    how_to_decide: "Starte mit einem einzigen Kanal, den du zu 100% beherrscht. Skaliere erst, wenn du dort profitabel bist.",
+    how_to_decide: "Gehe die Compliance-Checkliste Punkt für Punkt durch. Starte mit einem einzigen Vertriebskanal, den du zu 100% beherrscht.",
     confidence_tip: "500 verkaufte Einheiten auf einem Kanal sind wertvoller als 50 auf zehn Kanälen.",
   },
-  7: {
-    what_is_this: "Der 30-Tage-Launch-Plan strukturiert deine Aktivitäten von der Vorbereitung bis zum Post-Launch.",
+  5: {
+    what_is_this: "Der Launch-Plan strukturiert deine Aktivitäten von der Vorbereitung bis zum Post-Launch.",
     why_it_matters: "Ein Launch ohne Plan ist Glücksspiel. Strukturierte Aktivitäten maximieren die Wirkung deiner begrenzten Ressourcen.",
     common_mistakes: [
       "Alles auf den Launch-Tag setzen statt Momentum vorher aufzubauen",
       "Kein Pre-Launch-Marketing (Warteliste, Teaser, Community)",
       "Nach dem Launch aufhören statt die ersten Learnings sofort umzusetzen",
     ],
-    how_to_decide: "Plane rückwärts vom Launch-Tag. Was muss 2 Wochen vorher stehen? Was 1 Woche? Priorisiere gnadenlos.",
+    how_to_decide: "Plane rückwärts vom Launch-Tag. Was muss 2 Wochen vorher stehen? Priorisiere gnadenlos.",
     confidence_tip: "Ein imperfekter Launch schlägt keinen Launch. Du kannst alles iterieren — außer verpasste Zeit.",
   },
 };
 
 const stepGuidanceEN: Record<number, StepGuidance> = {
   1: {
-    what_is_this: "Define the foundation of your brand: product, audience, price segment, and positioning.",
-    why_it_matters: "Without a clear foundation, you'll make later decisions blindly. Positioning determines price, communication, and sales channel.",
+    what_is_this: "Define your product, audience, positioning AND brand identity — name, tone, and visual direction.",
+    why_it_matters: "Positioning and brand identity belong together. They determine how customers perceive you, what you can charge, and how you communicate.",
     common_mistakes: [
       "Defining too broad an audience ('all women 18-65')",
-      "Describing the product instead of the customer benefit",
       "Forgetting differentiation — why should someone buy YOUR product?",
+      "Choosing a brand name by personal taste instead of market positioning",
     ],
-    how_to_decide: "Ask yourself: For whom do I solve which problem better than everyone else? If you can say it in one sentence, you have your positioning.",
+    how_to_decide: "Ask yourself: For whom do I solve which problem better than everyone else? The name must be memorable and available as a domain.",
     confidence_tip: "It doesn't need to be perfect. A clear, testable hypothesis beats weeks of analysis.",
   },
   2: {
-    what_is_this: "Set your brand name, tone, and visual direction.",
-    why_it_matters: "Your brand name and visual identity are the first things customers perceive. Consistency builds trust.",
-    common_mistakes: [
-      "Choosing an overly creative name nobody can spell or pronounce",
-      "Not matching tone to target audience",
-      "Choosing visual direction by personal taste instead of market positioning",
-    ],
-    how_to_decide: "The name must be memorable, pronounceable, and available as a domain. Test it with 5 people from your target audience.",
-    confidence_tip: "A good-enough name with strong positioning beats a perfect name without strategy.",
-  },
-  3: {
     what_is_this: "The calculator computes unit costs, recommends a selling price, and shows your break-even.",
     why_it_matters: "Without realistic calculations, you risk losing money. Margin determines whether you can fund marketing.",
     common_mistakes: [
@@ -133,8 +100,8 @@ const stepGuidanceEN: Record<number, StepGuidance> = {
     how_to_decide: "Your price should be at least 2.5x your unit cost. In premium segments, aim for 4x.",
     confidence_tip: "Start with conservative numbers. Better to be positively surprised than negatively.",
   },
-  4: {
-    what_is_this: "Plan production: region, MOQ, category, and quality standards.",
+  3: {
+    what_is_this: "Plan production: region, MOQ, category, quality standards, and supplier selection.",
     why_it_matters: "Production mistakes are expensive and time-consuming. Good preparation protects your capital and timeline.",
     common_mistakes: [
       "Going straight to full production without samples",
@@ -144,37 +111,26 @@ const stepGuidanceEN: Record<number, StepGuidance> = {
     how_to_decide: "If your budget is under €10,000, start with EU suppliers and small MOQs. Asia makes sense only at larger volumes.",
     confidence_tip: "Always order a sample first. No serious supplier will refuse.",
   },
-  5: {
-    what_is_this: "Compliance covers label requirements, mandatory legal information, and barcode registration.",
-    why_it_matters: "Missing or incorrect label information can lead to legal action, sales bans, or fines.",
+  4: {
+    what_is_this: "Compliance (labels, legal, barcode) AND sales setup (channel, fulfillment, operational checklist) in one phase.",
+    why_it_matters: "Missing compliance can lead to legal action. The wrong sales channel wastes budget. Both must be ready before launch.",
     common_mistakes: [
-      "Forgetting mandatory information like manufacturer address or batch number",
-      "Not listing ingredients correctly",
-      "Ignoring EU regulations — especially for cosmetics and food",
-    ],
-    how_to_decide: "Go through the checklist item by item. When in doubt: ask a lawyer. The cost is much lower than a legal claim.",
-    confidence_tip: "You don't need to be a lawyer. The checklist covers the most important points.",
-  },
-  6: {
-    what_is_this: "Choose your sales channel, launch quantity, and fulfillment model.",
-    why_it_matters: "The wrong channel wastes budget. The wrong launch quantity ties up capital or leaves you without stock.",
-    common_mistakes: [
+      "Forgetting mandatory info like manufacturer address or batch number",
       "Launching on too many channels at once",
-      "Setting launch quantity too high without validated demand",
       "Not including fulfillment costs in calculations",
     ],
-    how_to_decide: "Start with a single channel you fully control. Scale only when profitable there.",
+    how_to_decide: "Go through the compliance checklist item by item. Start with a single channel you fully control.",
     confidence_tip: "500 units sold on one channel are more valuable than 50 units across ten channels.",
   },
-  7: {
-    what_is_this: "The 30-day launch plan structures activities from preparation to post-launch.",
+  5: {
+    what_is_this: "The launch plan structures activities from preparation to post-launch.",
     why_it_matters: "A launch without a plan is gambling. Structured activities maximize impact of limited resources.",
     common_mistakes: [
       "Putting everything on launch day instead of building momentum before",
       "No pre-launch marketing (waitlist, teasers, community)",
       "Stopping after launch instead of immediately implementing first learnings",
     ],
-    how_to_decide: "Plan backwards from launch day. What needs to be ready 2 weeks before? 1 week? Prioritize ruthlessly.",
+    how_to_decide: "Plan backwards from launch day. What needs to be ready 2 weeks before? Prioritize ruthlessly.",
     confidence_tip: "An imperfect launch beats no launch. You can iterate everything — except missed time.",
   },
 };

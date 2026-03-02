@@ -4,12 +4,10 @@ import { useTranslation } from "react-i18next";
 import { Globe, Sparkles, HeartPulse, Crown, Map, Zap } from "lucide-react";
 import {
   LayoutDashboard,
-  Lightbulb,
-  Palette,
+  Target,
   Calculator,
   Factory,
   Shield,
-  ShoppingBag,
   Rocket,
   LogOut,
   Settings,
@@ -41,13 +39,13 @@ export function DashboardSidebar({ onNavigate }: DashboardSidebarProps) {
   const navItems = [
     { icon: LayoutDashboard, label: t("dashboard.title"), path: "/dashboard" },
     { icon: Brain, label: t("insights.title"), path: "/dashboard/insights" },
-    { icon: Lightbulb, label: t("steps.s1"), path: "/dashboard/step/1" },
-    { icon: Palette, label: t("steps.s2"), path: "/dashboard/step/2" },
-    { icon: Calculator, label: t("steps.s3"), path: "/dashboard/step/3" },
-    { icon: Factory, label: t("steps.s4"), path: "/dashboard/step/4" },
-    { icon: Shield, label: t("steps.s5"), path: "/dashboard/step/5" },
-    { icon: ShoppingBag, label: t("steps.s6"), path: "/dashboard/step/6" },
-    { icon: Rocket, label: t("steps.s7"), path: "/dashboard/step/7" },
+    // ── 5 Phases ──
+    { icon: Target, label: t("steps.p1"), path: "/dashboard/step/1", group: "phases" },
+    { icon: Calculator, label: t("steps.p2"), path: "/dashboard/step/2", group: "phases" },
+    { icon: Factory, label: t("steps.p3"), path: "/dashboard/step/3", group: "phases" },
+    { icon: Shield, label: t("steps.p4"), path: "/dashboard/step/4", group: "phases" },
+    { icon: Rocket, label: t("steps.p5"), path: "/dashboard/step/5", group: "phases" },
+    // ── Extras ──
     { icon: Gift, label: "Empfehlungen", path: "/dashboard/referrals" },
     { icon: Sparkles, label: "Intelligence Suite", path: "/dashboard/intelligence" },
     { icon: HeartPulse, label: "Recovery Mode", path: "/dashboard/recovery" },
@@ -66,21 +64,28 @@ export function DashboardSidebar({ onNavigate }: DashboardSidebarProps) {
       </div>
 
       <nav className="flex-1 space-y-1 px-3 py-4 overflow-y-auto">
-        {navItems.map(({ icon: Icon, label, path }, i) => {
+        {navItems.map(({ icon: Icon, label, path, group }, i) => {
           const isActive = location.pathname === path;
+          const isFirstPhase = group === "phases" && (i === 0 || navItems[i - 1]?.group !== "phases");
           return (
-            <button
-              key={path}
-              onClick={() => handleNav(path)}
-              className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
-                isActive
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
-                  : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
-              } ${i === 1 ? "mb-2" : ""}`}
-            >
-              <Icon className="h-4 w-4 shrink-0" />
-              <span className="truncate">{label}</span>
-            </button>
+            <div key={path}>
+              {isFirstPhase && (
+                <p className="px-3 pt-3 pb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  {i18n.language === "de" ? "Founder Journey" : "Founder Journey"}
+                </p>
+              )}
+              <button
+                onClick={() => handleNav(path)}
+                className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
+                  isActive
+                    ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                    : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
+                } ${i === 1 ? "mb-2" : ""}`}
+              >
+                <Icon className="h-4 w-4 shrink-0" />
+                <span className="truncate">{label}</span>
+              </button>
+            </div>
           );
         })}
       </nav>
