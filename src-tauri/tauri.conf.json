@@ -42,7 +42,10 @@
         "languages": ["German", "English"],
         "installerIcon": "icons/icon.ico",
         "headerImage": "icons/header.bmp",
-        "sidebarImage": "icons/sidebar.bmp"
+        "sidebarImage": "icons/sidebar.bmp",
+        "license": "LICENSE.rtf",
+        "installMode": "both",
+        "installerHooks": "windows/hooks.nsh"
       }
     }
   }
