@@ -42,24 +42,32 @@ export function HeroSection() {
 
         {/* Founder Risk Index Visual */}
         <div className="mx-auto mt-12 max-w-sm">
-          <div className="rounded-2xl border bg-card/80 backdrop-blur p-6 shadow-card">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <Shield className="h-4 w-4 text-accent" />
-                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Founder Risk Index
-                </span>
-              </div>
-              <span className="text-xs text-muted-foreground">Live Preview</span>
+          <div className="rounded-2xl border bg-card/80 backdrop-blur p-6 shadow-card relative">
+            {/* Live Preview Badge */}
+            <span className="absolute right-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-muted/80 px-2.5 py-1 text-[10px] font-medium text-muted-foreground">
+              <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
+              Live Preview
+            </span>
+
+            <div className="flex items-center gap-2 mb-4">
+              <Shield className="h-4 w-4 text-accent" />
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Founder Risk Index
+              </span>
             </div>
             <div className="flex items-baseline gap-2">
               <span className="text-5xl font-bold tabular-nums text-warning">48</span>
               <span className="text-lg text-muted-foreground">/ 100</span>
             </div>
-            <div className="mt-3 h-2 rounded-full bg-muted">
-              <div className="h-2 rounded-full bg-warning transition-all" style={{ width: "48%" }} />
+            <div className="mt-4 flex items-center">
+              <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-warning transition-all duration-1000 ease-out"
+                  style={{ width: "48%" }}
+                />
+              </div>
             </div>
-            <p className="mt-3 text-xs text-muted-foreground">
+            <p className="mt-4 text-xs text-muted-foreground">
               {isDE ? "Mittleres Risiko · 9 Monate Runway · 3 offene Blocker" : "Medium risk · 9 months runway · 3 open blockers"}
             </p>
           </div>

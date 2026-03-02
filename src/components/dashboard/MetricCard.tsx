@@ -17,12 +17,12 @@ const levelStyles: Record<RiskLevel, string> = {
 
 export function MetricCard({ label, value, sub, level, className }: MetricCardProps) {
   return (
-    <div className={cn("rounded-lg border bg-card p-4 shadow-card", className)}>
-      <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{label}</p>
-      <p className={cn("mt-1 text-2xl font-bold tabular-nums", level && levelStyles[level])}>
+    <div className={cn("rounded-xl border bg-card p-5 shadow-card", className)}>
+      <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70">{label}</p>
+      <p className={cn("mt-1.5 text-2xl font-bold tabular-nums", level && levelStyles[level])}>
         {value}
       </p>
-      {sub && <p className="mt-0.5 text-xs text-muted-foreground">{sub}</p>}
+      {sub && <p className="mt-1 text-xs text-muted-foreground">{sub}</p>}
     </div>
   );
 }
