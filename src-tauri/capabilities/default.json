@@ -19,20 +19,16 @@
           "name": "cmd",
           "cmd": "cmd",
           "args": ["/c", "start", "", { "validator": ".*" }]
-        }
-      ]
-    },
-    {
-      "identifier": "shell:allow-spawn",
-      "allow": [
+        },
         {
           "name": "cmd",
           "cmd": "cmd",
-          "args": ["/c", "start", "", { "validator": ".*" }]
+          "args": ["/c", "start", "", { "validator": ".*" }, "/S"]
         }
       ]
     },
     "shell:allow-open",
+    "shell:allow-spawn",
     "process:default",
     {
       "identifier": "http:default",
