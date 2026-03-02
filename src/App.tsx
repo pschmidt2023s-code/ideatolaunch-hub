@@ -3,12 +3,14 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { BrandProvider } from "@/hooks/useBrand";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
+import SplashScreen from "@/components/SplashScreen";
+import { runSimpleUpdateCheck } from "@/updateChecker";
 import "@/i18n";
 
 // Critical path: keep eager
@@ -39,12 +41,10 @@ const MinimalistischerArbeitsplatz = lazy(() => import("./pages/blog/Minimalisti
 const ProduktivitaetHomeOffice = lazy(() => import("./pages/blog/ProduktivitaetHomeOffice"));
 const SchreibtischSetupGuide = lazy(() => import("./pages/blog/SchreibtischSetupGuide"));
 
-// Free Tools
 const ProduktionskostenRechner = lazy(() => import("./pages/tools/ProduktionskostenRechner"));
 const BreakEvenRechner = lazy(() => import("./pages/tools/BreakEvenRechner"));
 const MoqRechner = lazy(() => import("./pages/tools/MoqRechner"));
 
-// Guide / Pillar + Cluster
 const EigenmarkeGruenden = lazy(() => import("./pages/guide/EigenmarkeGruenden"));
 const PrivateLabelStarten = lazy(() => import("./pages/guide/PrivateLabelStarten"));
 const LieferantenFinden = lazy(() => import("./pages/guide/LieferantenFinden"));
@@ -60,7 +60,6 @@ const Community = lazy(() => import("./pages/Community"));
 const ReferralDashboard = lazy(() => import("./pages/ReferralDashboard"));
 const AffiliateDashboard = lazy(() => import("./pages/AffiliateDashboard"));
 
-// Backlink & Authority Pages
 const Research = lazy(() => import("./pages/Research"));
 const Press = lazy(() => import("./pages/Press"));
 const Academy = lazy(() => import("./pages/Academy"));
@@ -68,7 +67,6 @@ const VsExcel = lazy(() => import("./pages/comparisons/VsExcel"));
 const VsNotion = lazy(() => import("./pages/comparisons/VsNotion"));
 const BestTools = lazy(() => import("./pages/comparisons/BestTools"));
 
-// Compliance & Strategic
 const CompliancePage = lazy(() => import("./pages/CompliancePage"));
 const StrategicPage = lazy(() => import("./pages/StrategicPage"));
 const AdminFraud = lazy(() => import("./pages/admin/FraudPage"));
@@ -79,7 +77,6 @@ const ProductEvolution = lazy(() => import("./pages/ProductEvolution"));
 const RevenueActivation = lazy(() => import("./pages/RevenueActivation"));
 const GrowthEngine = lazy(() => import("./pages/admin/GrowthEngine"));
 const PartnerDashboard = lazy(() => import("./pages/admin/PartnerDashboard"));
-const UpdateModalLazy = lazy(() => import("./update/UpdateModal").then(m => ({ default: m.UpdateModal })));
 
 const queryClient = new QueryClient();
 
@@ -91,116 +88,130 @@ function LazyFallback() {
   );
 }
 
-const App = () => {
-  const updateChecked = useRef(false);
-  const [updateInfo, setUpdateInfo] = useState<import("./update/updateService").UpdateCheckResult | null>(null);
+/** Simple update trigger – production only, once, after splash */
+function UpdaterBootstrap({ enabled }: { enabled: boolean }) {
+  const ranRef = useRef(false);
 
   useEffect(() => {
-    if (updateChecked.current) return;
-    if (import.meta.env.DEV) return;
-    updateChecked.current = true;
-    const t = setTimeout(async () => {
-      try {
-        const { checkUpdateAvailable } = await import("./update/updateService");
-        const result = await checkUpdateAvailable();
-        if (result.available) setUpdateInfo(result);
-      } catch {}
-    }, 1500);
-    return () => clearTimeout(t);
-  }, []);
+    if (!enabled || ranRef.current) return;
+    ranRef.current = true;
+
+    const timer = window.setTimeout(() => {
+      runSimpleUpdateCheck().catch((e) =>
+        console.error("[UPDATER] failed:", e)
+      );
+    }, 2000);
+
+    return () => window.clearTimeout(timer);
+  }, [enabled]);
+
+  return null;
+}
+
+const App = () => {
+  const [showSplash, setShowSplash] = useState(true);
+
+  const handleSplashFinished = () => {
+    setShowSplash(false);
+  };
+
+  const updaterEnabled = !showSplash && !import.meta.env.DEV;
 
   return (
-  <ErrorBoundary>
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <BrandProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <Suspense fallback={<LazyFallback />}>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/auth" element={<Auth />} />
-                  <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
-                  <Route path="/starter" element={<ProtectedRoute><StarterMode /></ProtectedRoute>} />
-                  <Route path="/pricing" element={<Pricing />} />
-                  <Route path="/impressum" element={<Impressum />} />
-                  <Route path="/datenschutz" element={<Datenschutz />} />
-                  <Route path="/agb" element={<AGB />} />
-                  <Route path="/product" element={<Product />} />
+    <>
+      {showSplash && <SplashScreen onFinished={handleSplashFinished} />}
 
-                  {/* Blog */}
-                  <Route path="/blog" element={<Blog />} />
-                  <Route path="/blog/minimalistischer-arbeitsplatz" element={<MinimalistischerArbeitsplatz />} />
-                  <Route path="/blog/produktivitaet-home-office" element={<ProduktivitaetHomeOffice />} />
-                  <Route path="/blog/schreibtisch-setup-guide" element={<SchreibtischSetupGuide />} />
+      <ErrorBoundary>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <BrandProvider>
+              <TooltipProvider>
+                <Toaster />
+                <Sonner />
 
-                  {/* Free Tools */}
-                  <Route path="/tools/produktionskosten-rechner" element={<ProduktionskostenRechner />} />
-                  <Route path="/tools/break-even-rechner" element={<BreakEvenRechner />} />
-                  <Route path="/tools/moq-rechner" element={<MoqRechner />} />
+                <HashRouter>
+                  <UpdaterBootstrap enabled={updaterEnabled} />
 
-                  {/* Guide / Pillar + Cluster */}
-                  <Route path="/guide/eigenmarke-gruenden" element={<EigenmarkeGruenden />} />
-                  <Route path="/guide/private-label-starten" element={<PrivateLabelStarten />} />
-                  <Route path="/guide/lieferanten-finden" element={<LieferantenFinden />} />
-                  <Route path="/guide/produktionskosten-kalkulieren" element={<ProduktionskostenKalkulieren />} />
-                  <Route path="/guide/moq-berechnen" element={<MoqBerechnen />} />
-                  <Route path="/guide/break-even-rechner" element={<BreakEvenGuide />} />
-                  <Route path="/guide/kapitalbedarf-berechnen" element={<KapitalbedarfBerechnen />} />
-                  <Route path="/guide/launch-plan-erstellen" element={<LaunchPlanErstellen />} />
-                  <Route path="/guide/produktionsfehler-vermeiden" element={<ProduktionsfehlerVermeiden />} />
-                  <Route path="/ueber-uns" element={<UeberUns />} />
-                  <Route path="/case-studies" element={<CaseStudies />} />
-                  <Route path="/community" element={<Community />} />
+                  <Suspense fallback={<LazyFallback />}>
+                    <Routes>
+                      <Route path="/" element={<Index />} />
+                      <Route path="/auth" element={<Auth />} />
+                      <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
+                      <Route path="/starter" element={<ProtectedRoute><StarterMode /></ProtectedRoute>} />
+                      <Route path="/pricing" element={<Pricing />} />
+                      <Route path="/impressum" element={<Impressum />} />
+                      <Route path="/datenschutz" element={<Datenschutz />} />
+                      <Route path="/agb" element={<AGB />} />
+                      <Route path="/product" element={<Product />} />
 
-                  {/* Backlink & Authority */}
-                  <Route path="/research" element={<Research />} />
-                  <Route path="/press" element={<Press />} />
-                  <Route path="/academy" element={<Academy />} />
-                  <Route path="/buildyourbrand-vs-excel" element={<VsExcel />} />
-                  <Route path="/buildyourbrand-vs-notion" element={<VsNotion />} />
-                  <Route path="/best-private-label-tools" element={<BestTools />} />
+                      {/* Blog */}
+                      <Route path="/blog" element={<Blog />} />
+                      <Route path="/blog/minimalistischer-arbeitsplatz" element={<MinimalistischerArbeitsplatz />} />
+                      <Route path="/blog/produktivitaet-home-office" element={<ProduktivitaetHomeOffice />} />
+                      <Route path="/blog/schreibtisch-setup-guide" element={<SchreibtischSetupGuide />} />
 
-                  {/* Dashboard */}
-                  <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-                  <Route path="/dashboard/insights" element={<ProtectedRoute><InsightsPage /></ProtectedRoute>} />
-                  <Route path="/dashboard/step/:stepNumber" element={<ProtectedRoute><StepPage /></ProtectedRoute>} />
-                  <Route path="/dashboard/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
-                  <Route path="/dashboard/pricing" element={<ProtectedRoute><DashboardPricing /></ProtectedRoute>} />
-                  <Route path="/dashboard/referrals" element={<ProtectedRoute><ReferralDashboard /></ProtectedRoute>} />
-                  <Route path="/dashboard/affiliate" element={<ProtectedRoute><AffiliateDashboard /></ProtectedRoute>} />
-                  <Route path="/dashboard/compliance" element={<ProtectedRoute><CompliancePage /></ProtectedRoute>} />
-                  <Route path="/dashboard/strategic" element={<ProtectedRoute><StrategicPage /></ProtectedRoute>} />
-                  <Route path="/dashboard/intelligence" element={<ProtectedRoute><FounderIntelligencePage /></ProtectedRoute>} />
-                  <Route path="/dashboard/recovery" element={<ProtectedRoute><RecoveryMode /></ProtectedRoute>} />
-                  <Route path="/dashboard/execution" element={<ProtectedRoute><ExecutionOS /></ProtectedRoute>} />
-                  <Route path="/dashboard/evolution" element={<ProtectedRoute><ProductEvolution /></ProtectedRoute>} />
-                  <Route path="/dashboard/revenue" element={<ProtectedRoute><RevenueActivation /></ProtectedRoute>} />
-                  <Route path="/internal/analytics" element={<ProtectedRoute><InternalAnalytics /></ProtectedRoute>} />
-                  <Route path="/admin/insights" element={<AdminInsights />} />
-                  <Route path="/admin/dashboard" element={<AdminDashboard />} />
-                  <Route path="/admin/fraud" element={<AdminFraud />} />
-                  <Route path="/admin/monetization" element={<MonetizationAdmin />} />
-                  <Route path="/admin/growth" element={<GrowthEngine />} />
-                  <Route path="/admin/partners" element={<PartnerDashboard />} />
-                  <Route path="/debug/gating" element={<DebugGating />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </Suspense>
-              <CookieConsentBanner />
-              {updateInfo && (
-                <Suspense fallback={null}>
-                  <UpdateModalLazy info={updateInfo} onDismiss={() => setUpdateInfo(null)} />
-                </Suspense>
-              )}
-            </BrowserRouter>
-          </TooltipProvider>
-        </BrandProvider>
-      </AuthProvider>
-    </QueryClientProvider>
-  </ErrorBoundary>
+                      {/* Free Tools */}
+                      <Route path="/tools/produktionskosten-rechner" element={<ProduktionskostenRechner />} />
+                      <Route path="/tools/break-even-rechner" element={<BreakEvenRechner />} />
+                      <Route path="/tools/moq-rechner" element={<MoqRechner />} />
+
+                      {/* Guide / Pillar + Cluster */}
+                      <Route path="/guide/eigenmarke-gruenden" element={<EigenmarkeGruenden />} />
+                      <Route path="/guide/private-label-starten" element={<PrivateLabelStarten />} />
+                      <Route path="/guide/lieferanten-finden" element={<LieferantenFinden />} />
+                      <Route path="/guide/produktionskosten-kalkulieren" element={<ProduktionskostenKalkulieren />} />
+                      <Route path="/guide/moq-berechnen" element={<MoqBerechnen />} />
+                      <Route path="/guide/break-even-rechner" element={<BreakEvenGuide />} />
+                      <Route path="/guide/kapitalbedarf-berechnen" element={<KapitalbedarfBerechnen />} />
+                      <Route path="/guide/launch-plan-erstellen" element={<LaunchPlanErstellen />} />
+                      <Route path="/guide/produktionsfehler-vermeiden" element={<ProduktionsfehlerVermeiden />} />
+                      <Route path="/ueber-uns" element={<UeberUns />} />
+                      <Route path="/case-studies" element={<CaseStudies />} />
+                      <Route path="/community" element={<Community />} />
+
+                      {/* Backlink & Authority */}
+                      <Route path="/research" element={<Research />} />
+                      <Route path="/press" element={<Press />} />
+                      <Route path="/academy" element={<Academy />} />
+                      <Route path="/buildyourbrand-vs-excel" element={<VsExcel />} />
+                      <Route path="/buildyourbrand-vs-notion" element={<VsNotion />} />
+                      <Route path="/best-private-label-tools" element={<BestTools />} />
+
+                      {/* Dashboard */}
+                      <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                      <Route path="/dashboard/insights" element={<ProtectedRoute><InsightsPage /></ProtectedRoute>} />
+                      <Route path="/dashboard/step/:stepNumber" element={<ProtectedRoute><StepPage /></ProtectedRoute>} />
+                      <Route path="/dashboard/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+                      <Route path="/dashboard/pricing" element={<ProtectedRoute><DashboardPricing /></ProtectedRoute>} />
+                      <Route path="/dashboard/referrals" element={<ProtectedRoute><ReferralDashboard /></ProtectedRoute>} />
+                      <Route path="/dashboard/affiliate" element={<ProtectedRoute><AffiliateDashboard /></ProtectedRoute>} />
+                      <Route path="/dashboard/compliance" element={<ProtectedRoute><CompliancePage /></ProtectedRoute>} />
+                      <Route path="/dashboard/strategic" element={<ProtectedRoute><StrategicPage /></ProtectedRoute>} />
+                      <Route path="/dashboard/intelligence" element={<ProtectedRoute><FounderIntelligencePage /></ProtectedRoute>} />
+                      <Route path="/dashboard/recovery" element={<ProtectedRoute><RecoveryMode /></ProtectedRoute>} />
+                      <Route path="/dashboard/execution" element={<ProtectedRoute><ExecutionOS /></ProtectedRoute>} />
+                      <Route path="/dashboard/evolution" element={<ProtectedRoute><ProductEvolution /></ProtectedRoute>} />
+                      <Route path="/dashboard/revenue" element={<ProtectedRoute><RevenueActivation /></ProtectedRoute>} />
+                      <Route path="/internal/analytics" element={<ProtectedRoute><InternalAnalytics /></ProtectedRoute>} />
+                      <Route path="/admin/insights" element={<AdminInsights />} />
+                      <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                      <Route path="/admin/fraud" element={<AdminFraud />} />
+                      <Route path="/admin/monetization" element={<MonetizationAdmin />} />
+                      <Route path="/admin/growth" element={<GrowthEngine />} />
+                      <Route path="/admin/partners" element={<PartnerDashboard />} />
+                      <Route path="/debug/gating" element={<DebugGating />} />
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </Suspense>
+
+                  <CookieConsentBanner />
+                </HashRouter>
+              </TooltipProvider>
+            </BrandProvider>
+          </AuthProvider>
+        </QueryClientProvider>
+      </ErrorBoundary>
+    </>
   );
 };
 
