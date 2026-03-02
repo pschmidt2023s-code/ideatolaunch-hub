@@ -21,4 +21,18 @@ export default defineConfig(({ mode }) => ({
   optimizeDeps: {
     include: ["react", "react-dom", "react/jsx-runtime"],
   },
+  build: {
+    rollupOptions: {
+      external: [
+        "@tauri-apps/plugin-http",
+        "@tauri-apps/plugin-shell",
+        "@tauri-apps/plugin-process",
+        "@tauri-apps/plugin-fs",
+        "@tauri-apps/plugin-opener",
+        "@tauri-apps/plugin-dialog",
+        "@tauri-apps/api/app",
+        "@tauri-apps/api/path",
+      ],
+    },
+  },
 }));
