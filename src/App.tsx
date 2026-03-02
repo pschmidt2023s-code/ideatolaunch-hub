@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useRef } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -79,6 +79,7 @@ const ProductEvolution = lazy(() => import("./pages/ProductEvolution"));
 const RevenueActivation = lazy(() => import("./pages/RevenueActivation"));
 const GrowthEngine = lazy(() => import("./pages/admin/GrowthEngine"));
 const PartnerDashboard = lazy(() => import("./pages/admin/PartnerDashboard"));
+const UpdateModalLazy = lazy(() => import("./update/UpdateModal").then(m => ({ default: m.UpdateModal })));
 
 const queryClient = new QueryClient();
 
@@ -92,6 +93,7 @@ function LazyFallback() {
 
 const App = () => {
   const updateChecked = useRef(false);
+  const [updateInfo, setUpdateInfo] = useState<import("./update/updateService").UpdateCheckResult | null>(null);
 
   useEffect(() => {
     if (updateChecked.current) return;
@@ -99,8 +101,9 @@ const App = () => {
     updateChecked.current = true;
     const t = setTimeout(async () => {
       try {
-        const { checkForUpdate } = await import("./updateWebsite");
-        await checkForUpdate();
+        const { checkUpdateAvailable } = await import("./update/updateService");
+        const result = await checkUpdateAvailable();
+        if (result.available) setUpdateInfo(result);
       } catch {}
     }, 1500);
     return () => clearTimeout(t);
@@ -187,6 +190,11 @@ const App = () => {
                 </Routes>
               </Suspense>
               <CookieConsentBanner />
+              {updateInfo && (
+                <Suspense fallback={null}>
+                  <UpdateModalLazy info={updateInfo} onDismiss={() => setUpdateInfo(null)} />
+                </Suspense>
+              )}
             </BrowserRouter>
           </TooltipProvider>
         </BrandProvider>
