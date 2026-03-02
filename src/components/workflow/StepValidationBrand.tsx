@@ -12,7 +12,7 @@ import { useTranslation } from "react-i18next";
 import { useBrand } from "@/hooks/useBrand";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { BrandNameIntelligence } from "@/components/BrandNameIntelligence";
+import { BrandNameEngine } from "@/components/BrandNameEngine";
 import type { StepHandle } from "./StepIdeaFoundation";
 
 const toneOptions = ["Luxuriös", "Minimal", "Bold", "Verspielt", "Professionell", "Natürlich"];
@@ -46,8 +46,6 @@ export const StepValidationBrand = forwardRef<StepHandle>(function StepValidatio
   const [tone, setTone] = useState("");
   const [visual, setVisual] = useState("");
   const [tagline, setTagline] = useState("");
-  const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
 
   const [saving, setSaving] = useState(false);
 
@@ -177,22 +175,6 @@ export const StepValidationBrand = forwardRef<StepHandle>(function StepValidatio
     }
   };
 
-  const generateNameSuggestions = async () => {
-    setLoadingSuggestions(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("ai-brand-names", {
-        body: { productDescription: tagline || brandName, tone, visual },
-      });
-      if (error) throw error;
-      if (data?.error) { toast.error(data.error); return; }
-      setSuggestions(data.names || []);
-    } catch (e) {
-      console.error(e);
-      toast.error("Vorschläge konnten nicht geladen werden.");
-    } finally {
-      setLoadingSuggestions(false);
-    }
-  };
 
   return (
     <div className="space-y-6">
@@ -284,29 +266,13 @@ export const StepValidationBrand = forwardRef<StepHandle>(function StepValidatio
           </div>
         </TabsContent>
 
-        {/* ── Tab 2: Brand Identity ── */}
         <TabsContent value="brand" className="space-y-6 mt-4">
           <div className="rounded-xl border bg-card p-6 shadow-card">
             <h2 className="mb-4 text-lg font-semibold">{t("step2.title", "Markenidentität")}</h2>
             <div className="space-y-5">
               <div className="space-y-2">
                 <Label>{t("step2.brandName", "Markenname")}</Label>
-                <div className="flex gap-3">
-                  <Input placeholder="Dein Markenname..." value={brandName} onChange={(e) => setBrandName(e.target.value)} className="flex-1" />
-                  <Button variant="outline" className="gap-2 shrink-0" onClick={generateNameSuggestions} disabled={loadingSuggestions}>
-                    {loadingSuggestions ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-                    {t("step2.suggestions", "Vorschläge")}
-                  </Button>
-                </div>
-                {suggestions.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {suggestions.map((name) => (
-                      <button key={name} onClick={() => { setBrandName(name); setSuggestions([]); }} className="rounded-full border px-3 py-1 text-sm hover:bg-accent/10 hover:border-accent transition-colors">
-                        {name}
-                      </button>
-                    ))}
-                  </div>
-                )}
+                <Input placeholder="Dein Markenname..." value={brandName} onChange={(e) => setBrandName(e.target.value)} className="flex-1" />
               </div>
 
               <div className="space-y-2">
@@ -339,7 +305,15 @@ export const StepValidationBrand = forwardRef<StepHandle>(function StepValidatio
           </div>
 
           <div className="rounded-xl border bg-card p-6 shadow-card">
-            <BrandNameIntelligence brandName={brandName} tone={tone} onSelectName={(name) => setBrandName(name)} />
+            <BrandNameEngine
+              productDescription={form.productDescription}
+              targetAudience={form.targetAudience}
+              tone={tone}
+              visual={visual}
+              priceLevel={form.priceLevel}
+              onSelectName={(name) => setBrandName(name)}
+              onSelectTagline={(tl) => setTagline(tl)}
+            />
           </div>
         </TabsContent>
       </Tabs>
