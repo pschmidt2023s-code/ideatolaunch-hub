@@ -43,12 +43,10 @@ import {
 import {
   Plus,
   ArrowRight,
-  Lightbulb,
-  Palette,
+  Target,
   Calculator,
   Factory,
   Shield,
-  ShoppingBag,
   Rocket,
   MoreVertical,
   Pencil,
@@ -59,7 +57,8 @@ import {
 } from "lucide-react";
 import { GuidedStarterDialog } from "@/components/GuidedStarterDialog";
 
-const stepIcons = [Lightbulb, Palette, Calculator, Factory, Shield, ShoppingBag, Rocket];
+const TOTAL_PHASES = 5;
+const stepIcons = [Target, Calculator, Factory, Shield, Rocket];
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -102,7 +101,7 @@ export default function Dashboard() {
     }
   };
 
-  const stepKeys = ["s1", "s2", "s3", "s4", "s5", "s6", "s7"];
+  const stepKeys = ["p1", "p2", "p3", "p4", "p5"];
 
   const createBrand = async () => {
     if (isFree && brands.length >= 1) {
@@ -164,9 +163,9 @@ export default function Dashboard() {
   };
 
   const currentBrand = activeBrand;
-  const isCompleted = currentBrand ? currentBrand.current_step > 7 : false;
-  const clampedStep = currentBrand ? Math.min(currentBrand.current_step, 7) : 1;
-  const progress = isCompleted ? 100 : currentBrand ? Math.round(((clampedStep - 1) / 7) * 100) : 0;
+  const isCompleted = currentBrand ? currentBrand.current_step > TOTAL_PHASES : false;
+  const clampedStep = currentBrand ? Math.min(currentBrand.current_step, TOTAL_PHASES) : 1;
+  const progress = isCompleted ? 100 : currentBrand ? Math.round(((clampedStep - 1) / TOTAL_PHASES) * 100) : 0;
   useEffect(() => {
     if (!isCompleted || !currentBrand) return;
     const storageKey = `confetti_fired_${currentBrand.id}`;
@@ -285,7 +284,7 @@ export default function Dashboard() {
                       🎉 {t("dashboard.congratulations", "Glückwunsch!")}
                     </h2>
                     <p className="text-sm text-green-600/80 dark:text-green-400/80">
-                      {t("dashboard.brandComplete", "Deine Marke «{{name}}» ist startklar! Alle 7 Schritte abgeschlossen.").replace("{{name}}", currentBrand.name)}
+                      {t("dashboard.brandComplete", "Deine Marke «{{name}}» ist startklar! Alle 5 Phasen abgeschlossen.").replace("{{name}}", currentBrand.name)}
                     </p>
                   </div>
                 </div>
@@ -337,11 +336,11 @@ export default function Dashboard() {
                 </div>
                 <Progress value={progress} className="mb-6 h-2" />
 
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
                   {stepKeys.map((key, i) => {
                     const Icon = stepIcons[i];
                     const stepNum = i + 1;
-                    const stepDone = stepNum < clampedStep || (isCompleted && stepNum === 7);
+                    const stepDone = stepNum < clampedStep || (isCompleted && stepNum === TOTAL_PHASES);
                     const isCurrent = !isCompleted && stepNum === clampedStep;
 
                     return (
