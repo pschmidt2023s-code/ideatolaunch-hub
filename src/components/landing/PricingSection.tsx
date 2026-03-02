@@ -44,7 +44,7 @@ export function PricingSection() {
       // Use the published web URL as return target instead.
       const isTauriEnv = typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
       const returnUrl = isTauriEnv
-        ? "https://ideatolaunch-hub.lovable.app"
+        ? "https://brand.aldenairperfumes.de"
         : window.location.origin;
 
       const data = await withPerfTracking(
