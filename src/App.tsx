@@ -83,7 +83,16 @@ const queryClient = new QueryClient();
 function LazyFallback() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      <div className="mx-auto w-full max-w-5xl px-4 space-y-6 animate-pulse">
+        <div className="h-8 w-48 rounded-md bg-muted" />
+        <div className="h-4 w-72 rounded-md bg-muted" />
+        <div className="grid gap-4 sm:grid-cols-3">
+          <div className="h-32 rounded-xl bg-muted" />
+          <div className="h-32 rounded-xl bg-muted" />
+          <div className="h-32 rounded-xl bg-muted" />
+        </div>
+        <div className="h-64 rounded-xl bg-muted" />
+      </div>
     </div>
   );
 }
