@@ -2,17 +2,45 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Globe, Menu, X } from "lucide-react";
+import { Globe, Menu, X, ChevronDown } from "lucide-react";
+
+const navLinks = [
+  { labelKey: "product", href: "/product" },
+  { labelKey: "pricing", href: "#pricing" },
+  { labelKey: "tools", href: null }, // dropdown
+  { labelKey: "guide", href: "/guide/eigenmarke-gruenden" },
+  { labelKey: "download", href: "/download" },
+];
+
+const toolLinks = [
+  { labelDE: "Produktionskosten Rechner", labelEN: "Production Cost Calculator", href: "/tools/produktionskosten-rechner" },
+  { labelDE: "Break-Even Rechner", labelEN: "Break-Even Calculator", href: "/tools/break-even-rechner" },
+  { labelDE: "MOQ Rechner", labelEN: "MOQ Calculator", href: "/tools/moq-rechner" },
+];
 
 export function Navbar() {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [toolsOpen, setToolsOpen] = useState(false);
+  const isDE = i18n.language === "de";
 
   const toggleLang = () => {
-    const next = i18n.language === "de" ? "en" : "de";
+    const next = isDE ? "en" : "de";
     i18n.changeLanguage(next);
     localStorage.setItem("lang", next);
+  };
+
+  const navLabel = (key: string) => {
+    const map: Record<string, [string, string]> = {
+      product: ["Produkt", "Product"],
+      pricing: [t("nav.pricing"), t("nav.pricing")],
+      tools: ["Tools", "Tools"],
+      guide: ["Guide", "Guide"],
+      download: ["Download", "Download"],
+    };
+    const pair = map[key];
+    return pair ? (isDE ? pair[0] : pair[1]) : key;
   };
 
   return (
@@ -25,22 +53,45 @@ export function Navbar() {
           <span className="text-lg font-semibold">BuildYourBrand</span>
         </div>
 
-        <nav className="hidden items-center gap-6 md:flex">
-          <a href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            {t("nav.features")}
-          </a>
-          <a href="#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            {t("nav.pricing")}
-          </a>
-          <a href="/guide/eigenmarke-gruenden" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            Guide
-          </a>
-          <a href="/blog" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            Blog
-          </a>
-          <a href="#/download" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            Download
-          </a>
+        <nav className="hidden items-center gap-1 md:flex">
+          {navLinks.map((link) =>
+            link.href ? (
+              <a
+                key={link.labelKey}
+                href={link.href}
+                className="rounded-md px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {navLabel(link.labelKey)}
+              </a>
+            ) : (
+              <div
+                key={link.labelKey}
+                className="relative"
+                onMouseEnter={() => setToolsOpen(true)}
+                onMouseLeave={() => setToolsOpen(false)}
+              >
+                <button className="flex items-center gap-1 rounded-md px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  {navLabel(link.labelKey)}
+                  <ChevronDown className="h-3 w-3" />
+                </button>
+                {toolsOpen && (
+                  <div className="absolute left-0 top-full pt-1 z-50">
+                    <div className="rounded-lg border bg-card p-2 shadow-lg min-w-[220px]">
+                      {toolLinks.map((tool) => (
+                        <a
+                          key={tool.href}
+                          href={tool.href}
+                          className="block rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                        >
+                          {isDE ? tool.labelDE : tool.labelEN}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )
+          )}
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
@@ -49,7 +100,7 @@ export function Navbar() {
             className="flex items-center gap-1.5 rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             <Globe className="h-4 w-4" />
-            {i18n.language === "de" ? "EN" : "DE"}
+            {isDE ? "EN" : "DE"}
           </button>
           <Button variant="ghost" size="sm" onClick={() => navigate("/auth")}>
             {t("nav.login")}
@@ -59,7 +110,7 @@ export function Navbar() {
             className="bg-accent text-accent-foreground hover:bg-accent/90"
             onClick={() => navigate("/auth?tab=signup")}
           >
-            {t("nav.signup")}
+            {isDE ? "Jetzt starten" : "Get started"}
           </Button>
         </div>
 
@@ -75,12 +126,20 @@ export function Navbar() {
       {/* Mobile menu */}
       {menuOpen && (
         <div className="border-t bg-background px-4 pb-4 pt-2 md:hidden animate-fade-in">
-          <nav className="flex flex-col gap-2">
-            <a href="#features" onClick={() => setMenuOpen(false)} className="rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">{t("nav.features")}</a>
-            <a href="#pricing" onClick={() => setMenuOpen(false)} className="rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">{t("nav.pricing")}</a>
+          <nav className="flex flex-col gap-1">
+            <a href="/product" onClick={() => setMenuOpen(false)} className="rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
+              {isDE ? "Produkt" : "Product"}
+            </a>
+            <a href="#pricing" onClick={() => setMenuOpen(false)} className="rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
+              {t("nav.pricing")}
+            </a>
+            {toolLinks.map((tool) => (
+              <a key={tool.href} href={tool.href} onClick={() => setMenuOpen(false)} className="rounded-md px-3 py-2.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors pl-6">
+                {isDE ? tool.labelDE : tool.labelEN}
+              </a>
+            ))}
             <a href="/guide/eigenmarke-gruenden" onClick={() => setMenuOpen(false)} className="rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">Guide</a>
-            <a href="/blog" onClick={() => setMenuOpen(false)} className="rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">Blog</a>
-            <a href="#/download" onClick={() => setMenuOpen(false)} className="rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">Download</a>
+            <a href="/download" onClick={() => setMenuOpen(false)} className="rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">Download</a>
           </nav>
           <div className="mt-3 flex flex-col gap-2 border-t pt-3">
             <button
@@ -88,7 +147,7 @@ export function Navbar() {
               className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
             >
               <Globe className="h-4 w-4" />
-              {i18n.language === "de" ? "English" : "Deutsch"}
+              {isDE ? "English" : "Deutsch"}
             </button>
             <Button variant="ghost" className="justify-start" onClick={() => { navigate("/auth"); setMenuOpen(false); }}>
               {t("nav.login")}
@@ -97,7 +156,7 @@ export function Navbar() {
               className="bg-accent text-accent-foreground hover:bg-accent/90"
               onClick={() => { navigate("/auth?tab=signup"); setMenuOpen(false); }}
             >
-              {t("nav.signup")}
+              {isDE ? "Jetzt starten" : "Get started"}
             </Button>
           </div>
         </div>

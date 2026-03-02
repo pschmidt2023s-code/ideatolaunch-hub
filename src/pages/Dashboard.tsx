@@ -55,6 +55,7 @@ import {
   Trash2,
   HelpCircle,
   PartyPopper,
+  Wrench,
 } from "lucide-react";
 import { GuidedStarterDialog } from "@/components/GuidedStarterDialog";
 
@@ -65,7 +66,8 @@ export default function Dashboard() {
   const { brands, activeBrand, setActiveBrandId, refetchBrands } = useBrand();
   const { isFree } = useSubscription();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isDE = i18n.language === "de";
   const queryClient = useQueryClient();
 
   const [renameOpen, setRenameOpen] = useState(false);
@@ -184,6 +186,53 @@ export default function Dashboard() {
     <DashboardLayout>
       <div className="animate-fade-in">
         {isFree && <UpgradeBanner />}
+
+        {/* Quick Access Panel */}
+        {currentBrand && (
+          <div className="mb-6 rounded-xl border bg-card p-4 shadow-card">
+            <div className="flex items-center gap-2 mb-3">
+              <Wrench className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm font-medium text-muted-foreground">
+                {t("dashboard.quickAccess", "Schnellzugriff")}
+              </span>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { label: isDE ? "Produktionskosten" : "Production Costs", href: "/tools/produktionskosten-rechner" },
+                { label: "Break-Even", href: "/tools/break-even-rechner" },
+                { label: "MOQ", href: "/tools/moq-rechner" },
+              ].map((tool) => (
+                <button
+                  key={tool.href}
+                  onClick={() => navigate(tool.href)}
+                  className="rounded-lg border bg-background px-3 py-2.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors text-center"
+                >
+                  {tool.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Next Step Highlight */}
+        {currentBrand && !isCompleted && (
+          <button
+            onClick={() => navigate(`/dashboard/step/${clampedStep}`)}
+            className="mb-6 w-full flex items-center gap-4 rounded-xl border-2 border-accent/30 bg-accent/5 p-5 text-left hover:border-accent/50 transition-colors"
+          >
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent text-accent-foreground">
+              {(() => { const Icon = stepIcons[clampedStep - 1]; return <Icon className="h-5 w-5" />; })()}
+            </div>
+            <div className="flex-1">
+              <p className="text-xs font-medium text-accent mb-0.5">
+                {isDE ? "Nächster Schritt" : "Next Step"}
+              </p>
+              <p className="font-semibold">{t(`steps.s${clampedStep}`)}</p>
+            </div>
+            <ArrowRight className="h-5 w-5 text-accent" />
+          </button>
+        )}
+
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold">{t("dashboard.title")}</h1>
