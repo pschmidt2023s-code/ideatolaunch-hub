@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { StepGuidancePanel } from "@/components/StepGuidancePanel";
+import { PhaseIntelligenceBar } from "@/components/dashboard/PhaseIntelligenceBar";
 import { type StepHandle } from "@/components/workflow/StepIdeaFoundation";
 import { StepValidationBrand } from "@/components/workflow/StepValidationBrand";
 import { StepBusinessCalculator } from "@/components/workflow/StepBusinessCalculator";
@@ -148,6 +149,10 @@ export default function StepPage() {
               }
             </span>
           </div>
+        </div>
+
+        <div className="mb-4">
+          <PhaseIntelligenceBar step={step} />
         </div>
 
         <div className="mb-6">
