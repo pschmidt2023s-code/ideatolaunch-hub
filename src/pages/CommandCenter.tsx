@@ -32,7 +32,7 @@ export default function CommandCenter() {
         description="Dein strategisches Cockpit: Confidence, Risk, Runway und Execution auf einen Blick."
         path="/dashboard/command"
       />
-      <div className="animate-fade-in space-y-8">
+      <div className="animate-fade-in space-y-10">
         <PageHeader
           title="Command Center"
           description="Dein strategisches Cockpit – alle kritischen Kennzahlen auf einen Blick."
@@ -64,15 +64,15 @@ export default function CommandCenter() {
             <StatusBar status={data.status} />
 
             {/* Reality Mode Toggle */}
-            <div className="flex items-center gap-3">
-              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Reality Mode</span>
-              <div className="inline-flex rounded-lg bg-muted p-1">
+            <div className="flex items-center gap-4">
+              <span className="section-label">Reality Mode</span>
+              <div className="inline-flex rounded-2xl bg-muted p-1">
                 {MODES.map(({ value, label }) => (
                   <button
                     key={value}
                     onClick={() => setMode(value)}
                     className={cn(
-                      "rounded-md px-4 py-1.5 text-xs font-medium transition-all",
+                      "rounded-xl px-5 py-2 text-xs font-medium transition-all",
                       mode === value
                         ? "bg-background text-foreground shadow-sm"
                         : "text-muted-foreground hover:text-foreground"
@@ -85,7 +85,7 @@ export default function CommandCenter() {
             </div>
 
             {/* Top 3 Cards */}
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               <MoneyCard data={data.money} />
               <RiskCard risks={data.risks} />
               <ExecutionCard actions={data.actions} />
@@ -105,8 +105,8 @@ export default function CommandCenter() {
             />
 
             {/* Phase Stepper */}
-            <section className="space-y-3">
-              <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <section className="space-y-4">
+              <h2 className="section-label">
                 Founder Journey
               </h2>
               <PhaseStepper />
