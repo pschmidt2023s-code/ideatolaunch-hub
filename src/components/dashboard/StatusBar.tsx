@@ -5,7 +5,6 @@ import { METRIC_EXPLANATIONS } from "@/lib/intelligenceEngine";
 import type { StatusMetrics } from "@/lib/command-center-types";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Info, X } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 function MetricTooltip({ metricKey }: { metricKey: string }) {
   const [open, setOpen] = useState(false);
@@ -14,15 +13,15 @@ function MetricTooltip({ metricKey }: { metricKey: string }) {
 
   if (open) {
     return (
-      <div className="absolute inset-0 z-10 flex flex-col rounded-lg border bg-popover p-3 shadow-lg animate-in fade-in-0 zoom-in-95">
-        <button onClick={() => setOpen(false)} className="absolute right-2 top-2 text-muted-foreground hover:text-foreground">
-          <X className="h-3 w-3" />
+      <div className="absolute inset-0 z-10 flex flex-col rounded-2xl border bg-popover p-4 shadow-md animate-scale-in">
+        <button onClick={() => setOpen(false)} className="absolute right-3 top-3 text-muted-foreground hover:text-foreground transition-colors">
+          <X className="h-3.5 w-3.5" />
         </button>
         <p className="text-xs font-semibold">{explanation.title}</p>
-        <p className="mt-1 text-[10px] text-muted-foreground leading-relaxed">{explanation.description}</p>
-        <ul className="mt-1.5 space-y-0.5">
+        <p className="mt-1.5 text-[11px] text-muted-foreground leading-relaxed">{explanation.description}</p>
+        <ul className="mt-2 space-y-1">
           {explanation.factors.map((f, i) => (
-            <li key={i} className="text-[10px] text-muted-foreground">• {f}</li>
+            <li key={i} className="text-[11px] text-muted-foreground">• {f}</li>
           ))}
         </ul>
       </div>
@@ -35,9 +34,9 @@ function MetricTooltip({ metricKey }: { metricKey: string }) {
         <TooltipTrigger asChild>
           <button
             onClick={() => setOpen(true)}
-            className="absolute right-2 top-2 text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+            className="absolute right-3 top-3 text-muted-foreground/40 hover:text-muted-foreground transition-colors"
           >
-            <Info className="h-3 w-3" />
+            <Info className="h-3.5 w-3.5" />
           </button>
         </TooltipTrigger>
         <TooltipContent side="top" className="text-xs">
@@ -50,7 +49,7 @@ function MetricTooltip({ metricKey }: { metricKey: string }) {
 
 export function StatusBar({ status }: { status: StatusMetrics }) {
   return (
-    <CardGrid cols={3} className="lg:grid-cols-6">
+    <CardGrid cols={3} className="lg:grid-cols-6 gap-4">
       <div className="relative">
         <MetricCard
           label="Founder Risk Index"

@@ -69,11 +69,11 @@ export function DashboardSidebar({ onNavigate }: DashboardSidebarProps) {
   return (
     <aside className="flex h-screen w-64 flex-col bg-sidebar text-sidebar-foreground border-r border-sidebar-border">
       {/* Logo */}
-      <div className="flex h-16 items-center gap-2 px-6 border-b border-sidebar-border">
-        <div className="flex h-8 w-8 items-center justify-center rounded-md bg-sidebar-primary">
+      <div className="flex h-16 items-center gap-2.5 px-6 border-b border-sidebar-border">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sidebar-primary">
           <span className="text-sm font-bold text-sidebar-primary-foreground">B</span>
         </div>
-        <span className="text-lg font-semibold text-sidebar-accent-foreground">BrandOS</span>
+        <span className="text-lg font-semibold tracking-tight text-sidebar-accent-foreground">BrandOS</span>
       </div>
 
       {/* Search */}
@@ -88,7 +88,7 @@ export function DashboardSidebar({ onNavigate }: DashboardSidebarProps) {
         <NavBtn icon={Sparkles} label="Intelligence" path="/dashboard/intelligence" active={isActive("/dashboard/intelligence")} onClick={handleNav} />
 
         {/* Founder Journey */}
-        <p className="px-3 pt-4 pb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+        <p className="px-3 pt-5 pb-1.5 section-label">
           Founder Journey
         </p>
         {phases.map(({ icon: Icon, label, path }) => (
@@ -140,7 +140,7 @@ function NavBtn({ icon: Icon, label, path, active, onClick }: {
     <button
       onClick={() => onClick(path)}
       className={cn(
-        "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors",
+        "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all duration-150",
         active
           ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
           : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"

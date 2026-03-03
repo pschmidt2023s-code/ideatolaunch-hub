@@ -7,6 +7,7 @@ interface MetricCardProps {
   sub?: string;
   level?: RiskLevel;
   className?: string;
+  children?: React.ReactNode;
 }
 
 const levelStyles: Record<RiskLevel, string> = {
@@ -15,14 +16,15 @@ const levelStyles: Record<RiskLevel, string> = {
   high: "text-destructive",
 };
 
-export function MetricCard({ label, value, sub, level, className }: MetricCardProps) {
+export function MetricCard({ label, value, sub, level, className, children }: MetricCardProps) {
   return (
-    <div className={cn("rounded-xl border bg-card p-5 shadow-card", className)}>
-      <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70">{label}</p>
-      <p className={cn("mt-1.5 text-2xl font-bold tabular-nums", level && levelStyles[level])}>
+    <div className={cn("rounded-2xl border bg-card p-6 shadow-card transition-shadow hover:shadow-md", className)}>
+      <p className="section-label">{label}</p>
+      <p className={cn("mt-2 metric-value", level && levelStyles[level])}>
         {value}
       </p>
-      {sub && <p className="mt-1 text-xs text-muted-foreground">{sub}</p>}
+      {sub && <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed">{sub}</p>}
+      {children}
     </div>
   );
 }

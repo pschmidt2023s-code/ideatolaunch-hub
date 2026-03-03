@@ -130,7 +130,7 @@ export default function StepPage() {
             </div>
             <span className="text-xs font-medium text-muted-foreground">{progress}%</span>
           </div>
-          <Progress value={progress} className="h-2" />
+          <Progress value={progress} className="h-1.5 rounded-full" />
         </div>
 
         {/* Phase header with metadata */}

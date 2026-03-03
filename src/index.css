@@ -6,7 +6,7 @@
 
 @layer base {
   :root {
-    --background: 0 0% 98.5%;
+    --background: 0 0% 99%;
     --foreground: 220 20% 10%;
 
     --card: 0 0% 100%;
@@ -18,11 +18,11 @@
     --primary: 220 18% 14%;
     --primary-foreground: 0 0% 98%;
 
-    --secondary: 220 14% 94%;
+    --secondary: 220 14% 95%;
     --secondary-foreground: 220 18% 14%;
 
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 10% 46%;
+    --muted: 220 14% 96.5%;
+    --muted-foreground: 220 10% 44%;
 
     --accent: 38 92% 50%;
     --accent-foreground: 0 0% 100%;
@@ -34,7 +34,7 @@
     --input: 220 13% 91%;
     --ring: 220 18% 14%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
 
     --sidebar-background: 220 18% 14%;
     --sidebar-foreground: 220 14% 80%;
@@ -45,7 +45,7 @@
     --sidebar-border: 220 16% 22%;
     --sidebar-ring: 38 92% 50%;
 
-    /* Custom tokens */
+    /* Semantic tokens */
     --success: 152 60% 40%;
     --success-foreground: 0 0% 100%;
     --warning: 38 92% 50%;
@@ -53,14 +53,32 @@
     --info: 210 100% 52%;
     --info-foreground: 0 0% 100%;
 
+    /* Gradients */
     --gradient-brand: linear-gradient(135deg, hsl(220 18% 14%), hsl(220 16% 22%));
     --gradient-accent: linear-gradient(135deg, hsl(38 92% 50%), hsl(28 90% 48%));
-    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 98.5%), hsl(220 14% 96%));
+    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 99%), hsl(220 14% 96.5%));
 
-    --shadow-sm: 0 1px 2px 0 hsl(220 20% 10% / 0.03);
-    --shadow-md: 0 4px 6px -1px hsl(220 20% 10% / 0.05), 0 2px 4px -2px hsl(220 20% 10% / 0.03);
-    --shadow-lg: 0 10px 25px -3px hsl(220 20% 10% / 0.08), 0 4px 6px -4px hsl(220 20% 10% / 0.03);
-    --shadow-card: 0 1px 3px 0 hsl(220 20% 10% / 0.04), 0 1px 2px -1px hsl(220 20% 10% / 0.04);
+    /* Elevation system */
+    --shadow-xs: 0 1px 2px 0 hsl(220 20% 10% / 0.02);
+    --shadow-sm: 0 1px 3px 0 hsl(220 20% 10% / 0.04), 0 1px 2px -1px hsl(220 20% 10% / 0.03);
+    --shadow-md: 0 4px 8px -2px hsl(220 20% 10% / 0.06), 0 2px 4px -2px hsl(220 20% 10% / 0.03);
+    --shadow-lg: 0 12px 28px -6px hsl(220 20% 10% / 0.08), 0 4px 8px -4px hsl(220 20% 10% / 0.03);
+    --shadow-card: 0 1px 3px 0 hsl(220 20% 10% / 0.03), 0 1px 2px -1px hsl(220 20% 10% / 0.02);
+
+    /* Layout */
+    --content-max-width: 1120px;
+    --spacing-page: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    :root {
+      --spacing-page: 1.5rem;
+    }
+  }
+  @media (min-width: 1024px) {
+    :root {
+      --spacing-page: 2rem;
+    }
   }
 
   .dark {
@@ -92,7 +110,9 @@
     --input: 220 16% 18%;
     --ring: 38 92% 50%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
+
+    --shadow-card: 0 1px 3px 0 hsl(0 0% 0% / 0.2), 0 1px 2px -1px hsl(0 0% 0% / 0.15);
   }
 }
 
@@ -107,16 +127,47 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1 {
+    @apply text-3xl sm:text-4xl font-bold tracking-tight leading-tight;
+  }
+
+  h2 {
+    @apply text-2xl font-semibold tracking-tight;
+  }
+
+  h3 {
+    @apply text-lg font-semibold tracking-tight;
+  }
+
+  h4, h5, h6 {
     @apply font-semibold tracking-tight;
   }
 }
 
 @layer components {
-  /* Global card refinement */
+  /* Premium card surface */
   .card-premium {
-    @apply rounded-xl border bg-card text-card-foreground;
+    @apply rounded-2xl border bg-card text-card-foreground;
     box-shadow: var(--shadow-card);
+  }
+
+  /* Content container */
+  .content-container {
+    max-width: var(--content-max-width);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--spacing-page);
+    padding-right: var(--spacing-page);
+  }
+
+  /* Metric value – tabular for alignment */
+  .metric-value {
+    @apply text-3xl font-bold tabular-nums tracking-tight;
+  }
+
+  /* Section label */
+  .section-label {
+    @apply text-[11px] font-semibold uppercase tracking-widest text-muted-foreground;
   }
 }
 
