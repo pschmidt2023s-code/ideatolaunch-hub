@@ -133,6 +133,7 @@ const App = () => {
                     <Routes>
                       <Route path="/" element={<Index />} />
                       <Route path="/auth" element={<Auth />} />
+                      <Route path="/reset-password" element={<ResetPassword />} />
                       <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
                       <Route path="/starter" element={<ProtectedRoute><StarterMode /></ProtectedRoute>} />
                       <Route path="/pricing" element={<Pricing />} />
