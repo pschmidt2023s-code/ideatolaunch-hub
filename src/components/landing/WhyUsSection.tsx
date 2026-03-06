@@ -46,7 +46,7 @@ export function WhyUsSection() {
                 <Icon className="h-5 w-5 text-accent" />
               </div>
               <div>
-                <h3 className="font-bold mb-1">{title}</h3>
+                <h3 className="font-bold font-display mb-1">{title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
                   {desc}
                 </p>
