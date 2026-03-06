@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HashRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { BrandProvider } from "@/hooks/useBrand";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { ProtectedRoute, AdminRoute } from "@/components/ProtectedRoute";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 import { BetaBadge } from "@/components/BetaBadge";
