@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { AnimatedCard } from "@/components/dashboard/AnimatedCard";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { StatusBar } from "@/components/dashboard/StatusBar";
