@@ -243,7 +243,7 @@ export default function LicenseManagement() {
 
         {/* Quick Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-6 gap-3 mb-8">
-          {(["free", "builder", "pro", "execution"] as const).map((plan) => (
+          {(["free", "builder", "pro", "execution", "trading"] as const).map((plan) => (
             <div key={plan} className="rounded-xl border bg-card p-4">
               <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">{plan}</p>
               <p className="text-2xl font-bold mt-1">{subs.filter((s) => s.status === plan).length}</p>
