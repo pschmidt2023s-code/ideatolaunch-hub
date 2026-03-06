@@ -155,19 +155,21 @@ export default function LicenseManagement() {
   };
 
   // ── Create Invite Link ──
+  const CUSTOM_DOMAIN = "https://brand.aldenairperfumes.de";
+
   const handleCreateInvite = async () => {
     setInviteSaving(true);
-    const { error } = await supabase.from("license_invitations").insert({
+    const { data, error } = await supabase.from("license_invitations").insert({
       plan: invitePlan,
       label: inviteLabel || null,
       created_by: user!.id,
       expires_at: inviteExpiry ? new Date(inviteExpiry).toISOString() : null,
-    });
+    }).select("token").single();
 
     if (error) { toast.error("Fehler: " + error.message); }
-    else {
-      toast.success("Einladungslink erstellt");
-      setInviteDialogOpen(false);
+    else if (data) {
+      const url = getInviteUrl(data.token);
+      setCreatedInviteUrl(url);
       setInviteLabel("");
       setInviteExpiry("");
       loadData();
