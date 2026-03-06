@@ -8,8 +8,8 @@ export const Footer = forwardRef<HTMLElement>(function Footer(_, ref) {
   const isDE = i18n.language === "de";
 
   return (
-    <footer ref={ref} className="border-t px-4 py-12" role="contentinfo">
-      <div className="container mx-auto max-w-5xl">
+    <footer ref={ref} className="border-t px-4 sm:px-6 py-12 overflow-hidden" role="contentinfo">
+      <div className="mx-auto max-w-5xl">
         {/* Trust Bar */}
         <div className="flex flex-wrap items-center justify-center gap-6 mb-10 pb-8 border-b">
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
