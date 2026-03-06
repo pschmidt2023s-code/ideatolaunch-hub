@@ -1,11 +1,11 @@
 {
-  "version": "0.2.0",
-  "notes": "Update",
-  "pub_date": "2026-03-02T12:00:00Z",
+  "version": "0.3.0",
+  "notes": "Capital Intelligence Release",
+  "pub_date": "2026-03-07T12:00:00Z",
   "platforms": {
     "windows-x86_64": {
       "signature": "",
-      "url": "https://github.com/.../BrandOS_0.2.0_x64-setup.exe"
+      "url": "https://github.com/pschmidt2023s-code/ideatolaunch-hub/releases/download/v3.0/brandos-installer.exe"
     }
   }
 }

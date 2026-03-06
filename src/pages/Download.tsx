@@ -4,97 +4,94 @@ import { Button } from "@/components/ui/button";
 import { Download, Sparkles, Brain, Zap, Wrench, Tag, Link2, Code2, Bug, TrendingUp } from "lucide-react";
 
 const INSTALLER_URL =
-  "https://github.com/pschmidt2023s-code/ideatolaunch-hub/releases/download/2.0/BrandOS_0.2.0_x64-setup.exe";
+  "https://github.com/pschmidt2023s-code/ideatolaunch-hub/releases/download/v3.0/brandos-installer.exe";
 
 const patchSections = [
   {
-    icon: Sparkles,
-    title: "Neu",
-    color: "text-emerald-500",
-    items: [
-      "Dynamische Roadmap basierend auf Budget, Kategorie, Zielregion, Produktionsmenge & Preispositionierung",
-      "Personalisierte Label-Checkliste",
-      "Dynamische Legal-Map (EU, VAT, VerpackG etc.)",
-      "Operative Checkliste mit Business-Setup-Logik",
-      "Risiko-Scoring für PRO & EXECUTION",
-    ],
-  },
-  {
     icon: Brain,
-    title: "PRO Tier Improvements",
+    title: "Command Center",
     color: "text-violet-500",
     items: [
-      "Individuelle Roadmap statt statischer Schritte",
-      "Dynamische Compliance Hinweise",
-      "Kapital-Impact pro Schritt",
-      "Regionale Anpassungen (EU / Global)",
+      "Founder Risk Index™ (0–100 Risiko Score)",
+      "Confidence Score, Runway Anzeige, Break-even Datum",
+      "Kapitaldruck-Indikator & Top 3 Risikoquellen mit € Impact",
+      "Next Critical Action (KI Empfehlung)",
+      "Reality Mode (Optimistic / Realistic / Worst Case)",
     ],
   },
   {
     icon: Zap,
-    title: "EXECUTION Tier Upgrade",
+    title: "Capital Shock & Simulation Engine",
     color: "text-amber-500",
     items: [
-      "Risk Intelligence erweitert",
-      "Survival & Recovery Simulation verbessert",
-      "Szenario-basierte Kapitalexposition",
-      "Dynamische Priorisierung pro Roadmap-Step",
+      "Simulierbare Ereignisse: Preis +10%, Ads +20%, Lieferzeit +30 Tage, Retouren +8%",
+      "Echtzeit-Auswirkungen auf Runway, Break-even, Risiko & Gewinnpotenzial",
+    ],
+  },
+  {
+    icon: TrendingUp,
+    title: "Founder Risk Index™",
+    color: "text-emerald-500",
+    items: [
+      "Analyse: Margensicherheit, Kapitalpuffer, Lieferantenrisiko, Preisdruck, Execution, Marktpositionierung",
+      "Score-Darstellung: 🟢 Stabil · 🟡 Fragil · 🔴 Gefährdet",
+    ],
+  },
+  {
+    icon: Sparkles,
+    title: "Intelligence Suite 3.0",
+    color: "text-pink-500",
+    items: [
+      "Brand Intelligence: Namensvorschläge (Score ≥ 90), Archetype Analyse, Emotion Mapping",
+      "Decision Intelligence: Kapitalwarnsystem, Simulation Historie, Entscheidungs-Impact",
+      "Market Intelligence: Benchmark Story Upgrade, strategische Interpretation",
     ],
   },
   {
     icon: Wrench,
-    title: "Recovery Mode Fix",
+    title: "Founder Journey Upgrade",
     color: "text-blue-500",
     items: [
-      "Entfernte statische Blur-Overlays",
-      "Recovery Mode korrekt für PRO & EXECUTION freigeschaltet",
-      "Neue Berechnung: Runway nach Umsatzschock, Kapital-Lücke, Survival Probability",
-      "Verbesserte Stress-Test Logik",
+      "Kapitalauswirkungen & Risiko-Impact pro Phase",
+      "Confidence-Veränderung & Fortschrittsanzeige",
     ],
   },
   {
     icon: Tag,
-    title: "Label & Compliance Fix",
-    color: "text-teal-500",
+    title: "Execution Pressure Mode",
+    color: "text-red-500",
     items: [
-      "Barcode Logik korrigiert (Retail/Amazon Pflicht)",
-      "Gewerbeanmeldung in operative Checkliste integriert",
-      "EU-spezifische Anforderungen ergänzt",
-      "Kosmetik-/Supplement-abhängige Pflichtfelder ergänzt",
-    ],
-  },
-  {
-    icon: Link2,
-    title: "Supplier System",
-    color: "text-indigo-500",
-    items: [
-      "Affiliate-Logik vollständig entfernt",
-      "Saubere externe Weiterleitungen",
-      "Tracking nur noch intern",
-      "Ref/UTM Konflikte behoben",
+      "Automatische Warnstufen bei kritischem Kapital",
+      "Fokus auf Revenue-relevante Aufgaben & Prioritäten-Verschiebung",
     ],
   },
   {
     icon: Code2,
-    title: "Codebase Improvements",
-    color: "text-muted-foreground",
+    title: "Desktop Version 3.0",
+    color: "text-indigo-500",
     items: [
-      "Entfernte statische Arrays",
-      "Refactored Supplier URL Builder",
-      "Verbesserte Feature Flag Logik",
-      "Bereinigte Conditional Rendering Logik",
+      "Vollständig gebrandeter Installer mit eigener Oberfläche",
+      "Optimiertes Update-System & Beta Client",
+      "In-App Feedback System & Admin Beta Panel",
+    ],
+  },
+  {
+    icon: Link2,
+    title: "UI Redesign & Struktur",
+    color: "text-teal-500",
+    items: [
+      "Mehr White Space, größere Typografie, cleanere Kartenstruktur",
+      "Neue Hauptstruktur: Command Center → Journey → Intelligence → Settings",
+      "Micro-Animationen, Skeleton Loader, schnellere Ladezeiten",
     ],
   },
   {
     icon: Bug,
-    title: "Fixes",
-    color: "text-red-500",
+    title: "Sicherheit & Stabilität",
+    color: "text-muted-foreground",
     items: [
-      "405 Fehler bei externen Links behoben",
-      "Falsche Weiterleitungen korrigiert",
-      "Overlay-Fehler im Recovery Mode behoben",
-      "Plan-Erkennung stabilisiert",
-      "Auto Updater Patch",
+      "Optimierte Update-Architektur & Installer-Signierung",
+      "DSGVO-konforme Infrastruktur & Performance Optimierungen",
     ],
   },
 ];
@@ -129,14 +126,14 @@ export default function DownloadPage() {
               <div className="flex items-center gap-2">
                 <span className="text-2xl">🚀</span>
                 <div>
-                  <CardTitle className="text-xl">BrandOS v2.0</CardTitle>
-                  <p className="text-sm text-muted-foreground mt-0.5">Dynamic Intelligence Upgrade</p>
+                  <CardTitle className="text-xl">BrandOS v3.0</CardTitle>
+                  <p className="text-sm text-muted-foreground mt-0.5">Capital Intelligence Release</p>
                 </div>
               </div>
               <div className="mt-3 flex items-start gap-2 rounded-lg bg-primary/5 border border-primary/10 p-3">
                 <TrendingUp className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                 <p className="text-sm text-foreground">
-                  <span className="font-semibold">Major Upgrade:</span> BrandOS wurde von statischen Checklisten auf eine intelligente, dynamische Entscheidungs-Engine umgestellt.
+                  <span className="font-semibold">Major Upgrade:</span> BrandOS verbindet Kapital, Risiko und Execution in einem einzigen Founder Operating System.
                 </p>
               </div>
             </CardHeader>
@@ -159,9 +156,9 @@ export default function DownloadPage() {
 
               {/* Result */}
               <div className="rounded-lg bg-accent/10 border border-accent/20 p-4 mt-4">
-                <p className="text-sm font-semibold mb-2">📈 Ergebnis</p>
+                <p className="text-sm font-semibold mb-2">🎯 In einem Satz</p>
                 <p className="text-sm text-muted-foreground">
-                  BrandOS ist jetzt: 100% dynamisch · Compliance-intelligent · Risiko-bewusst · Skalierbar für zukünftige Intelligence Layer
+                  BrandOS 3.0 verbindet Kapital, Risiko und Execution in einem einzigen Founder Operating System.
                 </p>
               </div>
             </CardContent>
