@@ -197,3 +197,24 @@ export default function SettingsPage() {
     </DashboardLayout>
   );
 }
+
+function LicenseCopyButton({ value, isDE }: { value: string; isDE: boolean }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(true);
+      toast.success(isDE ? "Lizenzschlüssel kopiert" : "License key copied");
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error(isDE ? "Kopieren fehlgeschlagen" : "Failed to copy");
+    }
+  };
+
+  return (
+    <Button variant="outline" size="icon" onClick={handleCopy} className="shrink-0">
+      {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+    </Button>
+  );
+}
