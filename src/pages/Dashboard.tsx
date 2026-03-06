@@ -304,6 +304,13 @@ export default function Dashboard() {
             )}
             {currentBrand && <BrandHealthCard />}
             
+            {/* KI Smart Insights */}
+            {currentBrand && (
+              <div className="rounded-2xl border bg-card p-6 shadow-card">
+                <SmartInsightsPanel />
+              </div>
+            )}
+            
             {/* Retention Engine Widgets */}
             {currentBrand && (
               <div className="grid gap-4 sm:grid-cols-2">
