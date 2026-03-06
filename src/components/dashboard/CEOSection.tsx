@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 /**
  * CEO-grade dark wrapper for premium dashboard sections.
  * Forces dark palette via CSS variables scoped to this container.
+ * Includes subtle grain texture and accent glow.
  */
 export function CEOSection({
   children,
@@ -15,7 +16,7 @@ export function CEOSection({
   return (
     <div
       className={cn(
-        "ceo-section rounded-2xl p-6 sm:p-8 space-y-6",
+        "ceo-section grain rounded-2xl p-6 sm:p-8 space-y-6",
         className
       )}
     >

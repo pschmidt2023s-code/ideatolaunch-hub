@@ -69,13 +69,13 @@ export function DashboardSidebar({ onNavigate }: DashboardSidebarProps) {
   ];
 
   return (
-    <aside className="flex h-screen w-64 flex-col overflow-hidden bg-sidebar text-sidebar-foreground border-r border-sidebar-border">
+    <aside className="flex h-screen w-64 flex-col overflow-hidden bg-sidebar text-sidebar-foreground border-r border-sidebar-border relative grain">
       {/* Logo */}
       <div className="flex h-16 items-center gap-2.5 px-6 border-b border-sidebar-border">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sidebar-primary">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sidebar-primary shadow-glow-accent">
           <span className="text-sm font-bold text-sidebar-primary-foreground">B</span>
         </div>
-        <span className="text-lg font-semibold tracking-tight text-sidebar-accent-foreground">BrandOS</span>
+        <span className="text-lg font-semibold tracking-tight text-sidebar-accent-foreground font-display">BrandOS</span>
       </div>
 
       {/* Search */}

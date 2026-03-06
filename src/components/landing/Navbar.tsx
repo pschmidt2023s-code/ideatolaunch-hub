@@ -50,7 +50,7 @@ export function Navbar() {
           <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary">
             <span className="text-sm font-bold text-primary-foreground">B</span>
           </div>
-          <span className="text-lg font-semibold">BuildYourBrand</span>
+          <span className="text-lg font-semibold font-display">BuildYourBrand</span>
         </div>
 
         <nav className="hidden items-center gap-1 md:flex">

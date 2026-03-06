@@ -10,20 +10,21 @@ export function HeroSection() {
 
   return (
     <section className="relative overflow-hidden px-4 sm:px-6 pt-40 pb-20 md:pt-52 md:pb-28" aria-label="Hero">
-      {/* Subtle gradient backdrop */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--accent)/0.03),transparent_50%)]" />
+      {/* Multi-layer backdrop */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--accent)/0.04),transparent_50%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,hsl(var(--accent)/0.02),transparent_40%)]" />
 
       <div className="container relative mx-auto max-w-3xl text-center">
         {/* Badge */}
-        <div className="mb-12 inline-flex items-center gap-2 rounded-full border bg-card/80 backdrop-blur px-4 py-1.5 text-sm text-muted-foreground shadow-sm">
+        <div className="mb-12 inline-flex items-center gap-2 rounded-full border bg-card/80 backdrop-blur-sm px-4 py-1.5 text-sm text-muted-foreground shadow-sm">
           <span className="h-1.5 w-1.5 rounded-full bg-destructive animate-pulse" />
           {isDE
             ? "Ø 5.000 € Verlust durch vermeidbare Fehler"
             : "Avg. €5,000 lost to avoidable mistakes"}
         </div>
 
-        {/* Headline */}
-        <h1 className="mx-auto max-w-[18ch] text-5xl font-bold tracking-tight md:text-6xl lg:text-7xl leading-[1.08]">
+        {/* Headline – display font */}
+        <h1 className="mx-auto max-w-[18ch] text-5xl font-extrabold tracking-[-0.03em] font-display md:text-6xl lg:text-7xl leading-[1.06]">
           {isDE ? (
             <>
               Stoppe{" "}
@@ -50,7 +51,7 @@ export function HeroSection() {
         <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
           <Button
             size="lg"
-            className="gap-2 bg-accent text-accent-foreground hover:bg-accent/90 shadow-md px-8 text-base"
+            className="gap-2 bg-accent text-accent-foreground hover:bg-accent/90 px-8 text-base shadow-glow-accent"
             onClick={() => navigate("/auth?tab=signup")}
           >
             {isDE ? "Kostenlos starten" : "Start free"}
