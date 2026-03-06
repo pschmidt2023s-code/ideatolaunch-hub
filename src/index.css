@@ -53,17 +53,21 @@
     --info: 210 100% 52%;
     --info-foreground: 0 0% 100%;
 
-    /* Gradients */
+    /* Premium gradients */
     --gradient-brand: linear-gradient(135deg, hsl(220 18% 14%), hsl(220 16% 22%));
     --gradient-accent: linear-gradient(135deg, hsl(38 92% 50%), hsl(28 90% 48%));
     --gradient-subtle: linear-gradient(180deg, hsl(0 0% 99%), hsl(220 14% 96.5%));
+    --gradient-glow: radial-gradient(ellipse at 50% 0%, hsl(38 92% 50% / 0.08), transparent 60%);
+    --gradient-glass: linear-gradient(135deg, hsl(0 0% 100% / 0.7), hsl(0 0% 100% / 0.3));
 
     /* Elevation system */
     --shadow-xs: 0 1px 2px 0 hsl(220 20% 10% / 0.02);
     --shadow-sm: 0 1px 3px 0 hsl(220 20% 10% / 0.04), 0 1px 2px -1px hsl(220 20% 10% / 0.03);
     --shadow-md: 0 4px 8px -2px hsl(220 20% 10% / 0.06), 0 2px 4px -2px hsl(220 20% 10% / 0.03);
     --shadow-lg: 0 12px 28px -6px hsl(220 20% 10% / 0.08), 0 4px 8px -4px hsl(220 20% 10% / 0.03);
+    --shadow-xl: 0 20px 40px -8px hsl(220 20% 10% / 0.12), 0 8px 16px -6px hsl(220 20% 10% / 0.04);
     --shadow-card: 0 1px 3px 0 hsl(220 20% 10% / 0.03), 0 1px 2px -1px hsl(220 20% 10% / 0.02);
+    --shadow-glow-accent: 0 0 20px -4px hsl(38 92% 50% / 0.15);
 
     /* Layout */
     --content-max-width: 1120px;
