@@ -65,6 +65,7 @@ export default function CommandCenter() {
             </div>
 
             {/* Status Bar – 6 metrics */}
+            <ExecutionPressureBanner runwayMonths={data.status.runwayMonths} />
             <StatusBar status={data.status} />
 
             {/* Reality Mode Toggle */}
