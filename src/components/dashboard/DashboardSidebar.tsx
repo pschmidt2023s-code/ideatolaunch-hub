@@ -1,6 +1,8 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useMode } from "@/hooks/useMode";
 import { useTranslation } from "react-i18next";
+import type { AppMode } from "@/lib/mode-types";
 import {
   Crosshair,
   Brain,
@@ -21,6 +23,16 @@ import {
   Zap,
   Map,
   Target,
+  Shield,
+  Wallet,
+  LineChart,
+  Activity,
+  Scale,
+  Clock,
+  DollarSign,
+  Percent,
+  RotateCcw,
+  Layers,
 } from "lucide-react";
 import { ModeBadge } from "@/components/ModeSwitcher";
 import { cn } from "@/lib/utils";
@@ -30,10 +42,52 @@ interface DashboardSidebarProps {
   onNavigate?: () => void;
 }
 
+// Mode-specific navigation definitions
+const MODE_NAV: Record<AppMode, { icon: React.ElementType; label: string; path: string }[]> = {
+  founder: [
+    { icon: Crosshair, label: "Command Center", path: "/dashboard/command" },
+    { icon: Brain, label: "Intelligence", path: "/dashboard/intelligence" },
+    { icon: BarChart3, label: "Simulations", path: "/dashboard/failure-simulator" },
+    { icon: Sparkles, label: "Website Builder", path: "/dashboard/website-builder" },
+    { icon: Wrench, label: "Builder Tools", path: "/dashboard" },
+  ],
+  trading: [
+    { icon: Crosshair, label: "Command Center", path: "/dashboard/command" },
+    { icon: TrendingUp, label: "Trading Dashboard", path: "/dashboard/trading" },
+    { icon: BarChart3, label: "Risk Simulator", path: "/dashboard/failure-simulator" },
+    { icon: Brain, label: "Intelligence", path: "/dashboard/intelligence" },
+  ],
+  investor: [
+    { icon: Crosshair, label: "Command Center", path: "/dashboard/command" },
+    { icon: PieChart, label: "Portfolio Dashboard", path: "/dashboard/investor" },
+    { icon: BarChart3, label: "Risk Simulator", path: "/dashboard/failure-simulator" },
+    { icon: Brain, label: "Intelligence", path: "/dashboard/intelligence" },
+  ],
+  strategy: [
+    { icon: Crosshair, label: "Command Center", path: "/dashboard/command" },
+    { icon: Brain, label: "Strategy Dashboard", path: "/dashboard/strategy" },
+    { icon: BarChart3, label: "Simulations", path: "/dashboard/failure-simulator" },
+    { icon: Scale, label: "Intelligence", path: "/dashboard/intelligence" },
+  ],
+};
+
+// Founder-only sections
+const FOUNDER_JOURNEY = [1, 2, 3, 4, 5];
+
+const EXTRAS = [
+  { icon: Gift, label: "Empfehlungen", path: "/dashboard/referrals" },
+  { icon: HeartPulse, label: "Recovery Mode", path: "/dashboard/recovery" },
+  { icon: Crown, label: "Execution OS", path: "/dashboard/execution" },
+  { icon: Zap, label: "Revenue", path: "/dashboard/revenue" },
+  { icon: Map, label: "Evolution", path: "/dashboard/evolution" },
+  { icon: Target, label: "Benchmark", path: "/dashboard/benchmark" },
+];
+
 export function DashboardSidebar({ onNavigate }: DashboardSidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { signOut } = useAuth();
+  const { mode } = useMode();
   const { t, i18n } = useTranslation();
   const [extrasOpen, setExtrasOpen] = useState(false);
 
@@ -50,31 +104,8 @@ export function DashboardSidebar({ onNavigate }: DashboardSidebarProps) {
 
   const isActive = (path: string) => location.pathname === path;
 
-  const mainNav = [
-    { icon: Crosshair, label: "Command Center", path: "/dashboard/command" },
-    { icon: Brain, label: "Intelligence", path: "/dashboard/intelligence" },
-    { icon: BarChart3, label: "Simulations", path: "/dashboard/failure-simulator" },
-  ];
-
-  const modeModules = [
-    { icon: TrendingUp, label: "Trading", path: "/dashboard/trading" },
-    { icon: PieChart, label: "Investor", path: "/dashboard/investor" },
-    { icon: Brain, label: "Strategy", path: "/dashboard/strategy" },
-  ];
-
-  const builderTools = [
-    { icon: Sparkles, label: "Website Builder", path: "/dashboard/website-builder" },
-    { icon: Wrench, label: "Builder Tools", path: "/dashboard" },
-  ];
-
-  const extras = [
-    { icon: Gift, label: "Empfehlungen", path: "/dashboard/referrals" },
-    { icon: HeartPulse, label: "Recovery Mode", path: "/dashboard/recovery" },
-    { icon: Crown, label: "Execution OS", path: "/dashboard/execution" },
-    { icon: Zap, label: "Revenue", path: "/dashboard/revenue" },
-    { icon: Map, label: "Evolution", path: "/dashboard/evolution" },
-    { icon: Target, label: "Benchmark", path: "/dashboard/benchmark" },
-  ];
+  const navItems = MODE_NAV[mode] ?? MODE_NAV.founder;
+  const isFounder = mode === "founder";
 
   return (
     <aside className="flex h-screen w-[240px] flex-col bg-background border-r border-border">
@@ -92,40 +123,47 @@ export function DashboardSidebar({ onNavigate }: DashboardSidebarProps) {
       </div>
 
       <nav className="flex-1 overflow-y-auto px-3 py-2 space-y-5">
-        {/* Main */}
+        {/* Mode-specific main nav */}
         <div className="space-y-0.5">
-          {mainNav.map(({ icon, label, path }) => (
+          <p className="px-2.5 pb-1 text-[11px] font-medium text-muted-foreground/60 uppercase tracking-wider">
+            {mode === "founder" ? "Founder" : mode === "trading" ? "Trading" : mode === "investor" ? "Investor" : "Strategy"}
+          </p>
+          {navItems.map(({ icon, label, path }) => (
             <NavItem key={path} icon={icon} label={label} path={path} active={isActive(path)} onClick={handleNav} />
           ))}
         </div>
 
-        {/* Mode Modules */}
-        <NavGroup label="Modules">
-          {modeModules.map(({ icon, label, path }) => (
-            <NavItem key={path} icon={icon} label={label} path={path} active={isActive(path)} onClick={handleNav} />
-          ))}
-        </NavGroup>
+        {/* Founder Journey – only in founder mode */}
+        {isFounder && (
+          <NavGroup label="Founder Journey">
+            {FOUNDER_JOURNEY.map((n) => (
+              <NavItem
+                key={n}
+                icon={Rocket}
+                label={t(`steps.p${n}`)}
+                path={`/dashboard/step/${n}`}
+                active={isActive(`/dashboard/step/${n}`)}
+                onClick={handleNav}
+              />
+            ))}
+          </NavGroup>
+        )}
 
-        {/* Builder */}
-        <NavGroup label="Builder">
-          {builderTools.map(({ icon, label, path }) => (
-            <NavItem key={path} icon={icon} label={label} path={path} active={isActive(path)} onClick={handleNav} />
-          ))}
-        </NavGroup>
-
-        {/* Founder Journey */}
-        <NavGroup label="Founder Journey">
-          {[1, 2, 3, 4, 5].map((n) => (
-            <NavItem
-              key={n}
-              icon={Rocket}
-              label={t(`steps.p${n}`)}
-              path={`/dashboard/step/${n}`}
-              active={isActive(`/dashboard/step/${n}`)}
-              onClick={handleNav}
-            />
-          ))}
-        </NavGroup>
+        {/* Cross-mode access */}
+        {!isFounder && (
+          <NavGroup label="Other Modes">
+            {mode !== "trading" && (
+              <NavItem icon={TrendingUp} label="Trading" path="/dashboard/trading" active={isActive("/dashboard/trading")} onClick={handleNav} />
+            )}
+            {mode !== "investor" && (
+              <NavItem icon={PieChart} label="Investor" path="/dashboard/investor" active={isActive("/dashboard/investor")} onClick={handleNav} />
+            )}
+            {mode !== "strategy" && (
+              <NavItem icon={Brain} label="Strategy" path="/dashboard/strategy" active={isActive("/dashboard/strategy")} onClick={handleNav} />
+            )}
+            <NavItem icon={Rocket} label="Founder" path="/dashboard" active={isActive("/dashboard")} onClick={handleNav} />
+          </NavGroup>
+        )}
 
         {/* More */}
         <div>
@@ -138,7 +176,7 @@ export function DashboardSidebar({ onNavigate }: DashboardSidebarProps) {
           </button>
           {extrasOpen && (
             <div className="space-y-0.5 mt-0.5">
-              {extras.map(({ icon, label, path }) => (
+              {EXTRAS.map(({ icon, label, path }) => (
                 <NavItem key={path} icon={icon} label={label} path={path} active={isActive(path)} onClick={handleNav} />
               ))}
             </div>
