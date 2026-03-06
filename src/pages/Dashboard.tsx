@@ -230,29 +230,31 @@ export default function Dashboard() {
 
         {/* Quick Access */}
         {currentBrand && (
-          <div className="rounded-2xl border bg-card p-4 shadow-card">
-            <div className="flex items-center gap-2 mb-3">
-              <Wrench className="h-4 w-4 text-muted-foreground" />
-              <span className="text-xs font-medium text-muted-foreground">
-                {t("dashboard.quickAccess", "Schnellzugriff")}
-              </span>
+          <AnimatedCard index={2} variant="fade-up">
+            <div className="rounded-2xl border bg-card p-4 shadow-card">
+              <div className="flex items-center gap-2 mb-3">
+                <Wrench className="h-4 w-4 text-muted-foreground" />
+                <span className="text-xs font-medium text-muted-foreground">
+                  {t("dashboard.quickAccess", "Schnellzugriff")}
+                </span>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { label: isDE ? "Produktionskosten" : "Production Costs", href: "/tools/produktionskosten-rechner" },
+                  { label: "Break-Even", href: "/tools/break-even-rechner" },
+                  { label: "MOQ", href: "/tools/moq-rechner" },
+                ].map((tool) => (
+                  <button
+                    key={tool.href}
+                    onClick={() => navigate(tool.href)}
+                    className="rounded-xl border bg-background px-3 py-2.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors text-center focus-ring"
+                  >
+                    {tool.label}
+                  </button>
+                ))}
+              </div>
             </div>
-            <div className="grid grid-cols-3 gap-2">
-              {[
-                { label: isDE ? "Produktionskosten" : "Production Costs", href: "/tools/produktionskosten-rechner" },
-                { label: "Break-Even", href: "/tools/break-even-rechner" },
-                { label: "MOQ", href: "/tools/moq-rechner" },
-              ].map((tool) => (
-                <button
-                  key={tool.href}
-                  onClick={() => navigate(tool.href)}
-                  className="rounded-xl border bg-background px-3 py-2.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors text-center"
-                >
-                  {tool.label}
-                </button>
-              ))}
-            </div>
-          </div>
+          </AnimatedCard>
         )}
 
         {currentBrand && showGuidedStarter && (
