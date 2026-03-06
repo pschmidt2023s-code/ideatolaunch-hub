@@ -82,6 +82,8 @@ const GrowthEngine = lazy(() => import("./pages/admin/GrowthEngine"));
 const PartnerDashboard = lazy(() => import("./pages/admin/PartnerDashboard"));
 const BetaDashboard = lazy(() => import("./pages/admin/BetaDashboard"));
 const Download = lazy(() => import("./pages/Download"));
+const FailureSimulator = lazy(() => import("./pages/FailureSimulator"));
+const MarketBenchmark = lazy(() => import("./pages/MarketBenchmark"));
 
 const queryClient = new QueryClient();
 
