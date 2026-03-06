@@ -61,6 +61,7 @@ export default function LicenseManagement() {
   const [inviteLabel, setInviteLabel] = useState("");
   const [inviteExpiry, setInviteExpiry] = useState("");
   const [inviteSaving, setInviteSaving] = useState(false);
+  const [createdInviteUrl, setCreatedInviteUrl] = useState<string | null>(null);
 
   // Form
   const [formPlan, setFormPlan] = useState<string>("builder");
