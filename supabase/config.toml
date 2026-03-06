@@ -26,3 +26,6 @@ verify_jwt = false
 
 [functions.redeem-invite]
 verify_jwt = false
+
+[functions.ai-trade-review]
+verify_jwt = false
