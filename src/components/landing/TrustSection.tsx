@@ -25,8 +25,8 @@ export function TrustSection() {
   ];
 
   return (
-    <section className="px-4 py-16 border-t" id="security">
-      <div className="container mx-auto max-w-5xl">
+    <section className="border-t px-4 sm:px-6 section-py" id="security">
+      <div className="mx-auto max-w-5xl">
         <div className="text-center mb-10">
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-accent/10">
             <ShieldCheck className="h-6 w-6 text-accent" />

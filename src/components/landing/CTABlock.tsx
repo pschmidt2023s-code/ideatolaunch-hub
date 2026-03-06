@@ -14,8 +14,8 @@ export function CTABlock({ variant = "default" }: CTABlockProps) {
 
   if (variant === "download") {
     return (
-      <section className="border-t px-4 py-16 md:py-24">
-        <div className="container mx-auto max-w-3xl text-center">
+      <section className="border-t px-4 sm:px-6 py-16 md:py-24">
+        <div className="mx-auto max-w-3xl text-center">
           <h2 className="text-2xl font-bold md:text-3xl mb-4">
             {isDE ? "BrandOS Desktop – jetzt herunterladen" : "BrandOS Desktop – download now"}
           </h2>
