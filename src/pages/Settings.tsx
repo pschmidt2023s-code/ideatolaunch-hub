@@ -15,7 +15,7 @@ import { getClientMode, setClientMode, type ClientMode } from "@/lib/beta-client
 
 export default function SettingsPage() {
   const { user } = useAuth();
-  const { isFree, plan } = useSubscription();
+  const { isFree, plan, licenseKey } = useSubscription();
   const { t, i18n } = useTranslation();
   const isDE = i18n.language === "de";
   const navigate = useNavigate();
