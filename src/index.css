@@ -53,17 +53,21 @@
     --info: 210 100% 52%;
     --info-foreground: 0 0% 100%;
 
-    /* Gradients */
+    /* Premium gradients */
     --gradient-brand: linear-gradient(135deg, hsl(220 18% 14%), hsl(220 16% 22%));
     --gradient-accent: linear-gradient(135deg, hsl(38 92% 50%), hsl(28 90% 48%));
     --gradient-subtle: linear-gradient(180deg, hsl(0 0% 99%), hsl(220 14% 96.5%));
+    --gradient-glow: radial-gradient(ellipse at 50% 0%, hsl(38 92% 50% / 0.08), transparent 60%);
+    --gradient-glass: linear-gradient(135deg, hsl(0 0% 100% / 0.7), hsl(0 0% 100% / 0.3));
 
     /* Elevation system */
     --shadow-xs: 0 1px 2px 0 hsl(220 20% 10% / 0.02);
     --shadow-sm: 0 1px 3px 0 hsl(220 20% 10% / 0.04), 0 1px 2px -1px hsl(220 20% 10% / 0.03);
     --shadow-md: 0 4px 8px -2px hsl(220 20% 10% / 0.06), 0 2px 4px -2px hsl(220 20% 10% / 0.03);
     --shadow-lg: 0 12px 28px -6px hsl(220 20% 10% / 0.08), 0 4px 8px -4px hsl(220 20% 10% / 0.03);
+    --shadow-xl: 0 20px 40px -8px hsl(220 20% 10% / 0.12), 0 8px 16px -6px hsl(220 20% 10% / 0.04);
     --shadow-card: 0 1px 3px 0 hsl(220 20% 10% / 0.03), 0 1px 2px -1px hsl(220 20% 10% / 0.02);
+    --shadow-glow-accent: 0 0 20px -4px hsl(38 92% 50% / 0.15);
 
     /* Layout */
     --content-max-width: 1120px;
@@ -144,11 +148,11 @@
   }
 
   h1 {
-    @apply text-3xl sm:text-4xl font-bold tracking-tight leading-tight;
+    @apply text-3xl sm:text-4xl font-bold tracking-tight leading-tight font-display;
   }
 
   h2 {
-    @apply text-2xl font-semibold tracking-tight leading-snug;
+    @apply text-2xl font-semibold tracking-tight leading-snug font-display;
   }
 
   h3 {
@@ -175,6 +179,14 @@
     box-shadow: var(--shadow-card);
   }
 
+  /* Glass card */
+  .card-glass {
+    @apply rounded-2xl border;
+    background: hsl(var(--card) / 0.6);
+    backdrop-filter: blur(12px) saturate(1.4);
+    box-shadow: var(--shadow-sm), inset 0 1px 0 0 hsl(0 0% 100% / 0.06);
+  }
+
   /* Content container */
   .content-container {
     max-width: var(--content-max-width);
@@ -186,7 +198,7 @@
 
   /* Metric value – tabular for alignment */
   .metric-value {
-    @apply text-3xl font-bold tabular-nums tracking-tight;
+    @apply text-3xl font-bold tabular-nums tracking-tight font-display;
   }
 
   /* Section label */
@@ -211,11 +223,47 @@
 
     background: hsl(220 20% 7%);
     color: hsl(220 14% 92%);
-    border: 1px solid hsl(220 16% 18%);
+    border: 1px solid hsl(220 16% 16%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Subtle top glow for CEO section */
+  .ceo-section::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% -20%, hsl(38 92% 50% / 0.04), transparent 60%);
+    pointer-events: none;
   }
 
   .ceo-section .section-label {
     color: hsl(220 10% 50%);
+  }
+
+  /* Premium noise texture overlay */
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    border-radius: inherit;
+  }
+
+  /* Glow border effect */
+  .border-glow {
+    position: relative;
+  }
+  .border-glow::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: linear-gradient(135deg, hsl(38 92% 50% / 0.15), transparent 40%, transparent 60%, hsl(38 92% 50% / 0.08));
+    z-index: -1;
+    pointer-events: none;
   }
 }
 
@@ -231,6 +279,10 @@
 
   .shadow-elevated {
     box-shadow: var(--shadow-lg);
+  }
+
+  .shadow-glow-accent {
+    box-shadow: var(--shadow-glow-accent);
   }
 
   /* Safe area for mobile */

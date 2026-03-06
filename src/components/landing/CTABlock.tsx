@@ -16,7 +16,7 @@ export function CTABlock({ variant = "default" }: CTABlockProps) {
     return (
       <section className="border-t px-4 sm:px-6 py-16 md:py-24">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-2xl font-bold md:text-3xl mb-4">
+          <h2 className="text-2xl font-bold font-display md:text-3xl mb-4">
             {isDE ? "BrandOS Desktop – jetzt herunterladen" : "BrandOS Desktop – download now"}
           </h2>
           <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
@@ -40,7 +40,7 @@ export function CTABlock({ variant = "default" }: CTABlockProps) {
   return (
     <section className="border-t px-4 sm:px-6 py-16 md:py-24 bg-muted/30">
       <div className="mx-auto max-w-3xl text-center">
-        <h2 className="text-2xl font-bold md:text-3xl mb-4">
+        <h2 className="text-2xl font-bold font-display md:text-3xl mb-4">
           {isDE ? "Bereit, deine Marke zu starten?" : "Ready to launch your brand?"}
         </h2>
         <p className="text-muted-foreground mb-8 max-w-xl mx-auto">

@@ -253,7 +253,7 @@ export function PricingSection() {
     <section id="pricing" className="border-t px-4 sm:px-6 section-py md:py-32">
       <div className="mx-auto max-w-7xl">
         <div className="mb-16 text-center">
-          <h2 className="text-3xl font-bold md:text-4xl">
+          <h2 className="text-3xl font-bold font-display md:text-4xl">
             {isDE ? "Investiere in Klarheit – nicht in Fehler" : "Invest in clarity – not mistakes"}
           </h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -355,9 +355,9 @@ export function PricingSection() {
             return (
               <div
                 key={plan.name}
-                className={`relative rounded-xl border p-7 ${
+                className={`relative rounded-2xl border p-7 card-interactive ${
                   plan.highlighted
-                    ? "border-accent bg-card shadow-lg ring-1 ring-accent/20 scale-[1.02]"
+                    ? "border-accent bg-card shadow-lg ring-1 ring-accent/20 scale-[1.02] border-glow"
                     : isExecutionTier
                       ? "border-amber-500/40 bg-gradient-to-b from-card to-amber-500/5 shadow-lg ring-1 ring-amber-500/20"
                       : "bg-card shadow-card"

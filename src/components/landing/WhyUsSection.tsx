@@ -28,7 +28,7 @@ export function WhyUsSection() {
     <section className="border-t px-4 sm:px-6 section-py md:py-28">
       <div className="mx-auto max-w-5xl">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold md:text-4xl">
+          <h2 className="text-3xl font-bold font-display md:text-4xl">
             Warum <span className="text-gradient">BuildYourBrand</span>?
           </h2>
           <p className="mt-3 text-muted-foreground">
@@ -40,13 +40,13 @@ export function WhyUsSection() {
           {reasons.map(({ icon: Icon, title, desc }) => (
             <div
               key={title}
-              className="flex gap-4 rounded-xl border bg-card p-6 shadow-card"
+              className="flex gap-4 rounded-2xl border bg-card p-6 shadow-card card-interactive"
             >
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent/10">
                 <Icon className="h-5 w-5 text-accent" />
               </div>
               <div>
-                <h3 className="font-bold mb-1">{title}</h3>
+                <h3 className="font-bold font-display mb-1">{title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
                   {desc}
                 </p>
