@@ -156,8 +156,14 @@ export default function InvestorDashboard() {
   return (
     <DashboardLayout>
       <SEO title="Investor Mode – BrandOS" description="Portfolio Risk Score, Asset Allocation, Capital Growth." path="/dashboard/investor" />
+      <MetricOnboarding mode="investor" open={showOnboarding} onOpenChange={setShowOnboarding} />
       <div className="animate-fade-in space-y-8">
-        <PageHeader title="Investor Mode" description="Portfolio Risk, Allocation & Capital Growth im Überblick." badge="INVESTOR" badgeVariant="warning" />
+        <div className="flex items-center justify-between">
+          <PageHeader title="Investor Mode" description="Portfolio Risk, Allocation & Capital Growth im Überblick." badge="INVESTOR" badgeVariant="warning" />
+          <Button variant="outline" size="sm" onClick={() => setShowOnboarding(true)} className="text-xs gap-1.5">
+            <BookOpen className="h-3.5 w-3.5" /> Metriken lernen
+          </Button>
+        </div>
 
         <CEOSection>
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
