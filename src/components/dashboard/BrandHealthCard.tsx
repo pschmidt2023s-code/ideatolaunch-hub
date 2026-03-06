@@ -87,8 +87,12 @@ export function BrandHealthCard() {
         <div className="rounded-xl border bg-card p-5 shadow-card">
           <h3 className="mb-3 text-sm font-semibold">{t("health.warnings")}</h3>
           <div className="space-y-2.5">
-            {topWarnings.map((w) => (
-              <div key={w.id} className="flex gap-3 rounded-lg border p-3">
+            {topWarnings.map((w, i) => (
+              <div
+                key={w.id}
+                className="flex gap-3 rounded-lg border p-3 animate-slide-up-fade"
+                style={{ animationDelay: `${i * 100}ms` }}
+              >
                 {severityIcon[w.severity]}
                 <div className="min-w-0">
                   <p className="text-sm font-medium">{w.title}</p>

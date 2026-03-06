@@ -46,22 +46,22 @@ export function PhaseProgressBar() {
             <button
               key={step}
               onClick={() => navigate(`/dashboard/step/${step}`)}
-              className="group flex flex-col items-center gap-1.5"
+              className="group flex flex-col items-center gap-1.5 focus-ring rounded-lg"
             >
               <div
                 className={cn(
-                  "flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold transition-all",
+                  "flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold transition-all duration-200",
                   done && "bg-accent text-accent-foreground",
-                  active && "bg-accent/15 text-accent ring-2 ring-accent/30",
-                  !done && !active && "bg-muted text-muted-foreground"
+                  active && "bg-accent/15 text-accent ring-2 ring-accent/30 animate-pulse-subtle",
+                  !done && !active && "bg-muted text-muted-foreground group-hover:bg-muted/80 group-hover:scale-110"
                 )}
               >
                 {done ? <Check className="h-3.5 w-3.5" /> : step}
               </div>
               <span
                 className={cn(
-                  "text-[10px] font-medium leading-tight text-center max-w-[72px] hidden sm:block",
-                  active ? "text-foreground" : "text-muted-foreground"
+                  "text-[10px] font-medium leading-tight text-center max-w-[72px] hidden sm:block transition-colors",
+                  active ? "text-foreground" : "text-muted-foreground group-hover:text-foreground"
                 )}
               >
                 {t(`steps.p${step}`)}
