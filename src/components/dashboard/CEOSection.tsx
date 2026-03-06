@@ -2,9 +2,8 @@ import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * CEO-grade dark wrapper for premium dashboard sections.
- * Forces dark palette via CSS variables scoped to this container.
- * Includes subtle grain texture and accent glow.
+ * Premium section wrapper – subtle dark container for key metrics.
+ * Clean, minimal – Linear/Stripe aesthetic.
  */
 export function CEOSection({
   children,
@@ -16,7 +15,7 @@ export function CEOSection({
   return (
     <div
       className={cn(
-        "ceo-section grain rounded-2xl p-6 sm:p-8 space-y-6",
+        "rounded-xl border border-border bg-muted/30 p-5 sm:p-6 space-y-5",
         className
       )}
     >

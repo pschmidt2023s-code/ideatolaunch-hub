@@ -29,19 +29,17 @@ export function ModeSwitcher({ open, onOpenChange, isInitial }: ModeSwitcherProp
 
   return (
     <Dialog open={open} onOpenChange={isInitial ? undefined : onOpenChange}>
-      <DialogContent className="sm:max-w-lg" onPointerDownOutside={isInitial ? (e) => e.preventDefault() : undefined}>
+      <DialogContent className="sm:max-w-md" onPointerDownOutside={isInitial ? (e) => e.preventDefault() : undefined}>
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold text-center">
+          <DialogTitle className="text-lg font-semibold text-center">
             {isInitial ? "Select Your Mode" : "Switch Mode"}
           </DialogTitle>
-          <p className="text-sm text-muted-foreground text-center mt-1">
-            {isInitial
-              ? "Wähle deinen Schwerpunkt – du kannst jederzeit wechseln."
-              : "Wechsle deinen Modus für ein angepasstes Dashboard."}
+          <p className="text-xs text-muted-foreground text-center mt-1">
+            {isInitial ? "Choose your focus — you can switch anytime." : "Change your mode for a tailored experience."}
           </p>
         </DialogHeader>
 
-        <div className="grid grid-cols-2 gap-3 mt-4">
+        <div className="grid grid-cols-2 gap-2 mt-3">
           {ALL_MODES.map((key) => {
             const cfg = MODE_CONFIGS[key];
             const Icon = ICONS[cfg.icon];
@@ -52,23 +50,21 @@ export function ModeSwitcher({ open, onOpenChange, isInitial }: ModeSwitcherProp
                 key={key}
                 onClick={() => setSelected(key)}
                 className={cn(
-                  "relative flex flex-col items-center gap-3 rounded-2xl border-2 p-5 text-center transition-all hover:shadow-md",
+                  "relative flex flex-col items-center gap-2 rounded-xl border p-4 text-center transition-all",
                   isSelected
-                    ? "border-accent bg-accent/5 ring-1 ring-accent/30"
-                    : "border-border hover:border-accent/30"
+                    ? "border-foreground bg-muted/50"
+                    : "border-border hover:border-foreground/20 hover:bg-muted/30"
                 )}
               >
                 {isSelected && (
                   <div className="absolute top-2 right-2">
-                    <Check className="h-4 w-4 text-accent" />
+                    <Check className="h-3.5 w-3.5 text-foreground" />
                   </div>
                 )}
-                <div className={cn("flex h-12 w-12 items-center justify-center rounded-xl bg-muted", cfg.color)}>
-                  <Icon className="h-6 w-6" />
-                </div>
+                <Icon className="h-5 w-5 text-muted-foreground" />
                 <div>
-                  <p className="font-semibold text-sm">{cfg.label}</p>
-                  <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{cfg.description}</p>
+                  <p className="text-sm font-medium">{cfg.label}</p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">{cfg.description}</p>
                 </div>
               </button>
             );
@@ -78,9 +74,9 @@ export function ModeSwitcher({ open, onOpenChange, isInitial }: ModeSwitcherProp
         <button
           onClick={handleConfirm}
           disabled={saving}
-          className="mt-4 w-full rounded-xl bg-accent py-3 text-sm font-semibold text-accent-foreground hover:bg-accent/90 transition-colors disabled:opacity-50"
+          className="mt-3 w-full rounded-lg bg-foreground py-2.5 text-sm font-medium text-background hover:bg-foreground/90 transition-colors disabled:opacity-50"
         >
-          {saving ? "Speichern..." : isInitial ? "Loslegen" : "Mode wechseln"}
+          {saving ? "Saving..." : isInitial ? "Get Started" : "Switch Mode"}
         </button>
       </DialogContent>
     </Dialog>
@@ -98,10 +94,7 @@ export function ModeBadge() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className={cn(
-          "flex items-center gap-2 rounded-xl border bg-muted/50 px-3 py-2 text-xs font-medium transition-colors hover:bg-muted w-full",
-          cfg.color
-        )}
+        className="flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors w-full"
       >
         <Icon className="h-3.5 w-3.5" />
         <span className="truncate">{cfg.label}</span>
