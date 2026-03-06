@@ -1,5 +1,6 @@
 import { Navbar } from "@/components/landing/Navbar";
 import { HeroSection } from "@/components/landing/HeroSection";
+import { FounderRiskPreviewCard } from "@/components/landing/FounderRiskPreviewCard";
 import { FeaturesSection } from "@/components/landing/FeaturesSection";
 import { WhyUsSection } from "@/components/landing/WhyUsSection";
 import { BeforeAfterSection } from "@/components/landing/BeforeAfterSection";
