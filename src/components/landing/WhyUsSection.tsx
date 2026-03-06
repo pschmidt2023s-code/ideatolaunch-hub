@@ -28,7 +28,7 @@ export function WhyUsSection() {
     <section className="border-t px-4 sm:px-6 section-py md:py-28">
       <div className="mx-auto max-w-5xl">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold md:text-4xl">
+          <h2 className="text-3xl font-bold font-display md:text-4xl">
             Warum <span className="text-gradient">BuildYourBrand</span>?
           </h2>
           <p className="mt-3 text-muted-foreground">
