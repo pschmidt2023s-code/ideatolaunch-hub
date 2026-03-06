@@ -56,6 +56,7 @@ export function StatusBar({ status }: { status: StatusMetrics }) {
           value={status.founderRiskIndex}
           sub="/ 100"
           level={status.founderRiskIndex <= 30 ? "high" : status.founderRiskIndex <= 60 ? "medium" : "low"}
+          progress={status.founderRiskIndex}
         />
         <MetricTooltip metricKey="founderRiskIndex" />
       </div>
@@ -65,6 +66,7 @@ export function StatusBar({ status }: { status: StatusMetrics }) {
           value={status.confidenceScore}
           sub="/ 100"
           level={status.confidenceScore >= 70 ? "low" : status.confidenceScore >= 45 ? "medium" : "high"}
+          progress={status.confidenceScore}
         />
         <MetricTooltip metricKey="confidenceScore" />
       </div>
@@ -81,6 +83,7 @@ export function StatusBar({ status }: { status: StatusMetrics }) {
           label="Runway"
           value={`${status.runwayMonths} Mo.`}
           level={status.runwayMonths >= 10 ? "low" : status.runwayMonths >= 5 ? "medium" : "high"}
+          progress={Math.min(100, (status.runwayMonths / 18) * 100)}
         />
         <MetricTooltip metricKey="runway" />
       </div>
@@ -90,6 +93,7 @@ export function StatusBar({ status }: { status: StatusMetrics }) {
           value={status.capitalPressure}
           sub="/ 100"
           level={status.capitalPressure <= 30 ? "low" : status.capitalPressure <= 60 ? "medium" : "high"}
+          progress={status.capitalPressure}
         />
         <MetricTooltip metricKey="capitalPressure" />
       </div>
