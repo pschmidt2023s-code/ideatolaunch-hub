@@ -4,6 +4,7 @@ import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { StepGuidancePanel } from "@/components/StepGuidancePanel";
 import { PhaseIntelligenceBar } from "@/components/dashboard/PhaseIntelligenceBar";
 import { type StepHandle } from "@/components/workflow/StepIdeaFoundation";
+import { AdaptiveWorkflowPanel } from "@/components/dashboard/AdaptiveWorkflowPanel";
 import { StepValidationBrand } from "@/components/workflow/StepValidationBrand";
 import { StepBusinessCalculator } from "@/components/workflow/StepBusinessCalculator";
 import { StepProduction } from "@/components/workflow/StepProduction";
