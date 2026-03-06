@@ -95,7 +95,7 @@ export function SmartInsightsPanel() {
 
   if (!isPro) {
     return (
-      <LockedOverlay featureName="Smart Insights" requiredPlan="pro">
+      <LockedOverlay feature="budgetPlanner" requiredPlan="pro">
         <div className="rounded-2xl border bg-card p-8 text-center">
           <Sparkles className="h-8 w-8 mx-auto text-accent mb-3" />
           <h3 className="font-bold">KI-gestützte Smart Insights</h3>
