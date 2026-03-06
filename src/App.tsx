@@ -196,14 +196,15 @@ const App = () => {
                       <Route path="/dashboard/failure-simulator" element={<ProtectedRoute><FailureSimulator /></ProtectedRoute>} />
                       <Route path="/dashboard/benchmark" element={<ProtectedRoute><MarketBenchmark /></ProtectedRoute>} />
                       <Route path="/dashboard/website-builder" element={<ProtectedRoute><WebsiteBuilder /></ProtectedRoute>} />
-                      <Route path="/internal/analytics" element={<ProtectedRoute><InternalAnalytics /></ProtectedRoute>} />
-                      <Route path="/admin/insights" element={<AdminInsights />} />
-                      <Route path="/admin/dashboard" element={<AdminDashboard />} />
-                      <Route path="/admin/fraud" element={<AdminFraud />} />
-                      <Route path="/admin/monetization" element={<MonetizationAdmin />} />
-                      <Route path="/admin/growth" element={<GrowthEngine />} />
-                      <Route path="/admin/partners" element={<PartnerDashboard />} />
-                      <Route path="/admin/beta" element={<BetaDashboard />} />
+                      <Route path="/internal/analytics" element={<AdminRoute><InternalAnalytics /></AdminRoute>} />
+                      <Route path="/admin/insights" element={<AdminRoute><AdminInsights /></AdminRoute>} />
+                      <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+                      <Route path="/admin/fraud" element={<AdminRoute><AdminFraud /></AdminRoute>} />
+                      <Route path="/admin/monetization" element={<AdminRoute><MonetizationAdmin /></AdminRoute>} />
+                      <Route path="/admin/growth" element={<AdminRoute><GrowthEngine /></AdminRoute>} />
+                      <Route path="/admin/partners" element={<AdminRoute><PartnerDashboard /></AdminRoute>} />
+                      <Route path="/admin/beta" element={<AdminRoute><BetaDashboard /></AdminRoute>} />
+                      <Route path="/admin/security" element={<AdminRoute><SecurityDashboard /></AdminRoute>} />
                       <Route path="/debug/gating" element={<DebugGating />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
