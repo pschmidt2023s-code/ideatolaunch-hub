@@ -82,6 +82,8 @@ const GrowthEngine = lazy(() => import("./pages/admin/GrowthEngine"));
 const PartnerDashboard = lazy(() => import("./pages/admin/PartnerDashboard"));
 const BetaDashboard = lazy(() => import("./pages/admin/BetaDashboard"));
 const Download = lazy(() => import("./pages/Download"));
+const FailureSimulator = lazy(() => import("./pages/FailureSimulator"));
+const MarketBenchmark = lazy(() => import("./pages/MarketBenchmark"));
 
 const queryClient = new QueryClient();
 
@@ -188,6 +190,8 @@ const App = () => {
                       <Route path="/dashboard/execution" element={<ProtectedRoute><ExecutionOS /></ProtectedRoute>} />
                       <Route path="/dashboard/evolution" element={<ProtectedRoute><ProductEvolution /></ProtectedRoute>} />
                       <Route path="/dashboard/revenue" element={<ProtectedRoute><RevenueActivation /></ProtectedRoute>} />
+                      <Route path="/dashboard/failure-simulator" element={<ProtectedRoute><FailureSimulator /></ProtectedRoute>} />
+                      <Route path="/dashboard/benchmark" element={<ProtectedRoute><MarketBenchmark /></ProtectedRoute>} />
                       <Route path="/internal/analytics" element={<ProtectedRoute><InternalAnalytics /></ProtectedRoute>} />
                       <Route path="/admin/insights" element={<AdminInsights />} />
                       <Route path="/admin/dashboard" element={<AdminDashboard />} />

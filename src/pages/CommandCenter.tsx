@@ -9,6 +9,10 @@ import { DecisionSimulator } from "@/components/dashboard/DecisionSimulator";
 import { FailureCostCards } from "@/components/dashboard/FailureCostCards";
 import { PhaseStepper } from "@/components/dashboard/PhaseStepper";
 import { ExplainabilityPanel } from "@/components/dashboard/ExplainabilityPanel";
+import { ExecutionLeakDetector } from "@/components/dashboard/ExecutionLeakDetector";
+import { WorkingCapitalEngine } from "@/components/dashboard/WorkingCapitalEngine";
+import { DecisionEngineCard } from "@/components/dashboard/DecisionEngineCard";
+import { ExecutionPressureBanner } from "@/components/dashboard/ExecutionPressureBanner";
 import { SEO } from "@/components/SEO";
 import { useCommandCenterData } from "@/hooks/useCommandCenterData";
 import type { ScenarioMode } from "@/lib/command-center-types";
@@ -61,6 +65,7 @@ export default function CommandCenter() {
             </div>
 
             {/* Status Bar – 6 metrics */}
+            <ExecutionPressureBanner runwayMonths={data.status.runwayMonths} />
             <StatusBar status={data.status} />
 
             {/* Reality Mode Toggle */}
@@ -90,6 +95,15 @@ export default function CommandCenter() {
               <RiskCard risks={data.risks} />
               <ExecutionCard actions={data.actions} />
             </div>
+
+            {/* Capital Intelligence */}
+            <div className="grid gap-6 sm:grid-cols-2">
+              <WorkingCapitalEngine />
+              <ExecutionLeakDetector />
+            </div>
+
+            {/* Decision Engine */}
+            <DecisionEngineCard />
 
             <ExplainabilityPanel
               reasoning="Alle Werte werden live aus deinem Markenprofil, Finanzmodell, Compliance- und Produktionsdaten berechnet. Kein Demo – echte Zahlen."

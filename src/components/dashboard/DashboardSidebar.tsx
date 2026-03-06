@@ -64,6 +64,8 @@ export function DashboardSidebar({ onNavigate }: DashboardSidebarProps) {
     { icon: Crown, label: "Execution OS", path: "/dashboard/execution" },
     { icon: Zap, label: "Revenue Activation", path: "/dashboard/revenue" },
     { icon: Map, label: "Product Evolution", path: "/dashboard/evolution" },
+    { icon: Target, label: "Failure Simulator", path: "/dashboard/failure-simulator" },
+    { icon: Brain, label: "Market Benchmark", path: "/dashboard/benchmark" },
   ];
 
   return (
