@@ -85,7 +85,8 @@ const Download = lazy(() => import("./pages/Download"));
 const FailureSimulator = lazy(() => import("./pages/FailureSimulator"));
 const MarketBenchmark = lazy(() => import("./pages/MarketBenchmark"));
 const WebsiteBuilder = lazy(() => import("./pages/WebsiteBuilder"));
-
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const SecurityDashboard = lazy(() => import("./pages/admin/SecurityDashboard"));
 const queryClient = new QueryClient();
 
 function LazyFallback() {
