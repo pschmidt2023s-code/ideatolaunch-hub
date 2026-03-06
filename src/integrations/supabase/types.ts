@@ -885,6 +885,7 @@ export type Database = {
           last_name: string | null
           referred_by: string | null
           risk_tolerance: string | null
+          selected_mode: string
           updated_at: string
           user_id: string
         }
@@ -898,6 +899,7 @@ export type Database = {
           last_name?: string | null
           referred_by?: string | null
           risk_tolerance?: string | null
+          selected_mode?: string
           updated_at?: string
           user_id: string
         }
@@ -911,6 +913,7 @@ export type Database = {
           last_name?: string | null
           referred_by?: string | null
           risk_tolerance?: string | null
+          selected_mode?: string
           updated_at?: string
           user_id?: string
         }
