@@ -255,7 +255,7 @@ export default function Dashboard() {
           <Button
             variant="outline"
             onClick={() => setGuidedOpen(true)}
-            className="mb-6 gap-2"
+            className="gap-2"
           >
             <HelpCircle className="h-4 w-4" />
             {t("dashboard.guidedStarter", "Ich brauche Hilfe beim Start")}
