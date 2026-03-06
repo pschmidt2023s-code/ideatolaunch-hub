@@ -67,6 +67,13 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
 
         <Footer />
       </main>
+
+      {/* Mode selection dialog */}
+      <ModeSwitcher
+        open={modeDialogOpen}
+        onOpenChange={setModeDialogOpen}
+        isInitial={needsSelection}
+      />
     </div>
   );
 }
