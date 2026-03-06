@@ -61,8 +61,8 @@ export function SocialProofSection() {
   ];
 
   return (
-    <section className="border-t px-4 py-20 md:py-28 bg-muted/30">
-      <div className="container mx-auto max-w-6xl">
+    <section className="border-t px-4 sm:px-6 section-py md:py-28 bg-muted/30">
+      <div className="mx-auto max-w-6xl">
         {/* Header */}
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 rounded-full border bg-card px-4 py-1.5 text-sm font-medium mb-4">

@@ -34,8 +34,8 @@ export function BeforeAfterSection() {
       ];
 
   return (
-    <section className="border-t px-4 py-20 md:py-28">
-      <div className="container mx-auto max-w-4xl">
+    <section className="border-t px-4 sm:px-6 section-py md:py-28">
+      <div className="mx-auto max-w-4xl">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold md:text-4xl">
             {isDE ? "Vorher vs. Nachher" : "Before vs. After"}

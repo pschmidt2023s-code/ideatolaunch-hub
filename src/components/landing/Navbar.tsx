@@ -44,8 +44,8 @@ export function Navbar() {
   };
 
   return (
-    <header className="fixed top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md">
-      <div className="container mx-auto flex h-16 max-w-5xl items-center justify-between px-4">
+    <header className="fixed top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md pt-safe">
+      <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4 sm:px-6">
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
           <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary">
             <span className="text-sm font-bold text-primary-foreground">B</span>
@@ -125,61 +125,63 @@ export function Navbar() {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="border-t bg-background px-4 pb-8 pt-3 md:hidden animate-fade-in">
-          {/* Main navigation */}
-          <nav className="flex flex-col gap-0.5">
-            <a href="/product" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-foreground hover:bg-muted transition-colors">
-              {isDE ? "Produkt" : "Product"}
-            </a>
-            <a href="#pricing" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-foreground hover:bg-muted transition-colors">
-              {t("nav.pricing")}
-            </a>
-            <a href="/guide/eigenmarke-gruenden" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-foreground hover:bg-muted transition-colors">
-              Guide
-            </a>
-            <a href="/download" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-foreground hover:bg-muted transition-colors">
-              Download
-            </a>
-
-            {/* Tools sub-group */}
-            <div className="mt-1 mb-1 px-3">
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-1">Tools</p>
-            </div>
-            {toolLinks.map((tool) => (
-              <a
-                key={tool.href}
-                href={tool.href}
-                onClick={() => setMenuOpen(false)}
-                className="rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors pl-5"
-              >
-                {isDE ? tool.labelDE : tool.labelEN}
+        <div className="fixed inset-0 top-16 z-40 overflow-y-auto bg-background md:hidden animate-fade-in">
+          <div className="px-4 pb-8 pt-3">
+            {/* Main navigation */}
+            <nav className="flex flex-col gap-0.5">
+              <a href="/product" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-foreground hover:bg-muted transition-colors">
+                {isDE ? "Produkt" : "Product"}
               </a>
-            ))}
-          </nav>
+              <a href="#pricing" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-foreground hover:bg-muted transition-colors">
+                {t("nav.pricing")}
+              </a>
+              <a href="/guide/eigenmarke-gruenden" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-foreground hover:bg-muted transition-colors">
+                Guide
+              </a>
+              <a href="/download" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-foreground hover:bg-muted transition-colors">
+                Download
+              </a>
 
-          {/* Divider + secondary actions */}
-          <div className="mt-4 flex flex-col gap-1.5 border-t pt-4">
-            <button
-              onClick={() => { toggleLang(); setMenuOpen(false); }}
-              className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-            >
-              <Globe className="h-4 w-4" />
-              {isDE ? "English" : "Deutsch"}
-            </button>
-            <Button variant="ghost" className="justify-start h-10" onClick={() => { navigate("/auth"); setMenuOpen(false); }}>
-              {t("nav.login")}
-            </Button>
-          </div>
+              {/* Tools sub-group */}
+              <div className="mt-1 mb-1 px-3">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-1">Tools</p>
+              </div>
+              {toolLinks.map((tool) => (
+                <a
+                  key={tool.href}
+                  href={tool.href}
+                  onClick={() => setMenuOpen(false)}
+                  className="rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors pl-5"
+                >
+                  {isDE ? tool.labelDE : tool.labelEN}
+                </a>
+              ))}
+            </nav>
 
-          {/* CTA with bottom safe area */}
-          <div className="mt-4 pb-safe">
-            <Button
-              variant="outline"
-              className="w-full h-11"
-              onClick={() => { navigate("/auth?tab=signup"); setMenuOpen(false); }}
-            >
-              {isDE ? "Jetzt starten" : "Get started"}
-            </Button>
+            {/* Divider + secondary actions */}
+            <div className="mt-4 flex flex-col gap-1.5 border-t pt-4">
+              <button
+                onClick={() => { toggleLang(); setMenuOpen(false); }}
+                className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+              >
+                <Globe className="h-4 w-4" />
+                {isDE ? "English" : "Deutsch"}
+              </button>
+              <Button variant="ghost" className="justify-start h-10" onClick={() => { navigate("/auth"); setMenuOpen(false); }}>
+                {t("nav.login")}
+              </Button>
+            </div>
+
+            {/* CTA with bottom safe area */}
+            <div className="mt-4 pb-safe">
+              <Button
+                variant="outline"
+                className="w-full h-11"
+                onClick={() => { navigate("/auth?tab=signup"); setMenuOpen(false); }}
+              >
+                {isDE ? "Jetzt starten" : "Get started"}
+              </Button>
+            </div>
           </div>
         </div>
       )}

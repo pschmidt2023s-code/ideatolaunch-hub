@@ -9,7 +9,7 @@ export function HeroSection() {
   const isDE = i18n.language === "de";
 
   return (
-    <section className="relative overflow-hidden px-4 pt-40 pb-20 md:pt-52 md:pb-28" aria-label="Hero">
+    <section className="relative overflow-hidden px-4 sm:px-6 pt-40 pb-20 md:pt-52 md:pb-28" aria-label="Hero">
       {/* Subtle gradient backdrop */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--accent)/0.03),transparent_50%)]" />
 

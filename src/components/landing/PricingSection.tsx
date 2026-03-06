@@ -250,8 +250,8 @@ export function PricingSection() {
   ];
 
   return (
-    <section id="pricing" className="border-t px-4 py-20 md:py-32">
-      <div className="container mx-auto max-w-7xl">
+    <section id="pricing" className="border-t px-4 sm:px-6 section-py md:py-32">
+      <div className="mx-auto max-w-7xl">
         <div className="mb-16 text-center">
           <h2 className="text-3xl font-bold md:text-4xl">
             {isDE ? "Investiere in Klarheit – nicht in Fehler" : "Invest in clarity – not mistakes"}
