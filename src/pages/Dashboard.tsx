@@ -226,7 +226,7 @@ export default function Dashboard() {
               <ArrowRight className="h-5 w-5 text-accent shrink-0" />
             </button>
           </AnimatedCard>
-        )
+        )}
 
         {/* Quick Access */}
         {currentBrand && (
