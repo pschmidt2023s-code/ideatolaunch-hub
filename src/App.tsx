@@ -92,6 +92,7 @@ const SystemStatus = lazy(() => import("./pages/admin/SystemStatus"));
 const LicenseManagement = lazy(() => import("./pages/admin/LicenseManagement"));
 const InviteRedeem = lazy(() => import("./pages/InviteRedeem"));
 const TradingDashboard = lazy(() => import("./pages/modes/TradingDashboard"));
+const TradingIntelligence = lazy(() => import("./pages/TradingIntelligence"));
 const InvestorDashboard = lazy(() => import("./pages/modes/InvestorDashboard"));
 const StrategyDashboard = lazy(() => import("./pages/modes/StrategyDashboard"));
 
