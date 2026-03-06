@@ -22,14 +22,31 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_ANON_KEY") ?? "",
       { global: { headers: { Authorization: authHeader } } }
     );
-    const { data, error: claimsError } = await supabaseClient.auth.getClaims(authHeader.replace("Bearer ", ""));
-    if (claimsError || !data?.claims) {
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+    if (userError || !user) {
       return new Response(JSON.stringify({ error: "Not authenticated" }), {
         status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const { messages, context } = await req.json();
+    const body = await req.json();
+    const messages = body?.messages;
+    const context = body?.context;
+
+    if (!Array.isArray(messages) || messages.length === 0) {
+      return new Response(JSON.stringify({ error: "Messages array required" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Sanitize messages – only allow role + content
+    const sanitizedMessages = messages
+      .filter((m: any) => m?.role && m?.content && typeof m.content === "string")
+      .map((m: any) => ({
+        role: m.role === "assistant" ? "assistant" : "user",
+        content: m.content.slice(0, 4000),
+      }));
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
@@ -44,15 +61,19 @@ KONTEXT DES NUTZERS:
 - MOQ: ${context?.moq ?? "unbekannt"} Einheiten
 - Budget: €${context?.budget ?? "unbekannt"}
 - Retourenquote: ${context?.returnRate ?? "unbekannt"}%
+- Produktionskosten: €${context?.productionCost ?? "unbekannt"}
+- Zielpreis: €${context?.targetPrice ?? "unbekannt"}
 
 REGELN:
 1. Gib konkrete, datenbasierte Empfehlungen basierend auf dem Nutzerkontext
-2. Nenne immer den Confidence-Level deiner Empfehlung (z.B. "Confidence: 85%")
+2. Nenne immer den Confidence-Level deiner Empfehlung (z.B. "**Confidence: 85%**")
 3. Erkläre die Auswirkungen quantitativ wenn möglich
 4. Antworte auf Deutsch, außer der Nutzer schreibt auf Englisch
 5. Fokussiere auf: MOQ-Verhandlung, Preisgestaltung, Budgetallokation, Launch-Timing, Risikominimierung
 6. Vermeide generische Ratschläge – beziehe dich auf die konkreten Zahlen des Nutzers
-7. Halte Antworten unter 200 Wörtern`;
+7. Halte Antworten unter 200 Wörtern
+8. Verwende Markdown-Formatierung: **fett** für Schlüsselzahlen, Listen für Aktionspunkte, > für wichtige Hinweise
+9. Strukturiere Antworten klar mit Absätzen`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -64,7 +85,7 @@ REGELN:
         model: "google/gemini-3-flash-preview",
         messages: [
           { role: "system", content: systemPrompt },
-          ...messages,
+          ...sanitizedMessages,
         ],
         stream: true,
       }),
