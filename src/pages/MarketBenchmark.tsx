@@ -149,7 +149,7 @@ export default function MarketBenchmark() {
           <h3 className="text-sm font-semibold mb-4">Strategische Einschätzung</h3>
           <div className="space-y-2 text-sm text-muted-foreground">
             {insights.map((line, i) => (
-              <p key={i} dangerouslySetInnerHTML={{ __html: line }} />
+              <p key={i}>{line.replace(/<\/?strong>/g, "")}</p>
             ))}
           </div>
         </div>
