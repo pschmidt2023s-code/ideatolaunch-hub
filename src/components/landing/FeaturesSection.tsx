@@ -22,7 +22,7 @@ export function FeaturesSection() {
     <section id="features" className="border-t px-4 sm:px-6 section-py md:py-32">
       <div className="mx-auto max-w-5xl">
         <div className="mb-16 text-center">
-          <h2 className="text-3xl font-bold md:text-4xl">{t("features.title")}</h2>
+          <h2 className="text-3xl font-bold font-display md:text-4xl">{t("features.title")}</h2>
           <p className="mt-4 text-lg text-muted-foreground">{t("features.subtitle")}</p>
         </div>
 
