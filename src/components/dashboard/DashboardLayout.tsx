@@ -1,5 +1,6 @@
 import { ReactNode, useState } from "react";
 import { DashboardSidebar } from "./DashboardSidebar";
+import { Breadcrumb } from "./Breadcrumb";
 import { Footer } from "@/components/landing/Footer";
 import { Menu } from "lucide-react";
 
@@ -44,6 +45,7 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
         </div>
 
         <div className="content-container py-8 lg:py-10">
+          <Breadcrumb />
           {children}
         </div>
 
