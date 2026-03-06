@@ -7,7 +7,7 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex h-screen overflow-hidden bg-background">
       {/* Desktop sidebar */}
       <div className="hidden lg:block">
         <DashboardSidebar />
@@ -16,14 +16,17 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div className="fixed inset-0 z-40 lg:hidden">
-          <div className="absolute inset-0 bg-foreground/20 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
+          <div
+            className="absolute inset-0 bg-foreground/20 backdrop-blur-sm"
+            onClick={() => setSidebarOpen(false)}
+          />
           <div className="relative z-50 h-full w-64 animate-slide-in-left">
             <DashboardSidebar onNavigate={() => setSidebarOpen(false)} />
           </div>
         </div>
       )}
 
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto overflow-x-hidden">
         {/* Mobile header */}
         <div className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b bg-background/80 backdrop-blur-md px-4 lg:hidden">
           <button
