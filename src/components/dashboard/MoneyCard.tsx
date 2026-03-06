@@ -6,7 +6,7 @@ export function MoneyCard({ data }: { data: MoneySummary }) {
   const usedPct = Math.round((data.capitalUsed / data.totalCapital) * 100);
 
   return (
-    <div className="rounded-2xl border bg-card p-5 shadow-card space-y-4 group hover:shadow-md transition-shadow">
+    <div className="rounded-2xl border bg-card p-5 shadow-card space-y-4 group card-interactive">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">

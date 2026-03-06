@@ -29,7 +29,7 @@ const levelBarStyles: Record<RiskLevel, string> = {
 
 export function MetricCard({ label, value, sub, level, className, children, trend, progress }: MetricCardProps) {
   return (
-    <div className={cn("rounded-2xl border bg-card p-5 shadow-card transition-shadow hover:shadow-md group", className)}>
+    <div className={cn("rounded-2xl border bg-card p-5 shadow-card card-interactive group", className)}>
       {/* Header with label + trend */}
       <div className="flex items-center justify-between">
         <p className="section-label">{label}</p>
