@@ -178,8 +178,7 @@ export default function LicenseManagement() {
   };
 
   const getInviteUrl = (token: string) => {
-    const base = window.location.origin;
-    return `${base}/#/invite?token=${token}`;
+    return `${CUSTOM_DOMAIN}/#/invite?token=${token}`;
   };
 
   const copyInviteUrl = async (token: string) => {
