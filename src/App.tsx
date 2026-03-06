@@ -89,6 +89,9 @@ const WebsiteBuilder = lazy(() => import("./pages/WebsiteBuilder"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const SecurityDashboard = lazy(() => import("./pages/admin/SecurityDashboard"));
 const SystemStatus = lazy(() => import("./pages/admin/SystemStatus"));
+const TradingDashboard = lazy(() => import("./pages/modes/TradingDashboard"));
+const InvestorDashboard = lazy(() => import("./pages/modes/InvestorDashboard"));
+const StrategyDashboard = lazy(() => import("./pages/modes/StrategyDashboard"));
 
 // ── Optimized QueryClient with smart defaults ───────────────
 const queryClient = new QueryClient({
