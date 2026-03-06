@@ -1,4 +1,5 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from "jsr:@supabase/supabase-js@2";
 import { sendEmail } from "../_shared/email.ts";
 import { wrapLayout } from "../_shared/email-layout.ts";
 
@@ -50,26 +51,22 @@ Deno.serve(async (req) => {
 
         if (!brand) continue;
 
-        // Get financial data
-        const { data: financial } = await sb
-          .from("financial_models")
-          .select("margin, break_even_units, production_cost, recommended_price")
-          .eq("brand_id", brand.id)
-          .single();
+        // Fetch data in parallel
+        const [financialRes, strategicRes, complianceRes] = await Promise.all([
+          sb.from("financial_models")
+            .select("margin, break_even_units, production_cost, recommended_price")
+            .eq("brand_id", brand.id).single(),
+          sb.from("strategic_scores")
+            .select("execution_score, supplier_risk_score, cash_runway_months, capital_burn_monthly")
+            .eq("brand_id", brand.id).single(),
+          sb.from("compliance_scores")
+            .select("overall_score")
+            .eq("brand_id", brand.id).single(),
+        ]);
 
-        // Get strategic scores
-        const { data: strategic } = await sb
-          .from("strategic_scores")
-          .select("execution_score, supplier_risk_score, cash_runway_months, capital_burn_monthly")
-          .eq("brand_id", brand.id)
-          .single();
-
-        // Get compliance
-        const { data: compliance } = await sb
-          .from("compliance_scores")
-          .select("overall_score")
-          .eq("brand_id", brand.id)
-          .single();
+        const financial = financialRes.data;
+        const strategic = strategicRes.data;
+        const compliance = complianceRes.data;
 
         // Calculate a simple risk index
         const margin = financial?.margin ?? 0;

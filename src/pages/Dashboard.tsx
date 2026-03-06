@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { BrandHealthCard } from "@/components/dashboard/BrandHealthCard";
+import { SmartInsightsPanel } from "@/components/dashboard/SmartInsightsPanel";
 import { PhaseProgressBar } from "@/components/dashboard/PhaseProgressBar";
 import { UpgradeBanner } from "@/components/UpgradeBanner";
 import BlueprintExport from "@/components/BlueprintExport";
@@ -302,6 +303,13 @@ export default function Dashboard() {
               </div>
             )}
             {currentBrand && <BrandHealthCard />}
+            
+            {/* KI Smart Insights */}
+            {currentBrand && (
+              <div className="rounded-2xl border bg-card p-6 shadow-card">
+                <SmartInsightsPanel />
+              </div>
+            )}
             
             {/* Retention Engine Widgets */}
             {currentBrand && (
