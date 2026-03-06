@@ -80,6 +80,7 @@ function CollapsibleSection({ title, children, defaultOpen = false }: { title: s
 export default function TradingDashboard() {
   const [mode, setMode] = useState<ScenarioMode>("realistic");
   const [input, setInput] = useState<TradingInput>(getTradingDefaults());
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   const update = (key: keyof TradingInput, value: number | string) => setInput((p) => ({ ...p, [key]: value }));
 
