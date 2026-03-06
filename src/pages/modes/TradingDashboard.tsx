@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { AnimatedCard } from "@/components/dashboard/AnimatedCard";
@@ -11,9 +11,13 @@ import { MoneyCard } from "@/components/dashboard/MoneyCard";
 import { RiskCard } from "@/components/dashboard/RiskCard";
 import { ExecutionCard } from "@/components/dashboard/ExecutionCard";
 import { CEOSection } from "@/components/dashboard/CEOSection";
+import { TradingForecastPanel } from "@/components/dashboard/ForecastPanel";
+import { FinancialDisclaimer } from "@/components/dashboard/FinancialDisclaimer";
+import { MetricOnboarding } from "@/components/dashboard/MetricOnboarding";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Activity, TrendingUp, Target, BarChart3, Shield, Plus, Trash2, ChevronDown, ChevronRight } from "lucide-react";
+import { Activity, TrendingUp, Target, BarChart3, Shield, Plus, Trash2, ChevronDown, ChevronRight, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { buildTradingForecast } from "@/lib/signal-engine";
 import type { ScenarioMode } from "@/lib/command-center-types";
 import {
   getTradingDefaults,
