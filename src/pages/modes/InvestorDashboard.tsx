@@ -139,6 +139,10 @@ export default function InvestorDashboard() {
   const actions = buildInvestorActions(input);
   const portfolioRisk = calculatePortfolioRisk(input);
 
+  const cryptoSignals = useMemo(() => generateCryptoSignals(input), [input]);
+  const equitySignals = useMemo(() => generateEquitySignals(input), [input]);
+  const forecast = useMemo(() => buildPortfolioForecast(input, forecastTarget), [input, forecastTarget]);
+
   const totalAlloc = input.equityExposure + input.bondExposure + input.cryptoExposure + input.realEstateExposure + input.cashPosition;
 
   const allocations = [
