@@ -261,7 +261,11 @@ export default function TradingDashboard() {
               </div>
             ))}
           </div>
-        </CollapsibleSection>
+        {/* ── Forecast ── */}
+        <TradingForecastPanel forecast={tradingForecast} />
+
+        {/* ── Legal ── */}
+        <FinancialDisclaimer />
       </div>
     </DashboardLayout>
   );
