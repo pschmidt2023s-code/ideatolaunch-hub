@@ -1,11 +1,19 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useState, useEffect } from "react";
 import { DashboardSidebar } from "./DashboardSidebar";
 import { Breadcrumb } from "./Breadcrumb";
 import { Footer } from "@/components/landing/Footer";
 import { Menu } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { usePrefetchDashboard } from "@/hooks/useQueryDefaults";
 
 export function DashboardLayout({ children }: { children: ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { user } = useAuth();
+  const prefetch = usePrefetchDashboard(user?.id);
+
+  useEffect(() => {
+    prefetch();
+  }, [prefetch]);
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
