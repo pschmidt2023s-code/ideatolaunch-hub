@@ -2,18 +2,26 @@ import { ReactNode, useState, useEffect } from "react";
 import { DashboardSidebar } from "./DashboardSidebar";
 import { Breadcrumb } from "./Breadcrumb";
 import { Footer } from "@/components/landing/Footer";
+import { ModeSwitcher } from "@/components/ModeSwitcher";
 import { Menu } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useMode } from "@/hooks/useMode";
 import { usePrefetchDashboard } from "@/hooks/useQueryDefaults";
 
 export function DashboardLayout({ children }: { children: ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user } = useAuth();
+  const { needsSelection } = useMode();
+  const [modeDialogOpen, setModeDialogOpen] = useState(false);
   const prefetch = usePrefetchDashboard(user?.id);
 
   useEffect(() => {
     prefetch();
   }, [prefetch]);
+
+  useEffect(() => {
+    if (needsSelection) setModeDialogOpen(true);
+  }, [needsSelection]);
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
@@ -59,6 +67,13 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
 
         <Footer />
       </main>
+
+      {/* Mode selection dialog */}
+      <ModeSwitcher
+        open={modeDialogOpen}
+        onOpenChange={setModeDialogOpen}
+        isInitial={needsSelection}
+      />
     </div>
   );
 }

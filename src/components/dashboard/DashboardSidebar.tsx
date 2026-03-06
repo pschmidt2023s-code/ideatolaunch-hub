@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useMode } from "@/hooks/useMode";
 import { useTranslation } from "react-i18next";
 import { Globe } from "lucide-react";
 import {
@@ -21,8 +22,11 @@ import {
   Map,
   ChevronDown,
   ChevronRight,
+  TrendingUp,
+  PieChart,
 } from "lucide-react";
 import { CommandPalette } from "./CommandPalette";
+import { ModeBadge } from "@/components/ModeSwitcher";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
@@ -84,11 +88,22 @@ export function DashboardSidebar({ onNavigate }: DashboardSidebarProps) {
         <CommandPalette />
       </div>
 
+      {/* Mode Badge */}
+      <div className="px-3 pb-2">
+        <ModeBadge />
+      </div>
+
       <nav className="flex-1 space-y-1 px-3 py-2 overflow-y-auto">
-        {/* 4 Main Items */}
+        {/* Core Navigation */}
         <NavBtn icon={Crosshair} label="Command Center" path="/dashboard/command" active={isActive("/dashboard/command")} onClick={handleNav} />
         <NavBtn icon={LayoutDashboard} label={t("dashboard.title")} path="/dashboard" active={isActive("/dashboard")} onClick={handleNav} />
         <NavBtn icon={Sparkles} label="Intelligence" path="/dashboard/intelligence" active={isActive("/dashboard/intelligence")} onClick={handleNav} />
+
+        {/* Mode Modules */}
+        <p className="px-3 pt-5 pb-1.5 section-label">Mode Modules</p>
+        <NavBtn icon={TrendingUp} label="Trading" path="/dashboard/trading" active={isActive("/dashboard/trading")} onClick={handleNav} />
+        <NavBtn icon={PieChart} label="Investor" path="/dashboard/investor" active={isActive("/dashboard/investor")} onClick={handleNav} />
+        <NavBtn icon={Brain} label="Strategy" path="/dashboard/strategy" active={isActive("/dashboard/strategy")} onClick={handleNav} />
 
         {/* Founder Journey */}
         <p className="px-3 pt-5 pb-1.5 section-label">

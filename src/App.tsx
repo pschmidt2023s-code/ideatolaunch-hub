@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HashRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { BrandProvider } from "@/hooks/useBrand";
+import { ModeProvider } from "@/hooks/useMode";
 import { ProtectedRoute, AdminRoute } from "@/components/ProtectedRoute";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
@@ -88,6 +89,9 @@ const WebsiteBuilder = lazy(() => import("./pages/WebsiteBuilder"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const SecurityDashboard = lazy(() => import("./pages/admin/SecurityDashboard"));
 const SystemStatus = lazy(() => import("./pages/admin/SystemStatus"));
+const TradingDashboard = lazy(() => import("./pages/modes/TradingDashboard"));
+const InvestorDashboard = lazy(() => import("./pages/modes/InvestorDashboard"));
+const StrategyDashboard = lazy(() => import("./pages/modes/StrategyDashboard"));
 
 // ── Optimized QueryClient with smart defaults ───────────────
 const queryClient = new QueryClient({
@@ -136,6 +140,7 @@ const App = () => {
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
             <BrandProvider>
+              <ModeProvider>
               <TooltipProvider>
                 <Toaster />
                 <Sonner />
@@ -209,6 +214,9 @@ const App = () => {
                       <Route path="/dashboard/failure-simulator" element={<ProtectedRoute><FailureSimulator /></ProtectedRoute>} />
                       <Route path="/dashboard/benchmark" element={<ProtectedRoute><MarketBenchmark /></ProtectedRoute>} />
                       <Route path="/dashboard/website-builder" element={<ProtectedRoute><WebsiteBuilder /></ProtectedRoute>} />
+                      <Route path="/dashboard/trading" element={<ProtectedRoute><TradingDashboard /></ProtectedRoute>} />
+                      <Route path="/dashboard/investor" element={<ProtectedRoute><InvestorDashboard /></ProtectedRoute>} />
+                      <Route path="/dashboard/strategy" element={<ProtectedRoute><StrategyDashboard /></ProtectedRoute>} />
                       <Route path="/internal/analytics" element={<AdminRoute><InternalAnalytics /></AdminRoute>} />
                       <Route path="/admin/insights" element={<AdminRoute><AdminInsights /></AdminRoute>} />
                       <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
@@ -229,6 +237,7 @@ const App = () => {
                   <BetaFeedbackButton />
                 </HashRouter>
               </TooltipProvider>
+              </ModeProvider>
             </BrandProvider>
           </AuthProvider>
         </QueryClientProvider>
