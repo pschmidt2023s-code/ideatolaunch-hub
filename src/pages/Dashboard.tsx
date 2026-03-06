@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { BrandHealthCard } from "@/components/dashboard/BrandHealthCard";
+import { PhaseProgressBar } from "@/components/dashboard/PhaseProgressBar";
 import { UpgradeBanner } from "@/components/UpgradeBanner";
 import BlueprintExport from "@/components/BlueprintExport";
 import { WeeklyCEOReviewCard, MomentumScoreCard, DecisionTimeline, RetentionUpgradeTrigger } from "@/components/dashboard/RetentionWidgets";
