@@ -57,6 +57,8 @@ import {
   Wrench,
 } from "lucide-react";
 import { GuidedStarterDialog } from "@/components/GuidedStarterDialog";
+import { EmptyState } from "@/components/dashboard/EmptyState";
+import { AnimatedCard } from "@/components/dashboard/AnimatedCard";
 
 const TOTAL_PHASES = 5;
 const stepIcons = [Target, Calculator, Factory, Shield, Rocket];
