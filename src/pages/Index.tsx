@@ -1,6 +1,8 @@
 import { Navbar } from "@/components/landing/Navbar";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { FounderRiskPreviewCard } from "@/components/landing/FounderRiskPreviewCard";
+import { SocialProofTicker } from "@/components/landing/SocialProofTicker";
+import { CapitalSimulationWidget } from "@/components/landing/CapitalSimulationWidget";
 import { FeaturesSection } from "@/components/landing/FeaturesSection";
 import { WhyUsSection } from "@/components/landing/WhyUsSection";
 import { BeforeAfterSection } from "@/components/landing/BeforeAfterSection";
@@ -27,7 +29,9 @@ const Index = () => {
       <Navbar />
       <main>
         <HeroSection />
+        <SocialProofTicker />
         <FounderRiskPreviewCard />
+        <CapitalSimulationWidget />
         <FeaturesSection />
         <CTABlock />
         <WhyUsSection />
