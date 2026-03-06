@@ -800,6 +800,33 @@ export type Database = {
         }
         Relationships: []
       }
+      login_attempts: {
+        Row: {
+          created_at: string
+          email_hint: string
+          id: string
+          ip_hint: string | null
+          success: boolean
+          user_agent_hint: string | null
+        }
+        Insert: {
+          created_at?: string
+          email_hint: string
+          id?: string
+          ip_hint?: string | null
+          success?: boolean
+          user_agent_hint?: string | null
+        }
+        Update: {
+          created_at?: string
+          email_hint?: string
+          id?: string
+          ip_hint?: string | null
+          success?: boolean
+          user_agent_hint?: string | null
+        }
+        Relationships: []
+      }
       production_plans: {
         Row: {
           brand_id: string

@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HashRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { BrandProvider } from "@/hooks/useBrand";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { ProtectedRoute, AdminRoute } from "@/components/ProtectedRoute";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 import { BetaBadge } from "@/components/BetaBadge";
@@ -85,7 +85,8 @@ const Download = lazy(() => import("./pages/Download"));
 const FailureSimulator = lazy(() => import("./pages/FailureSimulator"));
 const MarketBenchmark = lazy(() => import("./pages/MarketBenchmark"));
 const WebsiteBuilder = lazy(() => import("./pages/WebsiteBuilder"));
-
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const SecurityDashboard = lazy(() => import("./pages/admin/SecurityDashboard"));
 const queryClient = new QueryClient();
 
 function LazyFallback() {
@@ -132,6 +133,7 @@ const App = () => {
                     <Routes>
                       <Route path="/" element={<Index />} />
                       <Route path="/auth" element={<Auth />} />
+                      <Route path="/reset-password" element={<ResetPassword />} />
                       <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
                       <Route path="/starter" element={<ProtectedRoute><StarterMode /></ProtectedRoute>} />
                       <Route path="/pricing" element={<Pricing />} />
@@ -194,14 +196,15 @@ const App = () => {
                       <Route path="/dashboard/failure-simulator" element={<ProtectedRoute><FailureSimulator /></ProtectedRoute>} />
                       <Route path="/dashboard/benchmark" element={<ProtectedRoute><MarketBenchmark /></ProtectedRoute>} />
                       <Route path="/dashboard/website-builder" element={<ProtectedRoute><WebsiteBuilder /></ProtectedRoute>} />
-                      <Route path="/internal/analytics" element={<ProtectedRoute><InternalAnalytics /></ProtectedRoute>} />
-                      <Route path="/admin/insights" element={<AdminInsights />} />
-                      <Route path="/admin/dashboard" element={<AdminDashboard />} />
-                      <Route path="/admin/fraud" element={<AdminFraud />} />
-                      <Route path="/admin/monetization" element={<MonetizationAdmin />} />
-                      <Route path="/admin/growth" element={<GrowthEngine />} />
-                      <Route path="/admin/partners" element={<PartnerDashboard />} />
-                      <Route path="/admin/beta" element={<BetaDashboard />} />
+                      <Route path="/internal/analytics" element={<AdminRoute><InternalAnalytics /></AdminRoute>} />
+                      <Route path="/admin/insights" element={<AdminRoute><AdminInsights /></AdminRoute>} />
+                      <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+                      <Route path="/admin/fraud" element={<AdminRoute><AdminFraud /></AdminRoute>} />
+                      <Route path="/admin/monetization" element={<AdminRoute><MonetizationAdmin /></AdminRoute>} />
+                      <Route path="/admin/growth" element={<AdminRoute><GrowthEngine /></AdminRoute>} />
+                      <Route path="/admin/partners" element={<AdminRoute><PartnerDashboard /></AdminRoute>} />
+                      <Route path="/admin/beta" element={<AdminRoute><BetaDashboard /></AdminRoute>} />
+                      <Route path="/admin/security" element={<AdminRoute><SecurityDashboard /></AdminRoute>} />
                       <Route path="/debug/gating" element={<DebugGating />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
