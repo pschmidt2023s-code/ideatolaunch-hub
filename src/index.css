@@ -68,6 +68,16 @@
     /* Layout */
     --content-max-width: 1120px;
     --spacing-page: 1rem;
+
+    /* Icon sizes */
+    --icon-xs: 14px;
+    --icon-sm: 16px;
+    --icon-md: 20px;
+    --icon-lg: 24px;
+
+    /* Section spacing */
+    --section-gap: 2rem;
+    --card-padding: 1.5rem;
   }
 
   @media (min-width: 640px) {
