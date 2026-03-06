@@ -9,7 +9,19 @@ import { installGlobalErrorHandler, trackPageLoad } from "./lib/analytics";
 if (typeof window !== "undefined") {
   const { origin, pathname, search, hash } = window.location;
   if (pathname !== "/" && !hash) {
-    window.history.replaceState(null, "", `${origin}/${search}#${pathname}`);
+    // Keep __lovable_token etc. as real query params, move route query params into hash
+    const url = new URL(window.location.href);
+    const lovableToken = url.searchParams.get("__lovable_token");
+    // Build the real query string (only system params like __lovable_token)
+    const systemParams = new URLSearchParams();
+    if (lovableToken) systemParams.set("__lovable_token", lovableToken);
+    // Build hash with pathname + remaining query params
+    url.searchParams.delete("__lovable_token");
+    const routeQuery = url.searchParams.toString();
+    const hashPath = routeQuery ? `${pathname}?${routeQuery}` : pathname;
+    const systemQuery = systemParams.toString();
+    const newUrl = `${origin}/${systemQuery ? `?${systemQuery}` : ""}#${hashPath}`;
+    window.history.replaceState(null, "", newUrl);
   }
 }
 
