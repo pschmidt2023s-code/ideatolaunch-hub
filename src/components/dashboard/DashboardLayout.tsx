@@ -45,6 +45,7 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
         </div>
 
         <div className="content-container py-8 lg:py-10">
+          <Breadcrumb />
           {children}
         </div>
 
