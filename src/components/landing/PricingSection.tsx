@@ -355,9 +355,9 @@ export function PricingSection() {
             return (
               <div
                 key={plan.name}
-                className={`relative rounded-xl border p-7 ${
+                className={`relative rounded-2xl border p-7 card-interactive ${
                   plan.highlighted
-                    ? "border-accent bg-card shadow-lg ring-1 ring-accent/20 scale-[1.02]"
+                    ? "border-accent bg-card shadow-lg ring-1 ring-accent/20 scale-[1.02] border-glow"
                     : isExecutionTier
                       ? "border-amber-500/40 bg-gradient-to-b from-card to-amber-500/5 shadow-lg ring-1 ring-amber-500/20"
                       : "bg-card shadow-card"
