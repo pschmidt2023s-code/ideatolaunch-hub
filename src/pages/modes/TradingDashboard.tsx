@@ -100,6 +100,7 @@ export default function TradingDashboard() {
   const expectancy = calculateExpectancy(input);
   const survival = calculateAccountSurvival(input);
   const netMonthly = calculateNetMonthlyPnL(input);
+  const tradingForecast = useMemo(() => buildTradingForecast(input), [input]);
 
   return (
     <DashboardLayout>
