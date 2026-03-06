@@ -40,7 +40,7 @@ export function WhyUsSection() {
           {reasons.map(({ icon: Icon, title, desc }) => (
             <div
               key={title}
-              className="flex gap-4 rounded-xl border bg-card p-6 shadow-card"
+              className="flex gap-4 rounded-2xl border bg-card p-6 shadow-card card-interactive"
             >
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent/10">
                 <Icon className="h-5 w-5 text-accent" />
