@@ -68,6 +68,16 @@
     /* Layout */
     --content-max-width: 1120px;
     --spacing-page: 1rem;
+
+    /* Icon sizes */
+    --icon-xs: 14px;
+    --icon-sm: 16px;
+    --icon-md: 20px;
+    --icon-lg: 24px;
+
+    /* Section spacing */
+    --section-gap: 2rem;
+    --card-padding: 1.5rem;
   }
 
   @media (min-width: 640px) {
@@ -132,15 +142,23 @@
   }
 
   h2 {
-    @apply text-2xl font-semibold tracking-tight;
+    @apply text-2xl font-semibold tracking-tight leading-snug;
   }
 
   h3 {
-    @apply text-lg font-semibold tracking-tight;
+    @apply text-lg font-semibold tracking-tight leading-snug;
   }
 
-  h4, h5, h6 {
-    @apply font-semibold tracking-tight;
+  h4 {
+    @apply text-base font-semibold tracking-tight;
+  }
+
+  h5 {
+    @apply text-sm font-semibold tracking-tight;
+  }
+
+  h6 {
+    @apply text-xs font-semibold uppercase tracking-widest;
   }
 }
 
@@ -197,5 +215,28 @@
 
   @keyframes barLoad {
     from { width: 0; }
+  }
+
+  /* ── Icon size utilities ── */
+  .icon-xs { width: var(--icon-xs); height: var(--icon-xs); }
+  .icon-sm { width: var(--icon-sm); height: var(--icon-sm); }
+  .icon-md { width: var(--icon-md); height: var(--icon-md); }
+  .icon-lg { width: var(--icon-lg); height: var(--icon-lg); }
+
+  /* ── Section spacing ── */
+  .section-gap { gap: var(--section-gap); }
+  .section-py { padding-top: var(--section-gap); padding-bottom: var(--section-gap); }
+
+  /* ── Label styles ── */
+  .text-label {
+    @apply text-xs font-medium text-muted-foreground;
+  }
+
+  .text-body {
+    @apply text-sm leading-relaxed text-foreground;
+  }
+
+  .text-body-muted {
+    @apply text-sm leading-relaxed text-muted-foreground;
   }
 }
