@@ -84,6 +84,7 @@ const BetaDashboard = lazy(() => import("./pages/admin/BetaDashboard"));
 const Download = lazy(() => import("./pages/Download"));
 const FailureSimulator = lazy(() => import("./pages/FailureSimulator"));
 const MarketBenchmark = lazy(() => import("./pages/MarketBenchmark"));
+const WebsiteBuilder = lazy(() => import("./pages/WebsiteBuilder"));
 
 const queryClient = new QueryClient();
 
@@ -192,6 +193,7 @@ const App = () => {
                       <Route path="/dashboard/revenue" element={<ProtectedRoute><RevenueActivation /></ProtectedRoute>} />
                       <Route path="/dashboard/failure-simulator" element={<ProtectedRoute><FailureSimulator /></ProtectedRoute>} />
                       <Route path="/dashboard/benchmark" element={<ProtectedRoute><MarketBenchmark /></ProtectedRoute>} />
+                      <Route path="/dashboard/website-builder" element={<ProtectedRoute><WebsiteBuilder /></ProtectedRoute>} />
                       <Route path="/internal/analytics" element={<ProtectedRoute><InternalAnalytics /></ProtectedRoute>} />
                       <Route path="/admin/insights" element={<AdminInsights />} />
                       <Route path="/admin/dashboard" element={<AdminDashboard />} />
