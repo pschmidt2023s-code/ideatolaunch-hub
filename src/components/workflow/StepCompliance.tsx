@@ -92,10 +92,10 @@ export const StepCompliance = forwardRef<StepHandle>(function StepCompliance(_, 
       navigate("/dashboard/pricing");
       return;
     }
-    generateBrandReport({
-      brandName: activeBrand?.name || "Brand",
-      complianceChecklist: labelChecklist.map((item) => ({ item: item.label, checked: !!checked[item.id] })),
-    });
+    generateWorkflowPdf(activeBrand?.name || "Brand", "Compliance Checkliste", [{
+      title: "Label & Compliance",
+      items: labelChecklist.map((item) => ({ label: item.label, checked: !!checked[item.id] })),
+    }]);
     toast.success(t("pdf.exportSuccess"));
   };
 

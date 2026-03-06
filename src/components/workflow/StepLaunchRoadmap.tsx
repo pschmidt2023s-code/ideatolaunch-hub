@@ -117,7 +117,40 @@ export const StepLaunchRoadmap = forwardRef<StepHandle>(function StepLaunchRoadm
 
   const handleExportPdf = () => {
     if (!caps.canExportPDF) { toast.error(t("upgrade.pdfLocked")); navigate("/dashboard/pricing"); return; }
-    generateBrandReport({ brandName: activeBrand?.name || "Brand" });
+
+    const sections: WorkflowPdfSection[] = [];
+
+    if (dynamicWeeks) {
+      for (const week of dynamicWeeks) {
+        sections.push({
+          title: week.title,
+          items: week.steps.map(s => ({
+            label: s.title,
+            checked: !!checked[s.id],
+            detail: s.description,
+          })),
+        });
+      }
+    } else if (smartWeeks) {
+      for (const week of smartWeeks) {
+        sections.push({
+          title: t(`step7.${week.titleKey}`),
+          items: [
+            ...week.staticTasks.map(task => ({ label: task, checked: !!checked[task] })),
+            ...week.dynamicTasks.map(dt => ({ label: dt.label, checked: !!checked[dt.id], detail: dt.reason })),
+          ],
+        });
+      }
+    } else {
+      for (const week of staticWeeks) {
+        sections.push({
+          title: t(`step7.${week.titleKey}`),
+          items: week.tasks.map(task => ({ label: task, checked: !!checked[task] })),
+        });
+      }
+    }
+
+    generateWorkflowPdf(activeBrand?.name || "Brand", "Launch Roadmap", sections);
     toast.success(t("pdf.exportSuccess"));
   };
 
