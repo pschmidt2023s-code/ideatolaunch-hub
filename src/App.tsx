@@ -90,6 +90,7 @@ const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const SecurityDashboard = lazy(() => import("./pages/admin/SecurityDashboard"));
 const SystemStatus = lazy(() => import("./pages/admin/SystemStatus"));
 const LicenseManagement = lazy(() => import("./pages/admin/LicenseManagement"));
+const InviteRedeem = lazy(() => import("./pages/InviteRedeem"));
 const TradingDashboard = lazy(() => import("./pages/modes/TradingDashboard"));
 const InvestorDashboard = lazy(() => import("./pages/modes/InvestorDashboard"));
 const StrategyDashboard = lazy(() => import("./pages/modes/StrategyDashboard"));
@@ -161,6 +162,7 @@ const App = () => {
                       <Route path="/agb" element={<AGB />} />
                       <Route path="/product" element={<Product />} />
                       <Route path="/download" element={<Download />} />
+                      <Route path="/invite" element={<InviteRedeem />} />
 
                       {/* Blog */}
                       <Route path="/blog" element={<Blog />} />
