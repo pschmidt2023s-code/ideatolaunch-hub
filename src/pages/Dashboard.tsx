@@ -184,15 +184,52 @@ export default function Dashboard() {
 
   return (
     <DashboardLayout>
-      <div className="animate-fade-in">
+      <div className="animate-fade-in space-y-6">
         {isFree && <UpgradeBanner />}
 
-        {/* Quick Access Panel */}
+        {/* Dashboard Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold">{t("dashboard.title")}</h1>
+            <p className="mt-1 text-sm text-muted-foreground">{t("dashboard.subtitle")}</p>
+          </div>
+          <Button
+            onClick={createBrand}
+            className="gap-2 bg-accent text-accent-foreground hover:bg-accent/90"
+          >
+            <Plus className="h-4 w-4" />
+            <span className="hidden sm:inline">{t("dashboard.newBrand")}</span>
+          </Button>
+        </div>
+
+        {/* Phase Progress – clear visual */}
+        {currentBrand && <PhaseProgressBar />}
+
+        {/* Next Step Highlight */}
+        {currentBrand && !isCompleted && (
+          <button
+            onClick={() => navigate(`/dashboard/step/${clampedStep}`)}
+            className="w-full flex items-center gap-4 rounded-2xl border-2 border-accent/30 bg-accent/5 p-5 text-left hover:border-accent/50 hover:shadow-md transition-all"
+          >
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent text-accent-foreground">
+              {(() => { const Icon = stepIcons[clampedStep - 1]; return <Icon className="h-5 w-5" />; })()}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-accent mb-0.5">
+                {isDE ? "Nächster Schritt" : "Next Step"}
+              </p>
+              <p className="font-semibold truncate">{t(`steps.s${clampedStep}`)}</p>
+            </div>
+            <ArrowRight className="h-5 w-5 text-accent shrink-0" />
+          </button>
+        )}
+
+        {/* Quick Access */}
         {currentBrand && (
-          <div className="mb-6 rounded-xl border bg-card p-4 shadow-card">
+          <div className="rounded-2xl border bg-card p-4 shadow-card">
             <div className="flex items-center gap-2 mb-3">
               <Wrench className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm font-medium text-muted-foreground">
+              <span className="text-xs font-medium text-muted-foreground">
                 {t("dashboard.quickAccess", "Schnellzugriff")}
               </span>
             </div>
@@ -205,7 +242,7 @@ export default function Dashboard() {
                 <button
                   key={tool.href}
                   onClick={() => navigate(tool.href)}
-                  className="rounded-lg border bg-background px-3 py-2.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors text-center"
+                  className="rounded-xl border bg-background px-3 py-2.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors text-center"
                 >
                   {tool.label}
                 </button>
@@ -213,39 +250,6 @@ export default function Dashboard() {
             </div>
           </div>
         )}
-
-        {/* Next Step Highlight */}
-        {currentBrand && !isCompleted && (
-          <button
-            onClick={() => navigate(`/dashboard/step/${clampedStep}`)}
-            className="mb-6 w-full flex items-center gap-4 rounded-xl border-2 border-accent/30 bg-accent/5 p-5 text-left hover:border-accent/50 transition-colors"
-          >
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent text-accent-foreground">
-              {(() => { const Icon = stepIcons[clampedStep - 1]; return <Icon className="h-5 w-5" />; })()}
-            </div>
-            <div className="flex-1">
-              <p className="text-xs font-medium text-accent mb-0.5">
-                {isDE ? "Nächster Schritt" : "Next Step"}
-              </p>
-              <p className="font-semibold">{t(`steps.s${clampedStep}`)}</p>
-            </div>
-            <ArrowRight className="h-5 w-5 text-accent" />
-          </button>
-        )}
-
-        <div className="mb-8 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">{t("dashboard.title")}</h1>
-            <p className="mt-1 text-muted-foreground">{t("dashboard.subtitle")}</p>
-          </div>
-          <Button
-            onClick={createBrand}
-            className="gap-2 bg-accent text-accent-foreground hover:bg-accent/90"
-          >
-            <Plus className="h-4 w-4" />
-            {t("dashboard.newBrand")}
-          </Button>
-        </div>
 
         {currentBrand && showGuidedStarter && (
           <Button
