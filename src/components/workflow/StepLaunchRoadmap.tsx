@@ -11,7 +11,7 @@ import { useBrandProfile } from "@/hooks/useBrandProfile";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { generateBrandReport } from "@/lib/pdf-export";
+import { generateWorkflowPdf, type WorkflowPdfSection } from "@/lib/pdf-export";
 import { generateSmartRoadmap, type SmartWeek } from "@/lib/roadmap-intelligence";
 import { generateRoadmap, type RoadmapWeek, type RoadmapStep } from "@/lib/dynamic-roadmap";
 import { Badge } from "@/components/ui/badge";
