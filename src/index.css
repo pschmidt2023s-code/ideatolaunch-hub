@@ -193,6 +193,30 @@
   .section-label {
     @apply text-[11px] font-semibold uppercase tracking-widest text-muted-foreground;
   }
+
+  /* CEO Section – dark premium container */
+  .ceo-section {
+    --background: 220 20% 7%;
+    --foreground: 220 14% 92%;
+    --card: 220 18% 10%;
+    --card-foreground: 220 14% 92%;
+    --muted: 220 16% 16%;
+    --muted-foreground: 220 10% 55%;
+    --border: 220 16% 18%;
+    --accent: 38 92% 50%;
+    --accent-foreground: 0 0% 100%;
+    --success: 152 60% 45%;
+    --warning: 38 92% 50%;
+    --destructive: 0 65% 55%;
+
+    background: hsl(220 20% 7%);
+    color: hsl(220 14% 92%);
+    border: 1px solid hsl(220 16% 18%);
+  }
+
+  .ceo-section .section-label {
+    color: hsl(220 10% 50%);
+  }
 }
 
 @layer utilities {
