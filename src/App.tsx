@@ -87,6 +87,7 @@ const MarketBenchmark = lazy(() => import("./pages/MarketBenchmark"));
 const WebsiteBuilder = lazy(() => import("./pages/WebsiteBuilder"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const SecurityDashboard = lazy(() => import("./pages/admin/SecurityDashboard"));
+const SystemStatus = lazy(() => import("./pages/admin/SystemStatus"));
 
 // ── Optimized QueryClient with smart defaults ───────────────
 const queryClient = new QueryClient({
