@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Download, Sparkles, Brain, Zap, Wrench, Tag, Link2, Code2, Bug, TrendingUp } from "lucide-react";
 
 const INSTALLER_URL =
-  "https://github.com/pschmidt2023s-code/ideatolaunch-hub/releases/download/2.0/BrandOS_0.2.0_x64-setup.exe";
+  "https://github.com/pschmidt2023s-code/ideatolaunch-hub/releases/download/v3.0/brandos-installer.exe";
 
 const patchSections = [
   {
