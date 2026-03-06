@@ -1,5 +1,6 @@
 import { ReactNode, useState } from "react";
 import { DashboardSidebar } from "./DashboardSidebar";
+import { Breadcrumb } from "./Breadcrumb";
 import { Footer } from "@/components/landing/Footer";
 import { Menu } from "lucide-react";
 
