@@ -188,6 +188,9 @@ export default function AdminDashboard() {
             <p className="text-sm text-muted-foreground">Übersicht über Nutzer, Leads, Revenue und Events</p>
           </div>
           <div className="flex items-center gap-3">
+            <button onClick={() => navigate("/admin/licenses")} className="flex items-center gap-1.5 text-sm font-medium text-accent hover:text-accent/80 transition-colors rounded-lg border border-accent/20 px-3 py-1.5">
+              🔑 Lizenzen
+            </button>
             <button onClick={() => navigate("/admin/monetization")} className="flex items-center gap-1.5 text-sm font-medium text-accent hover:text-accent/80 transition-colors rounded-lg border border-accent/20 px-3 py-1.5">
               💰 Monetization
             </button>
