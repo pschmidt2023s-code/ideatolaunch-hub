@@ -216,4 +216,27 @@
   @keyframes barLoad {
     from { width: 0; }
   }
+
+  /* ── Icon size utilities ── */
+  .icon-xs { width: var(--icon-xs); height: var(--icon-xs); }
+  .icon-sm { width: var(--icon-sm); height: var(--icon-sm); }
+  .icon-md { width: var(--icon-md); height: var(--icon-md); }
+  .icon-lg { width: var(--icon-lg); height: var(--icon-lg); }
+
+  /* ── Section spacing ── */
+  .section-gap { gap: var(--section-gap); }
+  .section-py { padding-top: var(--section-gap); padding-bottom: var(--section-gap); }
+
+  /* ── Label styles ── */
+  .text-label {
+    @apply text-xs font-medium text-muted-foreground;
+  }
+
+  .text-body {
+    @apply text-sm leading-relaxed text-foreground;
+  }
+
+  .text-body-muted {
+    @apply text-sm leading-relaxed text-muted-foreground;
+  }
 }
