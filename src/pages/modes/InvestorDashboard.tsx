@@ -1,16 +1,19 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { AnimatedCard } from "@/components/dashboard/AnimatedCard";
 import { SEO } from "@/components/SEO";
 import { Slider } from "@/components/ui/slider";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { StatusBar } from "@/components/dashboard/StatusBar";
 import { MoneyCard } from "@/components/dashboard/MoneyCard";
 import { RiskCard } from "@/components/dashboard/RiskCard";
 import { ExecutionCard } from "@/components/dashboard/ExecutionCard";
 import { CEOSection } from "@/components/dashboard/CEOSection";
-import { Activity, PieChart, Wallet, TrendingUp, ShieldAlert } from "lucide-react";
+import { Activity, PieChart, Wallet, TrendingUp, ShieldAlert, ChevronDown, ChevronRight, Plus, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { ScenarioMode } from "@/lib/command-center-types";
 import {
   getInvestorDefaults,
@@ -19,7 +22,13 @@ import {
   buildInvestorRisks,
   buildInvestorActions,
   calculatePortfolioRisk,
+  recalcAllocations,
+  autoConcentrationRisk,
   type InvestorInput,
+  type CryptoAsset,
+  type EquityAsset,
+  type BondAsset,
+  type RealEstateAsset,
 } from "@/lib/investor-engine";
 
 const MODES: { value: ScenarioMode; label: string }[] = [
@@ -28,11 +37,94 @@ const MODES: { value: ScenarioMode; label: string }[] = [
   { value: "worst-case", label: "Worst Case" },
 ];
 
+const VOLATILITY_OPTIONS = [
+  { value: "low", label: "Niedrig" },
+  { value: "medium", label: "Mittel" },
+  { value: "high", label: "Hoch" },
+  { value: "extreme", label: "Extrem" },
+] as const;
+
+const EQUITY_TYPES = [
+  { value: "etf", label: "ETF" },
+  { value: "single_stock", label: "Einzelaktie" },
+  { value: "index_fund", label: "Indexfonds" },
+] as const;
+
+const BOND_DURATIONS = [
+  { value: "short", label: "Kurz (<3J)" },
+  { value: "medium", label: "Mittel (3-7J)" },
+  { value: "long", label: "Lang (>7J)" },
+] as const;
+
+const RE_TYPES = [
+  { value: "reit", label: "REIT" },
+  { value: "direct", label: "Direkt" },
+  { value: "crowdfunding", label: "Crowdfunding" },
+] as const;
+
+function CollapsibleSection({ title, count, color, children, defaultOpen = false }: { title: string; count: number; color: string; children: React.ReactNode; defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="rounded-xl border bg-card">
+      <button onClick={() => setOpen(!open)} className="flex w-full items-center justify-between p-4 text-left">
+        <div className="flex items-center gap-2">
+          <div className={cn("h-3 w-3 rounded-full", color)} />
+          <span className="text-sm font-semibold">{title}</span>
+          <span className="text-xs text-muted-foreground">({count} Assets)</span>
+        </div>
+        {open ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />}
+      </button>
+      {open && <div className="border-t px-4 pb-4 pt-3 space-y-3">{children}</div>}
+    </div>
+  );
+}
+
 export default function InvestorDashboard() {
   const [mode, setMode] = useState<ScenarioMode>("realistic");
   const [input, setInput] = useState<InvestorInput>(getInvestorDefaults());
 
-  const update = (key: keyof InvestorInput, value: number) => setInput((p) => ({ ...p, [key]: value }));
+  const sync = useCallback((next: InvestorInput) => {
+    const recalced = recalcAllocations(next);
+    recalced.concentrationRisk = autoConcentrationRisk(recalced);
+    setInput(recalced);
+  }, []);
+
+  const update = (key: keyof InvestorInput, value: number) => {
+    sync({ ...input, [key]: value });
+  };
+
+  // Sub-asset helpers
+  const updateCrypto = (idx: number, patch: Partial<CryptoAsset>) => {
+    const next = [...input.cryptoAssets];
+    next[idx] = { ...next[idx], ...patch };
+    sync({ ...input, cryptoAssets: next });
+  };
+  const addCrypto = () => sync({ ...input, cryptoAssets: [...input.cryptoAssets, { id: `c${Date.now()}`, name: "Neues Asset", allocation: 0, volatility: "medium" }] });
+  const removeCrypto = (idx: number) => sync({ ...input, cryptoAssets: input.cryptoAssets.filter((_, i) => i !== idx) });
+
+  const updateEquity = (idx: number, patch: Partial<EquityAsset>) => {
+    const next = [...input.equityAssets];
+    next[idx] = { ...next[idx], ...patch };
+    sync({ ...input, equityAssets: next });
+  };
+  const addEquity = () => sync({ ...input, equityAssets: [...input.equityAssets, { id: `e${Date.now()}`, name: "Neues Asset", allocation: 0, type: "etf" }] });
+  const removeEquity = (idx: number) => sync({ ...input, equityAssets: input.equityAssets.filter((_, i) => i !== idx) });
+
+  const updateBond = (idx: number, patch: Partial<BondAsset>) => {
+    const next = [...input.bondAssets];
+    next[idx] = { ...next[idx], ...patch };
+    sync({ ...input, bondAssets: next });
+  };
+  const addBond = () => sync({ ...input, bondAssets: [...input.bondAssets, { id: `b${Date.now()}`, name: "Neue Anleihe", allocation: 0, duration: "medium" }] });
+  const removeBond = (idx: number) => sync({ ...input, bondAssets: input.bondAssets.filter((_, i) => i !== idx) });
+
+  const updateRE = (idx: number, patch: Partial<RealEstateAsset>) => {
+    const next = [...input.realEstateAssets];
+    next[idx] = { ...next[idx], ...patch };
+    sync({ ...input, realEstateAssets: next });
+  };
+  const addRE = () => sync({ ...input, realEstateAssets: [...input.realEstateAssets, { id: `r${Date.now()}`, name: "Neues Objekt", allocation: 0, type: "reit" }] });
+  const removeRE = (idx: number) => sync({ ...input, realEstateAssets: input.realEstateAssets.filter((_, i) => i !== idx) });
 
   const status = buildInvestorStatus(input, mode);
   const money = buildInvestorMoney(input, mode);
@@ -40,7 +132,8 @@ export default function InvestorDashboard() {
   const actions = buildInvestorActions(input);
   const portfolioRisk = calculatePortfolioRisk(input);
 
-  // Allocation breakdown
+  const totalAlloc = input.equityExposure + input.bondExposure + input.cryptoExposure + input.realEstateExposure + input.cashPosition;
+
   const allocations = [
     { label: "Aktien", pct: input.equityExposure, color: "bg-chart-1" },
     { label: "Anleihen", pct: input.bondExposure, color: "bg-chart-2" },
@@ -77,9 +170,16 @@ export default function InvestorDashboard() {
 
           {/* Asset Allocation Bar */}
           <div className="rounded-2xl border bg-card p-5 space-y-3">
-            <h3 className="text-sm font-semibold flex items-center gap-2">
-              <PieChart className="h-4 w-4 text-accent" /> Asset Allocation
-            </h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-semibold flex items-center gap-2">
+                <PieChart className="h-4 w-4 text-accent" /> Asset Allocation
+              </h3>
+              {totalAlloc !== 100 && (
+                <span className={cn("text-xs font-medium", totalAlloc > 100 ? "text-destructive" : "text-warning")}>
+                  Gesamt: {totalAlloc}% {totalAlloc > 100 ? "⚠️ Überallokiert" : "– nicht voll investiert"}
+                </span>
+              )}
+            </div>
             <div className="flex h-6 rounded-full overflow-hidden">
               {allocations.filter(a => a.pct > 0).map((a) => (
                 <div key={a.label} className={cn("transition-all", a.color)} style={{ width: `${a.pct}%` }} title={`${a.label}: ${a.pct}%`} />
@@ -119,19 +219,96 @@ export default function InvestorDashboard() {
           </div>
         </CEOSection>
 
-        {/* Input Controls */}
+        {/* ── Individual Asset Configuration ── */}
+        <div className="space-y-4">
+          <h3 className="text-sm font-semibold">Assets individuell konfigurieren</h3>
+
+          {/* Crypto */}
+          <CollapsibleSection title="Crypto Assets" count={input.cryptoAssets.length} color="bg-chart-3" defaultOpen>
+            {input.cryptoAssets.map((asset, idx) => (
+              <div key={asset.id} className="grid grid-cols-[1fr_80px_120px_32px] items-center gap-3">
+                <Input value={asset.name} onChange={(e) => updateCrypto(idx, { name: e.target.value })} className="h-8 text-xs" />
+                <div className="flex items-center gap-1">
+                  <Input type="number" value={asset.allocation} onChange={(e) => updateCrypto(idx, { allocation: Number(e.target.value) })} className="h-8 text-xs w-16" min={0} max={100} />
+                  <span className="text-xs text-muted-foreground">%</span>
+                </div>
+                <Select value={asset.volatility} onValueChange={(v) => updateCrypto(idx, { volatility: v as any })}>
+                  <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent>{VOLATILITY_OPTIONS.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
+                </Select>
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => removeCrypto(idx)}><Trash2 className="h-3.5 w-3.5 text-muted-foreground" /></Button>
+              </div>
+            ))}
+            <Button variant="outline" size="sm" onClick={addCrypto} className="text-xs"><Plus className="h-3 w-3 mr-1" /> Crypto Asset</Button>
+          </CollapsibleSection>
+
+          {/* Equity */}
+          <CollapsibleSection title="Aktien & ETFs" count={input.equityAssets.length} color="bg-chart-1">
+            {input.equityAssets.map((asset, idx) => (
+              <div key={asset.id} className="grid grid-cols-[1fr_80px_120px_32px] items-center gap-3">
+                <Input value={asset.name} onChange={(e) => updateEquity(idx, { name: e.target.value })} className="h-8 text-xs" />
+                <div className="flex items-center gap-1">
+                  <Input type="number" value={asset.allocation} onChange={(e) => updateEquity(idx, { allocation: Number(e.target.value) })} className="h-8 text-xs w-16" min={0} max={100} />
+                  <span className="text-xs text-muted-foreground">%</span>
+                </div>
+                <Select value={asset.type} onValueChange={(v) => updateEquity(idx, { type: v as any })}>
+                  <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent>{EQUITY_TYPES.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
+                </Select>
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => removeEquity(idx)}><Trash2 className="h-3.5 w-3.5 text-muted-foreground" /></Button>
+              </div>
+            ))}
+            <Button variant="outline" size="sm" onClick={addEquity} className="text-xs"><Plus className="h-3 w-3 mr-1" /> Aktie/ETF</Button>
+          </CollapsibleSection>
+
+          {/* Bonds */}
+          <CollapsibleSection title="Anleihen" count={input.bondAssets.length} color="bg-chart-2">
+            {input.bondAssets.map((asset, idx) => (
+              <div key={asset.id} className="grid grid-cols-[1fr_80px_120px_32px] items-center gap-3">
+                <Input value={asset.name} onChange={(e) => updateBond(idx, { name: e.target.value })} className="h-8 text-xs" />
+                <div className="flex items-center gap-1">
+                  <Input type="number" value={asset.allocation} onChange={(e) => updateBond(idx, { allocation: Number(e.target.value) })} className="h-8 text-xs w-16" min={0} max={100} />
+                  <span className="text-xs text-muted-foreground">%</span>
+                </div>
+                <Select value={asset.duration} onValueChange={(v) => updateBond(idx, { duration: v as any })}>
+                  <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent>{BOND_DURATIONS.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
+                </Select>
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => removeBond(idx)}><Trash2 className="h-3.5 w-3.5 text-muted-foreground" /></Button>
+              </div>
+            ))}
+            <Button variant="outline" size="sm" onClick={addBond} className="text-xs"><Plus className="h-3 w-3 mr-1" /> Anleihe</Button>
+          </CollapsibleSection>
+
+          {/* Real Estate */}
+          <CollapsibleSection title="Immobilien" count={input.realEstateAssets.length} color="bg-chart-4">
+            {input.realEstateAssets.map((asset, idx) => (
+              <div key={asset.id} className="grid grid-cols-[1fr_80px_120px_32px] items-center gap-3">
+                <Input value={asset.name} onChange={(e) => updateRE(idx, { name: e.target.value })} className="h-8 text-xs" />
+                <div className="flex items-center gap-1">
+                  <Input type="number" value={asset.allocation} onChange={(e) => updateRE(idx, { allocation: Number(e.target.value) })} className="h-8 text-xs w-16" min={0} max={100} />
+                  <span className="text-xs text-muted-foreground">%</span>
+                </div>
+                <Select value={asset.type} onValueChange={(v) => updateRE(idx, { type: v as any })}>
+                  <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent>{RE_TYPES.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
+                </Select>
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => removeRE(idx)}><Trash2 className="h-3.5 w-3.5 text-muted-foreground" /></Button>
+              </div>
+            ))}
+            <Button variant="outline" size="sm" onClick={addRE} className="text-xs"><Plus className="h-3 w-3 mr-1" /> Immobilie</Button>
+          </CollapsibleSection>
+        </div>
+
+        {/* Global Parameters */}
         <div className="rounded-2xl border bg-card p-6 shadow-card space-y-6">
-          <h3 className="text-sm font-semibold">Portfolio-Parameter anpassen</h3>
+          <h3 className="text-sm font-semibold">Globale Portfolio-Parameter</h3>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {[
               { key: "totalPortfolio" as const, label: "Gesamtportfolio (€)", min: 5000, max: 1000000, step: 5000 },
-              { key: "equityExposure" as const, label: "Aktien (%)", min: 0, max: 100, step: 5 },
-              { key: "bondExposure" as const, label: "Anleihen (%)", min: 0, max: 100, step: 5 },
-              { key: "cryptoExposure" as const, label: "Crypto (%)", min: 0, max: 100, step: 5 },
-              { key: "cashPosition" as const, label: "Cash (%)", min: 0, max: 100, step: 5 },
+              { key: "cashPosition" as const, label: "Cash (%)", min: 0, max: 100, step: 1 },
               { key: "annualReturn" as const, label: "Rendite p.a. (%)", min: -20, max: 50, step: 1 },
               { key: "portfolioDrawdown" as const, label: "Drawdown (%)", min: 0, max: 50, step: 1 },
-              { key: "concentrationRisk" as const, label: "Konzentration (0-100)", min: 0, max: 100, step: 5 },
               { key: "dividendYield" as const, label: "Dividendenrendite (%)", min: 0, max: 15, step: 0.5 },
             ].map((s) => (
               <div key={s.key} className="space-y-2">
