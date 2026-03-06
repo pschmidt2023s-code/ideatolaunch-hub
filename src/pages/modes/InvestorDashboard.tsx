@@ -317,6 +317,15 @@ export default function InvestorDashboard() {
           </CollapsibleSection>
         </div>
 
+        {/* ── Signals ── */}
+        <div className="grid gap-5 lg:grid-cols-2">
+          <SignalPanel signals={cryptoSignals} title="Crypto Signale" />
+          <SignalPanel signals={equitySignals} title="Aktien Signale" />
+        </div>
+
+        {/* ── Forecast ── */}
+        <PortfolioForecastPanel forecast={forecast} targetInput={forecastTarget} onTargetChange={setForecastTarget} />
+
         {/* Global Parameters */}
         <div className="rounded-2xl border bg-card p-6 shadow-card space-y-6">
           <h3 className="text-sm font-semibold">Globale Portfolio-Parameter</h3>
@@ -338,6 +347,9 @@ export default function InvestorDashboard() {
             ))}
           </div>
         </div>
+
+        {/* ── Legal ── */}
+        <FinancialDisclaimer />
       </div>
     </DashboardLayout>
   );
