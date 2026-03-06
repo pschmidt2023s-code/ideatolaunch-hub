@@ -33,9 +33,9 @@ interface InvitationRow {
 }
 type SubWithProfile = SubscriptionRow & { profile?: ProfileRow };
 
-const PLANS = ["free", "builder", "pro", "execution"] as const;
+const PLANS = ["free", "builder", "pro", "execution", "trading"] as const;
 const PLAN_LABELS: Record<string, string> = {
-  free: "Free", builder: "Builder (29€/mo)", pro: "Pro (79€/mo)", execution: "Execution OS (159€/mo)",
+  free: "Free", builder: "Builder (29€/mo)", pro: "Pro (79€/mo)", execution: "Execution OS (159€/mo)", trading: "Trading (199€/mo)",
 };
 
 function generateLicenseKey(): string {
