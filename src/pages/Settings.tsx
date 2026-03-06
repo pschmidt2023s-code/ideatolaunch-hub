@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Save, Loader2, User, CreditCard, FlaskConical } from "lucide-react";
+import { Save, Loader2, User, CreditCard, FlaskConical, KeyRound, Copy, Check } from "lucide-react";
 import { toast } from "sonner";
 import { getClientMode, setClientMode, type ClientMode } from "@/lib/beta-client";
 
