@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { AnimatedCard } from "@/components/dashboard/AnimatedCard";
@@ -11,9 +11,14 @@ import { MoneyCard } from "@/components/dashboard/MoneyCard";
 import { RiskCard } from "@/components/dashboard/RiskCard";
 import { ExecutionCard } from "@/components/dashboard/ExecutionCard";
 import { CEOSection } from "@/components/dashboard/CEOSection";
-import { Activity, PieChart, Wallet, TrendingUp, ShieldAlert, ChevronDown, ChevronRight, Plus, Trash2 } from "lucide-react";
+import { SignalPanel } from "@/components/dashboard/SignalPanel";
+import { PortfolioForecastPanel } from "@/components/dashboard/ForecastPanel";
+import { FinancialDisclaimer } from "@/components/dashboard/FinancialDisclaimer";
+import { MetricOnboarding } from "@/components/dashboard/MetricOnboarding";
+import { Activity, PieChart, Wallet, TrendingUp, ShieldAlert, ChevronDown, ChevronRight, Plus, Trash2, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { generateCryptoSignals, generateEquitySignals, buildPortfolioForecast } from "@/lib/signal-engine";
 import type { ScenarioMode } from "@/lib/command-center-types";
 import {
   getInvestorDefaults,
