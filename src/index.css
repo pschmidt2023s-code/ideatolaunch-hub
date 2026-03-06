@@ -142,15 +142,23 @@
   }
 
   h2 {
-    @apply text-2xl font-semibold tracking-tight;
+    @apply text-2xl font-semibold tracking-tight leading-snug;
   }
 
   h3 {
-    @apply text-lg font-semibold tracking-tight;
+    @apply text-lg font-semibold tracking-tight leading-snug;
   }
 
-  h4, h5, h6 {
-    @apply font-semibold tracking-tight;
+  h4 {
+    @apply text-base font-semibold tracking-tight;
+  }
+
+  h5 {
+    @apply text-sm font-semibold tracking-tight;
+  }
+
+  h6 {
+    @apply text-xs font-semibold uppercase tracking-widest;
   }
 }
 
