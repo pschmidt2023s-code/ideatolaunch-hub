@@ -162,6 +162,7 @@ const App = () => {
                       <Route path="/agb" element={<AGB />} />
                       <Route path="/product" element={<Product />} />
                       <Route path="/download" element={<Download />} />
+                      <Route path="/invite" element={<InviteRedeem />} />
 
                       {/* Blog */}
                       <Route path="/blog" element={<Blog />} />

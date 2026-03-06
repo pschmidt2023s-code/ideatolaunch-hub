@@ -23,3 +23,6 @@ verify_jwt = false
 
 [functions.ai-website-builder]
 verify_jwt = false
+
+[functions.redeem-invite]
+verify_jwt = false
