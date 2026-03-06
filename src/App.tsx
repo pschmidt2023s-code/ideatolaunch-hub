@@ -87,7 +87,19 @@ const MarketBenchmark = lazy(() => import("./pages/MarketBenchmark"));
 const WebsiteBuilder = lazy(() => import("./pages/WebsiteBuilder"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const SecurityDashboard = lazy(() => import("./pages/admin/SecurityDashboard"));
-const queryClient = new QueryClient();
+
+// ── Optimized QueryClient with smart defaults ───────────────
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000,      // 5 min – avoid redundant refetches
+      gcTime: 15 * 60 * 1000,         // 15 min garbage collection
+      retry: 1,                        // Single retry on failure
+      refetchOnWindowFocus: false,     // Don't refetch on tab switch
+      refetchOnReconnect: true,
+    },
+  },
+});
 
 function LazyFallback() {
   return (
@@ -188,7 +200,7 @@ const App = () => {
                       <Route path="/dashboard/affiliate" element={<ProtectedRoute><AffiliateDashboard /></ProtectedRoute>} />
                       <Route path="/dashboard/compliance" element={<ProtectedRoute><CompliancePage /></ProtectedRoute>} />
                       <Route path="/dashboard/strategic" element={<ProtectedRoute><StrategicPage /></ProtectedRoute>} />
-                      <Route path="/dashboard/intelligence" element={<ProtectedRoute><FounderIntelligencePage /></ProtectedRoute>} />
+                      <Route path="/dashboard/founder-intelligence" element={<ProtectedRoute><FounderIntelligencePage /></ProtectedRoute>} />
                       <Route path="/dashboard/recovery" element={<ProtectedRoute><RecoveryMode /></ProtectedRoute>} />
                       <Route path="/dashboard/execution" element={<ProtectedRoute><ExecutionOS /></ProtectedRoute>} />
                       <Route path="/dashboard/evolution" element={<ProtectedRoute><ProductEvolution /></ProtectedRoute>} />
