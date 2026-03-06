@@ -84,6 +84,7 @@ const BetaDashboard = lazy(() => import("./pages/admin/BetaDashboard"));
 const Download = lazy(() => import("./pages/Download"));
 const FailureSimulator = lazy(() => import("./pages/FailureSimulator"));
 const MarketBenchmark = lazy(() => import("./pages/MarketBenchmark"));
+const WebsiteBuilder = lazy(() => import("./pages/WebsiteBuilder"));
 
 const queryClient = new QueryClient();
 
