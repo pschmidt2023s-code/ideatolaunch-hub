@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { AnimatedCard } from "@/components/dashboard/AnimatedCard";
@@ -11,9 +11,13 @@ import { MoneyCard } from "@/components/dashboard/MoneyCard";
 import { RiskCard } from "@/components/dashboard/RiskCard";
 import { ExecutionCard } from "@/components/dashboard/ExecutionCard";
 import { CEOSection } from "@/components/dashboard/CEOSection";
+import { TradingForecastPanel } from "@/components/dashboard/ForecastPanel";
+import { FinancialDisclaimer } from "@/components/dashboard/FinancialDisclaimer";
+import { MetricOnboarding } from "@/components/dashboard/MetricOnboarding";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Activity, TrendingUp, Target, BarChart3, Shield, Plus, Trash2, ChevronDown, ChevronRight } from "lucide-react";
+import { Activity, TrendingUp, Target, BarChart3, Shield, Plus, Trash2, ChevronDown, ChevronRight, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { buildTradingForecast } from "@/lib/signal-engine";
 import type { ScenarioMode } from "@/lib/command-center-types";
 import {
   getTradingDefaults,
@@ -76,6 +80,7 @@ function CollapsibleSection({ title, children, defaultOpen = false }: { title: s
 export default function TradingDashboard() {
   const [mode, setMode] = useState<ScenarioMode>("realistic");
   const [input, setInput] = useState<TradingInput>(getTradingDefaults());
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   const update = (key: keyof TradingInput, value: number | string) => setInput((p) => ({ ...p, [key]: value }));
 
@@ -95,12 +100,19 @@ export default function TradingDashboard() {
   const expectancy = calculateExpectancy(input);
   const survival = calculateAccountSurvival(input);
   const netMonthly = calculateNetMonthlyPnL(input);
+  const tradingForecast = useMemo(() => buildTradingForecast(input), [input]);
 
   return (
     <DashboardLayout>
       <SEO title="Trading Mode – BrandOS" description="Trading Risk Score, Drawdown, Winrate, Profit Factor." path="/dashboard/trading" />
+      <MetricOnboarding mode="trading" open={showOnboarding} onOpenChange={setShowOnboarding} />
       <div className="animate-fade-in space-y-8">
-        <PageHeader title="Trading Mode" description="Risk, Performance & Account Survival auf einen Blick." badge="TRADER" badgeVariant="warning" />
+        <div className="flex items-center justify-between">
+          <PageHeader title="Trading Mode" description="Risk, Performance & Account Survival auf einen Blick." badge="TRADER" badgeVariant="warning" />
+          <Button variant="outline" size="sm" onClick={() => setShowOnboarding(true)} className="text-xs gap-1.5">
+            <BookOpen className="h-3.5 w-3.5" /> Metriken lernen
+          </Button>
+        </div>
 
         <CEOSection>
           <div className="flex items-center justify-between">
@@ -250,6 +262,12 @@ export default function TradingDashboard() {
             ))}
           </div>
         </CollapsibleSection>
+
+        {/* ── Forecast ── */}
+        <TradingForecastPanel forecast={tradingForecast} />
+
+        {/* ── Legal ── */}
+        <FinancialDisclaimer />
       </div>
     </DashboardLayout>
   );

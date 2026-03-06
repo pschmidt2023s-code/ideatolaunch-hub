@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { AnimatedCard } from "@/components/dashboard/AnimatedCard";
@@ -11,9 +11,14 @@ import { MoneyCard } from "@/components/dashboard/MoneyCard";
 import { RiskCard } from "@/components/dashboard/RiskCard";
 import { ExecutionCard } from "@/components/dashboard/ExecutionCard";
 import { CEOSection } from "@/components/dashboard/CEOSection";
-import { Activity, PieChart, Wallet, TrendingUp, ShieldAlert, ChevronDown, ChevronRight, Plus, Trash2 } from "lucide-react";
+import { SignalPanel } from "@/components/dashboard/SignalPanel";
+import { PortfolioForecastPanel } from "@/components/dashboard/ForecastPanel";
+import { FinancialDisclaimer } from "@/components/dashboard/FinancialDisclaimer";
+import { MetricOnboarding } from "@/components/dashboard/MetricOnboarding";
+import { Activity, PieChart, Wallet, TrendingUp, ShieldAlert, ChevronDown, ChevronRight, Plus, Trash2, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { generateCryptoSignals, generateEquitySignals, buildPortfolioForecast } from "@/lib/signal-engine";
 import type { ScenarioMode } from "@/lib/command-center-types";
 import {
   getInvestorDefaults,
@@ -82,6 +87,8 @@ function CollapsibleSection({ title, count, color, children, defaultOpen = false
 export default function InvestorDashboard() {
   const [mode, setMode] = useState<ScenarioMode>("realistic");
   const [input, setInput] = useState<InvestorInput>(getInvestorDefaults());
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [forecastTarget, setForecastTarget] = useState(75000);
 
   const sync = useCallback((next: InvestorInput) => {
     const recalced = recalcAllocations(next);
@@ -132,6 +139,10 @@ export default function InvestorDashboard() {
   const actions = buildInvestorActions(input);
   const portfolioRisk = calculatePortfolioRisk(input);
 
+  const cryptoSignals = useMemo(() => generateCryptoSignals(input), [input]);
+  const equitySignals = useMemo(() => generateEquitySignals(input), [input]);
+  const forecast = useMemo(() => buildPortfolioForecast(input, forecastTarget), [input, forecastTarget]);
+
   const totalAlloc = input.equityExposure + input.bondExposure + input.cryptoExposure + input.realEstateExposure + input.cashPosition;
 
   const allocations = [
@@ -145,8 +156,14 @@ export default function InvestorDashboard() {
   return (
     <DashboardLayout>
       <SEO title="Investor Mode – BrandOS" description="Portfolio Risk Score, Asset Allocation, Capital Growth." path="/dashboard/investor" />
+      <MetricOnboarding mode="investor" open={showOnboarding} onOpenChange={setShowOnboarding} />
       <div className="animate-fade-in space-y-8">
-        <PageHeader title="Investor Mode" description="Portfolio Risk, Allocation & Capital Growth im Überblick." badge="INVESTOR" badgeVariant="warning" />
+        <div className="flex items-center justify-between">
+          <PageHeader title="Investor Mode" description="Portfolio Risk, Allocation & Capital Growth im Überblick." badge="INVESTOR" badgeVariant="warning" />
+          <Button variant="outline" size="sm" onClick={() => setShowOnboarding(true)} className="text-xs gap-1.5">
+            <BookOpen className="h-3.5 w-3.5" /> Metriken lernen
+          </Button>
+        </div>
 
         <CEOSection>
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -300,6 +317,15 @@ export default function InvestorDashboard() {
           </CollapsibleSection>
         </div>
 
+        {/* ── Signals ── */}
+        <div className="grid gap-5 lg:grid-cols-2">
+          <SignalPanel signals={cryptoSignals} title="Crypto Signale" />
+          <SignalPanel signals={equitySignals} title="Aktien Signale" />
+        </div>
+
+        {/* ── Forecast ── */}
+        <PortfolioForecastPanel forecast={forecast} targetInput={forecastTarget} onTargetChange={setForecastTarget} />
+
         {/* Global Parameters */}
         <div className="rounded-2xl border bg-card p-6 shadow-card space-y-6">
           <h3 className="text-sm font-semibold">Globale Portfolio-Parameter</h3>
@@ -321,6 +347,9 @@ export default function InvestorDashboard() {
             ))}
           </div>
         </div>
+
+        {/* ── Legal ── */}
+        <FinancialDisclaimer />
       </div>
     </DashboardLayout>
   );
