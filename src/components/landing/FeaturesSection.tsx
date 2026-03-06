@@ -30,16 +30,16 @@ export function FeaturesSection() {
           {steps.map(({ icon: Icon, step, title, desc }, i) => (
             <div
               key={step}
-              className="group relative rounded-xl border bg-card p-6 transition-all hover:shadow-lg hover:border-accent/30"
+              className="group relative rounded-2xl border bg-card p-6 card-interactive"
               style={{ animationDelay: `${i * 80}ms` }}
             >
               <div className="mb-4 flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground text-sm font-mono font-medium">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground text-sm font-mono font-medium">
                   {step}
                 </div>
                 <Icon className="h-5 w-5 text-muted-foreground group-hover:text-accent transition-colors" />
               </div>
-              <h3 className="mb-1 text-lg font-semibold">{title}</h3>
+              <h3 className="mb-1 text-lg font-semibold font-display">{title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
             </div>
           ))}

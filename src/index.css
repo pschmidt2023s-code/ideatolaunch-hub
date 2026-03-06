@@ -281,6 +281,10 @@
     box-shadow: var(--shadow-lg);
   }
 
+  .shadow-glow-accent {
+    box-shadow: var(--shadow-glow-accent);
+  }
+
   /* Safe area for mobile */
   .pb-safe {
     padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
