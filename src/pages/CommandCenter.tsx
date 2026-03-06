@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { AnimatedCard } from "@/components/dashboard/AnimatedCard";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { StatusBar } from "@/components/dashboard/StatusBar";
@@ -97,9 +98,9 @@ export default function CommandCenter() {
 
               {/* Top 3 Cards */}
               <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                <MoneyCard data={data.money} />
-                <RiskCard risks={data.risks} />
-                <ExecutionCard actions={data.actions} />
+                <AnimatedCard index={0}><MoneyCard data={data.money} /></AnimatedCard>
+                <AnimatedCard index={1}><RiskCard risks={data.risks} /></AnimatedCard>
+                <AnimatedCard index={2}><ExecutionCard actions={data.actions} /></AnimatedCard>
               </div>
             </CEOSection>
 

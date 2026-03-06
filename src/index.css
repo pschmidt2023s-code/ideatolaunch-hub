@@ -273,4 +273,35 @@
   .text-body-muted {
     @apply text-sm leading-relaxed text-muted-foreground;
   }
+
+  /* ── Stagger delays for card grids ── */
+  .stagger-1 { animation-delay: 80ms; }
+  .stagger-2 { animation-delay: 160ms; }
+  .stagger-3 { animation-delay: 240ms; }
+  .stagger-4 { animation-delay: 320ms; }
+  .stagger-5 { animation-delay: 400ms; }
+
+  /* ── Interactive card hover ── */
+  .card-interactive {
+    @apply transition-all duration-200;
+  }
+  .card-interactive:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+  .card-interactive:active {
+    transform: translateY(0);
+  }
+
+  /* ── Focus ring utility ── */
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
+
+  /* ── Shimmer loading effect ── */
+  .shimmer {
+    background: linear-gradient(90deg, transparent 33%, hsl(var(--muted-foreground) / 0.05) 50%, transparent 67%);
+    background-size: 200% 100%;
+    animation: shimmer 2s ease-in-out infinite;
+  }
 }

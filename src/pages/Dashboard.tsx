@@ -57,6 +57,8 @@ import {
   Wrench,
 } from "lucide-react";
 import { GuidedStarterDialog } from "@/components/GuidedStarterDialog";
+import { EmptyState } from "@/components/dashboard/EmptyState";
+import { AnimatedCard } from "@/components/dashboard/AnimatedCard";
 
 const TOTAL_PHASES = 5;
 const stepIcons = [Target, Calculator, Factory, Shield, Rocket];
@@ -207,48 +209,52 @@ export default function Dashboard() {
 
         {/* Next Step Highlight */}
         {currentBrand && !isCompleted && (
-          <button
-            onClick={() => navigate(`/dashboard/step/${clampedStep}`)}
-            className="w-full flex items-center gap-4 rounded-2xl border-2 border-accent/30 bg-accent/5 p-5 text-left hover:border-accent/50 hover:shadow-md transition-all"
-          >
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent text-accent-foreground">
-              {(() => { const Icon = stepIcons[clampedStep - 1]; return <Icon className="h-5 w-5" />; })()}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-accent mb-0.5">
-                {isDE ? "Nächster Schritt" : "Next Step"}
-              </p>
-              <p className="font-semibold truncate">{t(`steps.s${clampedStep}`)}</p>
-            </div>
-            <ArrowRight className="h-5 w-5 text-accent shrink-0" />
-          </button>
+          <AnimatedCard index={1} variant="fade-up">
+            <button
+              onClick={() => navigate(`/dashboard/step/${clampedStep}`)}
+              className="w-full flex items-center gap-4 rounded-2xl border-2 border-accent/30 bg-accent/5 p-5 text-left hover:border-accent/50 card-interactive"
+            >
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent text-accent-foreground">
+                {(() => { const Icon = stepIcons[clampedStep - 1]; return <Icon className="h-5 w-5" />; })()}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-accent mb-0.5">
+                  {isDE ? "Nächster Schritt" : "Next Step"}
+                </p>
+                <p className="font-semibold truncate">{t(`steps.s${clampedStep}`)}</p>
+              </div>
+              <ArrowRight className="h-5 w-5 text-accent shrink-0" />
+            </button>
+          </AnimatedCard>
         )}
 
         {/* Quick Access */}
         {currentBrand && (
-          <div className="rounded-2xl border bg-card p-4 shadow-card">
-            <div className="flex items-center gap-2 mb-3">
-              <Wrench className="h-4 w-4 text-muted-foreground" />
-              <span className="text-xs font-medium text-muted-foreground">
-                {t("dashboard.quickAccess", "Schnellzugriff")}
-              </span>
+          <AnimatedCard index={2} variant="fade-up">
+            <div className="rounded-2xl border bg-card p-4 shadow-card">
+              <div className="flex items-center gap-2 mb-3">
+                <Wrench className="h-4 w-4 text-muted-foreground" />
+                <span className="text-xs font-medium text-muted-foreground">
+                  {t("dashboard.quickAccess", "Schnellzugriff")}
+                </span>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { label: isDE ? "Produktionskosten" : "Production Costs", href: "/tools/produktionskosten-rechner" },
+                  { label: "Break-Even", href: "/tools/break-even-rechner" },
+                  { label: "MOQ", href: "/tools/moq-rechner" },
+                ].map((tool) => (
+                  <button
+                    key={tool.href}
+                    onClick={() => navigate(tool.href)}
+                    className="rounded-xl border bg-background px-3 py-2.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors text-center focus-ring"
+                  >
+                    {tool.label}
+                  </button>
+                ))}
+              </div>
             </div>
-            <div className="grid grid-cols-3 gap-2">
-              {[
-                { label: isDE ? "Produktionskosten" : "Production Costs", href: "/tools/produktionskosten-rechner" },
-                { label: "Break-Even", href: "/tools/break-even-rechner" },
-                { label: "MOQ", href: "/tools/moq-rechner" },
-              ].map((tool) => (
-                <button
-                  key={tool.href}
-                  onClick={() => navigate(tool.href)}
-                  className="rounded-xl border bg-background px-3 py-2.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors text-center"
-                >
-                  {tool.label}
-                </button>
-              ))}
-            </div>
-          </div>
+          </AnimatedCard>
         )}
 
         {currentBrand && showGuidedStarter && (
@@ -262,20 +268,20 @@ export default function Dashboard() {
           </Button>
         )}
         {!brands?.length ? (
-          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed bg-card p-16 text-center">
-            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-accent/10">
-              <Plus className="h-6 w-6 text-accent" />
-            </div>
-            <h2 className="text-lg font-semibold">{t("dashboard.createFirst")}</h2>
-            <p className="mt-2 max-w-sm text-sm text-muted-foreground">{t("dashboard.createFirstDesc")}</p>
-            <Button
-              onClick={createBrand}
-              className="mt-6 gap-2 bg-accent text-accent-foreground hover:bg-accent/90"
-            >
-              <Plus className="h-4 w-4" />
-              {t("dashboard.createBrand")}
-            </Button>
-          </div>
+          <EmptyState
+            icon={<Plus className="h-6 w-6 text-accent" />}
+            title={t("dashboard.createFirst")}
+            description={t("dashboard.createFirstDesc")}
+            action={
+              <Button
+                onClick={createBrand}
+                className="gap-2 bg-accent text-accent-foreground hover:bg-accent/90"
+              >
+                <Plus className="h-4 w-4" />
+                {t("dashboard.createBrand")}
+              </Button>
+            }
+          />
         ) : (
           <div className="space-y-6">
             {currentBrand && isCompleted && (

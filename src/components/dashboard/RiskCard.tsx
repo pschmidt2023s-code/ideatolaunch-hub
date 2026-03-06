@@ -18,7 +18,7 @@ export function RiskCard({ risks }: { risks: RiskItem[] }) {
   const maxImpact = Math.max(...risks.map((r) => r.impact), 1);
 
   return (
-    <div className="rounded-2xl border bg-card p-5 shadow-card space-y-4 group hover:shadow-md transition-shadow">
+    <div className="rounded-2xl border bg-card p-5 shadow-card space-y-4 group card-interactive">
       {/* Header */}
       <div className="flex items-center gap-2">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-warning/10">
