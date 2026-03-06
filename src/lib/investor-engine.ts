@@ -63,8 +63,8 @@ const DEFAULT_EQUITY: EquityAsset[] = [
 ];
 
 const DEFAULT_BONDS: BondAsset[] = [
-  { id: "gov", name: "Staatsanleihen", allocation: 12, type: "etf" as any, duration: "medium" },
-  { id: "corp", name: "Unternehmensanleihen", allocation: 8, type: "etf" as any, duration: "short" },
+  { id: "gov", name: "Staatsanleihen", allocation: 12, duration: "medium" },
+  { id: "corp", name: "Unternehmensanleihen", allocation: 8, duration: "short" },
 ];
 
 const DEFAULT_RE: RealEstateAsset[] = [
