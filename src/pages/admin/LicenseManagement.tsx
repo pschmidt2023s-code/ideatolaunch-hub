@@ -61,6 +61,7 @@ export default function LicenseManagement() {
   const [inviteLabel, setInviteLabel] = useState("");
   const [inviteExpiry, setInviteExpiry] = useState("");
   const [inviteSaving, setInviteSaving] = useState(false);
+  const [createdInviteUrl, setCreatedInviteUrl] = useState<string | null>(null);
 
   // Form
   const [formPlan, setFormPlan] = useState<string>("builder");
@@ -154,19 +155,21 @@ export default function LicenseManagement() {
   };
 
   // ── Create Invite Link ──
+  const CUSTOM_DOMAIN = "https://brand.aldenairperfumes.de";
+
   const handleCreateInvite = async () => {
     setInviteSaving(true);
-    const { error } = await supabase.from("license_invitations").insert({
+    const { data, error } = await supabase.from("license_invitations").insert({
       plan: invitePlan,
       label: inviteLabel || null,
       created_by: user!.id,
       expires_at: inviteExpiry ? new Date(inviteExpiry).toISOString() : null,
-    });
+    }).select("token").single();
 
     if (error) { toast.error("Fehler: " + error.message); }
-    else {
-      toast.success("Einladungslink erstellt");
-      setInviteDialogOpen(false);
+    else if (data) {
+      const url = getInviteUrl(data.token);
+      setCreatedInviteUrl(url);
       setInviteLabel("");
       setInviteExpiry("");
       loadData();
@@ -175,8 +178,7 @@ export default function LicenseManagement() {
   };
 
   const getInviteUrl = (token: string) => {
-    const base = window.location.origin;
-    return `${base}/#/invite?token=${token}`;
+    return `${CUSTOM_DOMAIN}/#/invite?token=${token}`;
   };
 
   const copyInviteUrl = async (token: string) => {
@@ -448,34 +450,59 @@ export default function LicenseManagement() {
       </Dialog>
 
       {/* Create Invite Dialog */}
-      <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
+      <Dialog open={inviteDialogOpen} onOpenChange={(open) => { setInviteDialogOpen(open); if (!open) setCreatedInviteUrl(null); }}>
         <DialogContent className="sm:max-w-md">
-          <DialogHeader><DialogTitle>Einladungslink erstellen</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{createdInviteUrl ? "Link erstellt ✅" : "Einladungslink erstellen"}</DialogTitle></DialogHeader>
           <div className="space-y-4 mt-2">
-            <p className="text-sm text-muted-foreground">
-              Erstelle einen Link den du teilen kannst. Der Empfänger registriert sich darüber und bekommt automatisch den gewählten Plan.
-            </p>
-            <div className="space-y-2">
-              <Label>Plan</Label>
-              <Select value={invitePlan} onValueChange={setInvitePlan}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {PLANS.filter(p => p !== "free").map((p) => <SelectItem key={p} value={p}>{PLAN_LABELS[p]}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label>Label (intern)</Label>
-              <Input value={inviteLabel} onChange={(e) => setInviteLabel(e.target.value)} placeholder="z.B. Für Max, Partner-Deal…" />
-            </div>
-            <div className="space-y-2">
-              <Label>Ablaufdatum (optional)</Label>
-              <Input type="date" value={inviteExpiry} onChange={(e) => setInviteExpiry(e.target.value)} />
-            </div>
-            <Button onClick={handleCreateInvite} disabled={inviteSaving} className="w-full gap-2">
-              {inviteSaving && <Loader2 className="h-4 w-4 animate-spin" />}
-              <Send className="h-4 w-4" /> Link erstellen
-            </Button>
+            {createdInviteUrl ? (
+              <>
+                <p className="text-sm text-muted-foreground">
+                  Kopiere den Link und teile ihn. Der Empfänger registriert sich darüber und bekommt sofort den Plan.
+                </p>
+                <div className="rounded-lg border bg-muted/30 p-3 space-y-2">
+                  <p className="text-[11px] text-muted-foreground">Einladungslink</p>
+                  <code className="text-xs font-mono break-all block">{createdInviteUrl}</code>
+                </div>
+                <div className="flex gap-2">
+                  <Button className="flex-1 gap-2" onClick={async () => {
+                    await navigator.clipboard.writeText(createdInviteUrl);
+                    toast.success("Link kopiert!");
+                  }}>
+                    <Copy className="h-4 w-4" /> Link kopieren
+                  </Button>
+                  <Button variant="outline" onClick={() => { setCreatedInviteUrl(null); setInviteDialogOpen(false); }}>
+                    Fertig
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <>
+                <p className="text-sm text-muted-foreground">
+                  Erstelle einen Link den du teilen kannst. Keine E-Mail-Verifizierung nötig.
+                </p>
+                <div className="space-y-2">
+                  <Label>Plan</Label>
+                  <Select value={invitePlan} onValueChange={setInvitePlan}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {PLANS.filter(p => p !== "free").map((p) => <SelectItem key={p} value={p}>{PLAN_LABELS[p]}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Label (intern)</Label>
+                  <Input value={inviteLabel} onChange={(e) => setInviteLabel(e.target.value)} placeholder="z.B. Für Max, Partner-Deal…" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Ablaufdatum (optional)</Label>
+                  <Input type="date" value={inviteExpiry} onChange={(e) => setInviteExpiry(e.target.value)} />
+                </div>
+                <Button onClick={handleCreateInvite} disabled={inviteSaving} className="w-full gap-2">
+                  {inviteSaving && <Loader2 className="h-4 w-4 animate-spin" />}
+                  <Send className="h-4 w-4" /> Link erstellen
+                </Button>
+              </>
+            )}
           </div>
         </DialogContent>
       </Dialog>
