@@ -16,7 +16,7 @@ import { getCapabilities } from "@/lib/feature-flags";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { generateBrandReport } from "@/lib/pdf-export";
+import { generateWorkflowPdf } from "@/lib/pdf-export";
 import { useNavigate } from "react-router-dom";
 import type { StepHandle } from "./StepIdeaFoundation";
 import { generateLabelChecklist, type ChecklistEntry } from "@/lib/checklist-generators";
@@ -169,10 +169,10 @@ export const StepComplianceSales = forwardRef<StepHandle>(function StepComplianc
       navigate("/dashboard/pricing");
       return;
     }
-    generateBrandReport({
-      brandName: activeBrand?.name || "Brand",
-      complianceChecklist: labelChecklist.map((item) => ({ item: item.label, checked: !!complianceChecked[item.id] })),
-    });
+    generateWorkflowPdf(activeBrand?.name || "Brand", "Compliance & Vertrieb", [{
+      title: "Label & Compliance",
+      items: labelChecklist.map((item) => ({ label: item.label, checked: !!complianceChecked[item.id] })),
+    }]);
     toast.success(t("pdf.exportSuccess"));
   };
 

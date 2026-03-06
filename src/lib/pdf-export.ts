@@ -507,6 +507,87 @@ export function generateBlueprint(data: BlueprintData): void {
 }
 
 // ═══════════════════════════════════════════════════════════════════
+//  WORKFLOW STEP PDF EXPORT
+// ═══════════════════════════════════════════════════════════════════
+
+export interface WorkflowPdfSection {
+  title: string;
+  items: { label: string; checked: boolean; detail?: string }[];
+}
+
+export function generateWorkflowPdf(
+  brandName: string,
+  pageTitle: string,
+  sections: WorkflowPdfSection[]
+): void {
+  const doc = new jsPDF();
+  const margin = 20;
+  let y = margin;
+
+  const ensureSpace = (needed: number) => {
+    if (y + needed > 270) { doc.addPage(); y = margin; }
+  };
+
+  // Header
+  doc.setFontSize(18);
+  doc.setFont("helvetica", "bold");
+  doc.text(`${pageTitle} — ${brandName}`, margin, y);
+  y += 8;
+  doc.setFontSize(9);
+  doc.setFont("helvetica", "normal");
+  doc.text(`Erstellt am ${new Date().toLocaleDateString("de-DE")}`, margin, y);
+  y += 6;
+  doc.setDrawColor(180, 180, 180);
+  doc.line(margin, y, 190, y);
+  y += 8;
+
+  for (const section of sections) {
+    ensureSpace(14);
+    doc.setFontSize(13);
+    doc.setFont("helvetica", "bold");
+    doc.text(section.title, margin, y);
+    y += 7;
+
+    for (const item of section.items) {
+      ensureSpace(item.detail ? 12 : 7);
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+
+      const icon = item.checked ? "✓" : "○";
+      doc.setTextColor(item.checked ? 60 : 160, item.checked ? 160 : 80, item.checked ? 60 : 80);
+      doc.text(icon, margin, y);
+      doc.setTextColor(0, 0, 0);
+      doc.text(item.label, margin + 6, y);
+      y += 5;
+
+      if (item.detail) {
+        doc.setFontSize(8);
+        doc.setTextColor(120, 120, 120);
+        const lines = doc.splitTextToSize(item.detail, 160);
+        doc.text(lines, margin + 6, y);
+        y += lines.length * 4;
+        doc.setTextColor(0, 0, 0);
+      }
+      y += 1;
+    }
+    y += 4;
+  }
+
+  // Summary
+  const totalItems = sections.flatMap(s => s.items);
+  const doneCount = totalItems.filter(i => i.checked).length;
+  ensureSpace(14);
+  doc.setDrawColor(180, 180, 180);
+  doc.line(margin, y, 190, y);
+  y += 6;
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "bold");
+  doc.text(`Fortschritt: ${doneCount}/${totalItems.length} erledigt (${totalItems.length > 0 ? Math.round((doneCount / totalItems.length) * 100) : 0}%)`, margin, y);
+
+  doc.save(`${brandName.replace(/\s+/g, "_")}_${pageTitle.replace(/\s+/g, "_")}.pdf`);
+}
+
+// ═══════════════════════════════════════════════════════════════════
 //  LEGACY: keep old function for backward compat
 // ═══════════════════════════════════════════════════════════════════
 
