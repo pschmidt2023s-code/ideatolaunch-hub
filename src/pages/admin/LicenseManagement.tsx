@@ -517,6 +517,7 @@ function PlanBadge({ plan }: { plan: string }) {
     builder: "bg-primary/10 text-primary",
     pro: "bg-accent/10 text-accent-foreground",
     execution: "bg-orange-500/10 text-orange-600",
+    trading: "bg-blue-500/10 text-blue-600",
   };
   return (
     <span className={`inline-flex rounded-md px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide ${styles[plan] ?? styles.free}`}>
