@@ -35,6 +35,8 @@ export function useSubscription() {
   const isBuilder = plan === "builder" || isPro;
   const isFree = plan === "free";
 
+  const licenseKey = subscription?.license_key as string | null ?? null;
+
   return {
     subscription,
     plan,
@@ -42,6 +44,7 @@ export function useSubscription() {
     isPro,
     isBuilder,
     isFree,
+    licenseKey,
     loading: isLoading,
   };
 }
