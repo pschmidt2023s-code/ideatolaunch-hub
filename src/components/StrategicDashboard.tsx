@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +18,8 @@ import {
   type SupplierRiskInput,
 } from "@/lib/strategic-intelligence";
 import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
+import { useBrand } from "@/hooks/useBrand";
 import { toast } from "sonner";
 
 const RISK_LEVEL_COLORS: Record<string, string> = {
@@ -28,7 +30,65 @@ const RISK_LEVEL_COLORS: Record<string, string> = {
 };
 
 export default function StrategicDashboard() {
-  // Capital Burn inputs
+  const { activeBrand } = useBrand();
+  const brandId = activeBrand?.id;
+
+  // ── Live data fetches ──
+  const { data: financialModel } = useQuery({
+    queryKey: ["strat_financial", brandId],
+    queryFn: async () => {
+      const { data } = await supabase.from("financial_models").select("*").eq("brand_id", brandId!).maybeSingle();
+      return data;
+    },
+    enabled: !!brandId,
+  });
+
+  const { data: brandProfile } = useQuery({
+    queryKey: ["strat_profile", brandId],
+    queryFn: async () => {
+      const { data } = await supabase.from("brand_profiles").select("budget, product_category").eq("brand_id", brandId!).maybeSingle();
+      return data;
+    },
+    enabled: !!brandId,
+  });
+
+  const { data: productionPlan } = useQuery({
+    queryKey: ["strat_production", brandId],
+    queryFn: async () => {
+      const { data } = await supabase.from("production_plans").select("*").eq("brand_id", brandId!).maybeSingle();
+      return data;
+    },
+    enabled: !!brandId,
+  });
+
+  const { data: complianceScore } = useQuery({
+    queryKey: ["strat_compliance", brandId],
+    queryFn: async () => {
+      const { data } = await supabase.from("compliance_scores").select("overall_score").eq("brand_id", brandId!).maybeSingle();
+      return data;
+    },
+    enabled: !!brandId,
+  });
+
+  const { data: launchPlan } = useQuery({
+    queryKey: ["strat_launch", brandId],
+    queryFn: async () => {
+      const { data } = await supabase.from("launch_plans").select("fulfillment_model, sales_channel").eq("brand_id", brandId!).maybeSingle();
+      return data;
+    },
+    enabled: !!brandId,
+  });
+
+  const { data: brand } = useQuery({
+    queryKey: ["strat_brand", brandId],
+    queryFn: async () => {
+      const { data } = await supabase.from("brands").select("current_step, created_at").eq("id", brandId!).maybeSingle();
+      return data;
+    },
+    enabled: !!brandId,
+  });
+
+  // ── Capital Burn inputs (pre-filled from DB) ──
   const [productionCost, setProductionCost] = useState(5);
   const [packagingCost, setPackagingCost] = useState(2);
   const [shippingCost, setShippingCost] = useState(3);
@@ -44,6 +104,41 @@ export default function StrategicDashboard() {
   const [region, setRegion] = useState("China");
   const [leadTimeWeeks, setLeadTimeWeeks] = useState(8);
   const [singleSupplier, setSingleSupplier] = useState(true);
+
+  // Track if we already pre-filled from DB
+  const [initialized, setInitialized] = useState(false);
+
+  useEffect(() => {
+    if (initialized) return;
+    if (!financialModel && !brandProfile && !productionPlan) return;
+
+    if (financialModel) {
+      if (financialModel.production_cost != null) setProductionCost(Number(financialModel.production_cost));
+      if (financialModel.packaging_cost != null) setPackagingCost(Number(financialModel.packaging_cost));
+      if (financialModel.shipping_cost != null) setShippingCost(Number(financialModel.shipping_cost));
+      if (financialModel.marketing_budget != null) setMarketingBudget(Number(financialModel.marketing_budget));
+      if (financialModel.recommended_price != null) setPricePerUnit(Number(financialModel.recommended_price));
+      if (financialModel.break_even_units != null) setUnitsPerMonth(financialModel.break_even_units);
+    }
+
+    if (brandProfile?.budget) {
+      const budgetMap: Record<string, number> = { "<1k": 800, "1k-5k": 3000, "5k-15k": 10000, "15k+": 20000 };
+      const parsed = parseFloat(brandProfile.budget.replace(/[^\d.]/g, ""));
+      const val = isNaN(parsed) ? (budgetMap[brandProfile.budget] ?? 10000) : parsed;
+      setTotalCapital(val);
+      setBudget(val);
+    }
+
+    if (productionPlan) {
+      if (productionPlan.moq_expectation) {
+        const moq = parseInt(productionPlan.moq_expectation, 10);
+        if (!isNaN(moq)) setMoqAmount(moq);
+      }
+      if (productionPlan.production_region) setRegion(productionPlan.production_region);
+    }
+
+    setInitialized(true);
+  }, [financialModel, brandProfile, productionPlan, initialized]);
 
   // AI Recommendations
   const [aiLoading, setAiLoading] = useState(false);
@@ -68,22 +163,32 @@ export default function StrategicDashboard() {
     ? Math.round(((pricePerUnit - productionCost - packagingCost - shippingCost) / pricePerUnit) * 100)
     : 0;
 
+  // Live compliance score from DB
+  const liveComplianceScore = complianceScore?.overall_score ?? 50;
+
   const launchProb = computeLaunchProbability({
     margin,
     capitalSafetyMonths: capitalBurn.cashRunwayMonths,
     supplierRiskScore: supplierRisk.overallScore,
-    complianceScore: 50,
-    hasProduct: true,
-    hasDistribution: false,
+    complianceScore: liveComplianceScore,
+    hasProduct: !!productionPlan,
+    hasDistribution: !!(launchPlan?.fulfillment_model || launchPlan?.sales_channel),
   });
 
+  // Compute execution from real brand progress
+  const currentStep = brand?.current_step ?? 1;
+  const totalSteps = 7;
+  const daysActive = brand?.created_at
+    ? Math.max(1, Math.floor((Date.now() - new Date(brand.created_at).getTime()) / 86400000))
+    : 14;
+
   const execution = computeExecutionScore({
-    stepsCompleted: 3,
-    totalSteps: 7,
-    daysActive: 14,
-    financialModelComplete: true,
-    supplierSelected: false,
-    complianceScore: 50,
+    stepsCompleted: Math.max(0, currentStep - 1),
+    totalSteps,
+    daysActive,
+    financialModelComplete: !!financialModel,
+    supplierSelected: !!productionPlan?.production_region,
+    complianceScore: liveComplianceScore,
   });
 
   const getAiRecommendations = async () => {
@@ -99,7 +204,7 @@ export default function StrategicDashboard() {
           productionCost,
           marketingBudget,
           region,
-          productCategory: "Konsumgüter",
+          productCategory: brandProfile?.product_category ?? "Konsumgüter",
         },
       });
 
