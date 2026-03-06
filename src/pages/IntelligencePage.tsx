@@ -1,12 +1,15 @@
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { LiveKPIDashboard } from "@/components/dashboard/LiveKPIDashboard";
+import { AIStrategyAdvisor } from "@/components/dashboard/AIStrategyAdvisor";
+import { MarketBenchmarkPanel } from "@/components/dashboard/MarketBenchmarkPanel";
 import { ExplainabilityPanel } from "@/components/dashboard/ExplainabilityPanel";
 import { MarketRealityCard } from "@/components/MarketRealityCard";
 import { FounderCopilot } from "@/components/FounderCopilot";
 import { SEO } from "@/components/SEO";
 import { MOCK_BRAND_SUGGESTIONS } from "@/lib/command-center-types";
-import { Sparkles, BarChart3, Brain, Crown, Target, DollarSign, TrendingUp } from "lucide-react";
+import { Sparkles, BarChart3, Brain, Crown, Target, DollarSign, TrendingUp, Activity, Compass } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
@@ -15,65 +18,74 @@ export default function IntelligencePage() {
     <DashboardLayout>
       <SEO
         title="Intelligence Suite – BrandOS"
-        description="Brand Pack, Market Signals und Decision Insights."
+        description="Live KPIs, KI-Strategieberater, Market Benchmarks und Brand Intelligence."
         path="/dashboard/intelligence"
       />
       <div className="animate-fade-in space-y-8">
         <PageHeader
           title="Intelligence Suite"
-          description="KI-gestützte Analysen und Empfehlungen"
+          description="KI-gestützte Analysen, Live-KPIs und strategische Empfehlungen"
           badge="AI"
           badgeVariant="warning"
         />
 
-        <Tabs defaultValue="brand-pack" className="space-y-6">
-          {/* Stable tabs – fixed width to prevent layout shift */}
-          <TabsList className="w-full sm:w-auto h-auto p-1 bg-muted rounded-2xl">
+        <Tabs defaultValue="live-kpis" className="space-y-6">
+          <TabsList className="w-full sm:w-auto h-auto p-1 bg-muted rounded-2xl flex-wrap">
+            <TabsTrigger value="live-kpis" className="gap-1.5 rounded-xl data-[state=active]:shadow-sm px-4 py-2.5">
+              <Activity className="h-3.5 w-3.5" /> Live KPIs
+            </TabsTrigger>
+            <TabsTrigger value="strategy" className="gap-1.5 rounded-xl data-[state=active]:shadow-sm px-4 py-2.5">
+              <Sparkles className="h-3.5 w-3.5" /> KI-Strategie
+            </TabsTrigger>
+            <TabsTrigger value="benchmark" className="gap-1.5 rounded-xl data-[state=active]:shadow-sm px-4 py-2.5">
+              <BarChart3 className="h-3.5 w-3.5" /> Benchmark
+            </TabsTrigger>
             <TabsTrigger value="brand-pack" className="gap-1.5 rounded-xl data-[state=active]:shadow-sm px-4 py-2.5">
-              <Sparkles className="h-3.5 w-3.5" /> Brand Pack
+              <Crown className="h-3.5 w-3.5" /> Brand Pack
             </TabsTrigger>
             <TabsTrigger value="market-signals" className="gap-1.5 rounded-xl data-[state=active]:shadow-sm px-4 py-2.5">
-              <BarChart3 className="h-3.5 w-3.5" /> Market Signals
+              <Compass className="h-3.5 w-3.5" /> Market Signals
             </TabsTrigger>
-            <TabsTrigger value="decision-insights" className="gap-1.5 rounded-xl data-[state=active]:shadow-sm px-4 py-2.5">
-              <Brain className="h-3.5 w-3.5" /> Decision Insights
+            <TabsTrigger value="copilot" className="gap-1.5 rounded-xl data-[state=active]:shadow-sm px-4 py-2.5">
+              <Brain className="h-3.5 w-3.5" /> Copilot
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="live-kpis">
+            <LiveKPIDashboard />
+          </TabsContent>
+
+          <TabsContent value="strategy">
+            <AIStrategyAdvisor />
+          </TabsContent>
+
+          <TabsContent value="benchmark">
+            <MarketBenchmarkPanel />
+          </TabsContent>
 
           <TabsContent value="brand-pack" className="space-y-5">
             {MOCK_BRAND_SUGGESTIONS.filter((b) => b.score >= 90).map((b) => {
               const [primaryColor, accentColor] = b.colorSuggestion.split(" / ");
               return (
                 <div key={b.name} className="rounded-2xl border bg-card p-6 shadow-card hover:shadow-md transition-shadow space-y-5">
-                  {/* Header */}
                   <div className="flex items-center justify-between gap-4">
                     <h3 className="text-xl font-bold">{b.name}</h3>
                     <ScoreBadge score={b.score} />
                   </div>
-
                   <p className="text-base italic text-muted-foreground leading-relaxed">„{b.claim}"</p>
-
-                  {/* Metadata grid */}
                   <div className="grid gap-4 sm:grid-cols-2">
                     <MetaItem icon={Crown} label="Archetype" value={b.archetype} />
                     <MetaItem icon={Target} label="Zielgruppen-Emotion" value={b.targetEmotion} />
                     <MetaItem icon={DollarSign} label="Preispositionierung" value={b.pricePositioning} />
                     <MetaItem icon={TrendingUp} label="Margen-Kompatibilität" value={b.marginCompatibility} />
                   </div>
-
-                  {/* Tonality pill + color dots */}
                   <div className="flex flex-wrap items-center gap-3">
-                    <span className="rounded-full border bg-muted/50 px-3 py-1 text-xs font-medium">
-                      {b.tonality}
-                    </span>
+                    <span className="rounded-full border bg-muted/50 px-3 py-1 text-xs font-medium">{b.tonality}</span>
                     <div className="flex items-center gap-2">
                       <TooltipProvider delayDuration={150}>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <span
-                              className="h-4 w-4 rounded-full border border-border/40 shadow-sm cursor-default"
-                              style={{ backgroundColor: primaryColor }}
-                            />
+                            <span className="h-4 w-4 rounded-full border border-border/40 shadow-sm cursor-default" style={{ backgroundColor: primaryColor }} />
                           </TooltipTrigger>
                           <TooltipContent side="top" className="text-xs">Primärfarbe</TooltipContent>
                         </Tooltip>
@@ -81,22 +93,14 @@ export default function IntelligencePage() {
                       <TooltipProvider delayDuration={150}>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <span
-                              className="h-4 w-4 rounded-full border border-border/40 shadow-sm cursor-default"
-                              style={{ backgroundColor: accentColor }}
-                            />
+                            <span className="h-4 w-4 rounded-full border border-border/40 shadow-sm cursor-default" style={{ backgroundColor: accentColor }} />
                           </TooltipTrigger>
                           <TooltipContent side="top" className="text-xs">Akzentfarbe</TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
                     </div>
                   </div>
-
-                  <ExplainabilityPanel
-                    reasoning={b.reasoning}
-                    dataUsed={b.dataUsed}
-                    confidence={b.confidence}
-                  />
+                  <ExplainabilityPanel reasoning={b.reasoning} dataUsed={b.dataUsed} confidence={b.confidence} />
                 </div>
               );
             })}
@@ -106,7 +110,7 @@ export default function IntelligencePage() {
             <MarketRealityCard />
           </TabsContent>
 
-          <TabsContent value="decision-insights">
+          <TabsContent value="copilot">
             <FounderCopilot />
           </TabsContent>
         </Tabs>
@@ -115,7 +119,6 @@ export default function IntelligencePage() {
   );
 }
 
-/** Unified score badge */
 function ScoreBadge({ score }: { score: number }) {
   const variant = score >= 90 ? "text-success bg-success/10" : score >= 70 ? "text-warning bg-warning/10" : "text-destructive bg-destructive/10";
   return (
