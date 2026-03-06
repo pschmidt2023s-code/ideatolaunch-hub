@@ -11,7 +11,7 @@ import { getCapabilities } from "@/lib/feature-flags";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { generateBrandReport } from "@/lib/pdf-export";
+import { generateWorkflowPdf } from "@/lib/pdf-export";
 import { useNavigate } from "react-router-dom";
 import type { StepHandle } from "./StepIdeaFoundation";
 import { generateLabelChecklist, type ChecklistEntry } from "@/lib/checklist-generators";
