@@ -19,6 +19,10 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
     prefetch();
   }, [prefetch]);
 
+  useEffect(() => {
+    if (needsSelection) setModeDialogOpen(true);
+  }, [needsSelection]);
+
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       {/* Desktop sidebar */}
