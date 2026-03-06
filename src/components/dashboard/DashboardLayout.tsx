@@ -11,6 +11,8 @@ import { usePrefetchDashboard } from "@/hooks/useQueryDefaults";
 export function DashboardLayout({ children }: { children: ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user } = useAuth();
+  const { needsSelection } = useMode();
+  const [modeDialogOpen, setModeDialogOpen] = useState(false);
   const prefetch = usePrefetchDashboard(user?.id);
 
   useEffect(() => {
