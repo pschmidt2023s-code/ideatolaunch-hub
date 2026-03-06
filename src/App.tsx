@@ -237,6 +237,7 @@ const App = () => {
                   <BetaFeedbackButton />
                 </HashRouter>
               </TooltipProvider>
+              </ModeProvider>
             </BrandProvider>
           </AuthProvider>
         </QueryClientProvider>
