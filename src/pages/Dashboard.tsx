@@ -262,20 +262,20 @@ export default function Dashboard() {
           </Button>
         )}
         {!brands?.length ? (
-          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed bg-card p-16 text-center">
-            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-accent/10">
-              <Plus className="h-6 w-6 text-accent" />
-            </div>
-            <h2 className="text-lg font-semibold">{t("dashboard.createFirst")}</h2>
-            <p className="mt-2 max-w-sm text-sm text-muted-foreground">{t("dashboard.createFirstDesc")}</p>
-            <Button
-              onClick={createBrand}
-              className="mt-6 gap-2 bg-accent text-accent-foreground hover:bg-accent/90"
-            >
-              <Plus className="h-4 w-4" />
-              {t("dashboard.createBrand")}
-            </Button>
-          </div>
+          <EmptyState
+            icon={<Plus className="h-6 w-6 text-accent" />}
+            title={t("dashboard.createFirst")}
+            description={t("dashboard.createFirstDesc")}
+            action={
+              <Button
+                onClick={createBrand}
+                className="gap-2 bg-accent text-accent-foreground hover:bg-accent/90"
+              >
+                <Plus className="h-4 w-4" />
+                {t("dashboard.createBrand")}
+              </Button>
+            }
+          />
         ) : (
           <div className="space-y-6">
             {currentBrand && isCompleted && (
