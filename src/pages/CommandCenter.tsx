@@ -96,6 +96,15 @@ export default function CommandCenter() {
               <ExecutionCard actions={data.actions} />
             </div>
 
+            {/* Capital Intelligence */}
+            <div className="grid gap-6 sm:grid-cols-2">
+              <WorkingCapitalEngine />
+              <ExecutionLeakDetector />
+            </div>
+
+            {/* Decision Engine */}
+            <DecisionEngineCard />
+
             <ExplainabilityPanel
               reasoning="Alle Werte werden live aus deinem Markenprofil, Finanzmodell, Compliance- und Produktionsdaten berechnet. Kein Demo – echte Zahlen."
               dataUsed={[
