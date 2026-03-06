@@ -160,6 +160,10 @@ export default function StepPage() {
           <StepGuidancePanel stepNumber={step} />
         </div>
 
+        <div className="mb-6">
+          <AdaptiveWorkflowPanel currentStep={step} />
+        </div>
+
         <StepComponent ref={stepRef} />
 
         <div className="mt-10 flex items-center justify-between border-t pt-6">

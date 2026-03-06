@@ -59,6 +59,7 @@ export function DashboardSidebar({ onNavigate }: DashboardSidebarProps) {
   ];
 
   const extras = [
+    { icon: Sparkles, label: "Website Builder", path: "/dashboard/website-builder" },
     { icon: Gift, label: "Empfehlungen", path: "/dashboard/referrals" },
     { icon: HeartPulse, label: "Recovery Mode", path: "/dashboard/recovery" },
     { icon: Crown, label: "Execution OS", path: "/dashboard/execution" },
