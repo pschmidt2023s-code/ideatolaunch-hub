@@ -242,7 +242,7 @@ export default function LicenseManagement() {
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-6 gap-3 mb-8">
           {(["free", "builder", "pro", "execution"] as const).map((plan) => (
             <div key={plan} className="rounded-xl border bg-card p-4">
               <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">{plan}</p>
