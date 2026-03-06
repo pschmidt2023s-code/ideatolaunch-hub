@@ -69,18 +69,69 @@ export function FounderCopilot() {
     enabled: !!activeBrand,
   });
 
+  const { data: strategic } = useQuery({
+    queryKey: ["copilot-strategic", activeBrand?.id],
+    queryFn: async () => {
+      if (!activeBrand) return null;
+      const { data } = await supabase
+        .from("strategic_scores")
+        .select("supplier_risk_score, capital_burn_monthly, cash_runway_months, launch_probability")
+        .eq("brand_id", activeBrand.id)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!activeBrand,
+  });
+
+  const { data: production } = useQuery({
+    queryKey: ["copilot-production", activeBrand?.id],
+    queryFn: async () => {
+      if (!activeBrand) return null;
+      const { data } = await supabase
+        .from("production_plans")
+        .select("moq_expectation")
+        .eq("brand_id", activeBrand.id)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!activeBrand,
+  });
+
+  const { data: launchPlan } = useQuery({
+    queryKey: ["copilot-launch", activeBrand?.id],
+    queryFn: async () => {
+      if (!activeBrand) return null;
+      const { data } = await supabase
+        .from("launch_plans")
+        .select("launch_readiness_score")
+        .eq("brand_id", activeBrand.id)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!activeBrand,
+  });
+
+  const budget = profile?.budget ? parseFloat(profile.budget) : 10000;
+  const monthlyBurn = strategic?.capital_burn_monthly
+    ? Number(strategic.capital_burn_monthly)
+    : (financials?.marketing_budget ?? 500) / 1; // fallback: marketing as burn proxy
+
   const ctx: CopilotContext = useMemo(() => ({
     margin: financials?.margin ?? 35,
-    capitalSafetyMonths: 5,
-    riskScore: 40,
-    monthlyBurnRate: 1200,
-    returnRate: 5,
-    launchProbability: 65,
-    moq: 500,
-    budget: profile?.budget ? parseFloat(profile.budget) : 10000,
+    capitalSafetyMonths: strategic?.cash_runway_months
+      ? Number(strategic.cash_runway_months)
+      : monthlyBurn > 0 ? budget / monthlyBurn : 12,
+    riskScore: strategic?.supplier_risk_score ?? 40,
+    monthlyBurnRate: monthlyBurn,
+    returnRate: 5, // no DB field yet – kept as sensible default
+    launchProbability: strategic?.launch_probability
+      ?? launchPlan?.launch_readiness_score
+      ?? 65,
+    moq: production?.moq_expectation ? parseInt(production.moq_expectation, 10) || 500 : 500,
+    budget,
     productionCost: financials?.production_cost ?? 8,
     targetPrice: financials?.recommended_price ?? 24.90,
-  }), [financials, profile]);
+  }), [financials, profile, strategic, production, launchPlan, budget, monthlyBurn]);
 
   const recommendations = useMemo(() => generateRecommendations(ctx), [ctx]);
 
