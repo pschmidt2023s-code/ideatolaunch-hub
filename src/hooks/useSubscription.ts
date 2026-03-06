@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { STALE } from "@/hooks/useQueryDefaults";
 
-export type Plan = "free" | "builder" | "pro" | "execution";
+export type Plan = "free" | "builder" | "pro" | "execution" | "trading";
 
 export function useSubscription() {
   const { user } = useAuth();
@@ -24,7 +24,9 @@ export function useSubscription() {
   });
 
   const plan: Plan =
-    subscription?.status === "execution"
+    subscription?.status === "trading"
+      ? "trading"
+      : subscription?.status === "execution"
       ? "execution"
       : subscription?.status === "pro"
       ? "pro"
@@ -32,8 +34,9 @@ export function useSubscription() {
       ? "builder"
       : "free";
 
-  const isExecution = plan === "execution";
-  const isPro = plan === "pro" || plan === "execution";
+  const isTrading = plan === "trading";
+  const isExecution = plan === "execution" || isTrading;
+  const isPro = plan === "pro" || isExecution;
   const isBuilder = plan === "builder" || isPro;
   const isFree = plan === "free";
 
@@ -42,6 +45,7 @@ export function useSubscription() {
   return {
     subscription,
     plan,
+    isTrading,
     isExecution,
     isPro,
     isBuilder,

@@ -33,9 +33,9 @@ interface InvitationRow {
 }
 type SubWithProfile = SubscriptionRow & { profile?: ProfileRow };
 
-const PLANS = ["free", "builder", "pro", "execution"] as const;
+const PLANS = ["free", "builder", "pro", "execution", "trading"] as const;
 const PLAN_LABELS: Record<string, string> = {
-  free: "Free", builder: "Builder (29€/mo)", pro: "Pro (79€/mo)", execution: "Execution OS (159€/mo)",
+  free: "Free", builder: "Builder (29€/mo)", pro: "Pro (79€/mo)", execution: "Execution OS (159€/mo)", trading: "Trading (199€/mo)",
 };
 
 function generateLicenseKey(): string {
@@ -242,8 +242,8 @@ export default function LicenseManagement() {
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-8">
-          {(["free", "builder", "pro", "execution"] as const).map((plan) => (
+        <div className="grid grid-cols-2 sm:grid-cols-6 gap-3 mb-8">
+          {(["free", "builder", "pro", "execution", "trading"] as const).map((plan) => (
             <div key={plan} className="rounded-xl border bg-card p-4">
               <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">{plan}</p>
               <p className="text-2xl font-bold mt-1">{subs.filter((s) => s.status === plan).length}</p>
@@ -517,6 +517,7 @@ function PlanBadge({ plan }: { plan: string }) {
     builder: "bg-primary/10 text-primary",
     pro: "bg-accent/10 text-accent-foreground",
     execution: "bg-orange-500/10 text-orange-600",
+    trading: "bg-blue-500/10 text-blue-600",
   };
   return (
     <span className={`inline-flex rounded-md px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide ${styles[plan] ?? styles.free}`}>

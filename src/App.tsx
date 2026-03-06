@@ -92,6 +92,7 @@ const SystemStatus = lazy(() => import("./pages/admin/SystemStatus"));
 const LicenseManagement = lazy(() => import("./pages/admin/LicenseManagement"));
 const InviteRedeem = lazy(() => import("./pages/InviteRedeem"));
 const TradingDashboard = lazy(() => import("./pages/modes/TradingDashboard"));
+const TradingIntelligence = lazy(() => import("./pages/TradingIntelligence"));
 const InvestorDashboard = lazy(() => import("./pages/modes/InvestorDashboard"));
 const StrategyDashboard = lazy(() => import("./pages/modes/StrategyDashboard"));
 
@@ -218,6 +219,7 @@ const App = () => {
                       <Route path="/dashboard/benchmark" element={<ProtectedRoute><MarketBenchmark /></ProtectedRoute>} />
                       <Route path="/dashboard/website-builder" element={<ProtectedRoute><WebsiteBuilder /></ProtectedRoute>} />
                       <Route path="/dashboard/trading" element={<ProtectedRoute><TradingDashboard /></ProtectedRoute>} />
+                      <Route path="/trading" element={<ProtectedRoute><TradingIntelligence /></ProtectedRoute>} />
                       <Route path="/dashboard/investor" element={<ProtectedRoute><InvestorDashboard /></ProtectedRoute>} />
                       <Route path="/dashboard/strategy" element={<ProtectedRoute><StrategyDashboard /></ProtectedRoute>} />
                       <Route path="/internal/analytics" element={<AdminRoute><InternalAnalytics /></AdminRoute>} />
