@@ -209,22 +209,24 @@ export default function Dashboard() {
 
         {/* Next Step Highlight */}
         {currentBrand && !isCompleted && (
-          <button
-            onClick={() => navigate(`/dashboard/step/${clampedStep}`)}
-            className="w-full flex items-center gap-4 rounded-2xl border-2 border-accent/30 bg-accent/5 p-5 text-left hover:border-accent/50 hover:shadow-md transition-all"
-          >
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent text-accent-foreground">
-              {(() => { const Icon = stepIcons[clampedStep - 1]; return <Icon className="h-5 w-5" />; })()}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-accent mb-0.5">
-                {isDE ? "Nächster Schritt" : "Next Step"}
-              </p>
-              <p className="font-semibold truncate">{t(`steps.s${clampedStep}`)}</p>
-            </div>
-            <ArrowRight className="h-5 w-5 text-accent shrink-0" />
-          </button>
-        )}
+          <AnimatedCard index={1} variant="fade-up">
+            <button
+              onClick={() => navigate(`/dashboard/step/${clampedStep}`)}
+              className="w-full flex items-center gap-4 rounded-2xl border-2 border-accent/30 bg-accent/5 p-5 text-left hover:border-accent/50 card-interactive"
+            >
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent text-accent-foreground">
+                {(() => { const Icon = stepIcons[clampedStep - 1]; return <Icon className="h-5 w-5" />; })()}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-accent mb-0.5">
+                  {isDE ? "Nächster Schritt" : "Next Step"}
+                </p>
+                <p className="font-semibold truncate">{t(`steps.s${clampedStep}`)}</p>
+              </div>
+              <ArrowRight className="h-5 w-5 text-accent shrink-0" />
+            </button>
+          </AnimatedCard>
+        )
 
         {/* Quick Access */}
         {currentBrand && (
