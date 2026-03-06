@@ -1,6 +1,7 @@
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import { STALE } from "@/hooks/useQueryDefaults";
 
 export type Plan = "free" | "builder" | "pro" | "execution";
 
@@ -19,6 +20,7 @@ export function useSubscription() {
       return data;
     },
     enabled: !!user,
+    staleTime: STALE.STATIC,
   });
 
   const plan: Plan =
