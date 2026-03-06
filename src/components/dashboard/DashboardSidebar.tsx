@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useMode } from "@/hooks/useMode";
 import { useTranslation } from "react-i18next";
 import { Globe } from "lucide-react";
 import {
@@ -21,8 +22,11 @@ import {
   Map,
   ChevronDown,
   ChevronRight,
+  TrendingUp,
+  PieChart,
 } from "lucide-react";
 import { CommandPalette } from "./CommandPalette";
+import { ModeBadge } from "@/components/ModeSwitcher";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
