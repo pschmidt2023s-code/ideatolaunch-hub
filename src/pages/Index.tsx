@@ -27,6 +27,7 @@ const Index = () => {
       <Navbar />
       <main>
         <HeroSection />
+        <FounderRiskPreviewCard />
         <FeaturesSection />
         <CTABlock />
         <WhyUsSection />
