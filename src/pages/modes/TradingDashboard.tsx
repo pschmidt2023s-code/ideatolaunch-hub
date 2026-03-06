@@ -105,8 +105,14 @@ export default function TradingDashboard() {
   return (
     <DashboardLayout>
       <SEO title="Trading Mode – BrandOS" description="Trading Risk Score, Drawdown, Winrate, Profit Factor." path="/dashboard/trading" />
+      <MetricOnboarding mode="trading" open={showOnboarding} onOpenChange={setShowOnboarding} />
       <div className="animate-fade-in space-y-8">
-        <PageHeader title="Trading Mode" description="Risk, Performance & Account Survival auf einen Blick." badge="TRADER" badgeVariant="warning" />
+        <div className="flex items-center justify-between">
+          <PageHeader title="Trading Mode" description="Risk, Performance & Account Survival auf einen Blick." badge="TRADER" badgeVariant="warning" />
+          <Button variant="outline" size="sm" onClick={() => setShowOnboarding(true)} className="text-xs gap-1.5">
+            <BookOpen className="h-3.5 w-3.5" /> Metriken lernen
+          </Button>
+        </div>
 
         <CEOSection>
           <div className="flex items-center justify-between">
