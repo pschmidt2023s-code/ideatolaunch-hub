@@ -114,8 +114,8 @@ export default function SettingsPage() {
           </Button>
         </div>
 
-        {/* Plan */}
-        <div className="rounded-xl border bg-card p-6 shadow-card">
+        {/* Plan & License */}
+        <div className="rounded-xl border bg-card p-6 shadow-card mb-6">
           <div className="flex items-center gap-3 mb-4">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent/10">
               <CreditCard className="h-5 w-5 text-accent" />
@@ -128,6 +128,31 @@ export default function SettingsPage() {
               {plan === "execution" ? "Execution OS" : plan === "pro" ? "Pro" : plan === "builder" ? "Builder" : "Free"}
             </span>
           </p>
+
+          {/* License Key */}
+          {licenseKey && (
+            <div className="mt-4 rounded-lg border bg-muted/30 p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <KeyRound className="h-4 w-4 text-accent" />
+                <span className="text-sm font-semibold">
+                  {isDE ? "Lizenzschlüssel" : "License Key"}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <code className="flex-1 rounded-md border bg-background px-3 py-2 font-mono text-sm tracking-wider select-all">
+                  {licenseKey}
+                </code>
+                <LicenseCopyButton value={licenseKey} isDE={isDE} />
+              </div>
+            </div>
+          )}
+
+          {!licenseKey && !isFree && (
+            <p className="mt-3 text-xs text-muted-foreground">
+              {isDE ? "Lizenzschlüssel wird generiert…" : "License key is being generated…"}
+            </p>
+          )}
+
           <Button
             variant="outline"
             className="mt-4 gap-2"
