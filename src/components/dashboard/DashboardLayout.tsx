@@ -75,9 +75,6 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
         </main>
       </div>
 
-      {/* Copilot Chat Widget */}
-      <CopilotChatWidget />
-
       {/* Mode selection dialog */}
       <ModeSwitcher
         open={modeDialogOpen}

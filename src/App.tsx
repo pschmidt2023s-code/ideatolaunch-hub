@@ -254,9 +254,10 @@ const App = () => {
                     </Routes>
                   </Suspense>
 
-                  <CookieConsentBanner />
-                  <BetaBadge />
-                  <BetaFeedbackButton />
+                   <CookieConsentBanner />
+                   <BetaBadge />
+                   <BetaFeedbackButton />
+                   <CopilotChatWidget />
                 </HashRouter>
               </TooltipProvider>
               </ModeProvider>
