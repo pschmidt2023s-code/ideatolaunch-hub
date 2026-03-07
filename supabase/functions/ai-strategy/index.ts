@@ -79,7 +79,7 @@ Format: Jede Empfehlung als JSON-Objekt mit "category", "title", "description", 
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash-lite",
+        model: "google/gemini-2.5-pro",
         messages: [
           { role: "system", content: "Du bist ein Experte für Private-Label-Geschäftsberatung. Antworte immer auf Deutsch. Gib nur das JSON-Array zurück, keine andere Formatierung." },
           { role: "user", content: prompt },
