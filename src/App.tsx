@@ -62,6 +62,7 @@ const ProduktionsfehlerVermeiden = lazy(() => import("./pages/guide/Produktionsf
 const UeberUns = lazy(() => import("./pages/UeberUns"));
 const CaseStudies = lazy(() => import("./pages/CaseStudies"));
 const Community = lazy(() => import("./pages/Community"));
+const CommunityHub = lazy(() => import("./pages/CommunityHub"));
 const ReferralDashboard = lazy(() => import("./pages/ReferralDashboard"));
 const AffiliateDashboard = lazy(() => import("./pages/AffiliateDashboard"));
 
