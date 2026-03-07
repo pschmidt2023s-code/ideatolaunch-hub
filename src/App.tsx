@@ -94,6 +94,7 @@ const InviteRedeem = lazy(() => import("./pages/InviteRedeem"));
 const RedeemCode = lazy(() => import("./pages/RedeemCode"));
 const TradingDashboard = lazy(() => import("./pages/modes/TradingDashboard"));
 const TradingIntelligence = lazy(() => import("./pages/TradingIntelligence"));
+const RiskAnalysis = lazy(() => import("./pages/RiskAnalysis"));
 const InvestorDashboard = lazy(() => import("./pages/modes/InvestorDashboard"));
 const StrategyDashboard = lazy(() => import("./pages/modes/StrategyDashboard"));
 
@@ -222,6 +223,7 @@ const App = () => {
                       <Route path="/dashboard/website-builder" element={<ProtectedRoute><WebsiteBuilder /></ProtectedRoute>} />
                       <Route path="/dashboard/trading" element={<ProtectedRoute><TradingDashboard /></ProtectedRoute>} />
                       <Route path="/trading" element={<ProtectedRoute><TradingIntelligence /></ProtectedRoute>} />
+                      <Route path="/risk-analysis" element={<ProtectedRoute><RiskAnalysis /></ProtectedRoute>} />
                       <Route path="/dashboard/investor" element={<ProtectedRoute><InvestorDashboard /></ProtectedRoute>} />
                       <Route path="/dashboard/strategy" element={<ProtectedRoute><StrategyDashboard /></ProtectedRoute>} />
                       <Route path="/internal/analytics" element={<AdminRoute><InternalAnalytics /></AdminRoute>} />
