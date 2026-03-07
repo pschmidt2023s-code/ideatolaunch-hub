@@ -112,6 +112,15 @@ Deno.serve(async (req) => {
             event_name: "nudge_sent",
             metadata: { step: brand.current_step, brand_name: brand.name },
           });
+          // Create in-app notification
+          await sb.from("notifications").insert({
+            user_id: brand.user_id,
+            brand_id: brand.id,
+            type: "nudge",
+            title: nudge.title,
+            message: `${brand.name}: ${nudge.action}`,
+            action_url: `/dashboard/step/${brand.current_step}`,
+          });
         }
       } catch (userError) {
         console.error(`[smart-nudge] Error for user ${brand.user_id}:`, userError);
