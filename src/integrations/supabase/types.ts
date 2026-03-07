@@ -809,6 +809,7 @@ export type Database = {
           label: string | null
           license_key: string | null
           plan: string
+          short_code: string | null
           status: string
           token: string
           used_at: string | null
@@ -822,6 +823,7 @@ export type Database = {
           label?: string | null
           license_key?: string | null
           plan?: string
+          short_code?: string | null
           status?: string
           token?: string
           used_at?: string | null
@@ -835,6 +837,7 @@ export type Database = {
           label?: string | null
           license_key?: string | null
           plan?: string
+          short_code?: string | null
           status?: string
           token?: string
           used_at?: string | null
