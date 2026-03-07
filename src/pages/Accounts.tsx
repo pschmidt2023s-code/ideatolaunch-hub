@@ -53,8 +53,8 @@ export default function Accounts() {
 
   const fetchAccounts = async () => {
     setLoading(true);
-    const { data } = await supabase
-      .from("trading_accounts" as string)
+    const { data } = await (supabase as any)
+      .from("trading_accounts")
       .select("*")
       .order("created_at", { ascending: false });
     setAccounts((data as unknown as TradingAccount[]) || []);
