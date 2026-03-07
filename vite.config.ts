@@ -49,6 +49,10 @@ export default defineConfig(({ mode }) => ({
           "vendor-pdf": ["jspdf"],
           // i18n
           "vendor-i18n": ["i18next", "react-i18next"],
+          // Animation – heavy, used across dashboard
+          "vendor-motion": ["framer-motion"],
+          // Markdown rendering
+          "vendor-markdown": ["react-markdown"],
         },
       },
     },
