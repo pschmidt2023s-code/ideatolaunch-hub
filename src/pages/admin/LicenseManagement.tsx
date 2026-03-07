@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { checkIsAdmin } from "@/lib/founder-analytics";
 import {
   ArrowLeft, Plus, Pencil, Trash2, Copy, Check, KeyRound, Loader2,
-  Link2, Power, PowerOff, Send, MoreHorizontal, ExternalLink,
+  Link2, Power, PowerOff, Send, MoreHorizontal, ExternalLink, QrCode,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
