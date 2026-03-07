@@ -232,8 +232,11 @@ export default function SettingsPage() {
           </div>
         </AnimatedCard>
 
+        {/* Session Management */}
+        <SessionManagement />
+
         {/* Beta Client */}
-        <AnimatedCard index={3}>
+        <AnimatedCard index={4}>
           <div className="rounded-2xl border bg-card p-6 shadow-card">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
