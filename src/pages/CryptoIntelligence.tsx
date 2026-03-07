@@ -590,6 +590,7 @@ export default function CryptoIntelligence() {
           </TabsContent>
         </Tabs>
 
+        <AIPageInsights pageContext="Crypto Intelligence – Portfolio, Trade Journal, Analytics, Risk Suite, Survival, Edge, Regime, Timeline, Emotion, Deep Tools" title="AI Crypto Insights" />
         <FinancialDisclaimer />
       </div>
     </DashboardLayout>
