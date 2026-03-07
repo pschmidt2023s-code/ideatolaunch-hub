@@ -51,6 +51,7 @@ const MODE_NAV: Record<AppMode, { icon: React.ElementType; label: string; path: 
 const FOUNDER_JOURNEY = [1, 2, 3, 4, 5];
 
 const EXTRAS = [
+  { icon: Telescope, label: "Wettbewerber", path: "/dashboard/competitors" },
   { icon: Gift, label: "Empfehlungen", path: "/dashboard/referrals" },
   { icon: HeartPulse, label: "Recovery Mode", path: "/dashboard/recovery" },
   { icon: Crown, label: "Execution OS", path: "/dashboard/execution" },
