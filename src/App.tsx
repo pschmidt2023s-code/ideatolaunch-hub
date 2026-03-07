@@ -98,7 +98,7 @@ const RiskAnalysis = lazy(() => import("./pages/RiskAnalysis"));
 const CryptoIntelligence = lazy(() => import("./pages/CryptoIntelligence"));
 const InvestorDashboard = lazy(() => import("./pages/modes/InvestorDashboard"));
 const StrategyDashboard = lazy(() => import("./pages/modes/StrategyDashboard"));
-
+const Accounts = lazy(() => import("./pages/Accounts"));
 // ── Optimized QueryClient with smart defaults ───────────────
 const queryClient = new QueryClient({
   defaultOptions: {
