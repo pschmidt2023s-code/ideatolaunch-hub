@@ -392,6 +392,7 @@ export default function RecoveryMode() {
             </TabsContent>
           </Tabs>
 
+          <AIPageInsights pageContext="Recovery Mode – Cashflow-Rettung, Kostenoptimierung, Notfall-Szenarien" title="AI Recovery Insights" />
           <LegalDisclaimer type="simulation" />
         </div>
       </div>

@@ -180,6 +180,7 @@ export default function RiskAnalysis() {
           </div>
         </AnimatedCard>
 
+        <AIPageInsights pageContext="Risk of Ruin Analysis – Monte Carlo Simulation, Ruin Probability, Bankroll Management" title="AI Risk Insights" />
         <FinancialDisclaimer />
       </div>
     </DashboardLayout>

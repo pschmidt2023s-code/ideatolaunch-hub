@@ -859,6 +859,7 @@ export default function ExecutionOSDashboard() {
             {isDE ? "Execution OS ist für ambitionierte Gründer gebaut." : "Execution OS is built for serious founders."}<br />
             {isDE ? "Execution OS entwickelt sich kontinuierlich weiter, um dein Kapital zu schützen." : "Execution OS continuously evolves to protect your capital."}
           </p>
+          <AIPageInsights pageContext="Execution OS – Kapitalschutz, Ausführungsdisziplin, Operational Excellence" title="AI Execution Insights" />
         </div>
       </div>
     </DashboardLayout>
