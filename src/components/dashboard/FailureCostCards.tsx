@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MOCK_FAILURE_COSTS } from "@/lib/command-center-types";
+import { FAILURE_COSTS } from "@/lib/command-center-types";
 import { AlertOctagon, Calculator, Shield, Undo, Truck, TrendingDown } from "lucide-react";
 
 const iconMap: Record<string, React.ReactNode> = {
@@ -20,7 +20,7 @@ export function FailureCostCards() {
       </CardHeader>
       <CardContent>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {MOCK_FAILURE_COSTS.map((f) => (
+          {FAILURE_COSTS.map((f) => (
             <div
               key={f.id}
               className="flex flex-col gap-2 rounded-lg border border-destructive/20 bg-destructive/5 p-4"
