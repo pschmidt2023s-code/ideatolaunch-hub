@@ -32,6 +32,7 @@ Deno.serve(async (req) => {
     const body = await req.json();
     const messages = body?.messages;
     const context = body?.context;
+    const language = context?.language === "en" ? "en" : "de";
 
     if (!Array.isArray(messages) || messages.length === 0) {
       return new Response(JSON.stringify({ error: "Messages array required" }), {
