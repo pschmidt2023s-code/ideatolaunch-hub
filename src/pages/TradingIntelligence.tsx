@@ -119,14 +119,8 @@ export default function TradingIntelligence() {
   const [aiLoading, setAiLoading] = useState(false);
   const [aiReview, setAiReview] = useState("");
 
-  // Pairs for exposure
-  const pairs = [
-    { name: "BTC/USD", market: "crypto", allocation: 30 },
-    { name: "ETH/USD", market: "crypto", allocation: 20 },
-    { name: "EUR/USD", market: "forex", allocation: 25 },
-    { name: "NAS100", market: "futures", allocation: 15 },
-    { name: "AAPL", market: "stocks", allocation: 10 },
-  ];
+  // Pairs for exposure – populated from connected accounts
+  const pairs: Array<{ name: string; market: string; allocation: number }> = [];
 
   // ── Calculations ──
   const survival = useMemo(() => runAccountSurvival(winrate, riskPerTrade, rrr, accountSize), [winrate, riskPerTrade, rrr, accountSize]);
@@ -367,38 +361,46 @@ export default function TradingIntelligence() {
           <TabsContent value="exposure">
             <Card>
               <h3 className="text-sm font-semibold mb-6 flex items-center gap-2"><PieChart className="h-4 w-4" /> Portfolio Exposure Map</h3>
-              <div className="grid sm:grid-cols-2 gap-8">
-                <div className="h-64">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <RPieChart>
-                      <Pie data={exposure.exposures} dataKey="allocation" nameKey="asset" cx="50%" cy="50%" outerRadius={80} label={({ asset, allocation }) => `${asset} ${allocation}%`}>
-                        {exposure.exposures.map((_, i) => (
-                          <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                    </RPieChart>
-                  </ResponsiveContainer>
+              {exposure.exposures.length === 0 ? (
+                <div className="text-center py-10">
+                  <PieChart className="h-8 w-8 mx-auto text-muted-foreground/30 mb-3" />
+                  <p className="text-sm text-muted-foreground">Kein Portfolio verbunden.</p>
+                  <p className="text-xs text-muted-foreground/60 mt-1">Verbinde deinen Exchange-Account, um deine Exposure zu analysieren.</p>
                 </div>
-                <div className="space-y-4">
-                  <BigNumber label="Diversification Score" value={`${exposure.diversificationScore}`} color={exposure.diversificationScore > 60 ? "text-green-500" : "text-yellow-500"} />
-                  <BigNumber label="Concentration Risk" value={`${exposure.concentrationRisk}%`} color={exposure.concentrationRisk > 40 ? "text-destructive" : "text-green-500"} />
-                  <div className="space-y-2 mt-4">
-                    {exposure.exposures.map((e, i) => (
-                      <div key={i} className="flex items-center justify-between text-xs">
-                        <div className="flex items-center gap-2">
-                          <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }} />
-                          <span>{e.asset}</span>
+              ) : (
+                <div className="grid sm:grid-cols-2 gap-8">
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <RPieChart>
+                        <Pie data={exposure.exposures} dataKey="allocation" nameKey="asset" cx="50%" cy="50%" outerRadius={80} label={({ asset, allocation }) => `${asset} ${allocation}%`}>
+                          {exposure.exposures.map((_, i) => (
+                            <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip />
+                      </RPieChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div className="space-y-4">
+                    <BigNumber label="Diversification Score" value={`${exposure.diversificationScore}`} color={exposure.diversificationScore > 60 ? "text-green-500" : "text-yellow-500"} />
+                    <BigNumber label="Concentration Risk" value={`${exposure.concentrationRisk}%`} color={exposure.concentrationRisk > 40 ? "text-destructive" : "text-green-500"} />
+                    <div className="space-y-2 mt-4">
+                      {exposure.exposures.map((e, i) => (
+                        <div key={i} className="flex items-center justify-between text-xs">
+                          <div className="flex items-center gap-2">
+                            <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }} />
+                            <span>{e.asset}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium">{e.allocation}%</span>
+                            <StatusPill label={e.risk} level={e.risk === "high" ? "danger" : e.risk === "low" ? "safe" : "warning"} />
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium">{e.allocation}%</span>
-                          <StatusPill label={e.risk} level={e.risk === "high" ? "danger" : e.risk === "low" ? "safe" : "warning"} />
-                        </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </Card>
           </TabsContent>
 

@@ -120,13 +120,7 @@ export default function CryptoIntelligence() {
   const whaleResult = useMemo(() => analyzeWhaleActivity(whaleRatio, whaleFlow), [whaleRatio, whaleFlow]);
   const orderbookResult = useMemo(() => analyzeOrderbook(bidVol, askVol), [bidVol, askVol]);
 
-  const portfolioResult = useMemo(() => analyzePortfolioCorrelation([
-    { name: "BTC", allocation: 40, type: "btc_correlated" },
-    { name: "ETH", allocation: 25, type: "eth_correlated" },
-    { name: "SOL", allocation: 15, type: "alt" },
-    { name: "USDT", allocation: 10, type: "stablecoin" },
-    { name: "UNI", allocation: 10, type: "defi" },
-  ]), []);
+  const portfolioResult = useMemo(() => analyzePortfolioCorrelation([]), []);
 
   // ── Slider helper ──
   const SliderField = ({ label, value, onChange, min, max, step = 1 }: {
@@ -165,18 +159,9 @@ export default function CryptoIntelligence() {
           {/* ═══ NEW: Portfolio Dashboard (Features 1, 2, 18) ═══ */}
           <TabsContent value="portfolio" className="space-y-6">
             <PortfolioDashboard
-              balances={[
-                { asset: "USDT", free: 15000, locked: 2000, usdValue: 17000 },
-                { asset: "BTC", free: 0.5, locked: 0.1, usdValue: 40200 },
-                { asset: "ETH", free: 5, locked: 1, usdValue: 21000 },
-                { asset: "SOL", free: 100, locked: 20, usdValue: 21600 },
-              ]}
-              totalEquity={99800}
-              positions={[
-                { symbol: "BTCUSDT", size: 0.1, leverage: liqLeverage, entryPrice: liqEntry, unrealizedPnl: 1250, isLong: true },
-                { symbol: "ETHUSDT", size: 2, leverage: 5, entryPrice: 3500, unrealizedPnl: -320, isLong: true },
-                { symbol: "SOLUSDT", size: 50, leverage: 3, entryPrice: 180, unrealizedPnl: 450, isLong: false },
-              ]}
+              balances={[]}
+              totalEquity={0}
+              positions={[]}
               accountBalance={survival.accountSize}
             />
           </TabsContent>

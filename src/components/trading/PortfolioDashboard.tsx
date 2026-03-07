@@ -17,9 +17,22 @@ interface Props {
 }
 
 export function PortfolioDashboard({ balances, totalEquity, positions, accountBalance }: Props) {
+  const hasData = balances.length > 0;
   const pieData = balances.filter(b => b.usdValue > 0).map(b => ({ name: b.asset, value: Math.round(b.usdValue) }));
   const margin = useMemo(() => checkMarginHealth(positions, accountBalance), [positions, accountBalance]);
   const totalPnl = positions.reduce((s, p) => s + p.unrealizedPnl, 0);
+
+  if (!hasData) {
+    return (
+      <div className="rounded-2xl border bg-card p-8 text-center">
+        <Wallet className="h-10 w-10 mx-auto text-muted-foreground/30 mb-4" />
+        <h3 className="text-base font-semibold mb-2">Kein Portfolio verbunden</h3>
+        <p className="text-sm text-muted-foreground max-w-md mx-auto">
+          Verbinde deinen Exchange-Account (Binance, Bybit, OKX, Kraken) um dein echtes Portfolio, Positionen und Risiken hier zu sehen.
+        </p>
+      </div>
+    );
+  }
 
   // Correlation matrix (simplified)
   const assets = balances.filter(b => b.usdValue > totalEquity * 0.05).map(b => b.asset);
