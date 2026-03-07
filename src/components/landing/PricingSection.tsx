@@ -166,6 +166,28 @@ export function PricingSection() {
         { label: "Advanced AI Copilot", desc: "CEO-level recommendations & next-best-action" },
       ];
 
+  const tradingFeatures: PlanFeature[] = isDE
+    ? [
+        { label: "Risk of Ruin Engine", desc: "Monte-Carlo-Simulation deiner Account-Überlebenswahrscheinlichkeit" },
+        { label: "Account Connector", desc: "Binance, Bybit, OKX & Kraken – Read-Only Analyse" },
+        { label: "Liquidation Risk Scanner", desc: "Echtzeit-Abstand zur Liquidation für alle Futures-Positionen" },
+        { label: "AI Edge Detector", desc: "KI erkennt Edge-Stärke, Decline & Entry-Qualität" },
+        { label: "Market Regime AI", desc: "Erkennt Marktphasen: Trend, Sideways, Bear, Bull" },
+        { label: "Emotional Trading Detector", desc: "Erkennt Overtrading, Tilt & Risk Violations" },
+        { label: "Portfolio Exposure Map", desc: "Visualisierung deiner Exposure nach Asset" },
+        { label: "AI Trade Review", desc: "KI analysiert Trade History: FOMO, Early Exits, Risk Management" },
+      ]
+    : [
+        { label: "Risk of Ruin Engine", desc: "Monte Carlo simulation of your account survival probability" },
+        { label: "Account Connector", desc: "Binance, Bybit, OKX & Kraken – read-only analysis" },
+        { label: "Liquidation Risk Scanner", desc: "Real-time distance to liquidation for all futures positions" },
+        { label: "AI Edge Detector", desc: "AI detects edge strength, decline & entry quality" },
+        { label: "Market Regime AI", desc: "Detects market phases: trend, sideways, bear, bull" },
+        { label: "Emotional Trading Detector", desc: "Detects overtrading, tilt & risk violations" },
+        { label: "Portfolio Exposure Map", desc: "Visualize your exposure by asset" },
+        { label: "AI Trade Review", desc: "AI analyzes trade history: FOMO, early exits, risk management" },
+      ];
+
   const plans = [
     {
       name: "Free",
