@@ -17,7 +17,7 @@ export function PortfolioForecastPanel({ forecast, targetInput, onTargetChange }
           <TrendingUp className="h-4 w-4 text-primary" />
           Portfolio Prognose (24 Monate)
         </h3>
-        <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Simuliert</span>
+        <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Prognose</span>
       </div>
 
       {/* Chart */}
