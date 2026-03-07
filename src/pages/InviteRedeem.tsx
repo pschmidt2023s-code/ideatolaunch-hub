@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -21,6 +21,22 @@ export default function InviteRedeem() {
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<{ plan: string; license_key: string } | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
+  const pendingRedeem = useRef(false);
+
+  const PLAN_LABELS: Record<string, string> = {
+    builder: "Builder",
+    pro: "Pro",
+    execution: "Execution OS",
+    trading: "Trading",
+  };
+
+  // Auto-redeem when user session becomes available after signup
+  useEffect(() => {
+    if (user && pendingRedeem.current) {
+      pendingRedeem.current = false;
+      redeemInvite();
+    }
+  }, [user]);
 
   // Check token validity
   useEffect(() => {
@@ -50,9 +66,7 @@ export default function InviteRedeem() {
         return;
       }
 
-      // Token is valid
       if (!authLoading && user) {
-        // Already logged in → redeem directly
         redeemInvite();
       } else if (!authLoading) {
         setStep("signup");
@@ -65,14 +79,6 @@ export default function InviteRedeem() {
   const redeemInvite = async () => {
     setStep("redeeming");
     try {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const accessToken = sessionData.session?.access_token;
-      if (!accessToken) {
-        setStep("error");
-        setErrorMsg("Nicht eingeloggt.");
-        return;
-      }
-
       const res = await supabase.functions.invoke("redeem-invite", {
         body: { token },
       });
@@ -85,6 +91,7 @@ export default function InviteRedeem() {
 
       setResult(res.data);
       setStep("done");
+      toast.success("Einladung erfolgreich eingelöst!");
     } catch (e: any) {
       setStep("error");
       setErrorMsg(e.message);
@@ -111,20 +118,14 @@ export default function InviteRedeem() {
           setSubmitting(false);
           return;
         }
-        toast.success("Account erstellt! Einladung wird eingelöst…");
       }
 
-      // Wait a moment for session to establish, then redeem
-      setTimeout(() => redeemInvite(), 1500);
+      // With auto-confirm, session is immediately available.
+      pendingRedeem.current = true;
+      setStep("redeeming");
     } catch {
       setSubmitting(false);
     }
-  };
-
-  const PLAN_LABELS: Record<string, string> = {
-    builder: "Builder",
-    pro: "Pro",
-    execution: "Execution OS",
   };
 
   if (step === "loading") {
@@ -198,31 +199,18 @@ export default function InviteRedeem() {
           <p className="text-sm text-muted-foreground">
             {isLogin
               ? "Melde dich an, um deine Einladung einzulösen."
-              : "Erstelle einen Account, um deine Einladung einzulösen."}
+              : "Schnell registrieren — keine Bestätigung nötig."}
           </p>
         </div>
 
         <form onSubmit={handleAuth} className="space-y-4">
           <div className="space-y-2">
             <Label>E-Mail</Label>
-            <Input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="deine@email.de"
-              required
-            />
+            <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="deine@email.de" required />
           </div>
           <div className="space-y-2">
             <Label>Passwort</Label>
-            <Input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder={isLogin ? "Dein Passwort" : "Mind. 8 Zeichen"}
-              required
-              minLength={8}
-            />
+            <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder={isLogin ? "Dein Passwort" : "Mind. 8 Zeichen"} required minLength={8} />
           </div>
           <Button type="submit" className="w-full gap-2" disabled={submitting}>
             {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
@@ -232,10 +220,7 @@ export default function InviteRedeem() {
 
         <p className="text-center text-xs text-muted-foreground">
           {isLogin ? "Noch kein Account?" : "Bereits registriert?"}{" "}
-          <button
-            onClick={() => setIsLogin(!isLogin)}
-            className="text-primary hover:underline"
-          >
+          <button onClick={() => setIsLogin(!isLogin)} className="text-primary hover:underline">
             {isLogin ? "Registrieren" : "Anmelden"}
           </button>
         </p>
