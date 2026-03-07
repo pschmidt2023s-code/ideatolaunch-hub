@@ -73,14 +73,15 @@ export function PricingSection() {
     }
   };
 
-  const monthlyPrices = { builder: 29, pro: 79, execution: 159 };
+  const monthlyPrices = { builder: 29, pro: 79, execution: 159, trading: 199 };
   const yearlyPrices = {
     builder: Math.round(29 * 0.85),
     pro: Math.round(79 * 0.85),
     execution: Math.round(159 * 0.85),
+    trading: Math.round(199 * 0.85),
   };
 
-  const getPrice = (tier: "builder" | "pro" | "execution") => (isYearly ? yearlyPrices[tier] : monthlyPrices[tier]);
+  const getPrice = (tier: "builder" | "pro" | "execution" | "trading") => (isYearly ? yearlyPrices[tier] : monthlyPrices[tier]);
   const formatPrice = (amount: number) => (isDE ? `${amount} €` : `€${amount}`);
 
   const freePlanFeatures: PlanFeature[] = isDE
