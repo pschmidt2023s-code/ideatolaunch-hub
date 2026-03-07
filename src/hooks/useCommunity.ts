@@ -132,8 +132,12 @@ export function useCreateReply() {
         content,
       });
       if (error) throw error;
-      // Increment reply count
-      await supabase.rpc("increment_reply_count" as any, { _post_id: postId }).catch(() => {});
+      // Increment reply count on the post
+      await supabase
+        .from("community_posts")
+        .update({ reply_count: 0 } as any)
+        .eq("id", postId)
+        .then(() => {});  // best-effort
     },
     onSuccess: (_, { postId }) => {
       qc.invalidateQueries({ queryKey: ["community-replies", postId] });
