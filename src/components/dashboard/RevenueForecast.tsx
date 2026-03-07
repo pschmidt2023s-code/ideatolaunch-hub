@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { TrendingUp, AlertTriangle } from "lucide-react";
 import { useCommandCenterData } from "@/hooks/useCommandCenterData";
 import { useTranslation } from "react-i18next";
+import type { ScenarioMode } from "@/lib/command-center-types";
 import { cn } from "@/lib/utils";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
