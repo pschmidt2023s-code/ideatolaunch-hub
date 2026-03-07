@@ -13,14 +13,14 @@ export function RevenueForecast() {
   const isDE = i18n.language === "de";
 
   const forecast = useMemo(() => {
-    const fin = cmdData?.financial;
-    if (!fin?.recommended_price || !fin?.production_cost) return null;
+    const input = cmdData?.input;
+    if (!input?.recommendedPrice || !input?.productionCost) return null;
 
-    const price = Number(fin.recommended_price);
-    const cogs = Number(fin.production_cost) + Number(fin.packaging_cost || 0) + Number(fin.shipping_cost || 0);
+    const price = input.recommendedPrice;
+    const cogs = input.productionCost + (input.packagingCost || 0) + (input.shippingCost || 0);
     const margin = price - cogs;
-    const breakEven = Number(fin.break_even_units || 100);
-    const marketingBudget = Number(fin.marketing_budget || 500);
+    const breakEven = input.breakEvenUnits || 100;
+    const marketingBudget = input.marketingBudget || 500;
 
     // Simple 12-month forecast model
     const months = [];
