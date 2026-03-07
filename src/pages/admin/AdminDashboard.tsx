@@ -13,6 +13,7 @@ interface ReferralRow { referral_count: number; reward_builder_months: number; }
 interface AffiliateRow { total_clicks: number; total_conversions: number; total_earnings: number; }
 interface WaitlistRow { id: string; email: string; niche: string | null; created_at: string; }
 interface SecurityEventRow { id: string; event_type: string; route: string | null; metadata: any; created_at: string; }
+interface FeedbackRow { id: string; user_id: string; category: string; message: string; page: string | null; status: string; created_at: string; }
 
 // ── Metric Card ──
 function MetricCard({ icon: Icon, label, value, sub, accent }: { icon: any; label: string; value: string | number; sub?: string; accent?: boolean }) {
