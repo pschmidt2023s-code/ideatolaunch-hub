@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Globe, Menu, X, ChevronDown } from "lucide-react";
-
+import { Globe, Menu, ChevronDown } from "lucide-react";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 const navLinks = [
   { labelKey: "product", href: "/product" },
   { labelKey: "pricing", href: "/pricing" },
@@ -54,7 +54,7 @@ export function Navbar() {
   };
 
   return (
-    <header className="fixed top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md pt-safe">
+    <header className="fixed top-0 z-[90] w-full border-b bg-background/80 backdrop-blur-md pt-safe">
       <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4 sm:px-6">
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
           <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary">
@@ -125,71 +125,72 @@ export function Navbar() {
         </div>
 
         {/* Mobile hamburger */}
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="flex items-center justify-center rounded-md p-2 text-muted-foreground hover:text-foreground md:hidden"
-        >
-          {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
-      </div>
+        <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+          <button
+            onClick={() => setMenuOpen(true)}
+            className="flex items-center justify-center rounded-md p-2 text-muted-foreground hover:text-foreground md:hidden"
+            aria-label={isDE ? "Menü öffnen" : "Open menu"}
+            aria-expanded={menuOpen}
+          >
+            <Menu className="h-5 w-5" />
+          </button>
 
-      {/* Mobile menu */}
-      {menuOpen && (
-        <div className="fixed inset-0 top-16 z-40 overflow-y-auto bg-background md:hidden animate-fade-in">
-          <div className="px-4 pb-8 pt-3">
-            <nav className="flex flex-col gap-0.5">
-              <button onClick={() => handleNav("/product")} className="rounded-lg px-3 py-2.5 text-left text-sm font-medium text-foreground hover:bg-muted transition-colors">
-                {isDE ? "Produkt" : "Product"}
-              </button>
-              <button onClick={() => handleNav("/pricing")} className="rounded-lg px-3 py-2.5 text-left text-sm font-medium text-foreground hover:bg-muted transition-colors">
-                {t("nav.pricing")}
-              </button>
-              <button onClick={() => handleNav("/guide/eigenmarke-gruenden")} className="rounded-lg px-3 py-2.5 text-left text-sm font-medium text-foreground hover:bg-muted transition-colors">
-                Guide
-              </button>
-              <button onClick={() => handleNav("/download")} className="rounded-lg px-3 py-2.5 text-left text-sm font-medium text-foreground hover:bg-muted transition-colors">
-                Download
-              </button>
-
-              <div className="mt-1 mb-1 px-3">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-1">Tools</p>
-              </div>
-              {toolLinks.map((tool) => (
-                <button
-                  key={tool.href}
-                  onClick={() => handleNav(tool.href)}
-                  className="rounded-lg px-3 py-2 text-left text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors pl-5"
-                >
-                  {isDE ? tool.labelDE : tool.labelEN}
+          <SheetContent side="right" className="w-[88vw] max-w-sm border-l bg-background p-0 md:hidden">
+            <div className="h-full overflow-y-auto px-4 pb-safe pt-12">
+              <nav className="flex flex-col gap-0.5">
+                <button onClick={() => handleNav("/product")} className="rounded-lg px-3 py-2.5 text-left text-sm font-medium text-foreground hover:bg-muted transition-colors">
+                  {isDE ? "Produkt" : "Product"}
                 </button>
-              ))}
-            </nav>
+                <button onClick={() => handleNav("/pricing")} className="rounded-lg px-3 py-2.5 text-left text-sm font-medium text-foreground hover:bg-muted transition-colors">
+                  {t("nav.pricing")}
+                </button>
+                <button onClick={() => handleNav("/guide/eigenmarke-gruenden")} className="rounded-lg px-3 py-2.5 text-left text-sm font-medium text-foreground hover:bg-muted transition-colors">
+                  Guide
+                </button>
+                <button onClick={() => handleNav("/download")} className="rounded-lg px-3 py-2.5 text-left text-sm font-medium text-foreground hover:bg-muted transition-colors">
+                  Download
+                </button>
 
-            <div className="mt-4 flex flex-col gap-1.5 border-t pt-4">
-              <button
-                onClick={() => { toggleLang(); setMenuOpen(false); }}
-                className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-              >
-                <Globe className="h-4 w-4" />
-                {isDE ? "English" : "Deutsch"}
-              </button>
-              <Button variant="ghost" className="justify-start h-10" onClick={() => { navigate("/auth"); setMenuOpen(false); }}>
-                {t("nav.login")}
-              </Button>
-            </div>
+                <div className="mt-1 mb-1 px-3">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-1">Tools</p>
+                </div>
+                {toolLinks.map((tool) => (
+                  <button
+                    key={tool.href}
+                    onClick={() => handleNav(tool.href)}
+                    className="rounded-lg px-3 py-2 text-left text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors pl-5"
+                  >
+                    {isDE ? tool.labelDE : tool.labelEN}
+                  </button>
+                ))}
+              </nav>
 
-            <div className="mt-4 pb-safe">
-              <Button
-                variant="outline"
-                className="w-full h-11"
-                onClick={() => { navigate("/auth?tab=signup"); setMenuOpen(false); }}
-              >
-                {isDE ? "Jetzt starten" : "Get started"}
-              </Button>
+              <div className="mt-4 flex flex-col gap-1.5 border-t pt-4">
+                <button
+                  onClick={() => { toggleLang(); setMenuOpen(false); }}
+                  className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                >
+                  <Globe className="h-4 w-4" />
+                  {isDE ? "English" : "Deutsch"}
+                </button>
+                <Button variant="ghost" className="justify-start h-10" onClick={() => { navigate("/auth"); setMenuOpen(false); }}>
+                  {t("nav.login")}
+                </Button>
+              </div>
+
+              <div className="mt-4 pb-safe">
+                <Button
+                  variant="outline"
+                  className="w-full h-11"
+                  onClick={() => { navigate("/auth?tab=signup"); setMenuOpen(false); }}
+                >
+                  {isDE ? "Jetzt starten" : "Get started"}
+                </Button>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </SheetContent>
+        </Sheet>
+      </div>
     </header>
   );
 }
