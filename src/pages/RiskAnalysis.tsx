@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
+import { AIPageInsights } from "@/components/AIPageInsights";
 import { FinancialDisclaimer } from "@/components/dashboard/FinancialDisclaimer";
 import { AnimatedCard } from "@/components/dashboard/AnimatedCard";
 import {
