@@ -482,7 +482,7 @@ export function PricingSection() {
                 <ul className="mt-6 space-y-2.5">
                   {plan.features.map((f) => (
                     <li key={f.label} className="flex items-start gap-2.5 text-sm">
-                      <Check className={`h-4 w-4 shrink-0 mt-0.5 ${isExecutionTier ? "text-amber-500" : "text-success"}`} />
+                      <Check className={`h-4 w-4 shrink-0 mt-0.5 ${isExecutionTier ? "text-amber-500" : isTradingTier ? "text-blue-500" : "text-success"}`} />
                       <div>
                         <span className="font-medium">{f.label}</span>
                         <p className="text-xs text-muted-foreground mt-0.5">{f.desc}</p>
