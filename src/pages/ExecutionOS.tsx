@@ -5,6 +5,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { useBrand } from "@/hooks/useBrand";
 import { LockedOverlay } from "@/components/LockedOverlay";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AIPageInsights } from "@/components/AIPageInsights";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
