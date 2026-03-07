@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { trackEvent } from "@/lib/analytics";
 import { useAuth } from "@/hooks/useAuth";
@@ -18,8 +19,9 @@ export default function Auth() {
   const [showForgot, setShowForgot] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [inviteCode, setInviteCode] = useState("");
   const [loading, setLoading] = useState(false);
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, user } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -59,7 +61,28 @@ export default function Auth() {
 
     if (isSignUp) {
       trackEvent("signup_completed");
-      toast.success(t("auth.signupSuccess"));
+      // If invite code was provided, redeem it after signup
+      if (inviteCode.trim()) {
+        toast.success("Account erstellt! Code wird eingelöst…");
+        setTimeout(async () => {
+          try {
+            const res = await supabase.functions.invoke("redeem-invite", {
+              body: { short_code: inviteCode.trim().toUpperCase() },
+            });
+            if (res.data?.success) {
+              toast.success(`${res.data.plan}-Plan aktiviert! 🎉`);
+              navigate("/dashboard");
+            } else {
+              toast.error(res.data?.error || "Code konnte nicht eingelöst werden");
+              navigate("/onboarding");
+            }
+          } catch {
+            navigate("/onboarding");
+          }
+        }, 1500);
+      } else {
+        toast.success(t("auth.signupSuccess"));
+      }
     } else {
       navigate("/onboarding");
     }
@@ -149,6 +172,19 @@ export default function Auth() {
                   </div>
                 )}
               </div>
+              {isSignUp && (
+                <div className="space-y-2">
+                  <Label htmlFor="inviteCode">Einladungscode (optional)</Label>
+                  <Input
+                    id="inviteCode"
+                    value={inviteCode}
+                    onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
+                    placeholder="z.B. VIP-3F7A"
+                    className="font-mono tracking-wider"
+                    maxLength={10}
+                  />
+                </div>
+              )}
               <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90" disabled={loading}>
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isSignUp ? t("auth.register") : t("auth.login")}
