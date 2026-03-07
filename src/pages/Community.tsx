@@ -18,7 +18,6 @@ export default function Community() {
   const [niche, setNiche] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [saving, setSaving] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
