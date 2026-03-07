@@ -234,6 +234,13 @@ export default function Dashboard() {
               </AnimatedCard>
             )}
 
+            {/* ── Community Intelligence ── */}
+            {currentBrand && (
+              <AnimatedCard index={5.5}>
+                <CommunityIntelligenceWidget />
+              </AnimatedCard>
+            )}
+
             {/* ── Retention Widgets ── */}
             {currentBrand && (
               <div className="grid gap-4 sm:grid-cols-2">
