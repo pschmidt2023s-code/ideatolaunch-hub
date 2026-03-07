@@ -368,7 +368,7 @@ export default function LicenseManagement() {
                 </TableHeader>
                 <TableBody>
                   {invitations.length === 0 && (
-                    <TableRow><TableCell colSpan={7} className="text-center text-sm text-muted-foreground py-8">Keine Einladungen</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={8} className="text-center text-sm text-muted-foreground py-8">Keine Einladungen</TableCell></TableRow>
                   )}
                   {invitations.map((inv) => (
                     <TableRow key={inv.id}>
