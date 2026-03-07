@@ -569,6 +569,39 @@ export default function LicenseManagement() {
           </div>
         </DialogContent>
       </Dialog>
+      {/* QR Code Dialog */}
+      <Dialog open={qrDialogOpen} onOpenChange={setQrDialogOpen}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader><DialogTitle>QR-Code: {qrCode}</DialogTitle></DialogHeader>
+          <div className="flex flex-col items-center gap-4 py-4">
+            {qrCode && (
+              <div className="rounded-xl border border-border bg-white p-4">
+                <img
+                  src={getQrUrl(qrCode)}
+                  alt={`QR Code für ${qrCode}`}
+                  className="w-[250px] h-[250px]"
+                />
+              </div>
+            )}
+            <p className="text-center text-sm text-muted-foreground">
+              Scanne den QR-Code oder teile den Einladungscode: <strong className="text-primary">{qrCode}</strong>
+            </p>
+            <div className="flex gap-2 w-full">
+              <Button className="flex-1 gap-2" onClick={downloadQr}>
+                <Copy className="h-4 w-4" /> Herunterladen
+              </Button>
+              <Button variant="outline" className="flex-1 gap-2" onClick={shareQrWhatsApp}>
+                <Send className="h-4 w-4" /> WhatsApp
+              </Button>
+            </div>
+            <Button variant="ghost" size="sm" className="w-full" onClick={async () => {
+              if (qrCode) { await navigator.clipboard.writeText(qrCode); toast.success("Code kopiert!"); }
+            }}>
+              <Copy className="h-3.5 w-3.5 mr-2" /> Code kopieren
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
