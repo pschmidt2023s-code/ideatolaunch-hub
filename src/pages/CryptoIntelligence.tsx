@@ -120,13 +120,7 @@ export default function CryptoIntelligence() {
   const whaleResult = useMemo(() => analyzeWhaleActivity(whaleRatio, whaleFlow), [whaleRatio, whaleFlow]);
   const orderbookResult = useMemo(() => analyzeOrderbook(bidVol, askVol), [bidVol, askVol]);
 
-  const portfolioResult = useMemo(() => analyzePortfolioCorrelation([
-    { name: "BTC", allocation: 40, type: "btc_correlated" },
-    { name: "ETH", allocation: 25, type: "eth_correlated" },
-    { name: "SOL", allocation: 15, type: "alt" },
-    { name: "USDT", allocation: 10, type: "stablecoin" },
-    { name: "UNI", allocation: 10, type: "defi" },
-  ]), []);
+  const portfolioResult = useMemo(() => analyzePortfolioCorrelation([]), []);
 
   // ── Slider helper ──
   const SliderField = ({ label, value, onChange, min, max, step = 1 }: {
