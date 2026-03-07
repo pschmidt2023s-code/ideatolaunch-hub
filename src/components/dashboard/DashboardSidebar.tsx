@@ -53,7 +53,10 @@ const MODE_NAV: Record<AppMode, { icon: React.ElementType; label: string; path: 
   ],
   trading: [
     { icon: Crosshair, label: "Command Center", path: "/dashboard/command" },
+    { icon: Wallet, label: "Accounts", path: "/dashboard/accounts" },
     { icon: TrendingUp, label: "Trading Dashboard", path: "/dashboard/trading" },
+    { icon: Activity, label: "Trading Intelligence", path: "/trading-intelligence" },
+    { icon: Shield, label: "Risk Analysis", path: "/risk-analysis" },
     { icon: BarChart3, label: "Risk Simulator", path: "/dashboard/failure-simulator" },
     { icon: Brain, label: "Intelligence", path: "/dashboard/intelligence" },
   ],
