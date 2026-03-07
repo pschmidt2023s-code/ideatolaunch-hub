@@ -103,7 +103,7 @@ export function TradingForecastPanel({ forecast }: TradingProps) {
           <TrendingUp className="h-4 w-4 text-primary" />
           Trading Prognose (12 Monate)
         </h3>
-        <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Simuliert</span>
+        <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Prognose</span>
       </div>
 
       {/* Chart */}
