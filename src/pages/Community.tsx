@@ -59,12 +59,17 @@ export default function Community() {
           {/* Hero */}
           <section className="mb-14 text-center">
             <h1 className="text-3xl font-bold tracking-tight md:text-5xl mb-4">
-              Die Gründer-Community für{" "}
-              <span className="text-gradient">Eigenmarken-Builder</span>
+              Founder Intelligence{" "}
+              <span className="text-gradient">Network</span>
             </h1>
-            <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-              Tritt der exklusiven Community bei – vernetze dich, lerne von echten Gründern und erhalte Early Access auf neue Features.
+            <p className="text-lg text-muted-foreground max-w-xl mx-auto mb-6">
+              Das datengetriebene Gründer-Netzwerk – Market Signals, Supplier Reviews, Case Studies und strategischer Austausch.
             </p>
+            {user && (
+              <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 gap-2" onClick={() => navigate("/dashboard/community")}>
+                <Users className="h-4 w-4" /> Zum Network
+              </Button>
+            )}
           </section>
 
           {/* Benefits */}
