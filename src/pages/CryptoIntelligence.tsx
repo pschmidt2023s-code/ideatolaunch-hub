@@ -479,7 +479,7 @@ export default function CryptoIntelligence() {
                 </CardContent>
               </Card>
               <div className="grid gap-4 sm:grid-cols-3">
-                <MetricCard label="Liquidation Price" value={`$${liqResult.liquidationPrice.toLocaleString()}`} sub={`Distance: ${liqResult.distancePercent}%`} level={liqResult.riskLevel === "safe" ? "low" : liqResult.riskLevel === "warning" ? "medium" : "high"} />
+                <MetricCard label="Liquidation Price" value={`${liqResult.liquidationPrice.toLocaleString("de-DE")}€`} sub={`Distance: ${liqResult.distancePercent}%`} level={liqResult.riskLevel === "safe" ? "low" : liqResult.riskLevel === "warning" ? "medium" : "high"} />
                 <MetricCard label="Safety Buffer" value={`${liqResult.safetyBuffer}%`} level={liqResult.riskLevel === "safe" ? "low" : liqResult.riskLevel === "warning" ? "medium" : "high"} progress={Math.min(100, liqResult.safetyBuffer)} />
                 <MetricCard label="Risk Level" value={liqResult.riskLevel.toUpperCase()} level={liqResult.riskLevel === "safe" ? "low" : liqResult.riskLevel === "warning" ? "medium" : "high"} />
               </div>
