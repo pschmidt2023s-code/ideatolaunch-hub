@@ -1,4 +1,4 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Shield, TrendingUp, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -11,7 +11,7 @@ export function HeroSection() {
   return (
     <section className="relative overflow-hidden px-4 sm:px-6 pt-40 pb-20 md:pt-52 md:pb-28" aria-label="Hero">
       {/* Multi-layer backdrop */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--accent)/0.04),transparent_50%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--primary)/0.04),transparent_50%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,hsl(var(--accent)/0.02),transparent_40%)]" />
 
       <div className="container relative mx-auto max-w-3xl text-center">
@@ -23,7 +23,7 @@ export function HeroSection() {
             : "Avg. €5,000 lost to avoidable mistakes"}
         </div>
 
-        {/* Headline – display font */}
+        {/* Headline */}
         <h1 className="mx-auto max-w-[18ch] text-5xl font-extrabold tracking-[-0.03em] font-display md:text-6xl lg:text-7xl leading-[1.06]">
           {isDE ? (
             <>
@@ -51,7 +51,7 @@ export function HeroSection() {
         <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
           <Button
             size="lg"
-            className="gap-2 bg-accent text-accent-foreground hover:bg-accent/90 px-8 text-base shadow-glow-accent"
+            className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90 px-8 text-base shadow-lg"
             onClick={() => navigate("/auth?tab=signup")}
           >
             {isDE ? "Kostenlos starten" : "Start free"}
@@ -67,12 +67,23 @@ export function HeroSection() {
           </Button>
         </div>
 
-        {/* Social proof */}
-        <p className="mt-14 text-sm text-muted-foreground">
-          {isDE
-            ? "2.400+ Gründer nutzen BrandOS · Ø €3.200 gespart"
-            : "2,400+ founders use BrandOS · Avg. €3,200 saved"}
-        </p>
+        {/* Value props row */}
+        <div className="mt-16 flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <Shield className="h-4 w-4 text-success" />
+            <span>{isDE ? "DSGVO-konform" : "GDPR compliant"}</span>
+          </div>
+          <div className="h-3 w-px bg-border" />
+          <div className="flex items-center gap-2">
+            <TrendingUp className="h-4 w-4 text-primary" />
+            <span>{isDE ? "Ø €3.200 gespart" : "Avg. €3,200 saved"}</span>
+          </div>
+          <div className="h-3 w-px bg-border" />
+          <div className="flex items-center gap-2">
+            <Zap className="h-4 w-4 text-accent" />
+            <span>{isDE ? "2.400+ Gründer" : "2,400+ founders"}</span>
+          </div>
+        </div>
       </div>
     </section>
   );
