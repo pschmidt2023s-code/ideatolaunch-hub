@@ -20,6 +20,7 @@ import {
   isValidEmail,
 } from "@/lib/security";
 import { ForgotPassword } from "@/components/ForgotPassword";
+import { isKnownDevice, storeFingerprint } from "@/lib/device-fingerprint";
 
 export default function Auth() {
   const [searchParams] = useSearchParams();
