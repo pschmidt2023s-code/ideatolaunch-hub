@@ -147,8 +147,12 @@ export default function CryptoIntelligence() {
           badgeVariant="warning"
         />
 
-        <Tabs defaultValue="survival" className="space-y-6">
+        <Tabs defaultValue="portfolio" className="space-y-6">
           <TabsList className="flex-wrap h-auto gap-1">
+            <TabsTrigger value="portfolio" className="gap-1.5"><Wallet className="h-3.5 w-3.5" /> Portfolio</TabsTrigger>
+            <TabsTrigger value="journal" className="gap-1.5"><Eye className="h-3.5 w-3.5" /> Journal</TabsTrigger>
+            <TabsTrigger value="analytics" className="gap-1.5"><BarChart3 className="h-3.5 w-3.5" /> Analytics</TabsTrigger>
+            <TabsTrigger value="risk-suite" className="gap-1.5"><Shield className="h-3.5 w-3.5" /> Risk Suite</TabsTrigger>
             <TabsTrigger value="survival" className="gap-1.5"><Shield className="h-3.5 w-3.5" /> Survival</TabsTrigger>
             <TabsTrigger value="edge" className="gap-1.5"><Target className="h-3.5 w-3.5" /> Edge</TabsTrigger>
             <TabsTrigger value="regime" className="gap-1.5"><BarChart3 className="h-3.5 w-3.5" /> Regime</TabsTrigger>
@@ -156,6 +160,61 @@ export default function CryptoIntelligence() {
             <TabsTrigger value="emotion" className="gap-1.5"><Brain className="h-3.5 w-3.5" /> Emotion</TabsTrigger>
             <TabsTrigger value="deep" className="gap-1.5"><Zap className="h-3.5 w-3.5" /> Deep Tools</TabsTrigger>
           </TabsList>
+
+          {/* ═══ NEW: Portfolio Dashboard (Features 1, 2, 18) ═══ */}
+          <TabsContent value="portfolio" className="space-y-6">
+            <PortfolioDashboard
+              balances={[
+                { asset: "USDT", free: 15000, locked: 2000, usdValue: 17000 },
+                { asset: "BTC", free: 0.5, locked: 0.1, usdValue: 40200 },
+                { asset: "ETH", free: 5, locked: 1, usdValue: 21000 },
+                { asset: "SOL", free: 100, locked: 20, usdValue: 21600 },
+              ]}
+              totalEquity={99800}
+              positions={[
+                { symbol: "BTCUSDT", size: 0.1, leverage: liqLeverage, entryPrice: liqEntry, unrealizedPnl: 1250, isLong: true },
+                { symbol: "ETHUSDT", size: 2, leverage: 5, entryPrice: 3500, unrealizedPnl: -320, isLong: true },
+                { symbol: "SOLUSDT", size: 50, leverage: 3, entryPrice: 180, unrealizedPnl: 450, isLong: false },
+              ]}
+              accountBalance={survival.accountSize}
+            />
+          </TabsContent>
+
+          {/* ═══ NEW: Trade Journal (Feature 5) ═══ */}
+          <TabsContent value="journal" className="space-y-6">
+            <TradeJournal />
+          </TabsContent>
+
+          {/* ═══ NEW: Advanced Analytics (Features 6-10) ═══ */}
+          <TabsContent value="analytics" className="space-y-6">
+            <AdvancedAnalytics
+              winrate={survival.winrate}
+              riskPerTrade={survival.riskPerTrade}
+              rrr={survival.rrr}
+              accountSize={survival.accountSize}
+              tradesPerMonth={30}
+              avgCommission={survival.fees}
+              avgSlippage={survival.slippage}
+            />
+          </TabsContent>
+
+          {/* ═══ NEW: Risk Suite (Features 12-13, 15-17, 19-20) ═══ */}
+          <TabsContent value="risk-suite" className="space-y-6">
+            <RiskSuite
+              winrate={survival.winrate}
+              riskPerTrade={survival.riskPerTrade}
+              rrr={survival.rrr}
+              accountSize={survival.accountSize}
+              avgWin={edge.avgWin}
+              avgLoss={edge.avgLoss}
+              tradesPerDay={3}
+              leverage={liqLeverage}
+              volatility={regime.volatility}
+              trendDirection={regime.trendDirection}
+              volume={regime.volume}
+              fundingRate={fundingRate}
+            />
+          </TabsContent>
 
           {/* ═══ TAB 1: Strategy Survival ═══ */}
           <TabsContent value="survival" className="space-y-6">
