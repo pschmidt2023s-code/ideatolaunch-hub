@@ -430,23 +430,3 @@ export function checkMarginHealth(
   return { totalMarginUsed: Math.round(totalMarginUsed), availableMargin: Math.round(availableMargin), marginLevel, status, icon };
 }
 
-// Helper: Generate mock trade data for demos
-export function generateMockTrades(count: number, winrate: number): Array<{ win: boolean; pnl: number; size: number; holdTime: number; dayOfWeek: number; hour: number }> {
-  return Array.from({ length: count }, () => {
-    const win = Math.random() < winrate / 100;
-    return {
-      win,
-      pnl: win ? Math.round(Math.random() * 500 + 50) : -Math.round(Math.random() * 300 + 30),
-      size: Math.round(Math.random() * 1000 + 100),
-      holdTime: Math.round(Math.random() * 120 + 5),
-      dayOfWeek: Math.floor(Math.random() * 7),
-      hour: Math.floor(Math.random() * 24),
-    };
-  });
-}
-
-export function generateMockMonthlyReturns(months: number, avgReturn: number): number[] {
-  return Array.from({ length: months }, () =>
-    Math.round((avgReturn + (Math.random() - 0.5) * avgReturn * 3) * 100) / 100
-  );
-}
