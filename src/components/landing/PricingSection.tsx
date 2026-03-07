@@ -536,43 +536,45 @@ export function PricingSection() {
                   <th className="px-4 py-3 text-center font-semibold text-accent">Builder</th>
                   <th className="px-4 py-3 text-center font-semibold">Pro</th>
                   <th className="px-4 py-3 text-center font-semibold text-amber-600">Execution OS</th>
+                  <th className="px-4 py-3 text-center font-semibold text-blue-500">Trading</th>
                 </tr>
               </thead>
               <tbody className="text-muted-foreground">
                 {(isDE
                   ? [
-                      ["Market Reality Engine", "—", "Basis Demand", "Voll + Benchmark", "✓ Voll"],
-                      ["Cashflow Survival Engine", "—", "Timeline", "Voll + Stress-Test", "✓ Voll"],
-                      ["Stress Test Simulation", "—", "—", "✓ + Worst Case", "✓ Voll"],
-                      ["AI Founder Copilot", "—", "3 Empfehlungen", "Voll + Chat", "Advanced CEO-Level"],
-                      ["Business Recovery Mode", "—", "—", "✓ Voll", "✓ Voll"],
-                      ["Kosten-Kalkulator", "Einfach", "Voll", "Voll + Szenarien", "✓ Voll"],
-                      ["Kapitalschutz-Alerts", "—", "—", "—", "✓ Echtzeit"],
-                      ["Benchmark Intelligence", "—", "—", "—", "✓ Anonymer Vergleich"],
-                      ["Execution Planner", "—", "—", "—", "✓ Wöchentlich"],
-                      ["Investor-Ready Reports", "—", "—", "—", "✓ Reports"],
-                      ["Advanced Copilot", "—", "—", "—", "✓ CEO-Level"],
+                      ["Market Reality Engine", "—", "Basis Demand", "Voll + Benchmark", "✓ Voll", "—"],
+                      ["Cashflow Survival Engine", "—", "Timeline", "Voll + Stress-Test", "✓ Voll", "—"],
+                      ["AI Founder Copilot", "—", "3 Empfehlungen", "Voll + Chat", "Advanced CEO-Level", "—"],
+                      ["Kosten-Kalkulator", "Einfach", "Voll", "Voll + Szenarien", "✓ Voll", "—"],
+                      ["Risk of Ruin Engine", "—", "—", "—", "—", "✓ Voll"],
+                      ["Account Connector", "—", "—", "—", "—", "✓ 4 Exchanges"],
+                      ["Liquidation Scanner", "—", "—", "—", "—", "✓ Echtzeit"],
+                      ["AI Edge Detector", "—", "—", "—", "—", "✓ Voll"],
+                      ["Market Regime AI", "—", "—", "—", "—", "✓ Voll"],
+                      ["AI Trade Review", "—", "—", "—", "—", "✓ Voll"],
+                      ["Emotional Trading Detector", "—", "—", "—", "—", "✓ Voll"],
                     ]
                   : [
-                      ["Market Reality Engine", "—", "Basic Demand", "Full + Benchmark", "✓ Full"],
-                      ["Cashflow Survival Engine", "—", "Timeline", "Full + Stress Test", "✓ Full"],
-                      ["Stress Test Simulation", "—", "—", "✓ + Worst Case", "✓ Full"],
-                      ["AI Founder Copilot", "—", "3 Suggestions", "Full + Chat", "Advanced CEO-Level"],
-                      ["Business Recovery Mode", "—", "—", "✓ Full", "✓ Full"],
-                      ["Cost Calculator", "Basic", "Full", "Full + Scenarios", "✓ Full"],
-                      ["Capital Protection Alerts", "—", "—", "—", "✓ Real-time"],
-                      ["Benchmark Intelligence", "—", "—", "—", "✓ Anonymous Comparison"],
-                      ["Execution Planner", "—", "—", "—", "✓ Weekly"],
-                      ["Investor-Ready Reports", "—", "—", "—", "✓ Reports"],
-                      ["Advanced Copilot", "—", "—", "—", "✓ CEO-Level"],
+                      ["Market Reality Engine", "—", "Basic Demand", "Full + Benchmark", "✓ Full", "—"],
+                      ["Cashflow Survival Engine", "—", "Timeline", "Full + Stress Test", "✓ Full", "—"],
+                      ["AI Founder Copilot", "—", "3 Suggestions", "Full + Chat", "Advanced CEO-Level", "—"],
+                      ["Cost Calculator", "Basic", "Full", "Full + Scenarios", "✓ Full", "—"],
+                      ["Risk of Ruin Engine", "—", "—", "—", "—", "✓ Full"],
+                      ["Account Connector", "—", "—", "—", "—", "✓ 4 Exchanges"],
+                      ["Liquidation Scanner", "—", "—", "—", "—", "✓ Real-time"],
+                      ["AI Edge Detector", "—", "—", "—", "—", "✓ Full"],
+                      ["Market Regime AI", "—", "—", "—", "—", "✓ Full"],
+                      ["AI Trade Review", "—", "—", "—", "—", "✓ Full"],
+                      ["Emotional Trading Detector", "—", "—", "—", "—", "✓ Full"],
                     ]
-                ).map(([feature, free, builder, pro, execution]) => (
+                ).map(([feature, free, builder, pro, execution, trading]) => (
                   <tr key={feature} className="border-b last:border-b-0">
                     <td className="px-4 py-2.5 font-medium text-foreground">{feature}</td>
                     <td className="px-4 py-2.5 text-center">{free}</td>
                     <td className="px-4 py-2.5 text-center font-medium text-accent">{builder}</td>
                     <td className="px-4 py-2.5 text-center">{pro}</td>
                     <td className="px-4 py-2.5 text-center font-medium text-amber-600">{execution}</td>
+                    <td className="px-4 py-2.5 text-center font-medium text-blue-500">{trading}</td>
                   </tr>
                 ))}
               </tbody>
