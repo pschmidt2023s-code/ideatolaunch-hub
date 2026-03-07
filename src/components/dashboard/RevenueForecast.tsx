@@ -7,7 +7,8 @@ import { cn } from "@/lib/utils";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 export function RevenueForecast() {
-  const { data: cmdData } = useCommandCenterData();
+  const cmdResult = useCommandCenterData("realistic" as ScenarioMode);
+  const cmdData = cmdResult.ready ? cmdResult : null;
   const { i18n } = useTranslation();
   const isDE = i18n.language === "de";
 

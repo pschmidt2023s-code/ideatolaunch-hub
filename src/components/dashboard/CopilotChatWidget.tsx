@@ -24,7 +24,8 @@ export function CopilotChatWidget() {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const { user } = useAuth();
   const { activeBrand } = useBrand();
-  const { data: cmdData } = useCommandCenterData();
+  const cmdResult = useCommandCenterData("realistic" as ScenarioMode);
+  const cmdData = cmdResult.ready ? cmdResult : null;
   const { i18n } = useTranslation();
   const isDE = i18n.language === "de";
 
