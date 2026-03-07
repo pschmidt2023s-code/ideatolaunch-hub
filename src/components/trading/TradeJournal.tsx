@@ -130,7 +130,7 @@ export function TradeJournal() {
             </Select>
             <Textarea placeholder="Notizen..." value={form.notes} onChange={e => setForm(p => ({ ...p, notes: e.target.value }))} className="text-xs h-8 min-h-8 resize-none" />
           </div>
-          <Button size="sm" onClick={addEntry} disabled={!form.entryPrice || !form.exitPrice} className="text-xs">Speichern</Button>
+          <Button size="sm" onClick={addEntry} disabled={!form.symbol.trim() || !form.entryPrice || !form.exitPrice} className="text-xs">Speichern</Button>
         </div>
       )}
 

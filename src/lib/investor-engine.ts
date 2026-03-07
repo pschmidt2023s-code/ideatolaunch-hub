@@ -50,42 +50,21 @@ export interface InvestorInput {
   dividendYield: number;
 }
 
-const DEFAULT_CRYPTO: CryptoAsset[] = [
-  { id: "btc", name: "Bitcoin (BTC)", allocation: 5, volatility: "high" },
-  { id: "eth", name: "Ethereum (ETH)", allocation: 3, volatility: "high" },
-  { id: "sol", name: "Solana (SOL)", allocation: 2, volatility: "extreme" },
-];
-
-const DEFAULT_EQUITY: EquityAsset[] = [
-  { id: "msci", name: "MSCI World ETF", allocation: 30, type: "etf" },
-  { id: "sp500", name: "S&P 500 ETF", allocation: 15, type: "etf" },
-  { id: "single", name: "Einzelaktien", allocation: 5, type: "single_stock" },
-];
-
-const DEFAULT_BONDS: BondAsset[] = [
-  { id: "gov", name: "Staatsanleihen", allocation: 12, duration: "medium" },
-  { id: "corp", name: "Unternehmensanleihen", allocation: 8, duration: "short" },
-];
-
-const DEFAULT_RE: RealEstateAsset[] = [
-  { id: "reit1", name: "REIT ETF", allocation: 10, type: "reit" },
-];
-
 const DEFAULT_INVESTOR: InvestorInput = {
-  totalPortfolio: 50000,
-  cashPosition: 10,
-  equityExposure: 50,
-  bondExposure: 20,
-  cryptoExposure: 10,
-  realEstateExposure: 10,
-  cryptoAssets: DEFAULT_CRYPTO,
-  equityAssets: DEFAULT_EQUITY,
-  bondAssets: DEFAULT_BONDS,
-  realEstateAssets: DEFAULT_RE,
-  annualReturn: 8,
-  portfolioDrawdown: 5,
-  concentrationRisk: 30,
-  dividendYield: 2.5,
+  totalPortfolio: 0,
+  cashPosition: 0,
+  equityExposure: 0,
+  bondExposure: 0,
+  cryptoExposure: 0,
+  realEstateExposure: 0,
+  cryptoAssets: [],
+  equityAssets: [],
+  bondAssets: [],
+  realEstateAssets: [],
+  annualReturn: 0,
+  portfolioDrawdown: 0,
+  concentrationRisk: 0,
+  dividendYield: 0,
 };
 
 export function getInvestorDefaults(): InvestorInput {

@@ -13,14 +13,14 @@ export interface StrategyInput {
 }
 
 const DEFAULT_STRATEGY: StrategyInput = {
-  decisionCount: 12,
-  openDecisions: 3,
-  avgDecisionImpact: 5000,
-  riskExposure: 15000,
-  capitalAtStake: 50000,
-  successRate: 65,
-  timeToDecision: 5,
-  reversibilityScore: 60,
+  decisionCount: 0,
+  openDecisions: 0,
+  avgDecisionImpact: 0,
+  riskExposure: 0,
+  capitalAtStake: 0,
+  successRate: 0,
+  timeToDecision: 0,
+  reversibilityScore: 0,
 };
 
 export function getStrategyDefaults(): StrategyInput {
