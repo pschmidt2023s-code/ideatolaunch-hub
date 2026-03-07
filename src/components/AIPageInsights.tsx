@@ -139,8 +139,8 @@ export function AIPageInsights({ pageContext, dataContext, title, className }: A
       ) : (
         <p className="text-xs text-muted-foreground">
           {isDE
-            ? "Klicke auf „Analysieren" für KI-gestützte Insights zu dieser Seite."
-            : "Click \"Analyze\" for AI-powered insights about this page."}
+            ? 'Klicke auf "Analysieren" für KI-gestützte Insights zu dieser Seite.'
+            : 'Click "Analyze" for AI-powered insights about this page.'}
         </p>
       )}
     </div>
