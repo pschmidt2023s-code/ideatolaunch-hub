@@ -119,14 +119,8 @@ export default function TradingIntelligence() {
   const [aiLoading, setAiLoading] = useState(false);
   const [aiReview, setAiReview] = useState("");
 
-  // Pairs for exposure
-  const pairs = [
-    { name: "BTC/USD", market: "crypto", allocation: 30 },
-    { name: "ETH/USD", market: "crypto", allocation: 20 },
-    { name: "EUR/USD", market: "forex", allocation: 25 },
-    { name: "NAS100", market: "futures", allocation: 15 },
-    { name: "AAPL", market: "stocks", allocation: 10 },
-  ];
+  // Pairs for exposure – populated from connected accounts
+  const pairs: Array<{ name: string; market: string; allocation: number }> = [];
 
   // ── Calculations ──
   const survival = useMemo(() => runAccountSurvival(winrate, riskPerTrade, rrr, accountSize), [winrate, riskPerTrade, rrr, accountSize]);
