@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { AnimatedCard } from "@/components/dashboard/AnimatedCard";
@@ -14,10 +14,14 @@ import { CEOSection } from "@/components/dashboard/CEOSection";
 import { TradingForecastPanel } from "@/components/dashboard/ForecastPanel";
 import { FinancialDisclaimer } from "@/components/dashboard/FinancialDisclaimer";
 import { MetricOnboarding } from "@/components/dashboard/MetricOnboarding";
+import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Activity, TrendingUp, Target, BarChart3, Shield, Plus, Trash2, ChevronDown, ChevronRight, BookOpen } from "lucide-react";
+import { Activity, TrendingUp, Target, BarChart3, Shield, Plus, Trash2, ChevronDown, ChevronRight, BookOpen, Wallet, Loader2, Link2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { buildTradingForecast } from "@/lib/signal-engine";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 import type { ScenarioMode } from "@/lib/command-center-types";
 import {
   getTradingDefaults,
@@ -78,9 +82,38 @@ function CollapsibleSection({ title, children, defaultOpen = false }: { title: s
 }
 
 export default function TradingDashboard() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [mode, setMode] = useState<ScenarioMode>("realistic");
   const [input, setInput] = useState<TradingInput>(getTradingDefaults());
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [hasAccounts, setHasAccounts] = useState<boolean | null>(null); // null = loading
+  const [accountCount, setAccountCount] = useState(0);
+
+  // Check if user has connected trading accounts
+  useEffect(() => {
+    if (!user) return;
+    const check = async () => {
+      const { data, error } = await (supabase as any)
+        .from("trading_accounts")
+        .select("id, account_data, balances, risk_metrics")
+        .eq("user_id", user.id);
+      if (error || !data || data.length === 0) {
+        setHasAccounts(false);
+        setAccountCount(0);
+        return;
+      }
+      setHasAccounts(true);
+      setAccountCount(data.length);
+
+      // Populate input from real account data
+      const totalEquity = data.reduce((s: number, a: any) => s + (a.account_data?.totalEquity || 0), 0);
+      if (totalEquity > 0) {
+        setInput(prev => ({ ...prev, accountBalance: Math.round(totalEquity) }));
+      }
+    };
+    check();
+  }, [user]);
 
   const update = (key: keyof TradingInput, value: number | string) => setInput((p) => ({ ...p, [key]: value }));
 
@@ -101,6 +134,44 @@ export default function TradingDashboard() {
   const survival = calculateAccountSurvival(input);
   const netMonthly = calculateNetMonthlyPnL(input);
   const tradingForecast = useMemo(() => buildTradingForecast(input), [input]);
+
+  // Loading state
+  if (hasAccounts === null) {
+    return (
+      <DashboardLayout>
+        <SEO title="Trading Mode – BrandOS" description="Trading Risk Score, Drawdown, Winrate, Profit Factor." path="/dashboard/trading" />
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  // Empty state — no connected accounts
+  if (!hasAccounts) {
+    return (
+      <DashboardLayout>
+        <SEO title="Trading Mode – BrandOS" description="Trading Risk Score, Drawdown, Winrate, Profit Factor." path="/dashboard/trading" />
+        <div className="animate-fade-in space-y-8">
+          <PageHeader title="Trading Mode" description="Risk, Performance & Account Survival auf einen Blick." badge="TRADER" badgeVariant="warning" />
+          <Card className="border-dashed">
+            <CardContent className="flex flex-col items-center justify-center py-20 text-center">
+              <Wallet className="h-14 w-14 text-muted-foreground/30 mb-5" />
+              <h3 className="text-xl font-semibold">Kein Trading Account verbunden</h3>
+              <p className="text-sm text-muted-foreground mt-2 max-w-md">
+                Verbinde deinen ersten Exchange-Account um dein Portfolio, Risiko und Performance in Echtzeit analysieren zu lassen.
+              </p>
+              <div className="flex gap-3 mt-8">
+                <Button onClick={() => navigate("/dashboard/accounts")}>
+                  <Link2 className="h-4 w-4 mr-2" />Exchange verbinden
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>

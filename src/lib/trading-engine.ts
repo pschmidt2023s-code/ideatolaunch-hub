@@ -35,31 +35,26 @@ export interface TradingInput {
   tradingPairs: TradingPair[];
 }
 
-const DEFAULT_PAIRS: TradingPair[] = [
-  { id: "eurusd", name: "EUR/USD", market: "forex", avgSpread: 0.8, allocation: 40 },
-  { id: "gbpusd", name: "GBP/USD", market: "forex", avgSpread: 1.2, allocation: 25 },
-  { id: "btcusd", name: "BTC/USD", market: "crypto", avgSpread: 15, allocation: 20 },
-  { id: "nas100", name: "NAS100", market: "futures", avgSpread: 1.5, allocation: 15 },
-];
+const DEFAULT_PAIRS: TradingPair[] = [];
 
 const DEFAULT_TRADING: TradingInput = {
-  accountBalance: 10000,
-  riskPerTrade: 2,
-  winrate: 55,
-  avgWin: 150,
-  avgLoss: 100,
-  tradesPerMonth: 20,
-  maxDrawdown: 15,
-  currentDrawdown: 5,
+  accountBalance: 0,
+  riskPerTrade: 1,
+  winrate: 50,
+  avgWin: 0,
+  avgLoss: 0,
+  tradesPerMonth: 0,
+  maxDrawdown: 10,
+  currentDrawdown: 0,
   strategy: "daytrading",
-  primaryMarket: "forex",
-  session: "london",
-  leverage: 30,
-  maxOpenPositions: 3,
-  dailyLossLimit: 5,
-  weeklyTarget: 500,
-  commissionPerTrade: 3,
-  slippageAvg: 1,
+  primaryMarket: "crypto",
+  session: "all",
+  leverage: 1,
+  maxOpenPositions: 1,
+  dailyLossLimit: 3,
+  weeklyTarget: 0,
+  commissionPerTrade: 0,
+  slippageAvg: 0,
   tradingPairs: DEFAULT_PAIRS,
 };
 
