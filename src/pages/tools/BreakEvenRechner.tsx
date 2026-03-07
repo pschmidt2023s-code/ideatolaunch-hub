@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { ToolPageLayout } from "@/components/ToolPageLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Target, TrendingUp, AlertTriangle } from "lucide-react";
+import { Target, TrendingUp, AlertTriangle, ArrowRight, DollarSign, BarChart3 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { cn } from "@/lib/utils";
+import { Progress } from "@/components/ui/progress";
 
 const faqJsonLd = {
   "@context": "https://schema.org",
@@ -22,26 +24,26 @@ export default function BreakEvenRechner() {
   const [fixedCosts, setFixedCosts] = useState("");
   const [unitCost, setUnitCost] = useState("");
   const [sellingPrice, setSellingPrice] = useState("");
-  const [result, setResult] = useState<null | { breakEvenUnits: number; breakEvenRevenue: number; contributionMargin: number }>(null);
 
-  const calculate = () => {
+  const result = useMemo(() => {
     const fixed = parseFloat(fixedCosts) || 0;
     const variable = parseFloat(unitCost) || 0;
     const price = parseFloat(sellingPrice) || 0;
+    if (!fixed && !variable && !price) return null;
 
     const contribution = price - variable;
-    if (contribution <= 0) {
-      setResult({ breakEvenUnits: Infinity, breakEvenRevenue: Infinity, contributionMargin: contribution });
-      return;
-    }
+    if (contribution <= 0) return { breakEvenUnits: Infinity, breakEvenRevenue: Infinity, contributionMargin: contribution, marginPercent: 0 };
 
     const units = Math.ceil(fixed / contribution);
-    setResult({
+    return {
       breakEvenUnits: units,
       breakEvenRevenue: units * price,
       contributionMargin: contribution,
-    });
-  };
+      marginPercent: (contribution / price) * 100,
+    };
+  }, [fixedCosts, unitCost, sellingPrice]);
+
+  const hasInput = fixedCosts || unitCost || sellingPrice;
 
   return (
     <ToolPageLayout
@@ -57,20 +59,16 @@ export default function BreakEvenRechner() {
           </h1>
           <p className="text-lg text-muted-foreground leading-relaxed mb-4">
             Der Break-Even-Point ist die wichtigste Kennzahl für jeden Gründer. Er zeigt dir exakt,
-            ab wie vielen verkauften Einheiten dein Business Gewinn macht. Mit unserem kostenlosen Rechner
-            findest du es in Sekunden heraus.
+            ab wie vielen verkauften Einheiten dein Business Gewinn macht.
           </p>
-          <p className="text-muted-foreground leading-relaxed">
-            Mehr zur Gesamtkalkulation im{" "}
-            <Link to="/guide/eigenmarke-gruenden" className="text-accent underline underline-offset-4 hover:text-accent/80">
-              Eigenmarke-Guide
-            </Link>{" "}
-            oder nutze den{" "}
-            <Link to="/tools/produktionskosten-rechner" className="text-accent underline underline-offset-4 hover:text-accent/80">
-              Produktionskosten-Rechner
-            </Link>{" "}
-            für detaillierte Stückkosten.
-          </p>
+          <div className="flex flex-wrap gap-2 text-xs">
+            <Link to="/guide/eigenmarke-gruenden" className="inline-flex items-center gap-1 rounded-xl border px-3 py-1.5 text-accent hover:bg-accent/5 transition-colors">
+              Eigenmarke-Guide <ArrowRight className="h-3 w-3" />
+            </Link>
+            <Link to="/tools/produktionskosten-rechner" className="inline-flex items-center gap-1 rounded-xl border px-3 py-1.5 text-accent hover:bg-accent/5 transition-colors">
+              Produktionskosten <ArrowRight className="h-3 w-3" />
+            </Link>
+          </div>
         </header>
       }
       faqContent={
@@ -83,7 +81,7 @@ export default function BreakEvenRechner() {
               { q: "Was sind typische Fixkosten?", a: "Tooling, Design, Branding, Shop-Setup, initiale Marketingkosten und Lagermiete." },
               { q: "Wie senke ich meinen Break-Even?", a: "Fixkosten reduzieren, Verkaufspreis erhöhen oder variable Kosten senken." },
             ].map(({ q, a }) => (
-              <details key={q} className="group rounded-xl border bg-card p-4">
+              <details key={q} className="group rounded-2xl border bg-card p-4">
                 <summary className="cursor-pointer font-semibold list-none flex items-center justify-between">
                   {q}
                   <span className="text-muted-foreground group-open:rotate-45 transition-transform text-xl">+</span>
@@ -95,61 +93,84 @@ export default function BreakEvenRechner() {
         </section>
       }
     >
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Target className="h-5 w-5 text-accent" />
+      <Card className="rounded-2xl border shadow-card">
+        <CardHeader className="pb-2">
+          <CardTitle className="flex items-center gap-2 text-base">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-accent/10">
+              <Target className="h-4 w-4 text-accent" />
+            </div>
             Break-Even Rechner
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-5">
           <div className="grid gap-4 sm:grid-cols-3">
-            <div>
-              <Label htmlFor="fixed">Fixkosten gesamt (€)</Label>
-              <Input id="fixed" type="number" placeholder="z.B. 5000" value={fixedCosts} onChange={e => setFixedCosts(e.target.value)} />
+            <div className="space-y-1.5">
+              <Label htmlFor="fixed" className="text-xs font-medium">Fixkosten gesamt (€)</Label>
+              <Input id="fixed" type="number" placeholder="z.B. 5000" value={fixedCosts} onChange={e => setFixedCosts(e.target.value)} className="rounded-xl" />
             </div>
-            <div>
-              <Label htmlFor="variable">Variable Stückkosten (€)</Label>
-              <Input id="variable" type="number" placeholder="z.B. 8.50" value={unitCost} onChange={e => setUnitCost(e.target.value)} />
+            <div className="space-y-1.5">
+              <Label htmlFor="variable" className="text-xs font-medium">Variable Stückkosten (€)</Label>
+              <Input id="variable" type="number" placeholder="z.B. 8.50" value={unitCost} onChange={e => setUnitCost(e.target.value)} className="rounded-xl" />
             </div>
-            <div>
-              <Label htmlFor="price">Verkaufspreis (€/Stück)</Label>
-              <Input id="price" type="number" placeholder="z.B. 29.90" value={sellingPrice} onChange={e => setSellingPrice(e.target.value)} />
+            <div className="space-y-1.5">
+              <Label htmlFor="price" className="text-xs font-medium">Verkaufspreis (€/Stück)</Label>
+              <Input id="price" type="number" placeholder="z.B. 29.90" value={sellingPrice} onChange={e => setSellingPrice(e.target.value)} className="rounded-xl" />
             </div>
           </div>
-          <Button className="w-full bg-accent text-accent-foreground hover:bg-accent/90" onClick={calculate}>
-            Break-Even berechnen
-          </Button>
 
+          {/* Live Results */}
           {result && (
-            <div className="grid gap-4 sm:grid-cols-3 mt-6">
-              <div className="rounded-lg border bg-card p-4 text-center">
-                <Target className="h-5 w-5 text-accent mx-auto mb-2" />
-                <p className="text-2xl font-bold">
-                  {result.breakEvenUnits === Infinity ? "∞" : result.breakEvenUnits}
-                </p>
-                <p className="text-xs text-muted-foreground">Stück bis Break-Even</p>
+            <div className="space-y-4 pt-2">
+              <div className="grid gap-3 sm:grid-cols-3">
+                <ResultCard
+                  icon={<Target className="h-4 w-4" />}
+                  value={result.breakEvenUnits === Infinity ? "∞" : result.breakEvenUnits.toLocaleString("de-DE")}
+                  label="Stück bis Break-Even"
+                  level={result.breakEvenUnits === Infinity ? "high" : result.breakEvenUnits > 1000 ? "medium" : "low"}
+                />
+                <ResultCard
+                  icon={<DollarSign className="h-4 w-4" />}
+                  value={result.breakEvenRevenue === Infinity ? "–" : `${result.breakEvenRevenue.toLocaleString("de-DE")} €`}
+                  label="Umsatz bis Break-Even"
+                  level={result.breakEvenRevenue === Infinity ? "high" : "neutral"}
+                />
+                <ResultCard
+                  icon={<BarChart3 className="h-4 w-4" />}
+                  value={`${result.contributionMargin.toFixed(2)} €`}
+                  label="Deckungsbeitrag/Stück"
+                  level={result.contributionMargin <= 0 ? "high" : result.contributionMargin < 5 ? "medium" : "low"}
+                />
               </div>
-              <div className="rounded-lg border bg-card p-4 text-center">
-                <TrendingUp className="h-5 w-5 text-accent mx-auto mb-2" />
-                <p className="text-2xl font-bold">
-                  {result.breakEvenRevenue === Infinity ? "–" : `${result.breakEvenRevenue.toFixed(0)} €`}
-                </p>
-                <p className="text-xs text-muted-foreground">Umsatz bis Break-Even</p>
-              </div>
-              <div className="rounded-lg border bg-card p-4 text-center">
-                <TrendingUp className="h-5 w-5 text-accent mx-auto mb-2" />
-                <p className={`text-2xl font-bold ${result.contributionMargin <= 0 ? "text-destructive" : "text-success"}`}>
-                  {result.contributionMargin.toFixed(2)} €
-                </p>
-                <p className="text-xs text-muted-foreground">Deckungsbeitrag/Stück</p>
-              </div>
+
+              {/* Margin bar */}
+              {result.marginPercent > 0 && (
+                <div className="rounded-xl border bg-muted/30 p-4 space-y-2">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-muted-foreground">Stückmarge</span>
+                    <span className={cn("font-semibold", result.marginPercent >= 50 ? "text-success" : result.marginPercent >= 30 ? "text-warning" : "text-destructive")}>
+                      {result.marginPercent.toFixed(1)}%
+                    </span>
+                  </div>
+                  <div className="h-2 rounded-full bg-muted overflow-hidden">
+                    <div
+                      className={cn("h-full rounded-full transition-all duration-500",
+                        result.marginPercent >= 50 ? "bg-success" : result.marginPercent >= 30 ? "bg-warning" : "bg-destructive"
+                      )}
+                      style={{ width: `${Math.min(100, result.marginPercent)}%` }}
+                    />
+                  </div>
+                  <p className="text-[11px] text-muted-foreground">
+                    {result.marginPercent >= 50 ? "✓ Gesunde Marge für E-Commerce" : result.marginPercent >= 30 ? "⚠ Knapp – Marketing & Retouren einkalkulieren" : "⚡ Zu niedrig – Preisanpassung empfohlen"}
+                  </p>
+                </div>
+              )}
+
               {result.contributionMargin <= 0 && (
-                <div className="sm:col-span-3 flex items-start gap-3 rounded-lg border border-destructive/30 bg-destructive/5 p-4">
+                <div className="flex items-start gap-3 rounded-2xl border border-destructive/30 bg-destructive/5 p-4">
                   <AlertTriangle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
                   <div>
                     <p className="font-semibold text-sm">Negativer Deckungsbeitrag</p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-muted-foreground mt-1">
                       Dein Verkaufspreis liegt unter den variablen Kosten. Du verlierst mit jedem Verkauf Geld.
                     </p>
                   </div>
@@ -160,5 +181,23 @@ export default function BreakEvenRechner() {
         </CardContent>
       </Card>
     </ToolPageLayout>
+  );
+}
+
+function ResultCard({ icon, value, label, level }: { icon: React.ReactNode; value: string; label: string; level: "low" | "medium" | "high" | "neutral" }) {
+  return (
+    <div className="rounded-xl border bg-card p-4 text-center space-y-2">
+      <div className={cn("mx-auto flex h-8 w-8 items-center justify-center rounded-lg",
+        level === "low" ? "bg-success/10 text-success" : level === "medium" ? "bg-warning/10 text-warning" : level === "high" ? "bg-destructive/10 text-destructive" : "bg-accent/10 text-accent"
+      )}>
+        {icon}
+      </div>
+      <p className={cn("text-2xl font-bold tabular-nums",
+        level === "low" ? "text-success" : level === "high" ? "text-destructive" : ""
+      )}>
+        {value}
+      </p>
+      <p className="text-[11px] text-muted-foreground">{label}</p>
+    </div>
   );
 }
