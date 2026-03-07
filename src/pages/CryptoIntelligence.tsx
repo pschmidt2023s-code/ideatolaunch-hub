@@ -15,6 +15,7 @@ import { AdvancedAnalytics } from "@/components/trading/AdvancedAnalytics";
 import { RiskSuite } from "@/components/trading/RiskSuite";
 import { TradeJournal } from "@/components/trading/TradeJournal";
 import { cn } from "@/lib/utils";
+import { AIPageInsights } from "@/components/AIPageInsights";
 import {
   calculateStrategySurvival,
   detectEdge,
