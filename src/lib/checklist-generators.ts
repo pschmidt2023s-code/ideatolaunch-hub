@@ -129,7 +129,7 @@ export function generateLabelChecklist(bp: BrandProfile, plan: string): Checklis
 
 export function generateLegalHints(bp: BrandProfile, plan: string): ChecklistEntry[] {
   const items: ChecklistEntry[] = [];
-  const isExecution = plan === "execution";
+  const isExecution = plan === "execution" || plan === "trading";
   const isEU = bp.targetRegion === "EU" || bp.targetRegion === "DE";
   const isDropship = bp.fulfillmentModel === "dropship" || bp.businessModel === "dropshipping";
   const isSelfWarehouse = bp.fulfillmentModel === "self";
