@@ -135,7 +135,7 @@ export function Navbar() {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="fixed inset-0 top-16 z-40 overflow-y-auto bg-background md:hidden animate-fade-in">
+        <div className="fixed inset-0 top-16 z-[85] overflow-y-auto bg-background md:hidden animate-fade-in">
           <div className="px-4 pb-8 pt-3">
             <nav className="flex flex-col gap-0.5">
               <button onClick={() => handleNav("/product")} className="rounded-lg px-3 py-2.5 text-left text-sm font-medium text-foreground hover:bg-muted transition-colors">
