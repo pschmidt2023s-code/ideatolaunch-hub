@@ -372,6 +372,14 @@ export default function LicenseManagement() {
                   )}
                   {invitations.map((inv) => (
                     <TableRow key={inv.id}>
+                      <TableCell>
+                        {inv.short_code ? (
+                          <div className="flex items-center gap-1.5">
+                            <code className="text-sm font-mono font-bold text-primary">{inv.short_code}</code>
+                            <button onClick={async () => { await navigator.clipboard.writeText(inv.short_code!); toast.success("Code kopiert!"); }} className="text-muted-foreground hover:text-foreground"><Copy className="h-3 w-3" /></button>
+                          </div>
+                        ) : <span className="text-xs text-muted-foreground">—</span>}
+                      </TableCell>
                       <TableCell><span className="text-sm">{inv.label || "—"}</span></TableCell>
                       <TableCell><PlanBadge plan={inv.plan} /></TableCell>
                       <TableCell>{inv.license_key ? <LicenseKeyCell value={inv.license_key} /> : "—"}</TableCell>
