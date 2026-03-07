@@ -20,7 +20,7 @@ export interface ChecklistEntry {
 
 export function generateLabelChecklist(bp: BrandProfile, plan: string): ChecklistEntry[] {
   const items: ChecklistEntry[] = [];
-  const isExecution = plan === "execution";
+  const isExecution = plan === "execution" || plan === "trading";
   const cat = bp.categoryId?.toLowerCase() || "";
   const isCosmetics = ["cosmetics", "kosmetik", "skincare", "beauty"].some(c => cat.includes(c));
   const isSupplements = ["supplements", "nahrungsergaenzung", "supplement", "vitamine"].some(s => cat.includes(s));
@@ -129,7 +129,7 @@ export function generateLabelChecklist(bp: BrandProfile, plan: string): Checklis
 
 export function generateLegalHints(bp: BrandProfile, plan: string): ChecklistEntry[] {
   const items: ChecklistEntry[] = [];
-  const isExecution = plan === "execution";
+  const isExecution = plan === "execution" || plan === "trading";
   const isEU = bp.targetRegion === "EU" || bp.targetRegion === "DE";
   const isDropship = bp.fulfillmentModel === "dropship" || bp.businessModel === "dropshipping";
   const isSelfWarehouse = bp.fulfillmentModel === "self";
@@ -183,7 +183,7 @@ export function generateLegalHints(bp: BrandProfile, plan: string): ChecklistEnt
 
 export function generateOperationalChecklist(bp: BrandProfile, plan: string): ChecklistEntry[] {
   const items: ChecklistEntry[] = [];
-  const isExecution = plan === "execution";
+  const isExecution = plan === "execution" || plan === "trading";
   const isAsiaProduction = bp.targetRegion === "global" || bp.fulfillmentModel === "dropship";
 
   const e = (id: string, label: string, desc: string, cat: string, opts: Partial<ChecklistEntry> = {}): ChecklistEntry => ({

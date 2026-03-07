@@ -38,7 +38,7 @@ export function ScenarioSimulatorCard() {
   const brandId = activeBrand?.id;
   const isDE = i18n.language === "de";
   const caps = getCapabilities(plan);
-  const isExecution = plan === "execution";
+  const isExecution = plan === "execution" || plan === "trading";
   const shouldFetch = plan !== "free";
 
   const { data: financial } = useQuery({

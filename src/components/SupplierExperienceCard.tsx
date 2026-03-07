@@ -410,7 +410,7 @@ export function SupplierExperienceCard({
   const { activeBrand } = useBrand();
 
   const isDE = i18n.language === "de";
-  const isExecution = plan === "execution";
+  const isExecution = plan === "execution" || plan === "trading";
   const access = getFeatureAccess("supplierMatching", plan);
   const hasInput = categoryId.length > 0 && budget > 0 && launchQuantity > 0;
 

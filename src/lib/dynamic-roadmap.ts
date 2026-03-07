@@ -40,8 +40,8 @@ function step(
  * Generates a personalised roadmap based on BrandProfile and plan tier.
  */
 export function generateRoadmap(bp: BrandProfile, plan: string): RoadmapWeek[] {
-  const isPro = plan === "pro" || plan === "execution";
-  const isExecution = plan === "execution";
+  const isPro = plan === "pro" || plan === "execution" || plan === "trading";
+  const isExecution = plan === "execution" || plan === "trading";
 
   // ── Week 1: Foundation & Validation ──────────────────────────
   const w1: RoadmapStep[] = [];

@@ -125,7 +125,7 @@ export default function SettingsPage() {
           <p className="text-sm text-muted-foreground">
             {t("settings.currentPlan")}:{" "}
             <span className="font-semibold text-foreground">
-              {plan === "execution" ? "Execution OS" : plan === "pro" ? "Pro" : plan === "builder" ? "Builder" : "Free"}
+              {plan === "trading" ? "Trading" : plan === "execution" ? "Execution OS" : plan === "pro" ? "Pro" : plan === "builder" ? "Builder" : "Free"}
             </span>
           </p>
 

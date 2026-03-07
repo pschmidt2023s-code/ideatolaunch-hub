@@ -56,7 +56,7 @@ export const StepLaunchRoadmap = forwardRef<StepHandle>(function StepLaunchRoadm
 
   const caps = getCapabilities(plan);
   const isPro = caps.canUseRoadmap;
-  const isExecution = plan === "execution";
+  const isExecution = plan === "execution" || plan === "trading";
 
   // Dynamic roadmap for PRO+ using BrandProfile
   const dynamicWeeks: RoadmapWeek[] | null = useMemo(() => {

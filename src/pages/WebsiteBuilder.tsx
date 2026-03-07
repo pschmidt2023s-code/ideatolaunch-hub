@@ -35,7 +35,7 @@ const COLOR_SCHEMES = [
 export default function WebsiteBuilder() {
   const { activeBrand } = useBrand();
   const { plan } = useSubscription();
-  const isPro = plan === "pro" || plan === "execution";
+  const isPro = plan === "pro" || plan === "execution" || plan === "trading";
   const brandId = activeBrand?.id;
 
   const [loading, setLoading] = useState(false);

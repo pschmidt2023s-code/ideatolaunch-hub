@@ -356,7 +356,7 @@ export default function ExecutionOSDashboard() {
   const { activeBrand } = useBrand();
   const { i18n } = useTranslation();
   const isDE = i18n.language === "de";
-  const isExecution = plan === "execution";
+  const isExecution = plan === "execution" || plan === "trading";
   const isPro = plan === "pro" || isExecution;
 
   const [kpis, setKpis] = useState<WeeklyKPI>(defaultKPIs);

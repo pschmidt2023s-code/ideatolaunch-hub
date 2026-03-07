@@ -61,8 +61,8 @@ export default function RecoveryMode() {
   const { activeBrand } = useBrand();
   const { health } = useBrandHealth();
   const caps = getCapabilities(plan);
-  const isPro = plan === "pro" || plan === "execution";
-  const isExecution = plan === "execution";
+  const isPro = plan === "pro" || plan === "execution" || plan === "trading";
+  const isExecution = plan === "execution" || plan === "trading";
 
   const [metrics, setMetrics] = useState<BusinessMetrics>(() => {
     return defaultMetrics;

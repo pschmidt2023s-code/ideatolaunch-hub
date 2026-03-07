@@ -92,8 +92,8 @@ export function generateAdaptiveTasks(profile: BrandProfile, plan: string): Adap
   const productClass = classifyProduct(profile);
   const cat = detectCategory(profile);
   const isEU = profile.targetRegion === "DE" || profile.targetRegion === "EU";
-  const isPro = plan === "pro" || plan === "execution";
-  const isExecution = plan === "execution";
+  const isPro = plan === "pro" || plan === "execution" || plan === "trading";
+  const isExecution = plan === "execution" || plan === "trading";
 
   // ── Step 1: Validation & Brand ────────────────────────────
   tasks.push(t("val_product", "Produkt definieren", "Beschreibe dein Produkt, Zielgruppe und Preisniveau.", 1,
