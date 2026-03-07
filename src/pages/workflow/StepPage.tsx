@@ -145,6 +145,7 @@ export default function StepPage() {
       // Continue even if save fails
     }
     await advanceStep(TOTAL_PHASES + 1);
+    if (activeBrand?.id) fireCompletionConfetti(activeBrand.id);
     navigate("/dashboard");
   };
 

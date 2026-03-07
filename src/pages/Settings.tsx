@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { getClientMode, setClientMode } from "@/lib/beta-client";
 import { cn } from "@/lib/utils";
 import { AnimatedCard } from "@/components/dashboard/AnimatedCard";
+import { SessionManagement } from "@/components/settings/SessionManagement";
 
 const PLAN_META: Record<string, { label: string; color: string; icon: typeof Sparkles }> = {
   pro: { label: "Pro", color: "bg-accent text-accent-foreground", icon: Sparkles },
