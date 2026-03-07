@@ -94,6 +94,7 @@ const InviteRedeem = lazy(() => import("./pages/InviteRedeem"));
 const RedeemCode = lazy(() => import("./pages/RedeemCode"));
 const TradingDashboard = lazy(() => import("./pages/modes/TradingDashboard"));
 const TradingIntelligence = lazy(() => import("./pages/TradingIntelligence"));
+const RiskAnalysis = lazy(() => import("./pages/RiskAnalysis"));
 const InvestorDashboard = lazy(() => import("./pages/modes/InvestorDashboard"));
 const StrategyDashboard = lazy(() => import("./pages/modes/StrategyDashboard"));
 
