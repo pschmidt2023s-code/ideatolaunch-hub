@@ -18,6 +18,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Activity, TrendingUp, Target, BarChart3, Shield, Plus, Trash2, ChevronDown, ChevronRight, BookOpen, Wallet, Loader2, Link2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AIPageInsights } from "@/components/AIPageInsights";
 import { buildTradingForecast } from "@/lib/signal-engine";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";

@@ -423,6 +423,11 @@ export default function CommandCenter() {
             )}
           </>
         )}
+
+        <AIPageInsights
+          pageContext="Command Center – Zentrale Übersicht mit KPIs, Risiken, Aktionen und Szenarien"
+          title="AI Command Insights"
+        />
       </div>
     </DashboardLayout>
   );

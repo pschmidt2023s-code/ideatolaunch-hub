@@ -17,6 +17,7 @@ import { FinancialDisclaimer } from "@/components/dashboard/FinancialDisclaimer"
 import { MetricOnboarding } from "@/components/dashboard/MetricOnboarding";
 import { Activity, PieChart, Wallet, TrendingUp, ShieldAlert, ChevronDown, ChevronRight, Plus, Trash2, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AIPageInsights } from "@/components/AIPageInsights";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { generateCryptoSignals, generateEquitySignals, buildPortfolioForecast } from "@/lib/signal-engine";
 import type { ScenarioMode } from "@/lib/command-center-types";
