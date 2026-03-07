@@ -109,12 +109,15 @@ export default function Accounts() {
 
   // Exposure calculation
   const exposureMap: Record<string, number> = {};
-  allBalances.forEach((b) => {
-    const usdVal = b.asset === "USDT" ? b.free + b.locked
-      : b.asset === "BTC" ? (b.free + b.locked) * 67000
-      : b.asset === "ETH" ? (b.free + b.locked) * 3500
-      : (b.free + b.locked) * 180;
-    exposureMap[b.asset] = (exposureMap[b.asset] || 0) + usdVal;
+  accounts.forEach((account) => {
+    const prices = ((account.account_data as Record<string, any>)?.prices ?? {}) as Record<string, number>;
+    (account.balances || []).forEach((b) => {
+      const amount = (b.free || 0) + (b.locked || 0);
+      const quotePrice = ["USDT", "USD", "EUR"].includes(b.asset) ? 1 : Number(prices[b.asset] ?? 0);
+      if (amount <= 0 || quotePrice <= 0) return;
+      const eurVal = amount * quotePrice;
+      exposureMap[b.asset] = (exposureMap[b.asset] || 0) + eurVal;
+    });
   });
   const totalExposure = Object.values(exposureMap).reduce((s, v) => s + v, 0);
 
