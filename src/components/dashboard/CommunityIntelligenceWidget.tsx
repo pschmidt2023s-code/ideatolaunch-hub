@@ -1,7 +1,9 @@
 import { useTrendingPosts, useTopSuppliers, useMarketSignals, useCaseStudies } from "@/hooks/useCommunity";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { TrendingUp, Users, BookOpen, MessageCircle, ArrowRight, Factory, Star, Flame, Radar, Zap } from "lucide-react";
+import { TrendingUp, Users, BookOpen, ArrowRight, Factory, Star, Flame, Radar, FlaskConical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Progress } from "@/components/ui/progress";
@@ -10,12 +12,20 @@ export function CommunityIntelligenceWidget() {
   const { data: signals } = useMarketSignals();
   const { data: suppliers } = useTopSuppliers();
   const { data: cases } = useCaseStudies();
+  const { data: experiments } = useQuery({
+    queryKey: ["widget-experiments"],
+    queryFn: async () => {
+      const { data } = await supabase.from("community_experiments").select("*").order("upvote_count", { ascending: false }).limit(3);
+      return data || [];
+    },
+  });
   const navigate = useNavigate();
 
   const topSignals = signals?.slice(0, 3) || [];
   const topSuppliers = suppliers?.slice(0, 3) || [];
   const topCases = cases?.slice(0, 2) || [];
-  const hasData = topSignals.length > 0 || topSuppliers.length > 0 || topCases.length > 0;
+  const topExperiments = experiments?.slice(0, 2) || [];
+  const hasData = topSignals.length > 0 || topSuppliers.length > 0 || topCases.length > 0 || topExperiments.length > 0;
 
   return (
     <Card>
@@ -35,7 +45,6 @@ export function CommunityIntelligenceWidget() {
           <p className="text-xs text-muted-foreground text-center py-6">Noch keine Community-Daten verfügbar.</p>
         )}
 
-        {/* Top Market Signals */}
         {topSignals.length > 0 && (
           <div>
             <h4 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1.5">
@@ -46,11 +55,7 @@ export function CommunityIntelligenceWidget() {
                 const strength = (signal.metadata?.trend_strength as number) || 5;
                 const isHot = strength >= 8;
                 return (
-                  <div
-                    key={signal.id}
-                    className="flex items-center gap-2.5 rounded-lg p-2 hover:bg-muted/50 cursor-pointer transition-colors"
-                    onClick={() => navigate("/dashboard/community")}
-                  >
+                  <div key={signal.id} className="flex items-center gap-2.5 rounded-lg p-2 hover:bg-muted/50 cursor-pointer transition-colors" onClick={() => navigate("/dashboard/community")}>
                     <div className={`flex h-7 w-7 items-center justify-center rounded-lg shrink-0 ${isHot ? "bg-destructive/10" : "bg-accent/10"}`}>
                       {isHot ? <Flame className="h-3.5 w-3.5 text-destructive" /> : <TrendingUp className="h-3.5 w-3.5 text-accent" />}
                     </div>
@@ -72,7 +77,27 @@ export function CommunityIntelligenceWidget() {
           </div>
         )}
 
-        {/* Top Suppliers */}
+        {topExperiments.length > 0 && (
+          <div>
+            <h4 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1.5">
+              <FlaskConical className="h-3 w-3" /> Top Experiments
+            </h4>
+            <div className="space-y-1.5">
+              {topExperiments.map((e: any) => (
+                <div key={e.id} className="flex items-center gap-2.5 rounded-lg p-2 hover:bg-muted/50 cursor-pointer transition-colors" onClick={() => navigate("/dashboard/community")}>
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent/10 shrink-0">
+                    <FlaskConical className="h-3.5 w-3.5 text-accent" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium line-clamp-1">{e.title}</p>
+                    <p className="text-[10px] text-muted-foreground">{e.experiment_type} · {e.platform || ""}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {topSuppliers.length > 0 && (
           <div>
             <h4 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1.5">
@@ -82,11 +107,7 @@ export function CommunityIntelligenceWidget() {
               {topSuppliers.map((s) => {
                 const avg = ((s.quality_rating + s.communication_rating + s.delivery_rating) / 3).toFixed(1);
                 return (
-                  <div
-                    key={s.id}
-                    className="flex items-center gap-2.5 rounded-lg p-2 hover:bg-muted/50 cursor-pointer transition-colors"
-                    onClick={() => navigate("/dashboard/community")}
-                  >
+                  <div key={s.id} className="flex items-center gap-2.5 rounded-lg p-2 hover:bg-muted/50 cursor-pointer transition-colors" onClick={() => navigate("/dashboard/community")}>
                     <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent/10 shrink-0">
                       <Factory className="h-3.5 w-3.5 text-accent" />
                     </div>
@@ -105,7 +126,6 @@ export function CommunityIntelligenceWidget() {
           </div>
         )}
 
-        {/* Latest Case Studies */}
         {topCases.length > 0 && (
           <div>
             <h4 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1.5">
@@ -113,11 +133,7 @@ export function CommunityIntelligenceWidget() {
             </h4>
             <div className="space-y-1.5">
               {topCases.map((c) => (
-                <div
-                  key={c.id}
-                  className="flex items-center gap-2.5 rounded-lg p-2 hover:bg-muted/50 cursor-pointer transition-colors"
-                  onClick={() => navigate("/dashboard/community")}
-                >
+                <div key={c.id} className="flex items-center gap-2.5 rounded-lg p-2 hover:bg-muted/50 cursor-pointer transition-colors" onClick={() => navigate("/dashboard/community")}>
                   <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent/10 shrink-0">
                     <BookOpen className="h-3.5 w-3.5 text-accent" />
                   </div>
