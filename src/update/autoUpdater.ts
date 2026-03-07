@@ -1,6 +1,6 @@
 /**
  * Fully automatic updater – no UI, no user interaction.
- * Checks version.json → downloads installer silently → runs silent install → quits app.
+ * Checks version.json → downloads installer with integrity verification → runs silent install → quits app.
  */
 
 import { checkUpdateAvailable, downloadInstaller, type UpdateCheckResult } from "./updateService";
@@ -25,12 +25,14 @@ export async function runAutoUpdate(): Promise<boolean> {
     `[AUTO-UPDATER] Update available: ${result.currentVersion} → ${result.latestVersion}`
   );
 
-  // Download silently (no progress UI)
+  // Download with integrity verification
   let filePath: string;
   try {
-    filePath = await downloadInstaller(result.installerUrl, (p) => {
-      console.info(`[AUTO-UPDATER] Download: ${p.percent}%`);
-    });
+    filePath = await downloadInstaller(
+      result.installerUrl,
+      (p) => console.info(`[AUTO-UPDATER] Download: ${p.percent}%`),
+      result.expectedHash
+    );
   } catch (e) {
     console.error("[AUTO-UPDATER] Download failed:", e);
     return false;
@@ -38,7 +40,6 @@ export async function runAutoUpdate(): Promise<boolean> {
 
   console.info("[AUTO-UPDATER] Download complete, launching silent install…");
 
-  // Run installer silently (/S flag for NSIS) and quit
   try {
     await runSilentInstallerAndQuit(filePath);
   } catch (e) {
@@ -57,7 +58,6 @@ async function runSilentInstallerAndQuit(filePath: string): Promise<void> {
   const cmd = Command.create("cmd", ["/c", "start", "", filePath, "/S"]);
   await cmd.execute();
 
-  // Give the OS a moment to launch the process, then quit
   await new Promise((r) => setTimeout(r, 1000));
 
   const { exit } = await import("@tauri-apps/plugin-process");
