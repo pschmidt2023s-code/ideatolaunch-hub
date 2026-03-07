@@ -135,7 +135,7 @@ export function AdvancedAnalytics({ winrate, riskPerTrade, rrr, accountSize, tra
             <BigNum label="Max DD" value={`${simulation.maxDrawdown}%`} color="text-yellow-500" />
             <BigNum label="Profit Prob." value={`${simulation.profitProbability}%`} />
           </div>
-          <p className="text-[10px] text-muted-foreground mt-3 text-center">Basiert auf deinen aktuellen Parametern (Winrate, RRR, Risk/Trade) – keine echten Trade-Daten.</p>
+          <p className="text-[10px] text-muted-foreground mt-3 text-center">Basiert auf deinen aktuellen Parametern (Winrate, RRR, Risk/Trade).</p>
         </Card>
       </TabsContent>
 

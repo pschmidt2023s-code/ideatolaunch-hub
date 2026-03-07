@@ -89,7 +89,7 @@ export default function InvestorDashboard() {
   const [mode, setMode] = useState<ScenarioMode>("realistic");
   const [input, setInput] = useState<InvestorInput>(getInvestorDefaults());
   const [showOnboarding, setShowOnboarding] = useState(false);
-  const [forecastTarget, setForecastTarget] = useState(75000);
+  const [forecastTarget, setForecastTarget] = useState(0);
 
   const sync = useCallback((next: InvestorInput) => {
     const recalced = recalcAllocations(next);

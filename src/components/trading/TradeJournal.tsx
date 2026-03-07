@@ -26,7 +26,7 @@ export function TradeJournal() {
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState<string | null>(null);
-  const [form, setForm] = useState({ symbol: "BTCUSDT", side: "long" as "long" | "short", entryPrice: 0, exitPrice: 0, notes: "", emotion: "neutral" });
+  const [form, setForm] = useState({ symbol: "", side: "long" as "long" | "short", entryPrice: 0, exitPrice: 0, notes: "", emotion: "neutral" });
 
   const addEntry = () => {
     const pnl = form.side === "long" ? form.exitPrice - form.entryPrice : form.entryPrice - form.exitPrice;
@@ -37,7 +37,7 @@ export function TradeJournal() {
       timestamp: new Date().toISOString(),
     };
     setEntries(prev => [entry, ...prev]);
-    setForm({ symbol: "BTCUSDT", side: "long", entryPrice: 0, exitPrice: 0, notes: "", emotion: "neutral" });
+    setForm({ symbol: "", side: "long", entryPrice: 0, exitPrice: 0, notes: "", emotion: "neutral" });
     setShowForm(false);
   };
 
@@ -130,7 +130,7 @@ export function TradeJournal() {
             </Select>
             <Textarea placeholder="Notizen..." value={form.notes} onChange={e => setForm(p => ({ ...p, notes: e.target.value }))} className="text-xs h-8 min-h-8 resize-none" />
           </div>
-          <Button size="sm" onClick={addEntry} disabled={!form.entryPrice || !form.exitPrice} className="text-xs">Speichern</Button>
+          <Button size="sm" onClick={addEntry} disabled={!form.symbol.trim() || !form.entryPrice || !form.exitPrice} className="text-xs">Speichern</Button>
         </div>
       )}
 
