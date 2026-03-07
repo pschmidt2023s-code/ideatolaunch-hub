@@ -1,12 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Lightbulb, GraduationCap, Loader2, ArrowRight, ArrowLeft, Package, DollarSign, Target, ShieldAlert, Zap, Heart, AlertTriangle, Monitor, Briefcase, Box } from "lucide-react";
+import { Lightbulb, GraduationCap, Loader2, ArrowRight, ArrowLeft, Package, DollarSign, Target, ShieldAlert, Zap, Heart, AlertTriangle, Monitor, Briefcase, Box, CheckCircle2, Sparkles } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
@@ -14,10 +13,14 @@ import { Progress } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CATEGORIES } from "@/lib/categories";
 import { RISK_FLAGS, getDefaultRiskFlags, type ProductType } from "@/lib/product-intelligence";
+import { cn } from "@/lib/utils";
 
 type Step = "welcome" | "experience" | "product_type" | "product_category" | "risk_flags" | "product" | "budget" | "archetype" | "done";
 
 const STEPS: Step[] = ["welcome", "experience", "product_type", "product_category", "risk_flags", "product", "budget", "archetype", "done"];
+
+const STEP_LABELS_DE = ["Willkommen", "Erfahrung", "Produkttyp", "Kategorie", "Risiken", "Ziel", "Budget", "Archetyp"];
+const STEP_ICONS = [Sparkles, Target, Box, Package, AlertTriangle, Target, DollarSign, ShieldAlert];
 
 function determineArchetype(goal: string, riskTolerance: string, budget: string): string {
   if (goal === "survival" || (budget === "under1k" && riskTolerance === "low")) return "recovery_founder";
@@ -25,6 +28,13 @@ function determineArchetype(goal: string, riskTolerance: string, budget: string)
   if ((goal === "launch" || goal === "profitability") && riskTolerance !== "high" && (budget === "5k-15k" || budget === "15k-50k" || budget === "50k+")) return "brand_perfectionist";
   return "conservative_planner";
 }
+
+const ARCHETYPE_DATA: Record<string, { emoji: string; label: string; desc: string; color: string }> = {
+  conservative_planner: { emoji: "🛡️", label: "Conservative Planner", desc: "Sicherheit zuerst. Schritt für Schritt zum Erfolg.", color: "text-sky-500" },
+  aggressive_scaler: { emoji: "🚀", label: "Aggressive Scaler", desc: "Schnelles Wachstum mit kalkuliertem Risiko.", color: "text-emerald-500" },
+  brand_perfectionist: { emoji: "💎", label: "Brand Perfectionist", desc: "Premium-Qualität und starke Marke.", color: "text-violet-500" },
+  recovery_founder: { emoji: "🔄", label: "Recovery Founder", desc: "Cashflow stabilisieren und Risiken minimieren.", color: "text-amber-500" },
+};
 
 export default function Onboarding() {
   const navigate = useNavigate();
@@ -61,7 +71,6 @@ export default function Onboarding() {
     }
   }, [isLoading, profile, navigate]);
 
-  // Auto-set risk flags when category changes
   useEffect(() => {
     if (productCategory) {
       setRiskFlagSelections(getDefaultRiskFlags(productCategory));
@@ -83,9 +92,16 @@ export default function Onboarding() {
   const currentIdx = STEPS.indexOf(step);
   const progress = Math.round(((currentIdx) / (STEPS.length - 1)) * 100);
 
+  // Compute visible steps (skip category/risk_flags for non-physical)
+  const visibleSteps = STEPS.filter((s) => {
+    if ((s === "product_category" || s === "risk_flags") && productTypeChoice !== "physical" && productTypeChoice !== "") return false;
+    if (s === "done") return false;
+    return true;
+  });
+  const visibleIdx = visibleSteps.indexOf(step);
+
   const goNext = () => {
     const idx = STEPS.indexOf(step);
-    // Skip product_category and risk_flags for non-physical products
     if (step === "product_type" && productTypeChoice !== "physical") {
       setStep("product");
       return;
@@ -94,7 +110,6 @@ export default function Onboarding() {
   };
   const goBack = () => {
     const idx = STEPS.indexOf(step);
-    // Skip back over product_category/risk_flags for non-physical
     if (step === "product" && productTypeChoice !== "physical") {
       setStep("product_type");
       return;
@@ -115,24 +130,44 @@ export default function Onboarding() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
       <div className="w-full max-w-lg">
-        {step !== "welcome" && (
-          <div className="mb-6 space-y-2">
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>Schritt {currentIdx} von {STEPS.length - 1}</span>
-              <span>{progress}%</span>
+        {/* Step indicator dots */}
+        {step !== "welcome" && step !== "done" && (
+          <div className="mb-8 space-y-4">
+            {/* Dot stepper */}
+            <div className="flex items-center justify-center gap-2">
+              {visibleSteps.map((s, i) => {
+                const done = i < visibleIdx;
+                const active = s === step;
+                return (
+                  <div key={s} className="flex items-center gap-2">
+                    <div
+                      className={cn(
+                        "h-2.5 w-2.5 rounded-full transition-all duration-300",
+                        done && "bg-success",
+                        active && "bg-primary w-6",
+                        !done && !active && "bg-muted"
+                      )}
+                    />
+                  </div>
+                );
+              })}
             </div>
-            <Progress value={progress} className="h-1.5" />
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span>{STEP_LABELS_DE[currentIdx] || `Schritt ${currentIdx}`}</span>
+              <span className="tabular-nums font-medium">{progress}%</span>
+            </div>
+            <Progress value={progress} className="h-1" />
           </div>
         )}
 
         {/* Step: Welcome */}
         {step === "welcome" && (
           <div className="text-center animate-fade-in">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-primary">
-              <span className="text-xl font-bold text-primary-foreground">B</span>
+            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary shadow-lg">
+              <span className="text-2xl font-bold text-primary-foreground">B</span>
             </div>
             <h1 className="text-2xl font-bold">{t("onboarding.title")}</h1>
-            <p className="mt-2 text-muted-foreground">{t("onboarding.subtitle")}</p>
+            <p className="mt-2 text-muted-foreground max-w-sm mx-auto">{t("onboarding.subtitle")}</p>
 
             <div className="mt-10 grid gap-4 sm:grid-cols-2">
               <button
@@ -141,10 +176,10 @@ export default function Onboarding() {
                   await markCompleted("experienced");
                   navigate("/dashboard");
                 }}
-                className="flex flex-col items-center gap-3 rounded-xl border bg-card p-6 text-center shadow-card transition-all hover:shadow-md hover:border-accent/40"
+                className="group flex flex-col items-center gap-3 rounded-2xl border bg-card p-6 text-center shadow-card transition-all hover:shadow-md hover:border-primary/30"
               >
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
-                  <Lightbulb className="h-6 w-6 text-accent" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                  <Lightbulb className="h-6 w-6 text-primary" />
                 </div>
                 <h2 className="font-semibold">{t("onboarding.experienced")}</h2>
                 <p className="text-sm text-muted-foreground">{t("onboarding.experiencedDesc")}</p>
@@ -155,15 +190,19 @@ export default function Onboarding() {
                   setExperience("beginner");
                   setStep("experience");
                 }}
-                className="flex flex-col items-center gap-3 rounded-xl border bg-card p-6 text-center shadow-card transition-all hover:shadow-md hover:border-accent/40"
+                className="group flex flex-col items-center gap-3 rounded-2xl border bg-card p-6 text-center shadow-card transition-all hover:shadow-md hover:border-primary/30"
               >
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
-                  <GraduationCap className="h-6 w-6 text-accent" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                  <GraduationCap className="h-6 w-6 text-primary" />
                 </div>
                 <h2 className="font-semibold">{t("onboarding.beginner")}</h2>
                 <p className="text-sm text-muted-foreground">{t("onboarding.beginnerDesc")}</p>
               </button>
             </div>
+
+            <p className="mt-8 text-xs text-muted-foreground">
+              {isDE ? "⏱ Dauer: ca. 2 Minuten · Personalisiert dein Dashboard" : "⏱ Duration: ~2 minutes · Personalizes your dashboard"}
+            </p>
           </div>
         )}
 
@@ -171,31 +210,35 @@ export default function Onboarding() {
         {step === "experience" && (
           <div className="animate-fade-in space-y-6">
             <div className="text-center">
-              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
-                <Target className="h-6 w-6 text-accent" />
+              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                <Target className="h-6 w-6 text-primary" />
               </div>
               <h2 className="text-xl font-bold">{isDE ? "Wie viel Erfahrung hast du?" : "How much experience do you have?"}</h2>
               <p className="text-sm text-muted-foreground mt-1">{isDE ? "Das hilft uns, dir die richtigen Tools zu zeigen." : "This helps us show you the right tools."}</p>
             </div>
             <div className="space-y-3">
               {[
-                { value: "none", label: isDE ? "Komplett neu" : "Complete beginner", desc: isDE ? "Noch nie ein physisches Produkt verkauft" : "Never sold a physical product" },
-                { value: "some", label: isDE ? "Erste Erfahrung" : "Some experience", desc: isDE ? "Habe schon recherchiert oder erste Produkte getestet" : "Have researched or tested first products" },
-                { value: "active", label: isDE ? "Bereits aktiv" : "Already active", desc: isDE ? "Verkaufe bereits und möchte optimieren" : "Already selling and want to optimize" },
+                { value: "none", label: isDE ? "Komplett neu" : "Complete beginner", desc: isDE ? "Noch nie ein physisches Produkt verkauft" : "Never sold a physical product", emoji: "🌱" },
+                { value: "some", label: isDE ? "Erste Erfahrung" : "Some experience", desc: isDE ? "Habe schon recherchiert oder erste Produkte getestet" : "Have researched or tested first products", emoji: "📋" },
+                { value: "active", label: isDE ? "Bereits aktiv" : "Already active", desc: isDE ? "Verkaufe bereits und möchte optimieren" : "Already selling and want to optimize", emoji: "📈" },
               ].map((opt) => (
                 <button
                   key={opt.value}
                   onClick={() => { setExperience(opt.value); goNext(); }}
-                  className={`w-full text-left rounded-xl border p-4 transition-all hover:border-accent/40 hover:shadow-sm ${
-                    experience === opt.value ? "border-accent bg-accent/5" : "bg-card"
-                  }`}
+                  className={cn(
+                    "w-full text-left rounded-xl border p-4 transition-all hover:border-primary/30 hover:shadow-sm flex items-center gap-4",
+                    experience === opt.value ? "border-primary bg-primary/5" : "bg-card"
+                  )}
                 >
-                  <p className="font-semibold text-sm">{opt.label}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">{opt.desc}</p>
+                  <span className="text-2xl">{opt.emoji}</span>
+                  <div>
+                    <p className="font-semibold text-sm">{opt.label}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{opt.desc}</p>
+                  </div>
                 </button>
               ))}
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-start">
               <Button variant="ghost" size="sm" onClick={goBack} className="gap-1.5">
                 <ArrowLeft className="h-3.5 w-3.5" /> {isDE ? "Zurück" : "Back"}
               </Button>
@@ -203,12 +246,12 @@ export default function Onboarding() {
           </div>
         )}
 
-        {/* Step: Product Type (Physical / Digital / Service) */}
+        {/* Step: Product Type */}
         {step === "product_type" && (
           <div className="animate-fade-in space-y-6">
             <div className="text-center">
-              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
-                <Box className="h-6 w-6 text-accent" />
+              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                <Box className="h-6 w-6 text-primary" />
               </div>
               <h2 className="text-xl font-bold">{isDE ? "Was ist dein Produkttyp?" : "What's your product type?"}</h2>
               <p className="text-sm text-muted-foreground mt-1">{isDE ? "Dies bestimmt deine Checklisten, Compliance und Lieferantenempfehlungen." : "This determines your checklists, compliance, and supplier recommendations."}</p>
@@ -222,11 +265,14 @@ export default function Onboarding() {
                 <button
                   key={opt.value}
                   onClick={() => { setProductTypeChoice(opt.value); goNext(); }}
-                  className={`w-full text-left rounded-xl border p-4 transition-all hover:border-accent/40 hover:shadow-sm flex items-center gap-4 ${
-                    productTypeChoice === opt.value ? "border-accent bg-accent/5" : "bg-card"
-                  }`}
+                  className={cn(
+                    "w-full text-left rounded-xl border p-4 transition-all hover:border-primary/30 hover:shadow-sm flex items-center gap-4",
+                    productTypeChoice === opt.value ? "border-primary bg-primary/5" : "bg-card"
+                  )}
                 >
-                  <opt.icon className="h-5 w-5 shrink-0 text-accent" />
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                    <opt.icon className="h-5 w-5 text-primary" />
+                  </div>
                   <div>
                     <p className="font-semibold text-sm">{opt.label}</p>
                     <p className="text-xs text-muted-foreground mt-0.5">{opt.desc}</p>
@@ -234,7 +280,7 @@ export default function Onboarding() {
                 </button>
               ))}
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-start">
               <Button variant="ghost" size="sm" onClick={goBack} className="gap-1.5">
                 <ArrowLeft className="h-3.5 w-3.5" /> {isDE ? "Zurück" : "Back"}
               </Button>
@@ -246,8 +292,8 @@ export default function Onboarding() {
         {step === "product_category" && (
           <div className="animate-fade-in space-y-6">
             <div className="text-center">
-              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
-                <Package className="h-6 w-6 text-accent" />
+              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                <Package className="h-6 w-6 text-primary" />
               </div>
               <h2 className="text-xl font-bold">{isDE ? "Welche Produktkategorie?" : "Which product category?"}</h2>
               <p className="text-sm text-muted-foreground mt-1">{isDE ? "Deine Checklisten, Compliance und Lieferanten werden darauf angepasst." : "Your checklists, compliance, and suppliers will be tailored to this."}</p>
@@ -257,23 +303,25 @@ export default function Onboarding() {
                 <button
                   key={cat.id}
                   onClick={() => { setProductCategory(cat.id); setProductType(cat.id); goNext(); }}
-                  className={`text-left rounded-xl border p-4 transition-all hover:border-accent/40 hover:shadow-sm ${
-                    productCategory === cat.id ? "border-accent bg-accent/5" : "bg-card"
-                  }`}
+                  className={cn(
+                    "text-left rounded-xl border p-4 transition-all hover:border-primary/30 hover:shadow-sm",
+                    productCategory === cat.id ? "border-primary bg-primary/5" : "bg-card"
+                  )}
                 >
                   <p className="font-semibold text-sm">{isDE ? cat.labelDe : cat.labelEn}</p>
                 </button>
               ))}
               <button
                 onClick={() => { setProductCategory("other"); setProductType("other"); goNext(); }}
-                className={`text-left rounded-xl border p-4 transition-all hover:border-accent/40 hover:shadow-sm ${
-                  productCategory === "other" ? "border-accent bg-accent/5" : "bg-card"
-                }`}
+                className={cn(
+                  "text-left rounded-xl border p-4 transition-all hover:border-primary/30 hover:shadow-sm",
+                  productCategory === "other" ? "border-primary bg-primary/5" : "bg-card"
+                )}
               >
                 <p className="font-semibold text-sm">{isDE ? "Sonstiges" : "Other"}</p>
               </button>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-start">
               <Button variant="ghost" size="sm" onClick={goBack} className="gap-1.5">
                 <ArrowLeft className="h-3.5 w-3.5" /> {isDE ? "Zurück" : "Back"}
               </Button>
@@ -281,23 +329,24 @@ export default function Onboarding() {
           </div>
         )}
 
-        {/* Step: Risk Flags (Physical only) */}
+        {/* Step: Risk Flags */}
         {step === "risk_flags" && (
           <div className="animate-fade-in space-y-6">
             <div className="text-center">
-              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
+              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-destructive/10">
                 <AlertTriangle className="h-6 w-6 text-destructive" />
               </div>
               <h2 className="text-xl font-bold">{isDE ? "Risiko-Flags prüfen" : "Review risk flags"}</h2>
               <p className="text-sm text-muted-foreground mt-1">{isDE ? "Basierend auf deiner Kategorie – passe an, was auf dein Produkt zutrifft." : "Based on your category – adjust what applies to your product."}</p>
             </div>
-            <div className="space-y-3">
+            <div className="space-y-2">
               {RISK_FLAGS.map((flag) => (
                 <label
                   key={flag.id}
-                  className={`flex items-center gap-3 cursor-pointer rounded-xl border p-4 transition-all hover:border-accent/40 ${
-                    riskFlagSelections.includes(flag.id) ? "border-accent bg-accent/5" : "bg-card"
-                  }`}
+                  className={cn(
+                    "flex items-center gap-3 cursor-pointer rounded-xl border p-3.5 transition-all hover:border-primary/30",
+                    riskFlagSelections.includes(flag.id) ? "border-primary bg-primary/5" : "bg-card"
+                  )}
                 >
                   <Checkbox
                     checked={riskFlagSelections.includes(flag.id)}
@@ -326,33 +375,37 @@ export default function Onboarding() {
         {step === "product" && (
           <div className="animate-fade-in space-y-6">
             <div className="text-center">
-              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
-                <Target className="h-6 w-6 text-accent" />
+              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                <Target className="h-6 w-6 text-primary" />
               </div>
               <h2 className="text-xl font-bold">{isDE ? "Was ist dein Ziel?" : "What is your goal?"}</h2>
               <p className="text-sm text-muted-foreground mt-1">{isDE ? "Das bestimmt deine Dashboard-Prioritäten." : "This determines your dashboard priorities."}</p>
             </div>
             <div className="space-y-3">
               {[
-                { value: "validate", label: isDE ? "Idee validieren" : "Validate idea", desc: isDE ? "Herausfinden, ob mein Produkt Potenzial hat" : "Find out if my product has potential" },
-                { value: "launch", label: isDE ? "Ersten Launch planen" : "Plan first launch", desc: isDE ? "Strukturiert zum ersten Produkt" : "Structured path to first product" },
-                { value: "profitability", label: isDE ? "Profitabilität steigern" : "Increase profitability", desc: isDE ? "Margen verbessern und Kosten senken" : "Improve margins and reduce costs" },
-                { value: "scale", label: isDE ? "Skalieren" : "Scale", desc: isDE ? "Umsatz und Volumen steigern" : "Increase revenue and volume" },
-                { value: "survival", label: isDE ? "Überleben sichern" : "Secure survival", desc: isDE ? "Cashflow stabilisieren und Risiken senken" : "Stabilize cashflow and reduce risks" },
+                { value: "validate", label: isDE ? "Idee validieren" : "Validate idea", desc: isDE ? "Herausfinden, ob mein Produkt Potenzial hat" : "Find out if my product has potential", emoji: "🔍" },
+                { value: "launch", label: isDE ? "Ersten Launch planen" : "Plan first launch", desc: isDE ? "Strukturiert zum ersten Produkt" : "Structured path to first product", emoji: "🎯" },
+                { value: "profitability", label: isDE ? "Profitabilität steigern" : "Increase profitability", desc: isDE ? "Margen verbessern und Kosten senken" : "Improve margins and reduce costs", emoji: "💰" },
+                { value: "scale", label: isDE ? "Skalieren" : "Scale", desc: isDE ? "Umsatz und Volumen steigern" : "Increase revenue and volume", emoji: "📈" },
+                { value: "survival", label: isDE ? "Überleben sichern" : "Secure survival", desc: isDE ? "Cashflow stabilisieren und Risiken senken" : "Stabilize cashflow and reduce risks", emoji: "🛟" },
               ].map((opt) => (
                 <button
                   key={opt.value}
                   onClick={() => { setGoal(opt.value); goNext(); }}
-                  className={`w-full text-left rounded-xl border p-4 transition-all hover:border-accent/40 hover:shadow-sm ${
-                    goal === opt.value ? "border-accent bg-accent/5" : "bg-card"
-                  }`}
+                  className={cn(
+                    "w-full text-left rounded-xl border p-4 transition-all hover:border-primary/30 hover:shadow-sm flex items-center gap-4",
+                    goal === opt.value ? "border-primary bg-primary/5" : "bg-card"
+                  )}
                 >
-                  <p className="font-semibold text-sm">{opt.label}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">{opt.desc}</p>
+                  <span className="text-xl">{opt.emoji}</span>
+                  <div>
+                    <p className="font-semibold text-sm">{opt.label}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{opt.desc}</p>
+                  </div>
                 </button>
               ))}
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-start">
               <Button variant="ghost" size="sm" onClick={goBack} className="gap-1.5">
                 <ArrowLeft className="h-3.5 w-3.5" /> {isDE ? "Zurück" : "Back"}
               </Button>
@@ -364,28 +417,36 @@ export default function Onboarding() {
         {step === "budget" && (
           <div className="animate-fade-in space-y-6">
             <div className="text-center">
-              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
-                <DollarSign className="h-6 w-6 text-accent" />
+              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                <DollarSign className="h-6 w-6 text-primary" />
               </div>
               <h2 className="text-xl font-bold">{isDE ? "Wie viel Budget hast du?" : "What's your budget?"}</h2>
               <p className="text-sm text-muted-foreground mt-1">{isDE ? "Dein Startbudget für Produktion + Marketing." : "Your starting budget for production + marketing."}</p>
             </div>
-            <Select value={budget} onValueChange={setBudget}>
-              <SelectTrigger><SelectValue placeholder={isDE ? "Budget-Range wählen…" : "Select budget range…"} /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="under1k">{isDE ? "Unter 1.000 €" : "Under €1,000"}</SelectItem>
-                <SelectItem value="1k-5k">1.000 – 5.000 €</SelectItem>
-                <SelectItem value="5k-15k">5.000 – 15.000 €</SelectItem>
-                <SelectItem value="15k-50k">15.000 – 50.000 €</SelectItem>
-                <SelectItem value="50k+">{isDE ? "Über 50.000 €" : "Over €50,000"}</SelectItem>
-              </SelectContent>
-            </Select>
-            <div className="flex justify-between">
+            <div className="space-y-3">
+              {[
+                { value: "under1k", label: isDE ? "Unter 1.000 €" : "Under €1,000", desc: isDE ? "Micro-Budget, maximale Effizienz" : "Micro-budget, maximum efficiency" },
+                { value: "1k-5k", label: "1.000 – 5.000 €", desc: isDE ? "Solider Start mit Kernprodukt" : "Solid start with core product" },
+                { value: "5k-15k", label: "5.000 – 15.000 €", desc: isDE ? "Professioneller Launch möglich" : "Professional launch possible" },
+                { value: "15k-50k", label: "15.000 – 50.000 €", desc: isDE ? "Multi-Produkt oder Premium-Marke" : "Multi-product or premium brand" },
+                { value: "50k+", label: isDE ? "Über 50.000 €" : "Over €50,000", desc: isDE ? "Vollständige Skalierung" : "Full-scale operation" },
+              ].map((opt) => (
+                <button
+                  key={opt.value}
+                  onClick={() => { setBudget(opt.value); goNext(); }}
+                  className={cn(
+                    "w-full text-left rounded-xl border p-4 transition-all hover:border-primary/30 hover:shadow-sm",
+                    budget === opt.value ? "border-primary bg-primary/5" : "bg-card"
+                  )}
+                >
+                  <p className="font-semibold text-sm">{opt.label}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{opt.desc}</p>
+                </button>
+              ))}
+            </div>
+            <div className="flex justify-start">
               <Button variant="ghost" size="sm" onClick={goBack} className="gap-1.5">
                 <ArrowLeft className="h-3.5 w-3.5" /> {isDE ? "Zurück" : "Back"}
-              </Button>
-              <Button size="sm" onClick={goNext} disabled={!budget} className="gap-1.5">
-                {isDE ? "Weiter" : "Next"} <ArrowRight className="h-3.5 w-3.5" />
               </Button>
             </div>
           </div>
@@ -395,8 +456,8 @@ export default function Onboarding() {
         {step === "archetype" && (
           <div className="animate-fade-in space-y-6">
             <div className="text-center">
-              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
-                <ShieldAlert className="h-6 w-6 text-accent" />
+              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                <ShieldAlert className="h-6 w-6 text-primary" />
               </div>
               <h2 className="text-xl font-bold">{isDE ? "Wie risikobereit bist du?" : "What's your risk tolerance?"}</h2>
               <p className="text-sm text-muted-foreground mt-1">
@@ -412,11 +473,12 @@ export default function Onboarding() {
                 <button
                   key={opt.value}
                   onClick={() => setRiskTolerance(opt.value)}
-                  className={`w-full text-left rounded-xl border p-4 transition-all hover:border-accent/40 hover:shadow-sm flex items-center gap-4 ${
-                    riskTolerance === opt.value ? "border-accent bg-accent/5" : "bg-card"
-                  }`}
+                  className={cn(
+                    "w-full text-left rounded-xl border p-4 transition-all hover:border-primary/30 hover:shadow-sm flex items-center gap-4",
+                    riskTolerance === opt.value ? "border-primary bg-primary/5" : "bg-card"
+                  )}
                 >
-                  <opt.icon className={`h-5 w-5 shrink-0 ${opt.color}`} />
+                  <opt.icon className={cn("h-5 w-5 shrink-0", opt.color)} />
                   <div>
                     <p className="font-semibold text-sm">{opt.label}</p>
                     <p className="text-xs text-muted-foreground mt-0.5">{opt.desc}</p>
@@ -425,24 +487,25 @@ export default function Onboarding() {
               ))}
             </div>
 
+            {/* Archetype reveal */}
             {riskTolerance && goal && (
-              <div className="rounded-xl border bg-card/50 p-4 animate-fade-in">
-                <p className="text-xs text-muted-foreground mb-1">{isDE ? "Dein Gründer-Archetyp:" : "Your Founder Archetype:"}</p>
-                <p className="font-semibold text-sm">
-                  {(() => {
-                    const arch = determineArchetype(goal, riskTolerance, budget);
-                    const labels: Record<string, string> = {
-                      conservative_planner: "🛡️ Conservative Planner",
-                      aggressive_scaler: "🚀 Aggressive Scaler",
-                      brand_perfectionist: "💎 Brand Perfectionist",
-                      recovery_founder: "🔄 Recovery Founder",
-                    };
-                    return labels[arch] || arch;
-                  })()}
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {isDE ? "Dein Dashboard wird entsprechend priorisiert." : "Your dashboard will be prioritized accordingly."}
-                </p>
+              <div className="rounded-2xl border bg-card p-5 animate-fade-in shadow-card">
+                {(() => {
+                  const arch = determineArchetype(goal, riskTolerance, budget);
+                  const data = ARCHETYPE_DATA[arch];
+                  return (
+                    <div className="flex items-center gap-4">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-2xl">
+                        {data.emoji}
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Dein Archetyp</p>
+                        <p className="font-bold text-sm">{data.label}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">{data.desc}</p>
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
             )}
 
@@ -452,7 +515,7 @@ export default function Onboarding() {
               </Button>
               <Button
                 size="sm"
-                className="gap-1.5 bg-accent text-accent-foreground hover:bg-accent/90"
+                className="gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90"
                 disabled={!riskTolerance}
                 onClick={async () => {
                   setStep("done");
@@ -460,7 +523,8 @@ export default function Onboarding() {
                   navigate("/dashboard");
                 }}
               >
-                {isDE ? "Dashboard starten" : "Start Dashboard"} <ArrowRight className="h-3.5 w-3.5" />
+                <CheckCircle2 className="h-3.5 w-3.5" />
+                {isDE ? "Dashboard starten" : "Start Dashboard"}
               </Button>
             </div>
           </div>
