@@ -420,12 +420,15 @@ export function PricingSection() {
                         ? "bg-accent text-accent-foreground"
                         : isExecutionTier
                           ? "bg-gradient-to-r from-amber-600 to-yellow-500 text-white"
-                          : isProTier
-                            ? "bg-gradient-to-r from-amber-600 to-yellow-500 text-white"
-                            : "bg-primary text-primary-foreground"
+                          : isTradingTier
+                            ? "bg-gradient-to-r from-blue-600 to-cyan-500 text-white"
+                            : isProTier
+                              ? "bg-gradient-to-r from-amber-600 to-yellow-500 text-white"
+                              : "bg-primary text-primary-foreground"
                     }`}
                   >
                     {(isExecutionTier || isProTier) && <Crown className="h-3 w-3" />}
+                    {isTradingTier && <Activity className="h-3 w-3" />}
                     {plan.badge}
                   </div>
                 )}
