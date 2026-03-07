@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { getClientMode, setClientMode } from "@/lib/beta-client";
 import { cn } from "@/lib/utils";
 import { AnimatedCard } from "@/components/dashboard/AnimatedCard";
+import { SessionManagement } from "@/components/settings/SessionManagement";
 
 const PLAN_META: Record<string, { label: string; color: string; icon: typeof Sparkles }> = {
   pro: { label: "Pro", color: "bg-accent text-accent-foreground", icon: Sparkles },
@@ -232,8 +233,11 @@ export default function SettingsPage() {
           </div>
         </AnimatedCard>
 
+        {/* Session Management */}
+        <SessionManagement />
+
         {/* Beta Client */}
-        <AnimatedCard index={3}>
+        <AnimatedCard index={4}>
           <div className="rounded-2xl border bg-card p-6 shadow-card">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">

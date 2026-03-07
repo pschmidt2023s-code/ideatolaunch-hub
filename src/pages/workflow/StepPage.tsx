@@ -20,6 +20,7 @@ import { useBrand } from "@/hooks/useBrand";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { fireStepConfetti, fireCompletionConfetti } from "@/lib/confetti";
 
 const TOTAL_PHASES = 5;
 
@@ -132,6 +133,7 @@ export default function StepPage() {
       // Continue even if save fails
     }
     await advanceStep(step + 1);
+    if (activeBrand?.id) fireStepConfetti(activeBrand.id, step);
     navigate(`/dashboard/step/${step + 1}`);
   };
 
@@ -143,6 +145,7 @@ export default function StepPage() {
       // Continue even if save fails
     }
     await advanceStep(TOTAL_PHASES + 1);
+    if (activeBrand?.id) fireCompletionConfetti(activeBrand.id);
     navigate("/dashboard");
   };
 

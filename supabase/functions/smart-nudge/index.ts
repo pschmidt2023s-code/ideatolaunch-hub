@@ -112,13 +112,63 @@ Deno.serve(async (req) => {
             event_name: "nudge_sent",
             metadata: { step: brand.current_step, brand_name: brand.name },
           });
+          // Create in-app notification
+          await sb.from("notifications").insert({
+            user_id: brand.user_id,
+            brand_id: brand.id,
+            type: "nudge",
+            title: nudge.title,
+            message: `${brand.name}: ${nudge.action}`,
+            action_url: `/dashboard/step/${brand.current_step}`,
+          });
         }
       } catch (userError) {
         console.error(`[smart-nudge] Error for user ${brand.user_id}:`, userError);
       }
     }
 
-    return new Response(JSON.stringify({ nudged: nudgeCount, total: brands.length }), {
+    // ── Cashflow Runway Alerts ──────────────────────────────────
+    const { data: strategicScores } = await sb
+      .from("strategic_scores")
+      .select("brand_id, cash_runway_months")
+      .lt("cash_runway_months", 3)
+      .gt("cash_runway_months", 0);
+
+    let runwayAlerts = 0;
+    if (strategicScores) {
+      for (const score of strategicScores) {
+        // Get brand owner
+        const { data: brand } = await sb
+          .from("brands")
+          .select("user_id, name")
+          .eq("id", score.brand_id)
+          .maybeSingle();
+        if (!brand) continue;
+
+        // Check if we already alerted recently
+        const { data: recent } = await sb
+          .from("notifications")
+          .select("id")
+          .eq("user_id", brand.user_id)
+          .eq("type", "warning")
+          .like("title", "%Runway%")
+          .gt("created_at", sevenDaysAgo)
+          .limit(1);
+        if (recent && recent.length > 0) continue;
+
+        await sb.from("notifications").insert({
+          user_id: brand.user_id,
+          brand_id: score.brand_id,
+          type: "warning",
+          title: `⚠️ Runway-Warnung: ${Math.round(Number(score.cash_runway_months))} Monate`,
+          message: `${brand.name}: Dein Cash-Runway liegt unter 3 Monaten. Überprüfe dein Finanzmodell.`,
+          action_url: "/dashboard/command",
+        });
+        runwayAlerts++;
+      }
+    }
+
+    return new Response(JSON.stringify({ nudged: nudgeCount, runway_alerts: runwayAlerts, total: brands.length }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {

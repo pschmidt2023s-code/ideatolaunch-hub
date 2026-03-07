@@ -3,6 +3,7 @@ import { DashboardSidebar } from "./DashboardSidebar";
 import { TopBar } from "./TopBar";
 import { ModeSwitcher } from "@/components/ModeSwitcher";
 import { CopilotChatWidget } from "./CopilotChatWidget";
+import { PageTransition } from "./PageTransition";
 import { Menu } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useMode } from "@/hooks/useMode";
@@ -68,7 +69,9 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
         {/* Main content */}
         <main className="flex-1 overflow-y-auto">
           <div className="mx-auto max-w-content px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
-            {children}
+            <PageTransition>
+              {children}
+            </PageTransition>
           </div>
         </main>
       </div>
