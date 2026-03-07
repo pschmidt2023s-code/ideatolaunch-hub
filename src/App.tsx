@@ -1,5 +1,5 @@
 import { lazy, Suspense, useState } from "react";
-import { CopilotChatWidget } from "@/components/dashboard/CopilotChatWidget";
+import { FeedbackWidget } from "@/components/FeedbackWidget";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
