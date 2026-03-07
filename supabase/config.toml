@@ -29,3 +29,6 @@ verify_jwt = false
 
 [functions.ai-trade-review]
 verify_jwt = false
+
+[functions.invite-page]
+verify_jwt = false
