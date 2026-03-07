@@ -51,26 +51,25 @@ Deno.serve(async (req) => {
 
     const input: StrategyInput = await req.json();
 
-    const prompt = `Du bist ein erfahrener Private-Label-Berater für den deutschen Markt. Analysiere diese Geschäftsdaten und gib konkrete, umsetzbare Empfehlungen:
+    const prompt = `Analysiere diese Geschäftsdaten eines Private-Label-Gründers:
 
-Geschäftsdaten:
-- Marge: ${input.margin}%
-- MOQ (Mindestbestellmenge): ${input.moq} Stück
-- Budget: ${input.budget}€
-- Monatliche Absatzmenge: ${input.monthlyUnits} Stück
-- Verkaufspreis: ${input.pricePerUnit}€
-- Produktionskosten: ${input.productionCost}€ pro Stück
-- Marketingbudget: ${input.marketingBudget}€/Monat
-- Region: ${input.region}
-- Produktkategorie: ${input.productCategory}
+DATEN:
+- Marge: ${input.margin}% | MOQ: ${input.moq} Stk | Budget: €${input.budget}
+- Absatz/Monat: ${input.monthlyUnits} Stk | VK-Preis: €${input.pricePerUnit} | EK-Preis: €${input.productionCost}
+- Marketing: €${input.marketingBudget}/Monat | Region: ${input.region} | Kategorie: ${input.productCategory}
 
-Gib genau 4 Empfehlungen in diesen Kategorien:
-1. PREIS: Eine konkrete Preisstrategie-Empfehlung
-2. MOQ: Eine MOQ-Verhandlungsempfehlung
-3. BUDGET: Eine Budget-Reallokationsempfehlung
-4. TIMING: Eine Launch-Timing-Empfehlung
+BERECHNE für jede Empfehlung:
+- Break-even bei aktuellen Zahlen: ${input.budget} / (${input.pricePerUnit} - ${input.productionCost}) = ? Stück
+- Customer Acquisition Cost (CAC): €${input.marketingBudget} / ${input.monthlyUnits} = ? pro Kunde
+- Monatlicher Deckungsbeitrag: ${input.monthlyUnits} * (${input.pricePerUnit} - ${input.productionCost}) - ${input.marketingBudget}
 
-Format: Jede Empfehlung als JSON-Objekt mit "category", "title", "description", "impact" (high/medium/low), "savings_potential" (geschätzter €-Betrag).`;
+Gib exakt 4 Empfehlungen:
+1. PREIS: Preispsychologie-Taktik mit konkretem Preispunkt und erwartetem Margeneffekt
+2. MOQ: Verhandlungsskript-Element + alternative Bestellstrategie (z.B. Split-Order)
+3. BUDGET: Reallokation mit Prozentsätzen und erwartetem ROI pro Kanal
+4. TIMING: Konkreter Launch-Kalender basierend auf Saisonalität der Kategorie "${input.productCategory}"
+
+Jede Empfehlung MUSS einen €-Betrag als savings_potential nennen, basierend auf den obigen Berechnungen.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -79,9 +78,9 @@ Format: Jede Empfehlung als JSON-Objekt mit "category", "title", "description", 
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-pro",
+        model: "google/gemini-3-flash-preview",
         messages: [
-          { role: "system", content: "Du bist ein Experte für Private-Label-Geschäftsberatung. Antworte immer auf Deutsch. Gib nur das JSON-Array zurück, keine andere Formatierung." },
+          { role: "system", content: "Du bist ein Elite-Berater für Private-Label-Geschäfte mit Fokus auf den DACH-Markt. Deine Empfehlungen basieren IMMER auf konkreten Berechnungen aus den Nutzerdaten. Antworte auf Deutsch." },
           { role: "user", content: prompt },
         ],
         tools: [{

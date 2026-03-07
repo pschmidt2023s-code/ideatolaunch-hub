@@ -16,86 +16,45 @@ function jsonResponse(body: Record<string, unknown>, status = 200) {
 }
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    // Auth check
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return jsonResponse({ error: "Not authenticated" }, 401);
-    }
+    if (!authHeader?.startsWith("Bearer ")) return jsonResponse({ error: "Not authenticated" }, 401);
+
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_ANON_KEY") ?? "",
       { global: { headers: { Authorization: authHeader } } }
     );
-    const token = authHeader.replace("Bearer ", "");
-    const { data: claimsData, error: claimsError } = await supabaseClient.auth.getClaims(token);
-    if (claimsError || !claimsData?.claims) {
-      return jsonResponse({ error: "Not authenticated" }, 401);
-    }
+    const { data, error: claimsError } = await supabaseClient.auth.getClaims(authHeader.replace("Bearer ", ""));
+    if (claimsError || !data?.claims) return jsonResponse({ error: "Not authenticated" }, 401);
 
-    if (!LOVABLE_API_KEY) {
-      return jsonResponse({ error: "AI service not configured" }, 500);
-    }
+    if (!LOVABLE_API_KEY) return jsonResponse({ error: "AI service not configured" }, 500);
 
     let input: Record<string, unknown>;
-    try {
-      input = await req.json();
-    } catch {
-      return jsonResponse({ error: "Invalid JSON body" }, 400);
-    }
+    try { input = await req.json(); } catch { return jsonResponse({ error: "Invalid JSON body" }, 400); }
 
     const brandName = typeof input.brandName === "string" ? input.brandName.trim() : "";
     const category = typeof input.category === "string" ? input.category.trim() : "";
     const tone = typeof input.tone === "string" ? input.tone.trim() : "";
 
-    if (!brandName || brandName.length < 2) {
-      return jsonResponse({ error: "Brand name must be at least 2 characters" }, 400);
-    }
+    if (!brandName || brandName.length < 2) return jsonResponse({ error: "Brand name must be at least 2 characters" }, 400);
 
-    const prompt = `Du bist ein Brand-Intelligence-Analyst. Analysiere den Markennamen "${brandName}" für eine ${category || "Consumer Goods"} Marke mit Tonalität "${tone || "Professionell"}".
+    const handleClean = brandName.toLowerCase().replace(/\s+/g, "").replace(/[^a-z0-9]/g, "");
 
-Führe folgende Checks durch und antworte NUR mit einem JSON-Objekt (kein Markdown, kein Code-Block):
+    const systemPrompt = `Du bist ein Brand-Intelligence-Analyst mit Expertise in Markenrecht, SEO und Digital Marketing für den DACH-Raum.
 
-1. Domain-Verfügbarkeit: Schätze die Wahrscheinlichkeit, dass "${brandName}.de" und "${brandName}.com" verfügbar sind (basierend auf Namenslänge, Häufigkeit, generische Begriffe). Gib "likely_available", "likely_taken" oder "uncertain" an.
+ANALYSE-STANDARDS:
+- Domain-Einschätzung: Berücksichtige Namenslänge, Sprachspezifik, Branchenüblichkeit und bekannte Domain-Squatting-Muster
+- Trademark: Recherchiere gegen bekannte EU-/DACH-Marken in der Kategorie "${category || "Consumer Goods"}"
+- SEO: Bewerte basierend auf Suchvolumen-Schätzungen und Wettbewerbsdichte für "${brandName}" als Brand-Keyword
+- Social: Berücksichtige die Popularität des Handle-Formats "@${handleClean}" auf Instagram/TikTok
+- Rebranding nur vorschlagen wenn Score < 50, dann aber mit strategischer Begründung
 
-2. Social-Handle-Verfügbarkeit: Schätze für Instagram und TikTok ob @${brandName.toLowerCase().replace(/\s+/g, "")} verfügbar sein könnte.
+Sei EHRLICH in deiner Bewertung. Überbewerte nicht – ein Score von 60-75 ist für die meisten realistischen Namen normal.`;
 
-3. Trademark-Ähnlichkeit: Gibt es bekannte Marken oder Unternehmen mit ähnlichem Namen? Liste bis zu 3 ähnliche Namen auf und bewerte das Verwechslungsrisiko (low/medium/high).
-
-4. SEO-Wettbewerb: Wie stark ist der SEO-Wettbewerb für "${brandName}" als Keyword? (low/medium/high)
-
-5. Gesamtbewertung: Gib einen "legitimacy_score" von 0-100.
-
-6. Wenn der Score unter 50 liegt und du Execution-Level Rebranding-Vorschläge machen sollst, generiere 3 alternative Markennamen.
-
-JSON Format:
-{
-  "legitimacy_score": number,
-  "domains": {
-    "de": "likely_available" | "likely_taken" | "uncertain",
-    "com": "likely_available" | "likely_taken" | "uncertain"
-  },
-  "social": {
-    "instagram": "likely_available" | "likely_taken" | "uncertain",
-    "tiktok": "likely_available" | "likely_taken" | "uncertain"
-  },
-  "trademark": {
-    "risk_level": "low" | "medium" | "high",
-    "similar_brands": [{"name": string, "similarity": number}],
-    "warning": string | null
-  },
-  "seo": {
-    "competition": "low" | "medium" | "high",
-    "difficulty_score": number,
-    "explanation": string
-  },
-  "rebranding_suggestions": string[],
-  "summary": string
-}`;
+    const userPrompt = `Analysiere den Markennamen "${brandName}" für die Kategorie "${category || "Consumer Goods"}" mit Tonalität "${tone || "Professionell"}".`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -104,31 +63,99 @@ JSON Format:
         Authorization: `Bearer ${LOVABLE_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-pro",
-        messages: [{ role: "user", content: prompt }],
-        temperature: 0.3,
+        model: "google/gemini-3-flash-preview",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt },
+        ],
+        tools: [{
+          type: "function",
+          function: {
+            name: "return_intelligence",
+            description: "Return brand intelligence analysis results",
+            parameters: {
+              type: "object",
+              properties: {
+                legitimacy_score: { type: "number", description: "Gesamtbewertung 0-100" },
+                domains: {
+                  type: "object",
+                  properties: {
+                    de: { type: "string", enum: ["likely_available", "likely_taken", "uncertain"] },
+                    com: { type: "string", enum: ["likely_available", "likely_taken", "uncertain"] },
+                  },
+                  required: ["de", "com"],
+                  additionalProperties: false,
+                },
+                social: {
+                  type: "object",
+                  properties: {
+                    instagram: { type: "string", enum: ["likely_available", "likely_taken", "uncertain"] },
+                    tiktok: { type: "string", enum: ["likely_available", "likely_taken", "uncertain"] },
+                  },
+                  required: ["instagram", "tiktok"],
+                  additionalProperties: false,
+                },
+                trademark: {
+                  type: "object",
+                  properties: {
+                    risk_level: { type: "string", enum: ["low", "medium", "high"] },
+                    similar_brands: {
+                      type: "array",
+                      items: {
+                        type: "object",
+                        properties: {
+                          name: { type: "string" },
+                          similarity: { type: "number" },
+                        },
+                        required: ["name", "similarity"],
+                        additionalProperties: false,
+                      },
+                    },
+                    warning: { type: "string", description: "Warnung oder null wenn kein Risiko" },
+                  },
+                  required: ["risk_level", "similar_brands", "warning"],
+                  additionalProperties: false,
+                },
+                seo: {
+                  type: "object",
+                  properties: {
+                    competition: { type: "string", enum: ["low", "medium", "high"] },
+                    difficulty_score: { type: "number" },
+                    explanation: { type: "string" },
+                  },
+                  required: ["competition", "difficulty_score", "explanation"],
+                  additionalProperties: false,
+                },
+                rebranding_suggestions: {
+                  type: "array",
+                  items: { type: "string" },
+                  description: "3 alternative Namen nur wenn Score < 50",
+                },
+                summary: { type: "string", description: "Strategische Zusammenfassung auf Deutsch, 2-3 Sätze" },
+              },
+              required: ["legitimacy_score", "domains", "social", "trademark", "seo", "rebranding_suggestions", "summary"],
+              additionalProperties: false,
+            },
+          },
+        }],
+        tool_choice: { type: "function", function: { name: "return_intelligence" } },
       }),
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error("AI Gateway error:", response.status, errorText);
       if (response.status === 429) return jsonResponse({ error: "Rate limit erreicht." }, 429);
       if (response.status === 402) return jsonResponse({ error: "Guthaben aufgebraucht." }, 402);
+      const t = await response.text();
+      console.error("AI Gateway error:", response.status, t);
       return jsonResponse({ error: "AI service error" }, 500);
     }
 
     const aiData = await response.json();
-    const content = aiData.choices?.[0]?.message?.content || "";
+    const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
+    if (!toolCall?.function?.arguments) return jsonResponse({ error: "AI returned unexpected format" }, 500);
 
-    let result: Record<string, unknown>;
-    try {
-      const match = content.match(/\{[\s\S]*\}/);
-      result = JSON.parse(match ? match[0] : content);
-    } catch {
-      console.error("Failed to parse AI response:", content);
-      return jsonResponse({ error: "Could not parse intelligence result" }, 500);
-    }
+    let result;
+    try { result = JSON.parse(toolCall.function.arguments); } catch { return jsonResponse({ error: "AI returned invalid data" }, 500); }
 
     return jsonResponse({ result });
   } catch (error) {

@@ -107,16 +107,18 @@ LAUNCH:
 - Readiness: ${launch?.launch_readiness_score ?? "?"}%
 `;
 
-    const systemPrompt = `Du bist ein Senior Private-Label-Analyst. Analysiere die Daten eines Gründers und generiere 3-5 datenbasierte, priorisierte und UMSETZBARE Smart Insights.
+    const systemPrompt = `Du bist ein Elite Private-Label-Analyst mit 10+ Jahren Erfahrung in E-Commerce-Markenaufbau. Du analysierst Gründer-Daten und generierst 3-5 HOCHSPEZIFISCHE Smart Insights.
 
-REGELN:
-1. Jeder Insight MUSS sich auf konkrete Zahlen des Nutzers beziehen
-2. Jeder Insight braucht eine klare Handlungsanweisung
-3. Priorisiere nach €-Impact und Dringlichkeit
-4. Insights müssen SPEZIFISCH sein, nicht generisch
-5. Kategorisiere jeden Insight: risk, opportunity, optimization, compliance, growth
-6. Bewerte den €-Impact wo möglich
-7. Antworte NUR mit dem Tool Call`;
+QUALITÄTSSTANDARDS:
+1. JEDER Insight muss eine KONKRETE ZAHL des Nutzers referenzieren (z.B. "Bei deiner Marge von 32%...")
+2. Handlungsanweisungen müssen SOFORT umsetzbar sein – kein "Überlege ob..." sondern "Verhandle MOQ auf X runter"
+3. Priorisiere nach ECHTEM €-Impact: Berechne den geschätzten Effekt aus den vorliegenden Zahlen
+4. VERBOTEN: Generische Insights wie "Verbessere dein Marketing" oder "Optimiere deine Kosten"
+5. Kategorien: risk (akute Gefahr), opportunity (verpasstes Potenzial), optimization (Effizienz), compliance (rechtlich), growth (Skalierung)
+6. Bei fehlenden Daten: Sage WELCHE Daten fehlen und warum sie kritisch sind
+7. Vergleiche mit Branchen-Benchmarks: Margen >40% = stark, 25-40% = ok, <25% = kritisch
+8. Berücksichtige Wechselwirkungen zwischen Kennzahlen (z.B. niedriger Runway + hoher Capital Burn = CRITICAL)
+9. Antworte NUR mit dem Tool Call`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -125,7 +127,7 @@ REGELN:
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-pro",
+        model: "google/gemini-3-flash-preview",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: `Analysiere diese Brand-Daten und generiere Smart Insights:\n\n${dataContext}` },

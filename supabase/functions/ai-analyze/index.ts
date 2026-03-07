@@ -16,46 +16,28 @@ function jsonResponse(body: Record<string, unknown>, status = 200) {
 }
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    // ── Auth check ──
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return jsonResponse({ error: "Not authenticated" }, 401);
-    }
+    if (!authHeader?.startsWith("Bearer ")) return jsonResponse({ error: "Not authenticated" }, 401);
+
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_ANON_KEY") ?? "",
       { global: { headers: { Authorization: authHeader } } }
     );
     const { data, error: claimsError } = await supabaseClient.auth.getClaims(authHeader.replace("Bearer ", ""));
-    if (claimsError || !data?.claims) {
-      return jsonResponse({ error: "Not authenticated" }, 401);
-    }
+    if (claimsError || !data?.claims) return jsonResponse({ error: "Not authenticated" }, 401);
 
-    if (!LOVABLE_API_KEY) {
-      console.error("LOVABLE_API_KEY not configured");
-      return jsonResponse({ error: "AI service not configured" }, 500);
-    }
+    if (!LOVABLE_API_KEY) return jsonResponse({ error: "AI service not configured" }, 500);
 
-    // Validate input
     let input: Record<string, unknown>;
-    try {
-      input = await req.json();
-    } catch {
-      return jsonResponse({ error: "Invalid JSON body" }, 400);
-    }
+    try { input = await req.json(); } catch { return jsonResponse({ error: "Invalid JSON body" }, 400); }
 
     const productDescription = typeof input.productDescription === "string" ? input.productDescription.trim() : "";
-    if (!productDescription) {
-      return jsonResponse({ error: "productDescription is required" }, 400);
-    }
-    if (productDescription.length > 5000) {
-      return jsonResponse({ error: "productDescription too long (max 5000 chars)" }, 400);
-    }
+    if (!productDescription) return jsonResponse({ error: "productDescription is required" }, 400);
+    if (productDescription.length > 5000) return jsonResponse({ error: "productDescription too long (max 5000 chars)" }, 400);
 
     const sanitize = (v: unknown, max = 500): string => {
       if (typeof v !== "string") return "Nicht angegeben";
@@ -69,22 +51,28 @@ Deno.serve(async (req) => {
     const budget = sanitize(input.budget, 100);
     const timeline = sanitize(input.timeline, 50);
 
-    const prompt = `Du bist ein erfahrener Markenberater. Analysiere die folgende Geschäftsidee und generiere strukturierte Ergebnisse auf Deutsch.
+    const systemPrompt = `Du bist ein erfahrener Markenberater und Positionierungs-Experte für DTC/Private-Label-Marken im DACH-Raum.
 
-Geschäftsidee: ${productDescription}
+ANALYSE-TIEFE:
+- Positionierung: Nicht nur beschreiben WAS die Marke macht, sondern WHY sie existiert. Finde den emotionalen Kern.
+- Markenwerte: Wähle Werte die sich von Wettbewerbern ABHEBEN, nicht generische wie "Qualität" oder "Innovation"
+- Marktwinkel: Identifiziere eine UNBESETZTE Nische oder einen kontraintuitiven Ansatz
+- Differenzierung: Nenne konkrete, messbare Unterscheidungsmerkmale, nicht vage Versprechen
+
+QUALITÄTSKRITERIEN:
+- Jeder Satz muss einen strategischen Zweck haben
+- Vermeide Marketing-Floskeln und Buzzwords
+- Beziehe dich auf reale Marktdynamiken im ${country}-Markt
+- Berücksichtige das Budget von ${budget} und den Zeitrahmen von ${timeline}`;
+
+    const userPrompt = `Analysiere diese Geschäftsidee:
+
+Produkt: ${productDescription}
 Zielgruppe: ${targetAudience}
 Preissegment: ${priceLevel}
-Verkaufsland: ${country}
+Land: ${country}
 Budget: ${budget}
-Zeitrahmen: ${timeline}
-
-Antworte NUR mit einem JSON-Objekt (kein Markdown, kein Code-Block) mit genau diesen Feldern:
-{
-  "positioning": "Ein klares Positionierungs-Statement (2-3 Sätze)",
-  "values": "3-5 Markenwerte, kommagetrennt",
-  "marketAngle": "Der einzigartige Marktwinkel (2-3 Sätze)",
-  "differentiation": "Wie sich die Marke differenziert (2-3 Sätze)"
-}`;
+Zeitrahmen: ${timeline}`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -93,39 +81,47 @@ Antworte NUR mit einem JSON-Objekt (kein Markdown, kein Code-Block) mit genau di
         Authorization: `Bearer ${LOVABLE_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-pro",
-        messages: [{ role: "user", content: prompt }],
-        temperature: 0.7,
+        model: "google/gemini-3-flash-preview",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt },
+        ],
+        tools: [{
+          type: "function",
+          function: {
+            name: "return_analysis",
+            description: "Return brand positioning analysis",
+            parameters: {
+              type: "object",
+              properties: {
+                positioning: { type: "string", description: "Klares Positionierungs-Statement mit emotionalem Kern, 2-3 Sätze" },
+                values: { type: "string", description: "3-5 differenzierende Markenwerte, kommagetrennt" },
+                marketAngle: { type: "string", description: "Der einzigartige Marktwinkel mit konkreter Nische, 2-3 Sätze" },
+                differentiation: { type: "string", description: "Messbare Unterscheidungsmerkmale vs. Wettbewerb, 2-3 Sätze" },
+              },
+              required: ["positioning", "values", "marketAngle", "differentiation"],
+              additionalProperties: false,
+            },
+          },
+        }],
+        tool_choice: { type: "function", function: { name: "return_analysis" } },
       }),
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error("AI Gateway error:", response.status, errorText);
-      if (response.status === 429) {
-        return jsonResponse({ error: "Rate limit erreicht. Bitte versuche es später erneut." }, 429);
-      }
-      if (response.status === 402) {
-        return jsonResponse({ error: "Guthaben aufgebraucht. Bitte lade dein Konto auf." }, 402);
-      }
+      if (response.status === 429) return jsonResponse({ error: "Rate limit erreicht. Bitte versuche es später erneut." }, 429);
+      if (response.status === 402) return jsonResponse({ error: "Guthaben aufgebraucht." }, 402);
+      const t = await response.text();
+      console.error("AI Gateway error:", response.status, t);
       return jsonResponse({ error: "AI analysis failed" }, 500);
     }
 
     const aiData = await response.json();
-    const content = aiData.choices?.[0]?.message?.content || "";
+    const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
+    if (!toolCall?.function?.arguments) return jsonResponse({ error: "AI returned unexpected format" }, 500);
 
     let result;
-    try {
-      const jsonMatch = content.match(/\{[\s\S]*\}/);
-      result = JSON.parse(jsonMatch ? jsonMatch[0] : content);
-    } catch {
-      result = {
-        positioning: content,
-        values: "",
-        marketAngle: "",
-        differentiation: "",
-      };
-    }
+    try { result = JSON.parse(toolCall.function.arguments); } catch { return jsonResponse({ error: "AI returned invalid data" }, 500); }
 
     return jsonResponse(result);
   } catch (error) {
