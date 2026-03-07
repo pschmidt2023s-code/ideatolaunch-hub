@@ -104,7 +104,7 @@ export default function RiskAnalysis() {
             { label: "Risk of Ruin", value: `${metrics.riskOfRuin}%`, sub: "Probability of total account loss", level, progress: metrics.riskOfRuin, icon: Skull },
             { label: "Account Survival", value: `${metrics.survivalProbability}%`, sub: "Probability of staying solvent", level: (metrics.survivalProbability > 80 ? "low" : metrics.survivalProbability > 50 ? "medium" : "high") as "low"|"medium"|"high", progress: metrics.survivalProbability, icon: Shield },
             { label: "Expected Drawdown", value: `${metrics.expectedDrawdown}%`, sub: "Max consecutive loss impact", level: (metrics.expectedDrawdown < 20 ? "low" : metrics.expectedDrawdown < 50 ? "medium" : "high") as "low"|"medium"|"high", progress: metrics.expectedDrawdown, icon: Activity },
-            { label: "Trade Expectancy", value: `$${metrics.tradeExpectancy}`, sub: "Expected profit per trade", level: (metrics.tradeExpectancy > 0 ? "low" : "high") as "low"|"high", icon: TrendingUp },
+            { label: "Trade Expectancy", value: `${metrics.tradeExpectancy}€`, sub: "Expected profit per trade", level: (metrics.tradeExpectancy > 0 ? "low" : "high") as "low"|"high", icon: TrendingUp },
           ].map((m, i) => (
             <AnimatedCard key={m.label} index={i + 2}>
               <MetricCard label={m.label} value={m.value} sub={m.sub} level={m.level} progress={m.progress}>
