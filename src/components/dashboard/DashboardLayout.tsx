@@ -2,7 +2,6 @@ import { ReactNode, useState, useEffect } from "react";
 import { DashboardSidebar } from "./DashboardSidebar";
 import { TopBar } from "./TopBar";
 import { ModeSwitcher } from "@/components/ModeSwitcher";
-import { CopilotChatWidget } from "./CopilotChatWidget";
 import { PageTransition } from "./PageTransition";
 import { Menu } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
