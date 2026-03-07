@@ -135,6 +135,44 @@ export default function TradingDashboard() {
   const netMonthly = calculateNetMonthlyPnL(input);
   const tradingForecast = useMemo(() => buildTradingForecast(input), [input]);
 
+  // Loading state
+  if (hasAccounts === null) {
+    return (
+      <DashboardLayout>
+        <SEO title="Trading Mode – BrandOS" description="Trading Risk Score, Drawdown, Winrate, Profit Factor." path="/dashboard/trading" />
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  // Empty state — no connected accounts
+  if (!hasAccounts) {
+    return (
+      <DashboardLayout>
+        <SEO title="Trading Mode – BrandOS" description="Trading Risk Score, Drawdown, Winrate, Profit Factor." path="/dashboard/trading" />
+        <div className="animate-fade-in space-y-8">
+          <PageHeader title="Trading Mode" description="Risk, Performance & Account Survival auf einen Blick." badge="TRADER" badgeVariant="warning" />
+          <Card className="border-dashed">
+            <CardContent className="flex flex-col items-center justify-center py-20 text-center">
+              <Wallet className="h-14 w-14 text-muted-foreground/30 mb-5" />
+              <h3 className="text-xl font-semibold">Kein Trading Account verbunden</h3>
+              <p className="text-sm text-muted-foreground mt-2 max-w-md">
+                Verbinde deinen ersten Exchange-Account um dein Portfolio, Risiko und Performance in Echtzeit analysieren zu lassen.
+              </p>
+              <div className="flex gap-3 mt-8">
+                <Button onClick={() => navigate("/dashboard/accounts")}>
+                  <Link2 className="h-4 w-4 mr-2" />Exchange verbinden
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
   return (
     <DashboardLayout>
       <SEO title="Trading Mode – BrandOS" description="Trading Risk Score, Drawdown, Winrate, Profit Factor." path="/dashboard/trading" />
