@@ -20,6 +20,7 @@ import {
   isValidEmail,
 } from "@/lib/security";
 import { ForgotPassword } from "@/components/ForgotPassword";
+import { isKnownDevice, storeFingerprint } from "@/lib/device-fingerprint";
 
 export default function Auth() {
   const [searchParams] = useSearchParams();
@@ -101,13 +102,23 @@ export default function Auth() {
     // Successful login – reset brute force counter
     resetFailedLogins(trimmedEmail);
 
-    // Log successful attempt
+    // Device fingerprint & login notification
     try {
+      const { known, fingerprint } = await isKnownDevice();
+      storeFingerprint(fingerprint);
+
       await supabase.from("login_attempts" as any).insert({
         email_hint: trimmedEmail.slice(0, 3) + "***@" + trimmedEmail.split("@")[1],
         success: true,
         user_agent_hint: navigator.userAgent.slice(0, 100),
       } as any);
+
+      // Notify on new device (non-blocking)
+      if (!known && !isSignUp) {
+        supabase.functions.invoke("login-notification", {
+          body: { device_fingerprint: fingerprint, is_new_device: true },
+        }).catch(() => {});
+      }
     } catch { /* non-critical */ }
 
     if (isSignUp) {

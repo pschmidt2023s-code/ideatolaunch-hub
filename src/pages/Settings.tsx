@@ -16,6 +16,7 @@ import { getClientMode, setClientMode } from "@/lib/beta-client";
 import { cn } from "@/lib/utils";
 import { AnimatedCard } from "@/components/dashboard/AnimatedCard";
 import { SessionManagement } from "@/components/settings/SessionManagement";
+import { TwoFactorSetup } from "@/components/settings/TwoFactorSetup";
 
 const PLAN_META: Record<string, { label: string; color: string; icon: typeof Sparkles }> = {
   pro: { label: "Pro", color: "bg-accent text-accent-foreground", icon: Sparkles },
@@ -232,6 +233,9 @@ export default function SettingsPage() {
             </div>
           </div>
         </AnimatedCard>
+
+        {/* Two-Factor Authentication */}
+        <TwoFactorSetup />
 
         {/* Session Management */}
         <SessionManagement />

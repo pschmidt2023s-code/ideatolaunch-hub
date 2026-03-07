@@ -32,3 +32,9 @@ verify_jwt = false
 
 [functions.invite-page]
 verify_jwt = false
+
+[functions.login-notification]
+verify_jwt = false
+
+[functions.server-rate-limit]
+verify_jwt = false
