@@ -553,6 +553,7 @@ export type Database = {
       }
       community_supplier_reviews: {
         Row: {
+          avg_unit_cost: number | null
           communication_rating: number
           country: string | null
           created_at: string
@@ -560,7 +561,9 @@ export type Database = {
           id: string
           moq: string | null
           notes: string | null
+          platform: string | null
           product_type: string | null
+          production_time: string | null
           quality_rating: number
           supplier_name: string
           updated_at: string
@@ -568,6 +571,7 @@ export type Database = {
           verified: boolean
         }
         Insert: {
+          avg_unit_cost?: number | null
           communication_rating?: number
           country?: string | null
           created_at?: string
@@ -575,7 +579,9 @@ export type Database = {
           id?: string
           moq?: string | null
           notes?: string | null
+          platform?: string | null
           product_type?: string | null
+          production_time?: string | null
           quality_rating?: number
           supplier_name: string
           updated_at?: string
@@ -583,6 +589,7 @@ export type Database = {
           verified?: boolean
         }
         Update: {
+          avg_unit_cost?: number | null
           communication_rating?: number
           country?: string | null
           created_at?: string
@@ -590,7 +597,9 @@ export type Database = {
           id?: string
           moq?: string | null
           notes?: string | null
+          platform?: string | null
           product_type?: string | null
+          production_time?: string | null
           quality_rating?: number
           supplier_name?: string
           updated_at?: string

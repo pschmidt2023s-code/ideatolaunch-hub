@@ -38,3 +38,6 @@ verify_jwt = false
 
 [functions.server-rate-limit]
 verify_jwt = false
+
+[functions.community-insights]
+verify_jwt = false

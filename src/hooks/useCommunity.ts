@@ -38,7 +38,10 @@ export interface SupplierReview {
   supplier_name: string;
   country: string | null;
   product_type: string | null;
+  platform: string | null;
   moq: string | null;
+  avg_unit_cost: number | null;
+  production_time: string | null;
   quality_rating: number;
   communication_rating: number;
   delivery_rating: number;
@@ -46,6 +49,8 @@ export interface SupplierReview {
   verified: boolean;
   created_at: string;
 }
+
+// ── Posts ──
 
 export function useCommunityPosts(postType?: string, category?: string) {
   return useQuery({
@@ -132,12 +137,6 @@ export function useCreateReply() {
         content,
       });
       if (error) throw error;
-      // Increment reply count on the post
-      await supabase
-        .from("community_posts")
-        .update({ reply_count: 0 } as any)
-        .eq("id", postId)
-        .then(() => {});  // best-effort
     },
     onSuccess: (_, { postId }) => {
       qc.invalidateQueries({ queryKey: ["community-replies", postId] });
@@ -170,16 +169,19 @@ export function useToggleUpvote() {
   });
 }
 
-export function useSupplierReviews(filters?: { country?: string; product_type?: string }) {
+// ── Suppliers ──
+
+export function useSupplierReviews(filters?: { country?: string; product_type?: string; sort?: string; minRating?: number }) {
   return useQuery({
     queryKey: ["supplier-reviews", filters],
     queryFn: async () => {
       let query = supabase
         .from("community_supplier_reviews")
         .select("*")
-        .order("created_at", { ascending: false });
+        .order(filters?.sort === "rating" ? "quality_rating" : "created_at", { ascending: false });
       if (filters?.country) query = query.eq("country", filters.country);
       if (filters?.product_type) query = query.eq("product_type", filters.product_type);
+      if (filters?.minRating) query = query.gte("quality_rating", filters.minRating);
       const { data, error } = await query;
       if (error) throw error;
       return (data || []) as SupplierReview[];
@@ -196,7 +198,7 @@ export function useCreateSupplierReview() {
       const { error } = await supabase.from("community_supplier_reviews").insert({
         ...review,
         user_id: user.id,
-      });
+      } as any);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -206,6 +208,8 @@ export function useCreateSupplierReview() {
     onError: () => toast.error("Fehler beim Speichern"),
   });
 }
+
+// ── Reputation ──
 
 export function useMyReputation() {
   const { user } = useAuth();
@@ -224,6 +228,8 @@ export function useMyReputation() {
   });
 }
 
+// ── Circles ──
+
 export function useCommunityCircles() {
   return useQuery({
     queryKey: ["community-circles"],
@@ -238,6 +244,8 @@ export function useCommunityCircles() {
   });
 }
 
+// ── Trending / Dashboard ──
+
 export function useTrendingPosts() {
   return useQuery({
     queryKey: ["community-trending"],
@@ -247,6 +255,53 @@ export function useTrendingPosts() {
         .select("*")
         .order("upvote_count", { ascending: false })
         .limit(5);
+      if (error) throw error;
+      return (data || []) as CommunityPost[];
+    },
+  });
+}
+
+export function useTopSuppliers() {
+  return useQuery({
+    queryKey: ["top-suppliers"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("community_supplier_reviews")
+        .select("*")
+        .order("quality_rating", { ascending: false })
+        .limit(5);
+      if (error) throw error;
+      return (data || []) as SupplierReview[];
+    },
+  });
+}
+
+export function useMarketSignals() {
+  return useQuery({
+    queryKey: ["market-signals"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("community_posts")
+        .select("*")
+        .eq("post_type", "market_signal")
+        .order("upvote_count", { ascending: false })
+        .limit(10);
+      if (error) throw error;
+      return (data || []) as CommunityPost[];
+    },
+  });
+}
+
+export function useCaseStudies() {
+  return useQuery({
+    queryKey: ["case-studies"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("community_posts")
+        .select("*")
+        .eq("post_type", "case_study")
+        .order("upvote_count", { ascending: false })
+        .limit(10);
       if (error) throw error;
       return (data || []) as CommunityPost[];
     },
