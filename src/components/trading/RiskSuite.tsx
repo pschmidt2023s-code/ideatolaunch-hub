@@ -11,7 +11,6 @@ import {
   calculateSentiment,
   detectTradePatterns,
   checkDailyLossLimit,
-  generateMockTrades,
 } from "@/lib/crypto-advanced-engines";
 import { analyzeStrategyEdge } from "@/lib/trading-intelligence";
 
@@ -29,6 +28,15 @@ function BigNum({ label, value, color, sub }: { label: string; value: string; co
   );
 }
 
+interface TradeRecord {
+  win: boolean;
+  pnl: number;
+  size: number;
+  holdTime: number;
+  dayOfWeek: number;
+  hour: number;
+}
+
 interface Props {
   winrate: number;
   riskPerTrade: number;
@@ -42,40 +50,51 @@ interface Props {
   trendDirection: number;
   volume: number;
   fundingRate: number;
+  trades?: TradeRecord[];
+  positions?: Array<{ symbol: string; size: number; leverage: number; isLong: boolean; entryPrice: number }>;
+}
+
+function EmptyState({ title, description }: { title: string; description: string }) {
+  return (
+    <Card>
+      <div className="text-center py-10">
+        <Activity className="h-8 w-8 mx-auto text-muted-foreground/30 mb-3" />
+        <p className="text-sm font-medium text-muted-foreground">{title}</p>
+        <p className="text-xs text-muted-foreground/60 mt-1 max-w-sm mx-auto">{description}</p>
+      </div>
+    </Card>
+  );
 }
 
 export function RiskSuite({
   winrate, riskPerTrade, rrr, accountSize, avgWin, avgLoss,
-  tradesPerDay, leverage, volatility, trendDirection, volume, fundingRate
+  tradesPerDay, leverage, volatility, trendDirection, volume, fundingRate,
+  trades = [], positions = []
 }: Props) {
   const [currentDrawdown, setCurrentDrawdown] = useState(12);
   const [dailyLoss, setDailyLoss] = useState(150);
   const [dailyLimitPct, setDailyLimitPct] = useState(3);
+  const hasTrades = trades.length > 0;
+  const hasPositions = positions.length > 0;
 
-  // AI Position Sizer (Kelly)
+  // AI Position Sizer (Kelly) – calculation-based, always available
   const edge = useMemo(() => analyzeStrategyEdge(winrate, avgWin, avgLoss), [winrate, avgWin, avgLoss]);
   const kellySize = Math.round(edge.kellyPercent * accountSize / 100);
   const halfKelly = Math.round(kellySize / 2);
 
-  // Sentiment
+  // Sentiment – calculation-based, always available
   const sentiment = useMemo(() => calculateSentiment(volatility, trendDirection, volume, fundingRate), [volatility, trendDirection, volume, fundingRate]);
 
-  // Pattern Recognition
-  const mockTrades = useMemo(() => generateMockTrades(50, winrate), [winrate]);
-  const patterns = useMemo(() => detectTradePatterns(mockTrades), [mockTrades]);
+  // Pattern Recognition – requires real trades
+  const patterns = useMemo(() => hasTrades ? detectTradePatterns(trades) : [], [trades, hasTrades]);
 
-  // Daily Loss Limit
+  // Daily Loss Limit – calculation-based
   const lossLimit = useMemo(() => checkDailyLossLimit(dailyLoss, dailyLimitPct, accountSize), [dailyLoss, dailyLimitPct, accountSize]);
 
-  // Stress Test
-  const positions = [
-    { symbol: "BTCUSDT", size: 0.1, leverage, isLong: true, entryPrice: 67000 },
-    { symbol: "ETHUSDT", size: 2, leverage: Math.max(1, leverage / 2), isLong: true, entryPrice: 3500 },
-    { symbol: "SOLUSDT", size: 50, leverage: Math.max(1, leverage / 3), isLong: false, entryPrice: 180 },
-  ];
-  const stressResults = useMemo(() => runPortfolioStressTest(positions, accountSize), [accountSize, leverage]);
+  // Stress Test – requires positions
+  const stressResults = useMemo(() => hasPositions ? runPortfolioStressTest(positions, accountSize) : [], [positions, accountSize, hasPositions]);
 
-  // Drawdown Recovery
+  // Drawdown Recovery – calculation-based
   const recovery = useMemo(() => calculateDrawdownRecovery(currentDrawdown, riskPerTrade * rrr, winrate, tradesPerDay), [currentDrawdown, riskPerTrade, rrr, winrate, tradesPerDay]);
 
   return (
@@ -122,29 +141,33 @@ export function RiskSuite({
 
       {/* 17. Portfolio Stress Test */}
       <TabsContent value="stress">
-        <Card>
-          <h3 className="text-sm font-semibold mb-4 flex items-center gap-2"><Zap className="h-4 w-4" /> Portfolio Stress Test</h3>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {stressResults.map(sc => (
-              <div key={sc.scenario} className={cn("rounded-xl border p-4",
-                sc.liquidationTriggered ? "bg-destructive/10 border-destructive/20" :
-                sc.marginCallTriggered ? "bg-yellow-500/10 border-yellow-500/20" :
-                sc.portfolioImpact > 0 ? "bg-green-500/5 border-green-500/20" : "bg-muted/30"
-              )}>
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xl">{sc.icon}</span>
-                  <span className="text-xs font-semibold">{sc.scenario}</span>
+        {!hasPositions ? (
+          <EmptyState title="Keine offenen Positionen" description="Verbinde deinen Exchange-Account, um deine echten Positionen einem Stress Test zu unterziehen." />
+        ) : (
+          <Card>
+            <h3 className="text-sm font-semibold mb-4 flex items-center gap-2"><Zap className="h-4 w-4" /> Portfolio Stress Test</h3>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {stressResults.map(sc => (
+                <div key={sc.scenario} className={cn("rounded-xl border p-4",
+                  sc.liquidationTriggered ? "bg-destructive/10 border-destructive/20" :
+                  sc.marginCallTriggered ? "bg-yellow-500/10 border-yellow-500/20" :
+                  sc.portfolioImpact > 0 ? "bg-green-500/5 border-green-500/20" : "bg-muted/30"
+                )}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-xl">{sc.icon}</span>
+                    <span className="text-xs font-semibold">{sc.scenario}</span>
+                  </div>
+                  <p className={cn("text-2xl font-bold tabular-nums", sc.portfolioImpact >= 0 ? "text-green-500" : "text-destructive")}>
+                    {sc.portfolioImpact >= 0 ? "+" : ""}{sc.portfolioImpact}%
+                  </p>
+                  <p className="text-[10px] text-muted-foreground">Neues Balance: ${sc.newBalance.toLocaleString()}</p>
+                  {sc.liquidationTriggered && <p className="text-[10px] text-destructive font-bold mt-1">⚠ LIQUIDATION</p>}
+                  {sc.marginCallTriggered && !sc.liquidationTriggered && <p className="text-[10px] text-yellow-600 font-bold mt-1">⚠ MARGIN CALL</p>}
                 </div>
-                <p className={cn("text-2xl font-bold tabular-nums", sc.portfolioImpact >= 0 ? "text-green-500" : "text-destructive")}>
-                  {sc.portfolioImpact >= 0 ? "+" : ""}{sc.portfolioImpact}%
-                </p>
-                <p className="text-[10px] text-muted-foreground">Neues Balance: ${sc.newBalance.toLocaleString()}</p>
-                {sc.liquidationTriggered && <p className="text-[10px] text-destructive font-bold mt-1">⚠ LIQUIDATION</p>}
-                {sc.marginCallTriggered && !sc.liquidationTriggered && <p className="text-[10px] text-yellow-600 font-bold mt-1">⚠ MARGIN CALL</p>}
-              </div>
-            ))}
-          </div>
-        </Card>
+              ))}
+            </div>
+          </Card>
+        )}
       </TabsContent>
 
       {/* 13. Sentiment Pulse */}
@@ -154,9 +177,7 @@ export function RiskSuite({
           <div className="flex flex-col items-center py-6">
             <div className="relative h-40 w-40">
               <svg viewBox="0 0 100 60" className="w-full h-full">
-                {/* Gauge background */}
                 <path d="M 10 55 A 40 40 0 0 1 90 55" fill="none" stroke="hsl(var(--muted))" strokeWidth="8" strokeLinecap="round" />
-                {/* Gauge fill */}
                 <path d="M 10 55 A 40 40 0 0 1 90 55" fill="none" stroke={sentiment.fearGreedIndex >= 60 ? "hsl(142 76% 36%)" : sentiment.fearGreedIndex >= 40 ? "hsl(38 92% 50%)" : "hsl(0 84% 60%)"} strokeWidth="8" strokeLinecap="round"
                   strokeDasharray={`${sentiment.fearGreedIndex * 1.26} 126`} />
               </svg>
@@ -189,27 +210,31 @@ export function RiskSuite({
 
       {/* 15. Pattern Recognition */}
       <TabsContent value="patterns">
-        <Card>
-          <h3 className="text-sm font-semibold mb-4 flex items-center gap-2"><Brain className="h-4 w-4" /> Pattern Recognition</h3>
-          <div className="space-y-3">
-            {patterns.map((p, i) => (
-              <div key={i} className={cn("rounded-xl border p-4 flex items-start gap-3",
-                p.severity === "critical" ? "bg-destructive/10 border-destructive/20" :
-                p.severity === "warning" ? "bg-yellow-500/10 border-yellow-500/20" : "bg-muted/30"
-              )}>
-                <span className="text-2xl">{p.icon}</span>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm font-semibold">{p.pattern}</p>
-                    {p.frequency > 0 && <span className="text-[10px] font-medium bg-muted rounded-full px-2 py-0.5">{p.frequency}%</span>}
+        {!hasTrades ? (
+          <EmptyState title="Keine Trade-Daten" description="Verbinde deinen Exchange-Account oder trage Trades im Journal ein, um Trading-Patterns zu erkennen." />
+        ) : (
+          <Card>
+            <h3 className="text-sm font-semibold mb-4 flex items-center gap-2"><Brain className="h-4 w-4" /> Pattern Recognition</h3>
+            <div className="space-y-3">
+              {patterns.map((p, i) => (
+                <div key={i} className={cn("rounded-xl border p-4 flex items-start gap-3",
+                  p.severity === "critical" ? "bg-destructive/10 border-destructive/20" :
+                  p.severity === "warning" ? "bg-yellow-500/10 border-yellow-500/20" : "bg-muted/30"
+                )}>
+                  <span className="text-2xl">{p.icon}</span>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-semibold">{p.pattern}</p>
+                      {p.frequency > 0 && <span className="text-[10px] font-medium bg-muted rounded-full px-2 py-0.5">{p.frequency}%</span>}
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">{p.description}</p>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1">{p.description}</p>
+                  {p.severity !== "info" && <AlertTriangle className={cn("h-4 w-4 shrink-0 mt-1", p.severity === "critical" ? "text-destructive" : "text-yellow-500")} />}
                 </div>
-                {p.severity !== "info" && <AlertTriangle className={cn("h-4 w-4 shrink-0 mt-1", p.severity === "critical" ? "text-destructive" : "text-yellow-500")} />}
-              </div>
-            ))}
-          </div>
-        </Card>
+              ))}
+            </div>
+          </Card>
+        )}
       </TabsContent>
 
       {/* 19. Drawdown Recovery */}

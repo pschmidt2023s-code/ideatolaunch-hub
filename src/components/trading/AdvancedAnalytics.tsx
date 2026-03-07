@@ -10,8 +10,6 @@ import {
   analyzeStreaks,
   analyzeTimePerformance,
   calculateFeeImpact,
-  generateMockTrades,
-  generateMockMonthlyReturns,
 } from "@/lib/crypto-advanced-engines";
 import { simulateTrades } from "@/lib/trading-intelligence";
 
@@ -29,6 +27,15 @@ function BigNum({ label, value, color, sub }: { label: string; value: string; co
   );
 }
 
+interface TradeRecord {
+  win: boolean;
+  pnl: number;
+  size: number;
+  holdTime: number;
+  dayOfWeek: number;
+  hour: number;
+}
+
 interface Props {
   winrate: number;
   riskPerTrade: number;
@@ -37,28 +44,52 @@ interface Props {
   tradesPerMonth: number;
   avgCommission: number;
   avgSlippage: number;
+  trades?: TradeRecord[];
 }
 
-export function AdvancedAnalytics({ winrate, riskPerTrade, rrr, accountSize, tradesPerMonth, avgCommission, avgSlippage }: Props) {
-  const [simTrades, setSimTrades] = useState(200);
+function EmptyState({ title, description }: { title: string; description: string }) {
+  return (
+    <Card>
+      <div className="text-center py-10">
+        <Activity className="h-8 w-8 mx-auto text-muted-foreground/30 mb-3" />
+        <p className="text-sm font-medium text-muted-foreground">{title}</p>
+        <p className="text-xs text-muted-foreground/60 mt-1 max-w-sm mx-auto">{description}</p>
+      </div>
+    </Card>
+  );
+}
 
-  // Equity Curve
+export function AdvancedAnalytics({ winrate, riskPerTrade, rrr, accountSize, tradesPerMonth, avgCommission, avgSlippage, trades = [] }: Props) {
+  const [simTrades, setSimTrades] = useState(200);
+  const hasTrades = trades.length > 0;
+
+  // Equity Curve (simulation-based, always available)
   const simulation = useMemo(() => simulateTrades(winrate, rrr, riskPerTrade, accountSize, simTrades), [winrate, rrr, riskPerTrade, accountSize, simTrades]);
   const curveData = simulation.equityCurve.map((v, i) => ({ trade: i, balance: v }));
 
-  // Streaks
-  const mockTrades = useMemo(() => generateMockTrades(50, winrate), [winrate]);
-  const streakResults = useMemo(() => mockTrades.map(t => t.win ? "win" as const : "loss" as const), [mockTrades]);
-  const streaks = useMemo(() => analyzeStreaks(streakResults), [streakResults]);
+  // Streaks – from real trades only
+  const streakResults = useMemo(() => trades.map(t => t.win ? "win" as const : "loss" as const), [trades]);
+  const streaks = useMemo(() => hasTrades ? analyzeStreaks(streakResults) : null, [streakResults, hasTrades]);
 
-  // Risk-Adjusted Returns
-  const monthlyReturns = useMemo(() => generateMockMonthlyReturns(12, riskPerTrade * rrr * (winrate / 100) - riskPerTrade * (1 - winrate / 100)), [winrate, riskPerTrade, rrr]);
-  const riskAdj = useMemo(() => calculateRiskAdjustedReturns(monthlyReturns), [monthlyReturns]);
+  // Risk-Adjusted Returns – from real trades only
+  const monthlyReturns = useMemo(() => {
+    if (!hasTrades) return [];
+    // Group trades by month and calculate returns
+    const monthlyPnl: number[] = [];
+    const perMonth = Math.max(1, Math.ceil(trades.length / 12));
+    for (let i = 0; i < trades.length; i += perMonth) {
+      const chunk = trades.slice(i, i + perMonth);
+      const totalPnl = chunk.reduce((s, t) => s + t.pnl, 0);
+      monthlyPnl.push(Math.round((totalPnl / accountSize) * 100 * 100) / 100);
+    }
+    return monthlyPnl;
+  }, [trades, hasTrades, accountSize]);
+  const riskAdj = useMemo(() => monthlyReturns.length > 0 ? calculateRiskAdjustedReturns(monthlyReturns) : null, [monthlyReturns]);
 
-  // Time-of-Day
-  const timePerf = useMemo(() => analyzeTimePerformance(mockTrades.map(t => ({ hour: t.hour, pnl: t.pnl, win: t.win }))), [mockTrades]);
+  // Time-of-Day – from real trades only
+  const timePerf = useMemo(() => hasTrades ? analyzeTimePerformance(trades.map(t => ({ hour: t.hour, pnl: t.pnl, win: t.win }))) : [], [trades, hasTrades]);
 
-  // Fee Impact
+  // Fee Impact (calculation-based, always available)
   const monthlyProfit = Math.round(simulation.avgReturn / 100 * accountSize / (simTrades / tradesPerMonth));
   const fees = useMemo(() => calculateFeeImpact(tradesPerMonth, avgCommission, avgSlippage, accountSize, monthlyProfit), [tradesPerMonth, avgCommission, avgSlippage, accountSize, monthlyProfit]);
 
@@ -72,11 +103,11 @@ export function AdvancedAnalytics({ winrate, riskPerTrade, rrr, accountSize, tra
         <TabsTrigger value="fees" className="text-xs gap-1"><DollarSign className="h-3 w-3" /> Fee Impact</TabsTrigger>
       </TabsList>
 
-      {/* 6. Equity Curve */}
+      {/* 6. Equity Curve (simulation) */}
       <TabsContent value="equity">
         <Card>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold">Equity Curve Tracker</h3>
+            <h3 className="text-sm font-semibold">Equity Curve Simulation</h3>
             <div className="flex items-center gap-2 w-40">
               <span className="text-[10px] text-muted-foreground">{simTrades} Trades</span>
               <Slider value={[simTrades]} onValueChange={([v]) => setSimTrades(v)} min={50} max={500} step={50} />
@@ -104,71 +135,83 @@ export function AdvancedAnalytics({ winrate, riskPerTrade, rrr, accountSize, tra
             <BigNum label="Max DD" value={`${simulation.maxDrawdown}%`} color="text-yellow-500" />
             <BigNum label="Profit Prob." value={`${simulation.profitProbability}%`} />
           </div>
+          <p className="text-[10px] text-muted-foreground mt-3 text-center">Basiert auf deinen aktuellen Parametern (Winrate, RRR, Risk/Trade) – keine echten Trade-Daten.</p>
         </Card>
       </TabsContent>
 
       {/* 7. Streak Analyzer */}
       <TabsContent value="streaks">
-        <Card>
-          <h3 className="text-sm font-semibold mb-4">Win/Loss Streak Analyzer</h3>
-          <div className="grid sm:grid-cols-4 gap-4 mb-4">
-            <BigNum label="Aktuelle Serie" value={`${streaks.currentStreak} ${streaks.currentStreakType === "win" ? "W" : "L"}`} color={streaks.currentStreakType === "win" ? "text-green-500" : "text-destructive"} />
-            <BigNum label="Längste Win" value={`${streaks.longestWinStreak}`} color="text-green-500" />
-            <BigNum label="Längste Loss" value={`${streaks.longestLossStreak}`} color="text-destructive" />
-            <BigNum label="Tilt Risiko" value={streaks.tiltRisk.toUpperCase()} color={streaks.tiltRisk === "low" ? "text-green-500" : streaks.tiltRisk === "medium" ? "text-yellow-500" : "text-destructive"} />
-          </div>
-          {/* Visual streak map */}
-          <div className="flex flex-wrap gap-1 mb-3">
-            {streakResults.slice(-50).map((r, i) => (
-              <div key={i} className={cn("h-4 w-4 rounded-sm", r === "win" ? "bg-green-500" : "bg-destructive")} title={r} />
-            ))}
-          </div>
-          <p className="text-xs text-muted-foreground">{streaks.pattern}</p>
-        </Card>
+        {!streaks ? (
+          <EmptyState title="Keine Trade-Daten" description="Verbinde deinen Exchange-Account oder trage Trades im Journal ein, um Streak-Analysen zu sehen." />
+        ) : (
+          <Card>
+            <h3 className="text-sm font-semibold mb-4">Win/Loss Streak Analyzer</h3>
+            <div className="grid sm:grid-cols-4 gap-4 mb-4">
+              <BigNum label="Aktuelle Serie" value={`${streaks.currentStreak} ${streaks.currentStreakType === "win" ? "W" : "L"}`} color={streaks.currentStreakType === "win" ? "text-green-500" : "text-destructive"} />
+              <BigNum label="Längste Win" value={`${streaks.longestWinStreak}`} color="text-green-500" />
+              <BigNum label="Längste Loss" value={`${streaks.longestLossStreak}`} color="text-destructive" />
+              <BigNum label="Tilt Risiko" value={streaks.tiltRisk.toUpperCase()} color={streaks.tiltRisk === "low" ? "text-green-500" : streaks.tiltRisk === "medium" ? "text-yellow-500" : "text-destructive"} />
+            </div>
+            <div className="flex flex-wrap gap-1 mb-3">
+              {streakResults.slice(-50).map((r, i) => (
+                <div key={i} className={cn("h-4 w-4 rounded-sm", r === "win" ? "bg-green-500" : "bg-destructive")} title={r} />
+              ))}
+            </div>
+            <p className="text-xs text-muted-foreground">{streaks.pattern}</p>
+          </Card>
+        )}
       </TabsContent>
 
       {/* 8. Risk-Adjusted Returns */}
       <TabsContent value="risk-adj">
-        <Card>
-          <h3 className="text-sm font-semibold mb-4">Risk-Adjusted Returns</h3>
-          <div className="grid sm:grid-cols-3 lg:grid-cols-6 gap-4">
-            <BigNum label="Sharpe" value={`${riskAdj.sharpeRatio}`} color={riskAdj.sharpeRatio > 1 ? "text-green-500" : riskAdj.sharpeRatio > 0 ? "text-yellow-500" : "text-destructive"} sub="Risk/Return" />
-            <BigNum label="Sortino" value={`${riskAdj.sortinoRatio}`} color={riskAdj.sortinoRatio > 1.5 ? "text-green-500" : "text-yellow-500"} sub="Downside Risk" />
-            <BigNum label="Calmar" value={`${riskAdj.calmarRatio}`} sub="Return/MaxDD" />
-            <BigNum label="Ann. Return" value={`${riskAdj.annualizedReturn}%`} color={riskAdj.annualizedReturn > 0 ? "text-green-500" : "text-destructive"} />
-            <BigNum label="Volatility" value={`${riskAdj.volatility}%`} />
-            <BigNum label="Grade" value={riskAdj.grade} color={riskAdj.grade === "A" ? "text-green-500" : riskAdj.grade === "F" ? "text-destructive" : "text-yellow-500"} />
-          </div>
-        </Card>
+        {!riskAdj ? (
+          <EmptyState title="Keine Trade-Daten" description="Verbinde deinen Exchange-Account oder trage Trades im Journal ein, um Risk-Adjusted Returns zu berechnen." />
+        ) : (
+          <Card>
+            <h3 className="text-sm font-semibold mb-4">Risk-Adjusted Returns</h3>
+            <div className="grid sm:grid-cols-3 lg:grid-cols-6 gap-4">
+              <BigNum label="Sharpe" value={`${riskAdj.sharpeRatio}`} color={riskAdj.sharpeRatio > 1 ? "text-green-500" : riskAdj.sharpeRatio > 0 ? "text-yellow-500" : "text-destructive"} sub="Risk/Return" />
+              <BigNum label="Sortino" value={`${riskAdj.sortinoRatio}`} color={riskAdj.sortinoRatio > 1.5 ? "text-green-500" : "text-yellow-500"} sub="Downside Risk" />
+              <BigNum label="Calmar" value={`${riskAdj.calmarRatio}`} sub="Return/MaxDD" />
+              <BigNum label="Ann. Return" value={`${riskAdj.annualizedReturn}%`} color={riskAdj.annualizedReturn > 0 ? "text-green-500" : "text-destructive"} />
+              <BigNum label="Volatility" value={`${riskAdj.volatility}%`} />
+              <BigNum label="Grade" value={riskAdj.grade} color={riskAdj.grade === "A" ? "text-green-500" : riskAdj.grade === "F" ? "text-destructive" : "text-yellow-500"} />
+            </div>
+          </Card>
+        )}
       </TabsContent>
 
       {/* 9. Time-of-Day Performance */}
       <TabsContent value="time">
-        <Card>
-          <h3 className="text-sm font-semibold mb-4">Performance nach Tageszeit</h3>
-          <div className="h-48">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={timePerf.filter(t => t.trades > 0)}>
-                <XAxis dataKey="hour" tick={{ fontSize: 10 }} tickFormatter={v => `${v}h`} />
-                <YAxis tick={{ fontSize: 10 }} tickFormatter={v => `${v}€`} />
-                <Tooltip formatter={(v: number) => [`${v}€`, "Avg PnL"]} />
-                <Bar dataKey="avgPnl">
-                  {timePerf.filter(t => t.trades > 0).map((t, i) => (
-                    <Cell key={i} fill={t.avgPnl >= 0 ? "hsl(142 76% 36%)" : "hsl(0 84% 60%)"} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="grid grid-cols-6 gap-1 mt-4">
-            {timePerf.map(t => (
-              <div key={t.hour} className="text-center" title={`${t.hour}:00 – ${t.trades} Trades, WR: ${t.winrate}%`}>
-                <div className="h-6 w-full rounded" style={{ backgroundColor: t.color, opacity: t.trades > 0 ? 0.8 : 0.15 }} />
-                <span className="text-[8px] text-muted-foreground">{t.hour}h</span>
-              </div>
-            ))}
-          </div>
-        </Card>
+        {timePerf.length === 0 ? (
+          <EmptyState title="Keine Trade-Daten" description="Verbinde deinen Exchange-Account oder trage Trades im Journal ein, um Performance nach Tageszeit zu analysieren." />
+        ) : (
+          <Card>
+            <h3 className="text-sm font-semibold mb-4">Performance nach Tageszeit</h3>
+            <div className="h-48">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={timePerf.filter(t => t.trades > 0)}>
+                  <XAxis dataKey="hour" tick={{ fontSize: 10 }} tickFormatter={v => `${v}h`} />
+                  <YAxis tick={{ fontSize: 10 }} tickFormatter={v => `${v}€`} />
+                  <Tooltip formatter={(v: number) => [`${v}€`, "Avg PnL"]} />
+                  <Bar dataKey="avgPnl">
+                    {timePerf.filter(t => t.trades > 0).map((t, i) => (
+                      <Cell key={i} fill={t.avgPnl >= 0 ? "hsl(142 76% 36%)" : "hsl(0 84% 60%)"} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="grid grid-cols-6 gap-1 mt-4">
+              {timePerf.map(t => (
+                <div key={t.hour} className="text-center" title={`${t.hour}:00 – ${t.trades} Trades, WR: ${t.winrate}%`}>
+                  <div className="h-6 w-full rounded" style={{ backgroundColor: t.color, opacity: t.trades > 0 ? 0.8 : 0.15 }} />
+                  <span className="text-[8px] text-muted-foreground">{t.hour}h</span>
+                </div>
+              ))}
+            </div>
+          </Card>
+        )}
       </TabsContent>
 
       {/* 10. Fee Impact */}
