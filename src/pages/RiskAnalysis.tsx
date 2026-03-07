@@ -68,7 +68,7 @@ export default function RiskAnalysis() {
       <div className="space-y-8 pb-16">
         <PageHeader
           title="Risk of Ruin Analysis"
-          subtitle="Capital & Risk Intelligence for Traders"
+          description="Capital & Risk Intelligence for Traders"
         />
 
         {/* ── Status Badge ── */}
