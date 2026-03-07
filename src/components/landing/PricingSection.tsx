@@ -497,11 +497,13 @@ export function PricingSection() {
                       ? "bg-accent text-accent-foreground hover:bg-accent/90"
                       : isExecutionTier
                         ? "bg-gradient-to-r from-amber-600 to-yellow-500 text-white hover:from-amber-700 hover:to-yellow-600 shadow-md border-0"
-                        : isProTier
-                          ? "bg-gradient-to-r from-amber-600 to-yellow-500 text-white hover:from-amber-700 hover:to-yellow-600 shadow-md border-0"
-                          : ""
+                        : isTradingTier
+                          ? "bg-gradient-to-r from-blue-600 to-cyan-500 text-white hover:from-blue-700 hover:to-cyan-600 shadow-md border-0"
+                          : isProTier
+                            ? "bg-gradient-to-r from-amber-600 to-yellow-500 text-white hover:from-amber-700 hover:to-yellow-600 shadow-md border-0"
+                            : ""
                   }`}
-                  variant={plan.highlighted || isExecutionTier || isProTier ? "default" : "outline"}
+                  variant={plan.highlighted || isExecutionTier || isProTier || isTradingTier ? "default" : "outline"}
                   onClick={plan.onClick}
                   disabled={plan.loading}
                 >
