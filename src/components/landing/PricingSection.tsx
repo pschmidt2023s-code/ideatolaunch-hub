@@ -451,12 +451,6 @@ export function PricingSection() {
                       : "Risk intelligence for professional traders."}
                   </p>
                 )}
-                  <p className="text-xs text-amber-600/80 mt-0.5 italic">
-                    {isDE
-                      ? "Für Gründer, die echtes Kapital und echtes Risiko managen."
-                      : "For founders managing real capital and real risk."}
-                  </p>
-                )}
 
                 <div className="mt-4 flex items-baseline gap-1">
                   <span className="text-4xl font-bold">{plan.price}</span>
