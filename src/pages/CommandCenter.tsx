@@ -46,6 +46,25 @@ export default function CommandCenter() {
   const getMetrics = () => {
     switch (mode) {
       case "trading": {
+        const hasTradingData =
+          tradingInput.accountBalance > 0 &&
+          tradingInput.tradesPerMonth > 0 &&
+          tradingInput.avgWin > 0 &&
+          tradingInput.avgLoss > 0;
+
+        if (!hasTradingData) {
+          return {
+            status: buildTradingStatus(tradingInput, scenario),
+            money: buildTradingMoney(tradingInput, scenario),
+            risks: [],
+            actions: [],
+            hero: { label: "Trading Risk Score", value: 0, max: 100, level: "high" as const },
+            cards: [],
+            ready: true,
+            sufficient: false,
+          };
+        }
+
         const status = buildTradingStatus(tradingInput, scenario);
         const money = buildTradingMoney(tradingInput, scenario);
         const pf = calculateProfitFactor(tradingInput);
@@ -65,6 +84,26 @@ export default function CommandCenter() {
         };
       }
       case "investor": {
+        const hasInvestorData =
+          investorInput.totalPortfolio > 0 &&
+          (investorInput.cryptoAssets.length > 0 ||
+            investorInput.equityAssets.length > 0 ||
+            investorInput.bondAssets.length > 0 ||
+            investorInput.realEstateAssets.length > 0);
+
+        if (!hasInvestorData) {
+          return {
+            status: buildInvestorStatus(investorInput, scenario),
+            money: buildInvestorMoney(investorInput, scenario),
+            risks: [],
+            actions: [],
+            hero: { label: "Portfolio Risk", value: 0, max: 100, level: "high" as const },
+            cards: [],
+            ready: true,
+            sufficient: false,
+          };
+        }
+
         const status = buildInvestorStatus(investorInput, scenario);
         const money = buildInvestorMoney(investorInput, scenario);
         const pr = calculatePortfolioRisk(investorInput);
@@ -82,6 +121,23 @@ export default function CommandCenter() {
         };
       }
       case "strategy": {
+        const hasStrategyData =
+          strategyInput.capitalAtStake > 0 &&
+          strategyInput.decisionCount > 0;
+
+        if (!hasStrategyData) {
+          return {
+            status: buildStrategyStatus(strategyInput, scenario),
+            money: buildStrategyMoney(strategyInput, scenario),
+            risks: [],
+            actions: [],
+            hero: { label: "Decision Score", value: 0, max: 100, level: "high" as const },
+            cards: [],
+            ready: true,
+            sufficient: false,
+          };
+        }
+
         const status = buildStrategyStatus(strategyInput, scenario);
         const money = buildStrategyMoney(strategyInput, scenario);
         const dr = calculateDecisionRisk(strategyInput);
@@ -92,7 +148,7 @@ export default function CommandCenter() {
           hero: { label: "Decision Score", value: dr, max: 100, level: dr > 70 ? "low" as const : dr > 40 ? "medium" as const : "high" as const },
           cards: [
             { label: "Success Rate", value: `${strategyInput.successRate}%`, level: strategyInput.successRate > 65 ? "low" as const : strategyInput.successRate > 50 ? "medium" as const : "high" as const, progress: strategyInput.successRate, icon: Crosshair },
-            { label: "Risk Exposure", value: `${Math.round(strategyInput.riskExposure / 1000)}k €`, level: strategyInput.riskExposure / strategyInput.capitalAtStake > 0.4 ? "high" as const : "medium" as const, progress: Math.min(100, (strategyInput.riskExposure / strategyInput.capitalAtStake) * 100), icon: AlertTriangle },
+            { label: "Risk Exposure", value: `${Math.round(strategyInput.riskExposure / strategyInput.capitalAtStake * 100)}%`, level: strategyInput.capitalAtStake > 0 && strategyInput.riskExposure / strategyInput.capitalAtStake > 0.4 ? "high" as const : "medium" as const, progress: Math.min(100, strategyInput.capitalAtStake > 0 ? (strategyInput.riskExposure / strategyInput.capitalAtStake) * 100 : 0), icon: AlertTriangle },
             { label: "Open Decisions", value: `${strategyInput.openDecisions}`, level: strategyInput.openDecisions > 5 ? "high" as const : strategyInput.openDecisions > 3 ? "medium" as const : "low" as const, icon: Clock },
           ],
           ready: true, sufficient: true,
