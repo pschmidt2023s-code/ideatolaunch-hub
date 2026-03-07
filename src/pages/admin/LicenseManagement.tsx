@@ -356,6 +356,7 @@ export default function LicenseManagement() {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="text-xs">Code</TableHead>
                     <TableHead className="text-xs">Label</TableHead>
                     <TableHead className="text-xs">Plan</TableHead>
                     <TableHead className="text-xs">Key</TableHead>
