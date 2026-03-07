@@ -4,12 +4,13 @@ import { useMode } from "@/hooks/useMode";
 import { ModeSwitcher } from "@/components/ModeSwitcher";
 import { MODE_CONFIGS } from "@/lib/mode-types";
 import { CommandPalette } from "./CommandPalette";
-import { Bell, ChevronDown, Settings, LogOut } from "lucide-react";
+import { NotificationBell } from "./NotificationBell";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { ChevronDown, Settings, LogOut } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
-import { cn } from "@/lib/utils";
 
 export function TopBar() {
   const { user, signOut } = useAuth();
@@ -43,11 +44,10 @@ export function TopBar() {
           </div>
         </div>
 
-        {/* Right: Notifications + User */}
+        {/* Right: Theme + Notifications + User */}
         <div className="flex items-center gap-1.5">
-          <button className="relative flex h-8 w-8 items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors">
-            <Bell className="h-4 w-4" />
-          </button>
+          <ThemeToggle />
+          <NotificationBell />
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

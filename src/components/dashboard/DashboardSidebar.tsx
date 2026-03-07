@@ -6,7 +6,7 @@ import type { AppMode } from "@/lib/mode-types";
 import {
   Crosshair, Brain, BarChart3, Wrench, Globe as GlobeIcon, Rocket, Settings, LogOut,
   ChevronDown, ChevronRight, TrendingUp, PieChart, Sparkles, Gift, HeartPulse, Crown,
-  Zap, Map, Target, Shield, Wallet, Activity, Scale,
+  Zap, Map, Target, Shield, Wallet, Activity, Scale, Users, Telescope,
 } from "lucide-react";
 import { ModeBadge } from "@/components/ModeSwitcher";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -51,6 +51,7 @@ const MODE_NAV: Record<AppMode, { icon: React.ElementType; label: string; path: 
 const FOUNDER_JOURNEY = [1, 2, 3, 4, 5];
 
 const EXTRAS = [
+  { icon: Telescope, label: "Wettbewerber", path: "/dashboard/competitors" },
   { icon: Gift, label: "Empfehlungen", path: "/dashboard/referrals" },
   { icon: HeartPulse, label: "Recovery Mode", path: "/dashboard/recovery" },
   { icon: Crown, label: "Execution OS", path: "/dashboard/execution" },
