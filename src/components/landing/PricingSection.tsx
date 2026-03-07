@@ -1,4 +1,4 @@
-import { Check, Star, AlertTriangle, TrendingUp, ShieldCheck, Crown, Shield } from "lucide-react";
+import { Check, Star, AlertTriangle, TrendingUp, ShieldCheck, Crown, Shield, Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
