@@ -82,9 +82,38 @@ function CollapsibleSection({ title, children, defaultOpen = false }: { title: s
 }
 
 export default function TradingDashboard() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [mode, setMode] = useState<ScenarioMode>("realistic");
   const [input, setInput] = useState<TradingInput>(getTradingDefaults());
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [hasAccounts, setHasAccounts] = useState<boolean | null>(null); // null = loading
+  const [accountCount, setAccountCount] = useState(0);
+
+  // Check if user has connected trading accounts
+  useEffect(() => {
+    if (!user) return;
+    const check = async () => {
+      const { data, error } = await (supabase as any)
+        .from("trading_accounts")
+        .select("id, account_data, balances, risk_metrics")
+        .eq("user_id", user.id);
+      if (error || !data || data.length === 0) {
+        setHasAccounts(false);
+        setAccountCount(0);
+        return;
+      }
+      setHasAccounts(true);
+      setAccountCount(data.length);
+
+      // Populate input from real account data
+      const totalEquity = data.reduce((s: number, a: any) => s + (a.account_data?.totalEquity || 0), 0);
+      if (totalEquity > 0) {
+        setInput(prev => ({ ...prev, accountBalance: Math.round(totalEquity) }));
+      }
+    };
+    check();
+  }, [user]);
 
   const update = (key: keyof TradingInput, value: number | string) => setInput((p) => ({ ...p, [key]: value }));
 
