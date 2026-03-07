@@ -190,6 +190,7 @@ export function Navbar() {
             </div>
           </SheetContent>
         </Sheet>
+      </div>
     </header>
   );
 }
