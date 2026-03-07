@@ -154,7 +154,7 @@ export default function RiskAnalysis() {
                         <div className="space-y-2">
                           {[
                             { label: "Survival", value: `${sc.accountSurvival}%`, color: LEVEL_COLORS[survLevel] },
-                            { label: "Median Profit", value: `$${sc.medianProfit.toLocaleString()}`, color: sc.medianProfit >= 0 ? "text-success" : "text-destructive" },
+                            { label: "Median Profit", value: `${sc.medianProfit.toLocaleString("de-DE")}€`, color: sc.medianProfit >= 0 ? "text-success" : "text-destructive" },
                             { label: "Worst Drawdown", value: `${sc.worstCaseDrawdown}%`, color: "text-destructive" },
                           ].map((row) => (
                             <div key={row.label} className="flex justify-between text-sm">

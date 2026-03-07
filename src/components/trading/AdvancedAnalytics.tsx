@@ -130,7 +130,7 @@ export function AdvancedAnalytics({ winrate, riskPerTrade, rrr, accountSize, tra
             </ResponsiveContainer>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
-            <BigNum label="Final" value={`$${simulation.finalBalance.toLocaleString()}`} color={simulation.finalBalance > accountSize ? "text-green-500" : "text-destructive"} />
+            <BigNum label="Final" value={`${simulation.finalBalance.toLocaleString("de-DE")}€`} color={simulation.finalBalance > accountSize ? "text-green-500" : "text-destructive"} />
             <BigNum label="Return" value={`${simulation.avgReturn}%`} color={simulation.avgReturn > 0 ? "text-green-500" : "text-destructive"} />
             <BigNum label="Max DD" value={`${simulation.maxDrawdown}%`} color="text-yellow-500" />
             <BigNum label="Profit Prob." value={`${simulation.profitProbability}%`} />

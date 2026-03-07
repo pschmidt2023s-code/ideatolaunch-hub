@@ -75,7 +75,7 @@ export function PortfolioDashboard({ balances, totalEquity, positions, accountBa
                 <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={70} label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
                   {pieData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
                 </Pie>
-                <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} />
+                <Tooltip formatter={(v: number) => `${v.toLocaleString("de-DE")}€`} />
               </PieChart>
             </ResponsiveContainer>
           </div>

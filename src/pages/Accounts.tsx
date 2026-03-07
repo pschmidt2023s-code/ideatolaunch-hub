@@ -228,8 +228,8 @@ export default function Accounts() {
             {/* PORTFOLIO TAB */}
             <TabsContent value="portfolio" className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <MetricCard title="Total Capital" value={`$${totalEquity.toLocaleString("en", { maximumFractionDigits: 0 })}`} icon={Wallet} />
-                <MetricCard title="Total PnL" value={`${totalPnl >= 0 ? "+" : ""}$${totalPnl.toLocaleString("en", { maximumFractionDigits: 0 })}`} icon={totalPnl >= 0 ? TrendingUp : TrendingDown} className={totalPnl >= 0 ? "text-emerald-500" : "text-red-500"} />
+                <MetricCard title="Total Capital" value={`${totalEquity.toLocaleString("de-DE", { maximumFractionDigits: 0 })}€`} icon={Wallet} />
+                <MetricCard title="Total PnL" value={`${totalPnl >= 0 ? "+" : ""}${totalPnl.toLocaleString("de-DE", { maximumFractionDigits: 0 })}€`} icon={totalPnl >= 0 ? TrendingUp : TrendingDown} className={totalPnl >= 0 ? "text-emerald-500" : "text-red-500"} />
                 <MetricCard title="Open Positions" value={String(allPositions.length)} icon={Activity} />
                 <MetricCard title="Connected Exchanges" value={String(accounts.length)} icon={Link2} />
               </div>

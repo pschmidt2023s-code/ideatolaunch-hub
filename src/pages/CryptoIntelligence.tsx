@@ -503,7 +503,7 @@ export default function CryptoIntelligence() {
               </Card>
               <div className="grid gap-4 sm:grid-cols-3">
                 <MetricCard label="Annualized Rate" value={`${fundingResult.annualizedRate}%`} sub={`Sentiment: ${fundingResult.sentiment}`} level={Math.abs(fundingResult.annualizedRate) > 50 ? "high" : Math.abs(fundingResult.annualizedRate) > 20 ? "medium" : "low"} />
-                <MetricCard label="Cost / 24h" value={`$${fundingResult.costPer24h}`} level={fundingResult.costPer24h > 50 ? "high" : fundingResult.costPer24h > 10 ? "medium" : "low"} />
+                <MetricCard label="Cost / 24h" value={`${fundingResult.costPer24h}€`} level={fundingResult.costPer24h > 50 ? "high" : fundingResult.costPer24h > 10 ? "medium" : "low"} />
                 <Card className="p-5"><p className="section-label mb-2">Recommendation</p><p className="text-sm">{fundingResult.recommendation}</p></Card>
               </div>
             </Section>
