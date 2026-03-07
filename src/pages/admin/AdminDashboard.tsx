@@ -93,7 +93,8 @@ export default function AdminDashboard() {
       supabase.from("affiliates" as any).select("total_clicks, total_conversions, total_earnings"),
       supabase.from("community_waitlist" as any).select("*").order("created_at", { ascending: false }).limit(100),
       supabase.from("security_events" as any).select("*").order("created_at", { ascending: false }).limit(200),
-    ]).then(([planData, leadRes, eventRes, subRes, triggerData, dropOffData, refRes, affRes, waitRes, secRes]) => {
+      supabase.from("user_feedback" as any).select("*").order("created_at", { ascending: false }).limit(200),
+    ]).then(([planData, leadRes, eventRes, subRes, triggerData, dropOffData, refRes, affRes, waitRes, secRes, fbRes]) => {
       setPlans(planData);
       setLeads((leadRes.data ?? []) as unknown as LeadRow[]);
       setEvents((eventRes.data ?? []) as EventRow[]);
