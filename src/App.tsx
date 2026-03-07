@@ -258,6 +258,7 @@ const App = () => {
             </BrandProvider>
           </AuthProvider>
         </QueryClientProvider>
+        </ThemeProvider>
       </ErrorBoundary>
     </>
   );
