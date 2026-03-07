@@ -271,6 +271,29 @@ export function PricingSection() {
         ? "Eine falsche Produktionsentscheidung kann 8.000–20.000 € kosten."
         : "One wrong production decision can cost €8,000–€20,000.",
     },
+    {
+      name: "Trading Intelligence",
+      price: formatPrice(getPrice("trading")),
+      period: "/ " + (isDE ? "Monat" : "month"),
+      tagline: isDE ? "Für Crypto & Futures Trader." : "For crypto & futures traders.",
+      features: tradingFeatures,
+      cta: loadingTrading
+        ? isDE
+          ? "Weiterleitung zu Stripe..."
+          : "Redirecting to Stripe..."
+        : isDE
+          ? "Trading starten"
+          : "Start Trading",
+      highlighted: false,
+      badge: "NEW",
+      onClick: () => handleCheckout("execution", setLoadingTrading),
+      loading: loadingTrading,
+      tier: "trading" as const,
+      anchor: null as string | null,
+      roiText: isDE
+        ? "Ein vermiedener Liquidation-Hit = 2.000–50.000 € gespart."
+        : "One avoided liquidation hit = €2,000–€50,000 saved.",
+    },
   ];
 
   return (
