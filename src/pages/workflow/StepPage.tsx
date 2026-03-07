@@ -133,6 +133,7 @@ export default function StepPage() {
       // Continue even if save fails
     }
     await advanceStep(step + 1);
+    if (activeBrand?.id) fireStepConfetti(activeBrand.id, step);
     navigate(`/dashboard/step/${step + 1}`);
   };
 
