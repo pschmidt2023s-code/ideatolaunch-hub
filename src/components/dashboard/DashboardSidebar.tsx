@@ -35,6 +35,7 @@ import {
   Layers,
 } from "lucide-react";
 import { ModeBadge } from "@/components/ModeSwitcher";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
@@ -111,13 +112,16 @@ export function DashboardSidebar({ onNavigate }: DashboardSidebarProps) {
   const isFounder = mode === "founder";
 
   return (
-    <aside className="flex h-screen w-[240px] flex-col bg-background border-r border-border">
+    <aside className="flex h-screen w-[240px] flex-col bg-sidebar text-sidebar-foreground border-r border-sidebar-border">
       {/* Logo */}
-      <div className="flex h-14 items-center gap-2.5 px-5 border-b border-border shrink-0">
-        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-foreground">
-          <span className="text-[11px] font-bold text-background">B</span>
+      <div className="flex h-14 items-center justify-between px-5 border-b border-sidebar-border shrink-0">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-sidebar-foreground">
+            <span className="text-[11px] font-bold text-sidebar">B</span>
+          </div>
+          <span className="text-sm font-semibold tracking-tight">BrandOS</span>
         </div>
-        <span className="text-sm font-semibold tracking-tight">BrandOS</span>
+        <ThemeToggle />
       </div>
 
       {/* Mode Badge */}
