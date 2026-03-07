@@ -257,7 +257,7 @@ const App = () => {
                    <CookieConsentBanner />
                    <BetaBadge />
                    <BetaFeedbackButton />
-                   <CopilotChatWidget />
+                   <FeedbackWidget />
                 </HashRouter>
               </TooltipProvider>
               </ModeProvider>
