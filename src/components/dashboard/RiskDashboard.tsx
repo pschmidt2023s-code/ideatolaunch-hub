@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Shield, AlertTriangle, ArrowRight, Scale, TrendingDown, Package, Globe, DollarSign } from "lucide-react";
+import { Shield, AlertTriangle, ArrowRight, Scale, TrendingDown, Package, Globe, DollarSign, Info } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -12,6 +12,9 @@ import { useQuery } from "@tanstack/react-query";
 import { buildBrandProfile } from "@/lib/brand-profile";
 import { evaluateRisks, type RiskCategory, type WeightedRisk, type RiskEngineResult } from "@/lib/risk-engine-v2";
 import { LockedOverlay } from "@/components/LockedOverlay";
+import { EmptyState, ErrorState } from "@/components/dashboard/EmptyState";
+import { SkeletonCard } from "@/components/dashboard/SkeletonDashboard";
+import { ScoreExplainer } from "@/components/dashboard/ScoreExplainer";
 import { cn } from "@/lib/utils";
 
 const categoryIcons: Record<RiskCategory, React.ComponentType<{ className?: string }>> = {
@@ -32,20 +35,34 @@ const categoryLabels: Record<RiskCategory, string> = {
 
 const severityColors: Record<string, string> = {
   critical: "bg-destructive/10 text-destructive border-destructive/20",
-  high: "bg-orange-500/10 text-orange-600 border-orange-500/20",
-  medium: "bg-amber-500/10 text-amber-600 border-amber-500/20",
-  low: "bg-green-500/10 text-green-600 border-green-500/20",
+  high: "bg-warning/10 text-warning border-warning/20",
+  medium: "bg-accent/10 text-accent border-accent/20",
+  low: "bg-success/10 text-success border-success/20",
 };
 
 const riskLevelColors: Record<string, string> = {
   critical: "text-destructive",
-  high: "text-orange-500",
-  medium: "text-amber-500",
-  low: "text-green-500",
+  high: "text-warning",
+  medium: "text-accent",
+  low: "text-success",
+};
+
+const riskLevelBadgeColors: Record<string, string> = {
+  critical: "bg-destructive/10 text-destructive",
+  high: "bg-warning/10 text-warning",
+  medium: "bg-accent/10 text-accent",
+  low: "bg-success/10 text-success",
 };
 
 function fmt(n: number): string {
   return n.toLocaleString("de-DE") + " €";
+}
+
+function getRiskExplanation(result: RiskEngineResult): string {
+  if (result.riskLevel === "critical") return "Dein Risiko-Score ist kritisch. Es gibt mehrere hochgewichtete Risiken, die dein Projekt gefährden. Fokussiere dich auf die Top-3-Risiken.";
+  if (result.riskLevel === "high") return "Mehrere signifikante Risiken identifiziert. Gezieltes Handeln kann deinen Score deutlich verbessern.";
+  if (result.riskLevel === "medium") return "Moderate Risikolage. Einige Bereiche verdienen Aufmerksamkeit, aber die Grundlage ist solide.";
+  return "Dein Risikoprofil ist gut. Behalte die Kennzahlen im Auge und optimiere weiter.";
 }
 
 export function RiskDashboard() {
@@ -56,7 +73,7 @@ export function RiskDashboard() {
   const brandId = activeBrand?.id;
   const isPro = plan === "pro" || plan === "execution" || plan === "trading";
 
-  const { data: financial } = useQuery({
+  const { data: financial, isLoading: l1 } = useQuery({
     queryKey: ["financial_model", brandId],
     queryFn: async () => {
       const { data } = await supabase.from("financial_models").select("*").eq("brand_id", brandId!).maybeSingle();
@@ -65,7 +82,7 @@ export function RiskDashboard() {
     enabled: !!brandId,
   });
 
-  const { data: profile } = useQuery({
+  const { data: profile, isLoading: l2 } = useQuery({
     queryKey: ["brand_profile", brandId],
     queryFn: async () => {
       const { data } = await supabase.from("brand_profiles").select("*").eq("brand_id", brandId!).maybeSingle();
@@ -74,7 +91,7 @@ export function RiskDashboard() {
     enabled: !!brandId,
   });
 
-  const { data: production } = useQuery({
+  const { data: production, isLoading: l3 } = useQuery({
     queryKey: ["production_plan", brandId],
     queryFn: async () => {
       const { data } = await supabase.from("production_plans").select("*").eq("brand_id", brandId!).maybeSingle();
@@ -110,6 +127,8 @@ export function RiskDashboard() {
     enabled: !!activeBrand?.user_id,
   });
 
+  const isLoading = l1 || l2 || l3;
+
   const result: RiskEngineResult | null = useMemo(() => {
     if (!brandId) return null;
     const bp = buildBrandProfile(profile ?? null, financial ?? null, launch ?? null, profileData ?? null);
@@ -135,19 +154,54 @@ export function RiskDashboard() {
     });
   }, [brandId, financial, profile, production, compliance, launch, profileData, plan]);
 
-  const content = result ? (
-    <div className="space-y-6">
-      {/* Overview KPIs */}
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <div className="rounded-xl border bg-card p-4 text-center">
-          <p className="text-xs text-muted-foreground mb-1">Risk Score</p>
-          <p className={cn("text-3xl font-bold tabular-nums font-display", riskLevelColors[result.riskLevel])}>
-            {result.overallRiskScore}
-          </p>
-          <Badge variant="outline" className={cn("mt-1 text-[10px]", severityColors[result.riskLevel])}>
-            {result.riskLevel === "critical" ? "Kritisch" : result.riskLevel === "high" ? "Hoch" : result.riskLevel === "medium" ? "Mittel" : "Niedrig"}
-          </Badge>
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)}
         </div>
+        <SkeletonCard className="h-40" />
+      </div>
+    );
+  }
+
+  // Empty state
+  if (!result) {
+    return (
+      <EmptyState
+        icon={<Shield className="h-6 w-6 text-muted-foreground" />}
+        title="Risikoanalyse noch nicht verfügbar"
+        description="Erstelle zuerst eine Marke und fülle dein Finanzmodell aus, um die Risikoanalyse freizuschalten."
+        action={
+          <Button onClick={() => navigate("/dashboard")} variant="outline" size="sm">
+            Zum Dashboard
+          </Button>
+        }
+      />
+    );
+  }
+
+  // Top risk for "next step" hint
+  const topRisk = result.risks[0];
+
+  const content = (
+    <div className="space-y-6">
+      {/* Overview KPIs with explainer */}
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <ScoreExplainer
+          score={result.overallRiskScore}
+          label="Risk Score"
+          level={result.riskLevel === "critical" ? "Kritisch" : result.riskLevel === "high" ? "Hoch" : result.riskLevel === "medium" ? "Mittel" : "Niedrig"}
+          levelColor={riskLevelBadgeColors[result.riskLevel]}
+          explanation={getRiskExplanation(result)}
+          factors={result.risks.slice(0, 3).map(r => ({
+            label: r.title,
+            impact: r.severity === "critical" || r.severity === "high" ? "negative" as const : "neutral" as const,
+            detail: `€${r.euroImpact.toLocaleString("de-DE")} Exposure`,
+          }))}
+          nextStep={topRisk ? topRisk.fix : undefined}
+        />
         <div className="rounded-xl border bg-card p-4 text-center">
           <p className="text-xs text-muted-foreground mb-1">Gesamt-Exposure</p>
           <p className="text-2xl font-bold tabular-nums font-display">{fmt(result.totalExposure)}</p>
@@ -155,7 +209,7 @@ export function RiskDashboard() {
         </div>
         <div className="rounded-xl border bg-card p-4 text-center">
           <p className="text-xs text-muted-foreground mb-1">Gewichtet</p>
-          <p className="text-2xl font-bold tabular-nums font-display text-amber-500">{fmt(result.weightedExposure)}</p>
+          <p className="text-2xl font-bold tabular-nums font-display text-warning">{fmt(result.weightedExposure)}</p>
           <p className="text-[10px] text-muted-foreground mt-1">Wahrscheinlichkeits-bereinigt</p>
         </div>
         <div className="rounded-xl border bg-card p-4 text-center">
@@ -168,7 +222,7 @@ export function RiskDashboard() {
       {/* Category Breakdown */}
       <div className="rounded-2xl border bg-card p-5">
         <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
-          <Shield className="h-4 w-4 text-accent" />
+          <Shield className="h-4 w-4 text-primary" />
           Risiko nach Kategorie
         </h3>
         <div className="space-y-3">
@@ -196,14 +250,15 @@ export function RiskDashboard() {
 
       {/* Risk List */}
       <div className="space-y-3">
+        <h3 className="text-sm font-semibold flex items-center gap-2">
+          <AlertTriangle className="h-4 w-4 text-warning" />
+          Identifizierte Risiken
+          <span className="text-xs font-normal text-muted-foreground">· sortiert nach Impact</span>
+        </h3>
         {result.risks.map(risk => (
           <RiskRow key={risk.id} risk={risk} onNavigate={(step) => navigate(`/dashboard/step/${step}`)} />
         ))}
       </div>
-    </div>
-  ) : (
-    <div className="text-center py-12 text-muted-foreground text-sm">
-      Erstelle zuerst eine Marke, um die Risikoanalyse zu sehen.
     </div>
   );
 
@@ -244,7 +299,7 @@ function RiskRow({ risk, onNavigate }: { risk: WeightedRisk; onNavigate: (step: 
               <span className="text-muted-foreground">·</span>
               <span className="text-muted-foreground">{risk.timeToFix}</span>
             </div>
-            <p className="text-xs text-accent mt-2">💡 {risk.fix}</p>
+            <p className="text-xs text-primary mt-2 font-medium">💡 {risk.fix}</p>
           </div>
         </div>
         {risk.stepLink && (

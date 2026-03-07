@@ -12,13 +12,14 @@ import { StepComplianceSales } from "@/components/workflow/StepComplianceSales";
 import { StepLaunchRoadmap } from "@/components/workflow/StepLaunchRoadmap";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, ArrowRight, CheckCircle2, Clock, AlertTriangle } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2, Clock, AlertTriangle, Target, DollarSign, Package, Shield, Rocket } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { trackEvent, trackCriticalEvent, startStepTimer, clearStepTimer } from "@/lib/analytics";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useBrand } from "@/hooks/useBrand";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 const TOTAL_PHASES = 5;
 
@@ -31,16 +32,46 @@ const stepComponents = [
 ];
 
 const phaseMetadata = [
-  { timeEstimate: "30–45 min", riskLevel: "medium" as const },
-  { timeEstimate: "15–20 min", riskLevel: "high" as const },
-  { timeEstimate: "20–30 min", riskLevel: "high" as const },
-  { timeEstimate: "20–30 min", riskLevel: "medium" as const },
-  { timeEstimate: "15–20 min", riskLevel: "low" as const },
+  {
+    timeEstimate: "30–45 min",
+    riskLevel: "medium" as const,
+    icon: Target,
+    deliverables: ["Markenprofil", "Zielgruppe", "Positionierung"],
+    description: "Validiere deine Idee und definiere dein Markenprofil",
+  },
+  {
+    timeEstimate: "15–20 min",
+    riskLevel: "high" as const,
+    icon: DollarSign,
+    deliverables: ["Finanzmodell", "Break-Even", "Preiskalkulation"],
+    description: "Berechne Kosten, Marge und Kapitalbedarf",
+  },
+  {
+    timeEstimate: "20–30 min",
+    riskLevel: "high" as const,
+    icon: Package,
+    deliverables: ["Produktionsplan", "Lieferanten-Profil", "MOQ-Analyse"],
+    description: "Plane Produktion, Sourcing und Qualitätssicherung",
+  },
+  {
+    timeEstimate: "20–30 min",
+    riskLevel: "medium" as const,
+    icon: Shield,
+    deliverables: ["Compliance-Score", "Rechtliche Checkliste", "Vertriebsplan"],
+    description: "Sichere regulatorische Konformität und Vertriebskanäle",
+  },
+  {
+    timeEstimate: "15–20 min",
+    riskLevel: "low" as const,
+    icon: Rocket,
+    deliverables: ["Launch-Roadmap", "Fulfillment-Plan", "Readiness Score"],
+    description: "Erstelle deinen Launch-Plan und starte durch",
+  },
 ];
 
 const riskColors = {
-  low: "text-green-600 bg-green-500/10",
-  medium: "text-amber-600 bg-amber-500/10",
+  low: "text-success bg-success/10",
+  medium: "text-warning bg-warning/10",
   high: "text-destructive bg-destructive/10",
 };
 
@@ -117,38 +148,83 @@ export default function StepPage() {
 
   const stepTitle = t(`steps.${stepTitleKeys[step - 1]}`);
   const meta = phaseMetadata[step - 1];
+  const PhaseIcon = meta.icon;
+  const currentStep = activeBrand?.current_step ?? 1;
 
   return (
     <DashboardLayout>
       <div className="animate-fade-in">
-        {/* Phase progress bar */}
-        <div className="mb-4">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span className="font-mono">{t("steps.phase", { n: step, total: TOTAL_PHASES })}</span>
-              <span>·</span>
-              <span>{stepTitle}</span>
-            </div>
-            <span className="text-xs font-medium text-muted-foreground">{progress}%</span>
+        {/* Phase stepper dots */}
+        <div className="mb-6">
+          <div className="flex items-center gap-1 mb-4">
+            {Array.from({ length: TOTAL_PHASES }, (_, i) => {
+              const s = i + 1;
+              const done = s < currentStep;
+              const active = s === step;
+              return (
+                <div key={s} className="flex items-center flex-1">
+                  <button
+                    onClick={() => navigate(`/dashboard/step/${s}`)}
+                    className={cn(
+                      "flex items-center justify-center h-8 w-8 rounded-full text-xs font-bold transition-all",
+                      done && "bg-success text-success-foreground",
+                      active && "bg-primary text-primary-foreground ring-2 ring-primary/30 ring-offset-2 ring-offset-background",
+                      !done && !active && "bg-muted text-muted-foreground hover:bg-muted/80"
+                    )}
+                  >
+                    {done ? <CheckCircle2 className="h-4 w-4" /> : s}
+                  </button>
+                  {i < TOTAL_PHASES - 1 && (
+                    <div className={cn("flex-1 h-0.5 mx-1.5", done ? "bg-success" : "bg-border")} />
+                  )}
+                </div>
+              );
+            })}
           </div>
-          <Progress value={progress} className="h-1.5 rounded-full" />
+
+          {/* Progress percentage */}
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-xs font-medium text-muted-foreground">
+              Phase {step} von {TOTAL_PHASES}
+            </span>
+            <span className="text-xs font-bold tabular-nums text-muted-foreground">{progress}%</span>
+          </div>
+          <Progress value={progress} className="h-1 rounded-full" />
         </div>
 
-        {/* Phase header with metadata */}
-        <div className="mb-6 flex items-center gap-3 flex-wrap">
-          <h1 className="text-2xl font-bold">{stepTitle}</h1>
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-medium text-muted-foreground">
-              <Clock className="h-3 w-3" />
-              {meta.timeEstimate}
-            </span>
-            <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-medium ${riskColors[meta.riskLevel]}`}>
-              {meta.riskLevel === "high" && <AlertTriangle className="h-3 w-3" />}
-              {isDE
-                ? meta.riskLevel === "high" ? "Hohes Risiko" : meta.riskLevel === "medium" ? "Mittleres Risiko" : "Niedriges Risiko"
-                : meta.riskLevel === "high" ? "High Risk" : meta.riskLevel === "medium" ? "Medium Risk" : "Low Risk"
-              }
-            </span>
+        {/* Phase header card */}
+        <div className="mb-6 rounded-2xl border bg-card p-5 shadow-card">
+          <div className="flex items-start gap-4">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+              <PhaseIcon className="h-6 w-6 text-primary" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-3 flex-wrap mb-1">
+                <h1 className="text-xl font-bold">{stepTitle}</h1>
+                <span className="inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-medium text-muted-foreground">
+                  <Clock className="h-3 w-3" />
+                  {meta.timeEstimate}
+                </span>
+                <span className={cn("inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-medium", riskColors[meta.riskLevel])}>
+                  {meta.riskLevel === "high" && <AlertTriangle className="h-3 w-3" />}
+                  {isDE
+                    ? meta.riskLevel === "high" ? "Hohes Risiko" : meta.riskLevel === "medium" ? "Mittleres Risiko" : "Niedriges Risiko"
+                    : meta.riskLevel === "high" ? "High Risk" : meta.riskLevel === "medium" ? "Medium Risk" : "Low Risk"
+                  }
+                </span>
+              </div>
+              <p className="text-sm text-muted-foreground mb-3">{meta.description}</p>
+
+              {/* Deliverables */}
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mr-1">Outputs:</span>
+                {meta.deliverables.map((d) => (
+                  <span key={d} className="inline-flex items-center rounded-md bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+                    {d}
+                  </span>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -166,6 +242,7 @@ export default function StepPage() {
 
         <StepComponent ref={stepRef} />
 
+        {/* Navigation footer */}
         <div className="mt-10 flex items-center justify-between border-t pt-6">
           <Button
             variant="outline"
@@ -175,23 +252,31 @@ export default function StepPage() {
             <ArrowLeft className="h-4 w-4" />
             {step > 1 ? t("steps.back") : t("steps.dashboard")}
           </Button>
-          {step < TOTAL_PHASES ? (
-            <Button
-              onClick={handleNext}
-              className="gap-2 bg-accent text-accent-foreground hover:bg-accent/90"
-            >
-              {t("steps.next")}
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          ) : (
-            <Button
-              onClick={handleFinish}
-              className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
-            >
-              <CheckCircle2 className="h-4 w-4" />
-              {t("steps.finish", "Marke fertigstellen")}
-            </Button>
-          )}
+
+          <div className="flex items-center gap-3">
+            {step < TOTAL_PHASES && (
+              <span className="text-xs text-muted-foreground hidden sm:block">
+                Nächste Phase: {t(`steps.${stepTitleKeys[step]}`)}
+              </span>
+            )}
+            {step < TOTAL_PHASES ? (
+              <Button
+                onClick={handleNext}
+                className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
+              >
+                {t("steps.next")}
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            ) : (
+              <Button
+                onClick={handleFinish}
+                className="gap-2 bg-success text-success-foreground hover:bg-success/90"
+              >
+                <CheckCircle2 className="h-4 w-4" />
+                {t("steps.finish", "Marke fertigstellen")}
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </DashboardLayout>
