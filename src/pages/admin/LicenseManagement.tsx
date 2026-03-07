@@ -63,7 +63,6 @@ export default function LicenseManagement() {
   const [inviteExpiry, setInviteExpiry] = useState("");
   const [inviteSaving, setInviteSaving] = useState(false);
   const [createdInviteUrl, setCreatedInviteUrl] = useState<string | null>(null);
-  const [createdShortCode, setCreatedShortCode] = useState<string | null>(null);
 
   // QR Code dialog
   const [qrDialogOpen, setQrDialogOpen] = useState(false);
