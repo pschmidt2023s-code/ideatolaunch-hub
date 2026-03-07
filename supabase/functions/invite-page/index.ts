@@ -376,9 +376,12 @@ Deno.serve(async (req) => {
   return new Response(renderPage(code), {
     status: 200,
     headers: {
-      "Content-Type": "text/html; charset=utf-8",
-      "Content-Disposition": "inline",
-      "Cache-Control": "no-cache",
+      ...corsHeaders,
+      "content-type": "text/html; charset=utf-8",
+      "content-disposition": "inline",
+      "cache-control": "no-cache, no-store, must-revalidate",
+      pragma: "no-cache",
+      expires: "0",
     },
   });
 });
