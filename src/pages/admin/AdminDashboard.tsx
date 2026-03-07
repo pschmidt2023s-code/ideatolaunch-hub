@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { checkIsAdmin, getPlanDistribution, getUpgradeTriggerSources, getStepDropOffRates, type PlanDistribution, type UpgradeTrigger, type StepDropOff } from "@/lib/founder-analytics";
 import { supabase } from "@/integrations/supabase/client";
-import { Users, TrendingUp, Mail, CreditCard, BarChart3, MousePointerClick, ArrowLeft, Gift, Handshake, MessageCircle, ShieldAlert, Activity } from "lucide-react";
+import { Users, TrendingUp, Mail, CreditCard, BarChart3, MousePointerClick, ArrowLeft, Gift, Handshake, MessageCircle, ShieldAlert, Activity, MessageSquarePlus, CheckCircle2 } from "lucide-react";
 
 // ── Types ──
 interface LeadRow { id: string; email: string; source: string; trigger_type: string | null; page: string | null; converted: boolean; created_at: string; }
@@ -13,6 +13,7 @@ interface ReferralRow { referral_count: number; reward_builder_months: number; }
 interface AffiliateRow { total_clicks: number; total_conversions: number; total_earnings: number; }
 interface WaitlistRow { id: string; email: string; niche: string | null; created_at: string; }
 interface SecurityEventRow { id: string; event_type: string; route: string | null; metadata: any; created_at: string; }
+interface FeedbackRow { id: string; user_id: string; category: string; message: string; page: string | null; status: string; created_at: string; }
 
 // ── Metric Card ──
 function MetricCard({ icon: Icon, label, value, sub, accent }: { icon: any; label: string; value: string | number; sub?: string; accent?: boolean }) {
@@ -67,6 +68,7 @@ export default function AdminDashboard() {
   const [affiliatesData, setAffiliatesData] = useState<AffiliateRow[]>([]);
   const [waitlist, setWaitlist] = useState<WaitlistRow[]>([]);
   const [securityEvents, setSecurityEvents] = useState<SecurityEventRow[]>([]);
+  const [feedback, setFeedback] = useState<FeedbackRow[]>([]);
 
   useEffect(() => {
     if (authLoading) return;
@@ -91,7 +93,8 @@ export default function AdminDashboard() {
       supabase.from("affiliates" as any).select("total_clicks, total_conversions, total_earnings"),
       supabase.from("community_waitlist" as any).select("*").order("created_at", { ascending: false }).limit(100),
       supabase.from("security_events" as any).select("*").order("created_at", { ascending: false }).limit(200),
-    ]).then(([planData, leadRes, eventRes, subRes, triggerData, dropOffData, refRes, affRes, waitRes, secRes]) => {
+      supabase.from("user_feedback" as any).select("*").order("created_at", { ascending: false }).limit(200),
+    ]).then(([planData, leadRes, eventRes, subRes, triggerData, dropOffData, refRes, affRes, waitRes, secRes, fbRes]) => {
       setPlans(planData);
       setLeads((leadRes.data ?? []) as unknown as LeadRow[]);
       setEvents((eventRes.data ?? []) as EventRow[]);
@@ -102,6 +105,7 @@ export default function AdminDashboard() {
       setAffiliatesData((affRes.data ?? []) as unknown as AffiliateRow[]);
       setWaitlist((waitRes.data ?? []) as unknown as WaitlistRow[]);
       setSecurityEvents((secRes.data ?? []) as unknown as SecurityEventRow[]);
+      setFeedback((fbRes.data ?? []) as unknown as FeedbackRow[]);
       setLoading(false);
     });
   }, [authorized]);
@@ -473,6 +477,75 @@ export default function AdminDashboard() {
                       <span className="text-xs text-muted-foreground shrink-0">
                         {new Date(e.created_at).toLocaleString("de-DE", { hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit" })}
                       </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </SectionCard>
+
+          {/* ── User Feedback ── */}
+          <SectionCard title="User Feedback">
+            {feedback.length === 0 ? (
+              <p className="text-xs text-muted-foreground">Noch kein Feedback eingegangen</p>
+            ) : (
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-3 mb-3">
+                  <div className="rounded-lg bg-accent/5 border border-accent/20 p-3 text-center">
+                    <p className="text-lg font-bold text-accent">{feedback.filter(f => f.status === "open").length}</p>
+                    <p className="text-xs text-muted-foreground">Offen</p>
+                  </div>
+                  <div className="rounded-lg bg-muted p-3 text-center">
+                    <p className="text-lg font-bold">{feedback.filter(f => f.status === "resolved").length}</p>
+                    <p className="text-xs text-muted-foreground">Erledigt</p>
+                  </div>
+                </div>
+                <div className="flex gap-2 mb-2">
+                  {["bug", "feature", "ux", "general"].map(cat => {
+                    const count = feedback.filter(f => f.category === cat).length;
+                    if (count === 0) return null;
+                    return (
+                      <span key={cat} className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
+                        {cat === "bug" ? "🐛" : cat === "feature" ? "💡" : cat === "ux" ? "🎨" : "💬"} {count}
+                      </span>
+                    );
+                  })}
+                </div>
+                <div className="space-y-2 max-h-64 overflow-y-auto">
+                  {feedback.slice(0, 15).map(f => (
+                    <div key={f.id} className="border-b border-border/50 pb-2">
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-center gap-1.5">
+                          <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
+                            f.category === "bug" ? "bg-destructive/10 text-destructive" :
+                            f.category === "feature" ? "bg-accent/10 text-accent" :
+                            "bg-muted text-muted-foreground"
+                          }`}>
+                            {f.category}
+                          </span>
+                          <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
+                            f.status === "open" ? "bg-yellow-500/10 text-yellow-600" : "bg-green-500/10 text-green-600"
+                          }`}>
+                            {f.status}
+                          </span>
+                        </div>
+                        <span className="text-[10px] text-muted-foreground">
+                          {new Date(f.created_at).toLocaleDateString("de-DE")}
+                        </span>
+                      </div>
+                      <p className="text-sm text-foreground line-clamp-2">{f.message}</p>
+                      {f.page && <p className="text-[10px] text-muted-foreground mt-0.5">{f.page}</p>}
+                      {f.status === "open" && (
+                        <button
+                          onClick={async () => {
+                            await supabase.from("user_feedback" as any).update({ status: "resolved" } as any).eq("id", f.id);
+                            setFeedback(prev => prev.map(fb => fb.id === f.id ? { ...fb, status: "resolved" } : fb));
+                          }}
+                          className="mt-1 flex items-center gap-1 text-[10px] text-accent hover:text-accent/80 transition-colors"
+                        >
+                          <CheckCircle2 className="h-3 w-3" /> Als erledigt markieren
+                        </button>
+                      )}
                     </div>
                   ))}
                 </div>

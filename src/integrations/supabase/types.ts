@@ -1485,6 +1485,39 @@ export type Database = {
           },
         ]
       }
+      user_feedback: {
+        Row: {
+          admin_notes: string | null
+          category: string
+          created_at: string
+          id: string
+          message: string
+          page: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          category?: string
+          created_at?: string
+          id?: string
+          message: string
+          page?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          category?: string
+          created_at?: string
+          id?: string
+          message?: string
+          page?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       weekly_reviews: {
         Row: {
           brand_id: string
