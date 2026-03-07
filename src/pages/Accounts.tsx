@@ -250,7 +250,7 @@ export default function Accounts() {
                           <div key={asset} className="space-y-1">
                             <div className="flex justify-between text-sm">
                               <span className="font-medium">{asset}</span>
-                              <span className="text-muted-foreground">{pct.toFixed(1)}% — ${val.toLocaleString("en", { maximumFractionDigits: 0 })}</span>
+                              <span className="text-muted-foreground">{pct.toFixed(1)}% — {val.toLocaleString("de-DE", { maximumFractionDigits: 0 })}€</span>
                             </div>
                             <div className="h-2 rounded-full bg-muted overflow-hidden">
                               <div className="h-full rounded-full bg-foreground/80 transition-all" style={{ width: `${pct}%` }} />
