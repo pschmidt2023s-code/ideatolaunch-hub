@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Globe, Menu, X, ChevronDown } from "lucide-react";
+import { Globe, Menu, ChevronDown } from "lucide-react";
 
 const navLinks = [
   { labelKey: "product", href: "/product" },
