@@ -105,6 +105,7 @@ export default function AdminDashboard() {
       setAffiliatesData((affRes.data ?? []) as unknown as AffiliateRow[]);
       setWaitlist((waitRes.data ?? []) as unknown as WaitlistRow[]);
       setSecurityEvents((secRes.data ?? []) as unknown as SecurityEventRow[]);
+      setFeedback((fbRes.data ?? []) as unknown as FeedbackRow[]);
       setLoading(false);
     });
   }, [authorized]);
