@@ -64,7 +64,7 @@ function generateDecisions(
 export function DecisionEngineCard() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { brand } = useBrand();
+  const { activeBrand: brand } = useBrand();
 
   const { data } = useQuery({
     queryKey: ["decision-engine", brand?.id],

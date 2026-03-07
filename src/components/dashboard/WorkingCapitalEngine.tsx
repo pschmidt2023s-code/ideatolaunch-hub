@@ -15,7 +15,7 @@ interface WorkingCapitalData {
 
 export function WorkingCapitalEngine() {
   const { user } = useAuth();
-  const { brand } = useBrand();
+  const { activeBrand: brand } = useBrand();
 
   const { data: financialModel } = useQuery({
     queryKey: ["financial-model", brand?.id],
