@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Globe, Menu, ChevronDown } from "lucide-react";
-
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 const navLinks = [
   { labelKey: "product", href: "/product" },
   { labelKey: "pricing", href: "/pricing" },
