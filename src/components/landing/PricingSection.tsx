@@ -394,10 +394,11 @@ export function PricingSection() {
           </Link>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {plans.map((plan) => {
             const isExecutionTier = plan.tier === "execution";
             const isProTier = plan.tier === "pro";
+            const isTradingTier = plan.tier === "trading";
 
             return (
               <div
@@ -407,6 +408,8 @@ export function PricingSection() {
                     ? "border-accent bg-card shadow-lg ring-1 ring-accent/20 scale-[1.02] border-glow"
                     : isExecutionTier
                       ? "border-amber-500/40 bg-gradient-to-b from-card to-amber-500/5 shadow-lg ring-1 ring-amber-500/20"
+                    : isTradingTier
+                      ? "border-blue-500/40 bg-gradient-to-b from-card to-blue-500/5 shadow-lg ring-1 ring-blue-500/20"
                       : "bg-card shadow-card"
                 }`}
               >
