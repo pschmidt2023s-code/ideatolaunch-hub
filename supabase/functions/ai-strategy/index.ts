@@ -80,7 +80,7 @@ Jede Empfehlung MUSS einen €-Betrag als savings_potential nennen, basierend au
       body: JSON.stringify({
         model: "google/gemini-2.5-pro",
         messages: [
-          { role: "system", content: "Du bist ein Experte für Private-Label-Geschäftsberatung. Antworte immer auf Deutsch. Gib nur das JSON-Array zurück, keine andere Formatierung." },
+          { role: "system", content: "Du bist ein Elite-Berater für Private-Label-Geschäfte mit Fokus auf den DACH-Markt. Deine Empfehlungen basieren IMMER auf konkreten Berechnungen aus den Nutzerdaten. Antworte auf Deutsch." },
           { role: "user", content: prompt },
         ],
         tools: [{
