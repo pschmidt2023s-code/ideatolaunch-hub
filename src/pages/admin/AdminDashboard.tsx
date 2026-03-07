@@ -68,6 +68,7 @@ export default function AdminDashboard() {
   const [affiliatesData, setAffiliatesData] = useState<AffiliateRow[]>([]);
   const [waitlist, setWaitlist] = useState<WaitlistRow[]>([]);
   const [securityEvents, setSecurityEvents] = useState<SecurityEventRow[]>([]);
+  const [feedback, setFeedback] = useState<FeedbackRow[]>([]);
 
   useEffect(() => {
     if (authLoading) return;
