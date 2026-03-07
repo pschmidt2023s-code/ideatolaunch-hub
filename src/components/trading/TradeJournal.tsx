@@ -37,7 +37,7 @@ export function TradeJournal() {
       timestamp: new Date().toISOString(),
     };
     setEntries(prev => [entry, ...prev]);
-    setForm({ symbol: "BTCUSDT", side: "long", entryPrice: 0, exitPrice: 0, notes: "", emotion: "neutral" });
+    setForm({ symbol: "", side: "long", entryPrice: 0, exitPrice: 0, notes: "", emotion: "neutral" });
     setShowForm(false);
   };
 
