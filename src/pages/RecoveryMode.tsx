@@ -6,6 +6,7 @@ import { useBrandHealth } from "@/hooks/useBrandHealth";
 import { getCapabilities } from "@/lib/feature-flags";
 import { LockedOverlay } from "@/components/LockedOverlay";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AIPageInsights } from "@/components/AIPageInsights";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
@@ -391,6 +392,7 @@ export default function RecoveryMode() {
             </TabsContent>
           </Tabs>
 
+          <AIPageInsights pageContext="Recovery Mode – Cashflow-Rettung, Kostenoptimierung, Notfall-Szenarien" title="AI Recovery Insights" />
           <LegalDisclaimer type="simulation" />
         </div>
       </div>

@@ -15,6 +15,7 @@ import { AdvancedAnalytics } from "@/components/trading/AdvancedAnalytics";
 import { RiskSuite } from "@/components/trading/RiskSuite";
 import { TradeJournal } from "@/components/trading/TradeJournal";
 import { cn } from "@/lib/utils";
+import { AIPageInsights } from "@/components/AIPageInsights";
 import {
   calculateStrategySurvival,
   detectEdge,
@@ -589,6 +590,7 @@ export default function CryptoIntelligence() {
           </TabsContent>
         </Tabs>
 
+        <AIPageInsights pageContext="Crypto Intelligence – Portfolio, Trade Journal, Analytics, Risk Suite, Survival, Edge, Regime, Timeline, Emotion, Deep Tools" title="AI Crypto Insights" />
         <FinancialDisclaimer />
       </div>
     </DashboardLayout>

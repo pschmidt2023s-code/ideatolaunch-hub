@@ -5,6 +5,7 @@ import { SEO } from "@/components/SEO";
 import { Slider } from "@/components/ui/slider";
 import { AlertTriangle, Shield, TrendingDown, Lightbulb, Zap, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AIPageInsights } from "@/components/AIPageInsights";
 import { AnimatedCard } from "@/components/dashboard/AnimatedCard";
 
 interface SimInputs {
@@ -177,6 +178,7 @@ export default function FailureSimulator() {
           </div>
         </div>
       </div>
+      <AIPageInsights pageContext="Failure Simulator – Simulation von Werbekosten, Retourenquote, Lieferverzögerungen und Conversion-Rate" title="AI Risiko-Insights" />
     </DashboardLayout>
   );
 }

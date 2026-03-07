@@ -5,6 +5,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { useBrand } from "@/hooks/useBrand";
 import { LockedOverlay } from "@/components/LockedOverlay";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AIPageInsights } from "@/components/AIPageInsights";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
@@ -858,6 +859,7 @@ export default function ExecutionOSDashboard() {
             {isDE ? "Execution OS ist für ambitionierte Gründer gebaut." : "Execution OS is built for serious founders."}<br />
             {isDE ? "Execution OS entwickelt sich kontinuierlich weiter, um dein Kapital zu schützen." : "Execution OS continuously evolves to protect your capital."}
           </p>
+          <AIPageInsights pageContext="Execution OS – Kapitalschutz, Ausführungsdisziplin, Operational Excellence" title="AI Execution Insights" />
         </div>
       </div>
     </DashboardLayout>

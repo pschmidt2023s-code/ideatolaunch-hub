@@ -11,6 +11,7 @@ import { ExecutionCard } from "@/components/dashboard/ExecutionCard";
 import { CEOSection } from "@/components/dashboard/CEOSection";
 import { Activity, Brain, Crosshair, Clock, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AIPageInsights } from "@/components/AIPageInsights";
 import type { ScenarioMode } from "@/lib/command-center-types";
 import {
   getStrategyDefaults,
@@ -112,6 +113,8 @@ export default function StrategyDashboard() {
             ))}
           </div>
         </div>
+
+        <AIPageInsights pageContext="Strategy Dashboard – Decision Quality, Time Pressure, Opportunity Cost, Reversibility" title="AI Strategy Insights" />
       </div>
     </DashboardLayout>
   );
