@@ -135,58 +135,64 @@ export function Navbar() {
             <Menu className="h-5 w-5" />
           </button>
 
-          <SheetContent side="right" className="w-[88vw] max-w-sm border-l bg-background p-0 md:hidden">
-            <div className="h-full overflow-y-auto px-4 pb-safe pt-12">
+          <SheetContent side="right" className="w-[85vw] max-w-xs border-l bg-background p-0 md:hidden flex flex-col">
+            <div className="flex items-center gap-2 px-5 pt-5 pb-3 border-b border-border">
+              <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary">
+                <span className="text-xs font-bold text-primary-foreground">B</span>
+              </div>
+              <span className="text-base font-semibold font-display">BuildYourBrand</span>
+            </div>
+
+            <div className="flex-1 overflow-y-auto px-3 py-4">
               <nav className="flex flex-col gap-0.5">
-                <button onClick={() => handleNav("/product")} className="rounded-lg px-3 py-2.5 text-left text-sm font-medium text-foreground hover:bg-muted transition-colors">
+                <button onClick={() => handleNav("/product")} className="rounded-lg px-3 py-3 text-left text-[15px] font-medium text-foreground hover:bg-muted active:bg-muted/80 transition-colors">
                   {isDE ? "Produkt" : "Product"}
                 </button>
-                <button onClick={() => handleNav("/pricing")} className="rounded-lg px-3 py-2.5 text-left text-sm font-medium text-foreground hover:bg-muted transition-colors">
+                <button onClick={() => handleNav("/pricing")} className="rounded-lg px-3 py-3 text-left text-[15px] font-medium text-foreground hover:bg-muted active:bg-muted/80 transition-colors">
                   {t("nav.pricing")}
                 </button>
-                <button onClick={() => handleNav("/guide/eigenmarke-gruenden")} className="rounded-lg px-3 py-2.5 text-left text-sm font-medium text-foreground hover:bg-muted transition-colors">
+                <button onClick={() => handleNav("/guide/eigenmarke-gruenden")} className="rounded-lg px-3 py-3 text-left text-[15px] font-medium text-foreground hover:bg-muted active:bg-muted/80 transition-colors">
                   Guide
                 </button>
-                <button onClick={() => handleNav("/download")} className="rounded-lg px-3 py-2.5 text-left text-sm font-medium text-foreground hover:bg-muted transition-colors">
+                <button onClick={() => handleNav("/download")} className="rounded-lg px-3 py-3 text-left text-[15px] font-medium text-foreground hover:bg-muted active:bg-muted/80 transition-colors">
                   Download
                 </button>
 
-                <div className="mt-1 mb-1 px-3">
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-1">Tools</p>
+                <div className="mt-3 mb-1 px-3">
+                  <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/50">Tools</p>
                 </div>
                 {toolLinks.map((tool) => (
                   <button
                     key={tool.href}
                     onClick={() => handleNav(tool.href)}
-                    className="rounded-lg px-3 py-2 text-left text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors pl-5"
+                    className="rounded-lg px-3 py-2.5 text-left text-sm text-muted-foreground hover:bg-muted hover:text-foreground active:bg-muted/80 transition-colors pl-5"
                   >
                     {isDE ? tool.labelDE : tool.labelEN}
                   </button>
                 ))}
               </nav>
 
-              <div className="mt-4 flex flex-col gap-1.5 border-t pt-4">
+              <div className="mt-5 flex flex-col gap-1 border-t border-border pt-4">
                 <button
                   onClick={() => { toggleLang(); setMenuOpen(false); }}
-                  className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                  className="flex items-center gap-2.5 rounded-lg px-3 py-3 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                 >
                   <Globe className="h-4 w-4" />
                   {isDE ? "English" : "Deutsch"}
                 </button>
-                <Button variant="ghost" className="justify-start h-10" onClick={() => { navigate("/auth"); setMenuOpen(false); }}>
+                <Button variant="ghost" className="justify-start h-11 text-[15px]" onClick={() => { navigate("/auth"); setMenuOpen(false); }}>
                   {t("nav.login")}
                 </Button>
               </div>
+            </div>
 
-              <div className="mt-4 pb-safe">
-                <Button
-                  variant="outline"
-                  className="w-full h-11"
-                  onClick={() => { navigate("/auth?tab=signup"); setMenuOpen(false); }}
-                >
-                  {isDE ? "Jetzt starten" : "Get started"}
-                </Button>
-              </div>
+            <div className="px-4 py-4 border-t border-border pb-safe">
+              <Button
+                className="w-full h-12 text-[15px] bg-primary text-primary-foreground hover:bg-primary/90"
+                onClick={() => { navigate("/auth?tab=signup"); setMenuOpen(false); }}
+              >
+                {isDE ? "Jetzt starten" : "Get started"}
+              </Button>
             </div>
           </SheetContent>
         </Sheet>
