@@ -4,14 +4,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LiveKPIDashboard } from "@/components/dashboard/LiveKPIDashboard";
 import { AIStrategyAdvisor } from "@/components/dashboard/AIStrategyAdvisor";
 import { MarketBenchmarkPanel } from "@/components/dashboard/MarketBenchmarkPanel";
-import { ExplainabilityPanel } from "@/components/dashboard/ExplainabilityPanel";
 import { MarketRealityCard } from "@/components/MarketRealityCard";
 import { FounderCopilot } from "@/components/FounderCopilot";
+import { BrandNameEngine } from "@/components/BrandNameEngine";
 import { SEO } from "@/components/SEO";
-import { MOCK_BRAND_SUGGESTIONS } from "@/lib/command-center-types";
-import { Sparkles, BarChart3, Brain, Crown, Target, DollarSign, TrendingUp, Activity, Compass } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
+import { Sparkles, BarChart3, Brain, Crown, Compass, Activity } from "lucide-react";
 
 export default function IntelligencePage() {
   return (
@@ -63,47 +60,8 @@ export default function IntelligencePage() {
             <MarketBenchmarkPanel />
           </TabsContent>
 
-          <TabsContent value="brand-pack" className="space-y-5">
-            {MOCK_BRAND_SUGGESTIONS.filter((b) => b.score >= 90).map((b) => {
-              const [primaryColor, accentColor] = b.colorSuggestion.split(" / ");
-              return (
-                <div key={b.name} className="rounded-2xl border bg-card p-6 shadow-card hover:shadow-md transition-shadow space-y-5">
-                  <div className="flex items-center justify-between gap-4">
-                    <h3 className="text-xl font-bold">{b.name}</h3>
-                    <ScoreBadge score={b.score} />
-                  </div>
-                  <p className="text-base italic text-muted-foreground leading-relaxed">„{b.claim}"</p>
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <MetaItem icon={Crown} label="Archetype" value={b.archetype} />
-                    <MetaItem icon={Target} label="Zielgruppen-Emotion" value={b.targetEmotion} />
-                    <MetaItem icon={DollarSign} label="Preispositionierung" value={b.pricePositioning} />
-                    <MetaItem icon={TrendingUp} label="Margen-Kompatibilität" value={b.marginCompatibility} />
-                  </div>
-                  <div className="flex flex-wrap items-center gap-3">
-                    <span className="rounded-full border bg-muted/50 px-3 py-1 text-xs font-medium">{b.tonality}</span>
-                    <div className="flex items-center gap-2">
-                      <TooltipProvider delayDuration={150}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span className="h-4 w-4 rounded-full border border-border/40 shadow-sm cursor-default" style={{ backgroundColor: primaryColor }} />
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="text-xs">Primärfarbe</TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                      <TooltipProvider delayDuration={150}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span className="h-4 w-4 rounded-full border border-border/40 shadow-sm cursor-default" style={{ backgroundColor: accentColor }} />
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="text-xs">Akzentfarbe</TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                  </div>
-                  <ExplainabilityPanel reasoning={b.reasoning} dataUsed={b.dataUsed} confidence={b.confidence} />
-                </div>
-              );
-            })}
+          <TabsContent value="brand-pack">
+            <BrandNameEngine />
           </TabsContent>
 
           <TabsContent value="market-signals">
@@ -116,28 +74,5 @@ export default function IntelligencePage() {
         </Tabs>
       </div>
     </DashboardLayout>
-  );
-}
-
-function ScoreBadge({ score }: { score: number }) {
-  const variant = score >= 90 ? "text-success bg-success/10" : score >= 70 ? "text-warning bg-warning/10" : "text-destructive bg-destructive/10";
-  return (
-    <span className={cn("shrink-0 rounded-xl px-3 py-1.5 text-sm font-bold tabular-nums", variant)}>
-      {score}
-    </span>
-  );
-}
-
-function MetaItem({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) {
-  return (
-    <div className="flex items-start gap-3 group/meta">
-      <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/60 group-hover/meta:bg-accent/10 transition-colors">
-        <Icon className="h-4 w-4 text-muted-foreground group-hover/meta:text-accent transition-colors" />
-      </div>
-      <div className="space-y-0.5">
-        <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70">{label}</p>
-        <p className="text-sm font-semibold">{value}</p>
-      </div>
-    </div>
   );
 }
