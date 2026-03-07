@@ -124,7 +124,7 @@ export function AdvancedAnalytics({ winrate, riskPerTrade, rrr, accountSize, tra
                 </defs>
                 <XAxis dataKey="trade" tick={{ fontSize: 10 }} tickLine={false} />
                 <YAxis tick={{ fontSize: 10 }} tickFormatter={v => `${(v / 1000).toFixed(0)}k`} tickLine={false} />
-                <Tooltip formatter={(v: number) => [`$${v.toLocaleString()}`, "Balance"]} />
+                <Tooltip formatter={(v: number) => [`${v.toLocaleString("de-DE")}€`, "Balance"]} />
                 <Area type="monotone" dataKey="balance" stroke="hsl(var(--primary))" fill="url(#eqGrad)" strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
