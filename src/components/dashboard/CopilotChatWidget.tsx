@@ -52,9 +52,9 @@ export function CopilotChatWidget() {
       const { data: { session } } = await supabase.auth.getSession();
       const context = {
         margin: cmdData?.input?.margin,
-        capitalSafetyMonths: cmdData?.money?.runway,
-        riskScore: cmdData?.status?.riskIndex,
-        launchProbability: cmdData?.status?.launchProbability,
+        capitalSafetyMonths: cmdData?.money?.capitalDelta,
+        riskScore: cmdData?.status?.founderRiskIndex,
+        launchProbability: cmdData?.status?.confidenceScore,
         productionCost: cmdData?.input?.productionCost,
         language: isDE ? "de" : "en",
       };
