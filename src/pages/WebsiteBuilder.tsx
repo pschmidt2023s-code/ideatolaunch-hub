@@ -36,12 +36,12 @@ interface WebsiteData {
 }
 
 const PAGE_OPTIONS = [
-  { id: "home", label: "Startseite", icon: Globe, desc: "Hero, Features, Testimonials, CTA", required: true },
-  { id: "about", label: "Über uns", icon: Users, desc: "Story, Mission, Werte" },
-  { id: "products", label: "Produkte", icon: FileText, desc: "Produktkarten mit Preisen" },
-  { id: "contact", label: "Kontakt", icon: Mail, desc: "Formular & Kontaktdaten" },
-  { id: "faq", label: "FAQ", icon: HelpCircle, desc: "Häufige Fragen" },
-] as const;
+  { id: "home", label: "Startseite", icon: Globe, desc: "Hero, Features, Testimonials, CTA", required: true as const },
+  { id: "about", label: "Über uns", icon: Users, desc: "Story, Mission, Werte", required: false as const },
+  { id: "products", label: "Produkte", icon: FileText, desc: "Produktkarten mit Preisen", required: false as const },
+  { id: "contact", label: "Kontakt", icon: Mail, desc: "Formular & Kontaktdaten", required: false as const },
+  { id: "faq", label: "FAQ", icon: HelpCircle, desc: "Häufige Fragen", required: false as const },
+];
 
 const COLOR_SCHEMES = [
   { value: "modern-dark", label: "Modern Dark", preview: "bg-[hsl(235,50%,15%)]" },
