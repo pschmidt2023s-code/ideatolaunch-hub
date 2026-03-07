@@ -128,6 +128,59 @@ export type Database = {
         }
         Relationships: []
       }
+      brand_goals: {
+        Row: {
+          brand_id: string
+          created_at: string
+          current_value: number
+          deadline: string | null
+          description: string | null
+          id: string
+          status: string
+          target_value: number | null
+          title: string
+          unit: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          brand_id: string
+          created_at?: string
+          current_value?: number
+          deadline?: string | null
+          description?: string | null
+          id?: string
+          status?: string
+          target_value?: number | null
+          title: string
+          unit?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          brand_id?: string
+          created_at?: string
+          current_value?: number
+          deadline?: string | null
+          description?: string | null
+          id?: string
+          status?: string
+          target_value?: number | null
+          title?: string
+          unit?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brand_goals_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       brand_identities: {
         Row: {
           brand_id: string
@@ -331,6 +384,56 @@ export type Database = {
           niche?: string | null
         }
         Relationships: []
+      }
+      competitors: {
+        Row: {
+          brand_id: string
+          created_at: string
+          id: string
+          name: string
+          notes: string | null
+          price_range: string | null
+          strengths: string | null
+          threat_level: string
+          updated_at: string
+          url: string | null
+          weaknesses: string | null
+        }
+        Insert: {
+          brand_id: string
+          created_at?: string
+          id?: string
+          name: string
+          notes?: string | null
+          price_range?: string | null
+          strengths?: string | null
+          threat_level?: string
+          updated_at?: string
+          url?: string | null
+          weaknesses?: string | null
+        }
+        Update: {
+          brand_id?: string
+          created_at?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          price_range?: string | null
+          strengths?: string | null
+          threat_level?: string
+          updated_at?: string
+          url?: string | null
+          weaknesses?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "competitors_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       compliance_plans: {
         Row: {
@@ -871,6 +974,50 @@ export type Database = {
           user_agent_hint?: string | null
         }
         Relationships: []
+      }
+      notifications: {
+        Row: {
+          action_url: string | null
+          brand_id: string | null
+          created_at: string
+          id: string
+          message: string
+          read: boolean
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          action_url?: string | null
+          brand_id?: string | null
+          created_at?: string
+          id?: string
+          message: string
+          read?: boolean
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          action_url?: string | null
+          brand_id?: string | null
+          created_at?: string
+          id?: string
+          message?: string
+          read?: boolean
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       production_plans: {
         Row: {
