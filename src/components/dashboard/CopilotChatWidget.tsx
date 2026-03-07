@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useBrand } from "@/hooks/useBrand";
 import { useCommandCenterData } from "@/hooks/useCommandCenterData";
 import { useTranslation } from "react-i18next";
+import type { ScenarioMode } from "@/lib/command-center-types";
 import ReactMarkdown from "react-markdown";
 
 interface Message {
