@@ -63,6 +63,40 @@ export default function LicenseManagement() {
   const [inviteExpiry, setInviteExpiry] = useState("");
   const [inviteSaving, setInviteSaving] = useState(false);
   const [createdInviteUrl, setCreatedInviteUrl] = useState<string | null>(null);
+  const [createdShortCode, setCreatedShortCode] = useState<string | null>(null);
+
+  // QR Code dialog
+  const [qrDialogOpen, setQrDialogOpen] = useState(false);
+  const [qrCode, setQrCode] = useState<string | null>(null);
+  const [qrLabel, setQrLabel] = useState("");
+
+  const openQrDialog = (code: string, label?: string | null) => {
+    setQrCode(code);
+    setQrLabel(label || code);
+    setQrDialogOpen(true);
+  };
+
+  const getQrUrl = (code: string) =>
+    `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(code)}&bgcolor=0a0a0a&color=D4AF37&format=png`;
+
+  const downloadQr = async () => {
+    if (!qrCode) return;
+    const url = getQrUrl(qrCode);
+    const resp = await fetch(url);
+    const blob = await resp.blob();
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `einladung-${qrCode}.png`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    toast.success("QR-Code heruntergeladen!");
+  };
+
+  const shareQrWhatsApp = () => {
+    if (!qrCode) return;
+    const text = `🎉 Du wurdest zu BrandOS eingeladen!\n\nDein Einladungscode: *${qrCode}*\n\nGib den Code bei der Registrierung ein, um deinen Plan freizuschalten.`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+  };
 
   // Form
   const [formPlan, setFormPlan] = useState<string>("builder");
