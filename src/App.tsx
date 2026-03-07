@@ -225,6 +225,7 @@ const App = () => {
                       <Route path="/dashboard/trading" element={<ProtectedRoute><TradingDashboard /></ProtectedRoute>} />
                       <Route path="/trading" element={<ProtectedRoute><TradingIntelligence /></ProtectedRoute>} />
                       <Route path="/risk-analysis" element={<ProtectedRoute><RiskAnalysis /></ProtectedRoute>} />
+                      <Route path="/trading-intelligence" element={<ProtectedRoute><CryptoIntelligence /></ProtectedRoute>} />
                       <Route path="/dashboard/investor" element={<ProtectedRoute><InvestorDashboard /></ProtectedRoute>} />
                       <Route path="/dashboard/strategy" element={<ProtectedRoute><StrategyDashboard /></ProtectedRoute>} />
                       <Route path="/internal/analytics" element={<AdminRoute><InternalAnalytics /></AdminRoute>} />
