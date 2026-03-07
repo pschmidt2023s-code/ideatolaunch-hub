@@ -145,10 +145,12 @@ const App = () => {
       {showSplash && isTauriEnv && <SplashScreen onFinished={handleSplashFinished} />}
 
       <ErrorBoundary>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem storageKey="brandos-theme">
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
             <BrandProvider>
               <ModeProvider>
+              <AutoDarkMode />
               <TooltipProvider>
                 <Toaster />
                 <Sonner />
