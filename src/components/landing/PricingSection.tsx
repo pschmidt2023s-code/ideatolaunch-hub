@@ -22,6 +22,7 @@ export function PricingSection() {
   const [loadingBuilder, setLoadingBuilder] = useState(false);
   const [loadingPro, setLoadingPro] = useState(false);
   const [loadingExecution, setLoadingExecution] = useState(false);
+  const [loadingTrading, setLoadingTrading] = useState(false);
 
   const [billingCycle, setBillingCycle] = useState<"yearly" | "monthly">("yearly");
   const isDE = i18n.language === "de";
