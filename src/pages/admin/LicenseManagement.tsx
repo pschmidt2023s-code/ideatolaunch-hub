@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { checkIsAdmin } from "@/lib/founder-analytics";
 import {
   ArrowLeft, Plus, Pencil, Trash2, Copy, Check, KeyRound, Loader2,
-  Link2, Power, PowerOff, Send, MoreHorizontal, ExternalLink,
+  Link2, Power, PowerOff, Send, MoreHorizontal, ExternalLink, QrCode,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -63,6 +63,39 @@ export default function LicenseManagement() {
   const [inviteExpiry, setInviteExpiry] = useState("");
   const [inviteSaving, setInviteSaving] = useState(false);
   const [createdInviteUrl, setCreatedInviteUrl] = useState<string | null>(null);
+
+  // QR Code dialog
+  const [qrDialogOpen, setQrDialogOpen] = useState(false);
+  const [qrCode, setQrCode] = useState<string | null>(null);
+  const [qrLabel, setQrLabel] = useState("");
+
+  const openQrDialog = (code: string, label?: string | null) => {
+    setQrCode(code);
+    setQrLabel(label || code);
+    setQrDialogOpen(true);
+  };
+
+  const getQrUrl = (code: string) =>
+    `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(code)}&bgcolor=0a0a0a&color=D4AF37&format=png`;
+
+  const downloadQr = async () => {
+    if (!qrCode) return;
+    const url = getQrUrl(qrCode);
+    const resp = await fetch(url);
+    const blob = await resp.blob();
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `einladung-${qrCode}.png`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    toast.success("QR-Code heruntergeladen!");
+  };
+
+  const shareQrWhatsApp = () => {
+    if (!qrCode) return;
+    const text = `🎉 Du wurdest zu BrandOS eingeladen!\n\nDein Einladungscode: *${qrCode}*\n\nGib den Code bei der Registrierung ein, um deinen Plan freizuschalten.`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+  };
 
   // Form
   const [formPlan, setFormPlan] = useState<string>("builder");
@@ -377,6 +410,7 @@ export default function LicenseManagement() {
                           <div className="flex items-center gap-1.5">
                             <code className="text-sm font-mono font-bold text-primary">{inv.short_code}</code>
                             <button onClick={async () => { await navigator.clipboard.writeText(inv.short_code!); toast.success("Code kopiert!"); }} className="text-muted-foreground hover:text-foreground"><Copy className="h-3 w-3" /></button>
+                            <button onClick={() => openQrDialog(inv.short_code!, inv.label)} className="text-muted-foreground hover:text-foreground" title="QR-Code"><QrCode className="h-3 w-3" /></button>
                           </div>
                         ) : <span className="text-xs text-muted-foreground">—</span>}
                       </TableCell>
@@ -483,10 +517,20 @@ export default function LicenseManagement() {
                   }}>
                     <Copy className="h-4 w-4" /> Code kopieren
                   </Button>
-                  <Button variant="outline" onClick={() => { setCreatedInviteUrl(null); setCreatedShortCode(null); setInviteDialogOpen(false); }}>
-                    Fertig
+                  <Button variant="outline" className="gap-2" onClick={() => { if (createdShortCode) openQrDialog(createdShortCode, inviteLabel); }}>
+                    <QrCode className="h-4 w-4" /> QR-Code
                   </Button>
                 </div>
+                <Button variant="outline" size="sm" className="w-full gap-2" onClick={() => {
+                  if (!createdShortCode) return;
+                  const text = `🎉 Du wurdest zu BrandOS eingeladen!\n\nDein Einladungscode: *${createdShortCode}*\n\nGib den Code bei der Registrierung ein, um deinen Plan freizuschalten.`;
+                  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+                }}>
+                  <Send className="h-3.5 w-3.5" /> Per WhatsApp teilen
+                </Button>
+                <Button variant="ghost" size="sm" className="w-full" onClick={() => { setCreatedInviteUrl(null); setCreatedShortCode(null); setInviteDialogOpen(false); }}>
+                  Fertig
+                </Button>
                 {createdInviteUrl && (
                   <details className="text-xs text-muted-foreground">
                     <summary className="cursor-pointer hover:text-foreground">Alternativ: Direktlink</summary>
@@ -522,6 +566,39 @@ export default function LicenseManagement() {
                 </Button>
               </>
             )}
+          </div>
+        </DialogContent>
+      </Dialog>
+      {/* QR Code Dialog */}
+      <Dialog open={qrDialogOpen} onOpenChange={setQrDialogOpen}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader><DialogTitle>QR-Code: {qrCode}</DialogTitle></DialogHeader>
+          <div className="flex flex-col items-center gap-4 py-4">
+            {qrCode && (
+              <div className="rounded-xl border border-border bg-white p-4">
+                <img
+                  src={getQrUrl(qrCode)}
+                  alt={`QR Code für ${qrCode}`}
+                  className="w-[250px] h-[250px]"
+                />
+              </div>
+            )}
+            <p className="text-center text-sm text-muted-foreground">
+              Scanne den QR-Code oder teile den Einladungscode: <strong className="text-primary">{qrCode}</strong>
+            </p>
+            <div className="flex gap-2 w-full">
+              <Button className="flex-1 gap-2" onClick={downloadQr}>
+                <Copy className="h-4 w-4" /> Herunterladen
+              </Button>
+              <Button variant="outline" className="flex-1 gap-2" onClick={shareQrWhatsApp}>
+                <Send className="h-4 w-4" /> WhatsApp
+              </Button>
+            </div>
+            <Button variant="ghost" size="sm" className="w-full" onClick={async () => {
+              if (qrCode) { await navigator.clipboard.writeText(qrCode); toast.success("Code kopiert!"); }
+            }}>
+              <Copy className="h-3.5 w-3.5 mr-2" /> Code kopieren
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
