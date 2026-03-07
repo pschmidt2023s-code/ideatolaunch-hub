@@ -61,7 +61,28 @@ export default function Auth() {
 
     if (isSignUp) {
       trackEvent("signup_completed");
-      toast.success(t("auth.signupSuccess"));
+      // If invite code was provided, redeem it after signup
+      if (inviteCode.trim()) {
+        toast.success("Account erstellt! Code wird eingelöst…");
+        setTimeout(async () => {
+          try {
+            const res = await supabase.functions.invoke("redeem-invite", {
+              body: { short_code: inviteCode.trim().toUpperCase() },
+            });
+            if (res.data?.success) {
+              toast.success(`${res.data.plan}-Plan aktiviert! 🎉`);
+              navigate("/dashboard");
+            } else {
+              toast.error(res.data?.error || "Code konnte nicht eingelöst werden");
+              navigate("/onboarding");
+            }
+          } catch {
+            navigate("/onboarding");
+          }
+        }, 1500);
+      } else {
+        toast.success(t("auth.signupSuccess"));
+      }
     } else {
       navigate("/onboarding");
     }
