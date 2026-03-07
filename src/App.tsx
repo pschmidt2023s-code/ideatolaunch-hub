@@ -165,6 +165,7 @@ const App = () => {
                       <Route path="/product" element={<Product />} />
                       <Route path="/download" element={<Download />} />
                       <Route path="/invite" element={<InviteRedeem />} />
+                      <Route path="/redeem" element={<RedeemCode />} />
 
                       {/* Blog */}
                       <Route path="/blog" element={<Blog />} />
