@@ -361,6 +361,283 @@ export type Database = {
         }
         Relationships: []
       }
+      community_circle_members: {
+        Row: {
+          circle_id: string
+          id: string
+          joined_at: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          circle_id: string
+          id?: string
+          joined_at?: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          circle_id?: string
+          id?: string
+          joined_at?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_circle_members_circle_id_fkey"
+            columns: ["circle_id"]
+            isOneToOne: false
+            referencedRelation: "community_circles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      community_circles: {
+        Row: {
+          created_at: string
+          created_by: string
+          description: string | null
+          icon: string | null
+          id: string
+          invite_only: boolean
+          max_members: number | null
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          invite_only?: boolean
+          max_members?: number | null
+          name: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          invite_only?: boolean
+          max_members?: number | null
+          name?: string
+        }
+        Relationships: []
+      }
+      community_posts: {
+        Row: {
+          category: string | null
+          content: string
+          created_at: string
+          id: string
+          metadata: Json | null
+          pinned: boolean
+          post_type: string
+          reply_count: number
+          tags: string[] | null
+          title: string
+          updated_at: string
+          upvote_count: number
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          content: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          pinned?: boolean
+          post_type?: string
+          reply_count?: number
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          upvote_count?: number
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          content?: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          pinned?: boolean
+          post_type?: string
+          reply_count?: number
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          upvote_count?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      community_replies: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          post_id: string
+          upvote_count: number
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          post_id: string
+          upvote_count?: number
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          post_id?: string
+          upvote_count?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_replies_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      community_reputation: {
+        Row: {
+          case_study_count: number
+          created_at: string
+          display_name: string | null
+          id: string
+          level: string
+          points: number
+          post_count: number
+          reply_count: number
+          review_count: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          case_study_count?: number
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          level?: string
+          points?: number
+          post_count?: number
+          reply_count?: number
+          review_count?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          case_study_count?: number
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          level?: string
+          points?: number
+          post_count?: number
+          reply_count?: number
+          review_count?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      community_supplier_reviews: {
+        Row: {
+          communication_rating: number
+          country: string | null
+          created_at: string
+          delivery_rating: number
+          id: string
+          moq: string | null
+          notes: string | null
+          product_type: string | null
+          quality_rating: number
+          supplier_name: string
+          updated_at: string
+          user_id: string
+          verified: boolean
+        }
+        Insert: {
+          communication_rating?: number
+          country?: string | null
+          created_at?: string
+          delivery_rating?: number
+          id?: string
+          moq?: string | null
+          notes?: string | null
+          product_type?: string | null
+          quality_rating?: number
+          supplier_name: string
+          updated_at?: string
+          user_id: string
+          verified?: boolean
+        }
+        Update: {
+          communication_rating?: number
+          country?: string | null
+          created_at?: string
+          delivery_rating?: number
+          id?: string
+          moq?: string | null
+          notes?: string | null
+          product_type?: string | null
+          quality_rating?: number
+          supplier_name?: string
+          updated_at?: string
+          user_id?: string
+          verified?: boolean
+        }
+        Relationships: []
+      }
+      community_upvotes: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string | null
+          reply_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id?: string | null
+          reply_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string | null
+          reply_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_upvotes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "community_upvotes_reply_id_fkey"
+            columns: ["reply_id"]
+            isOneToOne: false
+            referencedRelation: "community_replies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       community_waitlist: {
         Row: {
           created_at: string

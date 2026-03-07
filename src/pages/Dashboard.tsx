@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { BrandHealthCard } from "@/components/dashboard/BrandHealthCard";
 import { SmartInsightsPanel } from "@/components/dashboard/SmartInsightsPanel";
+import { CommunityIntelligenceWidget } from "@/components/dashboard/CommunityIntelligenceWidget";
 import { PhaseProgressBar } from "@/components/dashboard/PhaseProgressBar";
 import { UpgradeBanner } from "@/components/UpgradeBanner";
 import BlueprintExport from "@/components/BlueprintExport";
@@ -231,6 +232,13 @@ export default function Dashboard() {
                 <div className="rounded-xl border bg-card p-5 shadow-card">
                   <SmartInsightsPanel />
                 </div>
+              </AnimatedCard>
+            )}
+
+            {/* ── Community Intelligence ── */}
+            {currentBrand && (
+              <AnimatedCard index={5.5}>
+                <CommunityIntelligenceWidget />
               </AnimatedCard>
             )}
 

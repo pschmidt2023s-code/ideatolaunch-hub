@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { SEO } from "@/components/SEO";
@@ -6,10 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { trackEvent } from "@/lib/analytics";
-import { Users, Lightbulb, BookOpen, Zap, MessageCircle, CheckCircle2 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { Users, Lightbulb, BookOpen, Zap, MessageCircle, CheckCircle2, TrendingUp, Handshake, Search } from "lucide-react";
 import { toast } from "sonner";
 
 export default function Community() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [niche, setNiche] = useState("");
   const [submitted, setSubmitted] = useState(false);
@@ -34,8 +38,11 @@ export default function Community() {
     { icon: Users, title: "Exklusives Netzwerk", desc: "Vernetze dich mit ambitionierten Gründern im DACH-Raum." },
     { icon: MessageCircle, title: "Direkter Austausch", desc: "Stelle Fragen, teile Erfahrungen und lerne von anderen." },
     { icon: BookOpen, title: "Case Study Sharing", desc: "Teile deinen Fortschritt und lerne aus echten Launches." },
+    { icon: TrendingUp, title: "Market Signals", desc: "Entdecke Trends und Marktchancen von anderen Gründern." },
+    { icon: Search, title: "Supplier Intelligence", desc: "Bewertungen und Erfahrungen zu echten Lieferanten." },
     { icon: Zap, title: "Early Feature Access", desc: "Teste neue Features vor allen anderen und gib Feedback." },
     { icon: Lightbulb, title: "Experten-Sessions", desc: "Regelmäßige Q&A Sessions mit E-Commerce Experten." },
+    { icon: Handshake, title: "Founder Matching", desc: "Finde Co-Founder, Designer oder Marketing-Partner." },
   ];
 
   return (
@@ -51,12 +58,17 @@ export default function Community() {
           {/* Hero */}
           <section className="mb-14 text-center">
             <h1 className="text-3xl font-bold tracking-tight md:text-5xl mb-4">
-              Die Gründer-Community für{" "}
-              <span className="text-gradient">Eigenmarken-Builder</span>
+              Founder Intelligence{" "}
+              <span className="text-gradient">Network</span>
             </h1>
-            <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-              Tritt der exklusiven Community bei – vernetze dich, lerne von echten Gründern und erhalte Early Access auf neue Features.
+            <p className="text-lg text-muted-foreground max-w-xl mx-auto mb-6">
+              Das datengetriebene Gründer-Netzwerk – Market Signals, Supplier Reviews, Case Studies und strategischer Austausch.
             </p>
+            {user && (
+              <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 gap-2" onClick={() => navigate("/dashboard/community")}>
+                <Users className="h-4 w-4" /> Zum Network
+              </Button>
+            )}
           </section>
 
           {/* Benefits */}

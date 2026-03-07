@@ -62,6 +62,7 @@ const ProduktionsfehlerVermeiden = lazy(() => import("./pages/guide/Produktionsf
 const UeberUns = lazy(() => import("./pages/UeberUns"));
 const CaseStudies = lazy(() => import("./pages/CaseStudies"));
 const Community = lazy(() => import("./pages/Community"));
+const CommunityHub = lazy(() => import("./pages/CommunityHub"));
 const ReferralDashboard = lazy(() => import("./pages/ReferralDashboard"));
 const AffiliateDashboard = lazy(() => import("./pages/AffiliateDashboard"));
 
@@ -237,6 +238,7 @@ const App = () => {
                       <Route path="/dashboard/accounts" element={<ProtectedRoute><Accounts /></ProtectedRoute>} />
                       <Route path="/dashboard/strategy" element={<ProtectedRoute><StrategyDashboard /></ProtectedRoute>} />
                       <Route path="/dashboard/competitors" element={<ProtectedRoute><CompetitorPage /></ProtectedRoute>} />
+                      <Route path="/dashboard/community" element={<ProtectedRoute><CommunityHub /></ProtectedRoute>} />
                       <Route path="/internal/analytics" element={<AdminRoute><InternalAnalytics /></AdminRoute>} />
                       <Route path="/admin/insights" element={<AdminRoute><AdminInsights /></AdminRoute>} />
                       <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
