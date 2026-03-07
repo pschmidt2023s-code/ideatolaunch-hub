@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { checkIsAdmin, getPlanDistribution, getUpgradeTriggerSources, getStepDropOffRates, type PlanDistribution, type UpgradeTrigger, type StepDropOff } from "@/lib/founder-analytics";
 import { supabase } from "@/integrations/supabase/client";
-import { Users, TrendingUp, Mail, CreditCard, BarChart3, MousePointerClick, ArrowLeft, Gift, Handshake, MessageCircle, ShieldAlert, Activity } from "lucide-react";
+import { Users, TrendingUp, Mail, CreditCard, BarChart3, MousePointerClick, ArrowLeft, Gift, Handshake, MessageCircle, ShieldAlert, Activity, MessageSquarePlus, CheckCircle2 } from "lucide-react";
 
 // ── Types ──
 interface LeadRow { id: string; email: string; source: string; trigger_type: string | null; page: string | null; converted: boolean; created_at: string; }
