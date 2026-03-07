@@ -68,9 +68,10 @@ export interface CapabilityFlags {
 }
 
 export function getCapabilities(plan: string): CapabilityFlags {
-  const isBuilder = plan === "builder" || plan === "pro" || plan === "execution";
-  const isPro = plan === "pro" || plan === "execution";
-  const isExecution = plan === "execution";
+  const isTrading = plan === "trading";
+  const isBuilder = plan === "builder" || plan === "pro" || plan === "execution" || isTrading;
+  const isPro = plan === "pro" || plan === "execution" || isTrading;
+  const isExecution = plan === "execution" || isTrading;
 
   return {
     canCreateUnlimitedBrands: isBuilder,
