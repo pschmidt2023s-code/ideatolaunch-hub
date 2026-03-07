@@ -172,6 +172,19 @@ export default function Auth() {
                   </div>
                 )}
               </div>
+              {isSignUp && (
+                <div className="space-y-2">
+                  <Label htmlFor="inviteCode">Einladungscode (optional)</Label>
+                  <Input
+                    id="inviteCode"
+                    value={inviteCode}
+                    onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
+                    placeholder="z.B. VIP-3F7A"
+                    className="font-mono tracking-wider"
+                    maxLength={10}
+                  />
+                </div>
+              )}
               <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90" disabled={loading}>
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isSignUp ? t("auth.register") : t("auth.login")}

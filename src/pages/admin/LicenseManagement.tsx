@@ -463,35 +463,41 @@ export default function LicenseManagement() {
       </Dialog>
 
       {/* Create Invite Dialog */}
-      <Dialog open={inviteDialogOpen} onOpenChange={(open) => { setInviteDialogOpen(open); if (!open) setCreatedInviteUrl(null); }}>
+      <Dialog open={inviteDialogOpen} onOpenChange={(open) => { setInviteDialogOpen(open); if (!open) { setCreatedInviteUrl(null); setCreatedShortCode(null); } }}>
         <DialogContent className="sm:max-w-md">
-          <DialogHeader><DialogTitle>{createdInviteUrl ? "Link erstellt ✅" : "Einladungslink erstellen"}</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{createdShortCode ? "Einladung erstellt ✅" : "Einladung erstellen"}</DialogTitle></DialogHeader>
           <div className="space-y-4 mt-2">
-            {createdInviteUrl ? (
+            {createdShortCode ? (
               <>
                 <p className="text-sm text-muted-foreground">
-                  Kopiere den Link und teile ihn. Der Empfänger registriert sich darüber und bekommt sofort den Plan.
+                  Teile den <strong>Code</strong> – der Empfänger gibt ihn bei der Registrierung oder auf <code>/redeem</code> ein.
                 </p>
-                <div className="rounded-lg border bg-muted/30 p-3 space-y-2">
-                  <p className="text-[11px] text-muted-foreground">Einladungslink</p>
-                  <code className="text-xs font-mono break-all block">{createdInviteUrl}</code>
+                <div className="rounded-xl border-2 border-primary/30 bg-primary/5 p-6 text-center">
+                  <p className="text-[11px] text-muted-foreground mb-2">Einladungscode</p>
+                  <code className="text-3xl font-mono font-black tracking-widest text-primary">{createdShortCode}</code>
                 </div>
                 <div className="flex gap-2">
                   <Button className="flex-1 gap-2" onClick={async () => {
-                    await navigator.clipboard.writeText(createdInviteUrl);
-                    toast.success("Link kopiert!");
+                    await navigator.clipboard.writeText(createdShortCode);
+                    toast.success("Code kopiert!");
                   }}>
-                    <Copy className="h-4 w-4" /> Link kopieren
+                    <Copy className="h-4 w-4" /> Code kopieren
                   </Button>
-                  <Button variant="outline" onClick={() => { setCreatedInviteUrl(null); setInviteDialogOpen(false); }}>
+                  <Button variant="outline" onClick={() => { setCreatedInviteUrl(null); setCreatedShortCode(null); setInviteDialogOpen(false); }}>
                     Fertig
                   </Button>
                 </div>
+                {createdInviteUrl && (
+                  <details className="text-xs text-muted-foreground">
+                    <summary className="cursor-pointer hover:text-foreground">Alternativ: Direktlink</summary>
+                    <code className="mt-2 text-[10px] font-mono break-all block bg-muted/30 rounded p-2">{createdInviteUrl}</code>
+                  </details>
+                )}
               </>
             ) : (
               <>
                 <p className="text-sm text-muted-foreground">
-                  Erstelle einen Link den du teilen kannst. Keine E-Mail-Verifizierung nötig.
+                  Erstelle einen Einladungscode. Keine E-Mail-Verifizierung nötig.
                 </p>
                 <div className="space-y-2">
                   <Label>Plan</Label>
@@ -512,7 +518,7 @@ export default function LicenseManagement() {
                 </div>
                 <Button onClick={handleCreateInvite} disabled={inviteSaving} className="w-full gap-2">
                   {inviteSaving && <Loader2 className="h-4 w-4 animate-spin" />}
-                  <Send className="h-4 w-4" /> Link erstellen
+                  <Send className="h-4 w-4" /> Code erstellen
                 </Button>
               </>
             )}

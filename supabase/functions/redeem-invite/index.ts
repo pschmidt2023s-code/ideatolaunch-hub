@@ -12,9 +12,11 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { token } = await req.json();
-    if (!token) {
-      return new Response(JSON.stringify({ error: "Token required" }), {
+    const body = await req.json();
+    const { token, short_code } = body;
+
+    if (!token && !short_code) {
+      return new Response(JSON.stringify({ error: "Token oder Code erforderlich" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -51,13 +53,19 @@ Deno.serve(async (req) => {
 
     const userId = claimsData.claims.sub as string;
 
-    // Find invitation using service role to bypass RLS
-    const { data: invitation, error: invErr } = await supabaseAdmin
+    // Find invitation by token OR short_code
+    let query = supabaseAdmin
       .from("license_invitations")
       .select("*")
-      .eq("token", token)
-      .eq("status", "active")
-      .maybeSingle();
+      .eq("status", "active");
+
+    if (short_code) {
+      query = query.eq("short_code", short_code.toUpperCase().trim());
+    } else {
+      query = query.eq("token", token);
+    }
+
+    const { data: invitation, error: invErr } = await query.maybeSingle();
 
     if (invErr || !invitation) {
       return new Response(
@@ -114,7 +122,12 @@ Deno.serve(async (req) => {
       admin_id: invitation.created_by,
       affected_user_id: userId,
       action_type: "invite_redeemed",
-      details: { plan: invitation.plan, license_key: invitation.license_key, token },
+      details: {
+        plan: invitation.plan,
+        license_key: invitation.license_key,
+        method: short_code ? "short_code" : "token",
+        short_code: invitation.short_code,
+      },
     });
 
     return new Response(
