@@ -35,6 +35,7 @@ import {
   Layers,
 } from "lucide-react";
 import { ModeBadge } from "@/components/ModeSwitcher";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
