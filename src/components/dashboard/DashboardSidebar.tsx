@@ -6,7 +6,7 @@ import type { AppMode } from "@/lib/mode-types";
 import {
   Crosshair, Brain, BarChart3, Wrench, Globe as GlobeIcon, Rocket, Settings, LogOut,
   ChevronDown, ChevronRight, TrendingUp, PieChart, Sparkles, Gift, HeartPulse, Crown,
-  Zap, Map, Target, Shield, Wallet, Activity, Scale,
+  Zap, Map, Target, Shield, Wallet, Activity, Scale, Users, Telescope,
 } from "lucide-react";
 import { ModeBadge } from "@/components/ModeSwitcher";
 import { ThemeToggle } from "@/components/ThemeToggle";
