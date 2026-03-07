@@ -12,6 +12,8 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 import { BetaBadge } from "@/components/BetaBadge";
 import { BetaFeedbackButton } from "@/components/BetaFeedbackButton";
+import { AutoDarkMode } from "@/components/AutoDarkMode";
+import { ThemeProvider } from "next-themes";
 import SplashScreen from "@/components/SplashScreen";
 import "@/i18n";
 
