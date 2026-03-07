@@ -1405,7 +1405,74 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      referral_validation_summary: {
+        Row: {
+          created_at: string | null
+          fraud_score: number | null
+          referral_id: string | null
+          status: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_validations_referral_id_fkey"
+            columns: ["referral_id"]
+            isOneToOne: false
+            referencedRelation: "referrals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trading_accounts_safe: {
+        Row: {
+          account_data: Json | null
+          balances: Json | null
+          created_at: string | null
+          exchange: string | null
+          id: string | null
+          label: string | null
+          last_synced_at: string | null
+          positions: Json | null
+          read_only: boolean | null
+          risk_metrics: Json | null
+          status: string | null
+          trade_history: Json | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          account_data?: Json | null
+          balances?: Json | null
+          created_at?: string | null
+          exchange?: string | null
+          id?: string | null
+          label?: string | null
+          last_synced_at?: string | null
+          positions?: Json | null
+          read_only?: boolean | null
+          risk_metrics?: Json | null
+          status?: string | null
+          trade_history?: Json | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          account_data?: Json | null
+          balances?: Json | null
+          created_at?: string | null
+          exchange?: string | null
+          id?: string | null
+          label?: string | null
+          last_synced_at?: string | null
+          positions?: Json | null
+          read_only?: boolean | null
+          risk_metrics?: Json | null
+          status?: string | null
+          trade_history?: Json | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       increment_referral_count: {

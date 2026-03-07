@@ -177,13 +177,33 @@ export function LiveKPIDashboard() {
   }
 
   if (!ccData.sufficient) {
+    const missing: { label: string; step: number }[] = [];
+    if (ccData.ready && ccData.input) {
+      if (!ccData.input.hasBrandProfile) missing.push({ label: "Markenprofil ausfüllen", step: 1 });
+      if (!ccData.input.hasFinancialModel) missing.push({ label: "Finanzmodell berechnen", step: 2 });
+      if (!ccData.input.hasProductionPlan) missing.push({ label: "Produktion planen", step: 3 });
+    }
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
         <AlertTriangle className="h-10 w-10 text-warning mb-4" />
-        <h3 className="text-lg font-semibold">Nicht genug Daten</h3>
-        <p className="mt-1 text-sm text-muted-foreground max-w-sm">
-          Fülle mindestens dein Finanzmodell oder Markenprofil aus, um Live-KPIs zu sehen.
+        <h3 className="text-lg font-semibold">Nicht genug Daten für Live-KPIs</h3>
+        <p className="mt-1 text-sm text-muted-foreground max-w-sm mb-4">
+          Fülle die folgenden Module aus, um dein Echtzeit-Dashboard zu aktivieren:
         </p>
+        {missing.length > 0 && (
+          <div className="flex flex-col gap-2 items-center">
+            {missing.map((m) => (
+              <a
+                key={m.step}
+                href={`/dashboard/step/${m.step}`}
+                className="flex items-center gap-2 rounded-lg border bg-card px-4 py-2.5 text-sm font-medium hover:bg-muted/50 transition-colors"
+              >
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-accent/10 text-xs font-bold text-accent">{m.step}</span>
+                {m.label}
+              </a>
+            ))}
+          </div>
+        )}
       </div>
     );
   }

@@ -1,6 +1,6 @@
 // ─── Hook: Fetch real brand data and compute Command Center metrics ────────
-import { useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useMemo, useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useBrand } from "@/hooks/useBrand";
 import type { IntelligenceInput } from "@/lib/intelligenceEngine";
@@ -16,6 +16,32 @@ import type { ScenarioMode } from "@/lib/command-center-types";
 export function useCommandCenterData(mode: ScenarioMode) {
   const { activeBrand } = useBrand();
   const brandId = activeBrand?.id;
+  const queryClient = useQueryClient();
+
+  // ── Realtime subscriptions ────────────────────────────────────────────
+  useEffect(() => {
+    if (!brandId) return;
+
+    const channel = supabase
+      .channel(`cc-realtime-${brandId}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'financial_models', filter: `brand_id=eq.${brandId}` }, () => {
+        queryClient.invalidateQueries({ queryKey: ["cc_financial", brandId] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'compliance_scores', filter: `brand_id=eq.${brandId}` }, () => {
+        queryClient.invalidateQueries({ queryKey: ["cc_compliance", brandId] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'strategic_scores', filter: `brand_id=eq.${brandId}` }, () => {
+        queryClient.invalidateQueries({ queryKey: ["cc_strategic", brandId] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'brand_tasks', filter: `brand_id=eq.${brandId}` }, () => {
+        queryClient.invalidateQueries({ queryKey: ["cc_tasks", brandId] });
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [brandId, queryClient]);
 
   // ── Parallel data fetches ─────────────────────────────────────────────
 
@@ -115,11 +141,9 @@ export function useCommandCenterData(mode: ScenarioMode) {
   const input: IntelligenceInput | null = useMemo(() => {
     if (!brandId) return null;
 
-    // Parse budget from brand profile
     const budgetStr = brandProfile?.budget;
     const budget = budgetStr ? parseFloat(budgetStr.replace(/[^\d.]/g, "")) : null;
 
-    // Count open compliance blockers
     const compFields = complianceScore
       ? [
           complianceScore.ce_marking_checked,
@@ -135,7 +159,6 @@ export function useCommandCenterData(mode: ScenarioMode) {
       : [];
     const openBlockers = compFields.filter((v) => v === false).length;
 
-    // Count supplier risk warnings
     const riskWarnings = Array.isArray(productionPlan?.risk_warnings)
       ? (productionPlan.risk_warnings as unknown[]).length
       : 0;
@@ -154,7 +177,7 @@ export function useCommandCenterData(mode: ScenarioMode) {
       supplierRiskWarnings: riskWarnings,
       complianceScore: complianceScore?.overall_score ?? null,
       openComplianceBlockers: openBlockers,
-      returnRate: null, // not yet captured in schema – will show as missing
+      returnRate: null,
       launchQuantity: launchPlan?.launch_quantity ?? null,
       launchReadinessScore: launchPlan?.launch_readiness_score ?? null,
       fulfillmentModel: launchPlan?.fulfillment_model ?? null,
