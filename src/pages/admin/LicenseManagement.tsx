@@ -517,10 +517,20 @@ export default function LicenseManagement() {
                   }}>
                     <Copy className="h-4 w-4" /> Code kopieren
                   </Button>
-                  <Button variant="outline" onClick={() => { setCreatedInviteUrl(null); setCreatedShortCode(null); setInviteDialogOpen(false); }}>
-                    Fertig
+                  <Button variant="outline" className="gap-2" onClick={() => { if (createdShortCode) openQrDialog(createdShortCode, inviteLabel); }}>
+                    <QrCode className="h-4 w-4" /> QR-Code
                   </Button>
                 </div>
+                <Button variant="outline" size="sm" className="w-full gap-2" onClick={() => {
+                  if (!createdShortCode) return;
+                  const text = `🎉 Du wurdest zu BrandOS eingeladen!\n\nDein Einladungscode: *${createdShortCode}*\n\nGib den Code bei der Registrierung ein, um deinen Plan freizuschalten.`;
+                  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+                }}>
+                  <Send className="h-3.5 w-3.5" /> Per WhatsApp teilen
+                </Button>
+                <Button variant="ghost" size="sm" className="w-full" onClick={() => { setCreatedInviteUrl(null); setCreatedShortCode(null); setInviteDialogOpen(false); }}>
+                  Fertig
+                </Button>
                 {createdInviteUrl && (
                   <details className="text-xs text-muted-foreground">
                     <summary className="cursor-pointer hover:text-foreground">Alternativ: Direktlink</summary>
