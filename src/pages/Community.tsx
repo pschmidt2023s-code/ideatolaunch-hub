@@ -12,9 +12,12 @@ import { Users, Lightbulb, BookOpen, Zap, MessageCircle, CheckCircle2, TrendingU
 import { toast } from "sonner";
 
 export default function Community() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [niche, setNiche] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [saving, setSaving] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
