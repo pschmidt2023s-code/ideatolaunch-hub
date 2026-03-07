@@ -183,7 +183,7 @@ export function generateLegalHints(bp: BrandProfile, plan: string): ChecklistEnt
 
 export function generateOperationalChecklist(bp: BrandProfile, plan: string): ChecklistEntry[] {
   const items: ChecklistEntry[] = [];
-  const isExecution = plan === "execution";
+  const isExecution = plan === "execution" || plan === "trading";
   const isAsiaProduction = bp.targetRegion === "global" || bp.fulfillmentModel === "dropship";
 
   const e = (id: string, label: string, desc: string, cat: string, opts: Partial<ChecklistEntry> = {}): ChecklistEntry => ({

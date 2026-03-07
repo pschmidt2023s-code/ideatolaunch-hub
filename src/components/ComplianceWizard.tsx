@@ -47,7 +47,7 @@ export default function ComplianceWizard() {
   const { brandProfile: bp } = useBrandProfile();
   const caps = getCapabilities(plan);
   const isPro = caps.canUseLegalMap;
-  const isExecution = plan === "execution";
+  const isExecution = plan === "execution" || plan === "trading";
 
   const [dynamicChecked, setDynamicChecked] = useState<Record<string, boolean>>({});
   const [opsChecked, setOpsChecked] = useState<Record<string, boolean>>({});

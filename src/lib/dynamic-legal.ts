@@ -40,7 +40,7 @@ function req(
  * Generate a personalised legal requirements map based on BrandProfile.
  */
 export function generateLegalMap(bp: BrandProfile, plan: string): LegalMap {
-  const isExecution = plan === "execution";
+  const isExecution = plan === "execution" || plan === "trading";
   const items: LegalRequirement[] = [];
 
   const isEU = bp.targetRegion === "EU" || bp.targetRegion === "DE";

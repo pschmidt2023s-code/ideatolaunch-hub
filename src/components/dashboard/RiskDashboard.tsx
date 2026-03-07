@@ -54,7 +54,7 @@ export function RiskDashboard() {
   const { activeBrand } = useBrand();
   const { plan } = useSubscription();
   const brandId = activeBrand?.id;
-  const isPro = plan === "pro" || plan === "execution";
+  const isPro = plan === "pro" || plan === "execution" || plan === "trading";
 
   const { data: financial } = useQuery({
     queryKey: ["financial_model", brandId],

@@ -45,7 +45,7 @@ export const StepComplianceSales = forwardRef<StepHandle>(function StepComplianc
 
   const caps = getCapabilities(plan);
   const isPro = caps.canUseLegalMap;
-  const isExecution = plan === "execution";
+  const isExecution = plan === "execution" || plan === "trading";
 
   // ── Compliance state ──
   const [complianceChecked, setComplianceChecked] = useState<Record<string, boolean>>({});
