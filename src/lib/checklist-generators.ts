@@ -20,7 +20,7 @@ export interface ChecklistEntry {
 
 export function generateLabelChecklist(bp: BrandProfile, plan: string): ChecklistEntry[] {
   const items: ChecklistEntry[] = [];
-  const isExecution = plan === "execution";
+  const isExecution = plan === "execution" || plan === "trading";
   const cat = bp.categoryId?.toLowerCase() || "";
   const isCosmetics = ["cosmetics", "kosmetik", "skincare", "beauty"].some(c => cat.includes(c));
   const isSupplements = ["supplements", "nahrungsergaenzung", "supplement", "vitamine"].some(s => cat.includes(s));
