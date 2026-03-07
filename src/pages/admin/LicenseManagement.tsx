@@ -158,6 +158,8 @@ export default function LicenseManagement() {
   // ── Create Invite Link ──
   const CUSTOM_DOMAIN = "https://brand.aldenairperfumes.de";
 
+  const [createdShortCode, setCreatedShortCode] = useState<string | null>(null);
+
   const handleCreateInvite = async () => {
     setInviteSaving(true);
     const { data, error } = await supabase.from("license_invitations").insert({
@@ -165,12 +167,13 @@ export default function LicenseManagement() {
       label: inviteLabel || null,
       created_by: user!.id,
       expires_at: inviteExpiry ? new Date(inviteExpiry).toISOString() : null,
-    }).select("token").single();
+    }).select("token, short_code").single();
 
     if (error) { toast.error("Fehler: " + error.message); }
     else if (data) {
       const url = getInviteUrl(data.token);
       setCreatedInviteUrl(url);
+      setCreatedShortCode((data as any).short_code ?? null);
       setInviteLabel("");
       setInviteExpiry("");
       loadData();
