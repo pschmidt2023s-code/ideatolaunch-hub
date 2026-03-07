@@ -30,6 +30,7 @@ interface InvitationRow {
   id: string; token: string; plan: string; license_key: string | null;
   status: string; label: string | null; created_by: string;
   used_by: string | null; created_at: string; used_at: string | null; expires_at: string | null;
+  short_code: string | null;
 }
 type SubWithProfile = SubscriptionRow & { profile?: ProfileRow };
 
