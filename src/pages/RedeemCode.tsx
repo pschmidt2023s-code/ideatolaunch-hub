@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -11,9 +11,11 @@ import { SEO } from "@/components/SEO";
 
 export default function RedeemCode() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const prefillCode = searchParams.get("code") || "";
   const { user, loading: authLoading, signUp, signIn } = useAuth();
 
-  const [code, setCode] = useState("");
+  const [code, setCode] = useState(prefillCode.toUpperCase());
   const [step, setStep] = useState<"enter" | "auth" | "redeeming" | "done" | "error">("enter");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -21,6 +23,7 @@ export default function RedeemCode() {
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<{ plan: string; license_key: string } | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
+  const pendingRedeem = useRef<string | null>(null);
 
   const PLAN_LABELS: Record<string, string> = {
     builder: "Builder",
@@ -29,12 +32,20 @@ export default function RedeemCode() {
     trading: "Trading",
   };
 
+  // Auto-redeem when user session becomes available and we have a pending code
+  useEffect(() => {
+    if (user && pendingRedeem.current) {
+      const codeToRedeem = pendingRedeem.current;
+      pendingRedeem.current = null;
+      redeemCode(codeToRedeem);
+    }
+  }, [user]);
+
   const handleCodeSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const trimmed = code.trim().toUpperCase();
     if (!trimmed) return;
 
-    // If already logged in, redeem directly
     if (user) {
       await redeemCode(trimmed);
     } else {
@@ -57,6 +68,7 @@ export default function RedeemCode() {
 
       setResult(res.data);
       setStep("done");
+      toast.success("Code erfolgreich eingelöst!");
     } catch (e: any) {
       setStep("error");
       setErrorMsg(e.message);
@@ -83,11 +95,12 @@ export default function RedeemCode() {
           setSubmitting(false);
           return;
         }
-        toast.success("Account erstellt!");
       }
 
-      // Wait for session, then redeem
-      setTimeout(() => redeemCode(code.trim().toUpperCase()), 1500);
+      // With auto-confirm, session is available immediately.
+      // Set pending code so the useEffect triggers redeem on session.
+      pendingRedeem.current = code.trim().toUpperCase();
+      setStep("redeeming");
     } catch {
       setSubmitting(false);
     }
@@ -163,7 +176,7 @@ export default function RedeemCode() {
             </div>
             <h1 className="text-xl font-bold">Code: {code.trim().toUpperCase()}</h1>
             <p className="text-sm text-muted-foreground">
-              {isLogin ? "Melde dich an, um den Code einzulösen." : "Erstelle einen Account, um den Code einzulösen."}
+              {isLogin ? "Melde dich an, um den Code einzulösen." : "Schnell registrieren — keine Bestätigung nötig."}
             </p>
           </div>
 
