@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { Navbar } from "@/components/landing/Navbar";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { FounderRiskPreviewCard } from "@/components/landing/FounderRiskPreviewCard";
@@ -17,6 +19,19 @@ import { faqJsonLd, howToJsonLd, softwareJsonLd } from "@/lib/homepage-jsonld";
 
 const Index = () => {
   const { showPopup, trigger, setShowPopup } = useLeadMagnet();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname !== "/") return;
+    if (sessionStorage.getItem("scrollTarget") !== "features") return;
+
+    const frame = window.requestAnimationFrame(() => {
+      document.getElementById("features")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      sessionStorage.removeItem("scrollTarget");
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [location.pathname]);
 
   return (
     <div className="min-h-screen bg-background">

@@ -1,11 +1,25 @@
-import { forwardRef } from "react";
+import { forwardRef, MouseEvent } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ShieldCheck, Lock, Server } from "lucide-react";
 
 export const Footer = forwardRef<HTMLElement>(function Footer(_, ref) {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
+  const location = useLocation();
   const isDE = i18n.language === "de";
+
+  const handleFeaturesClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+
+    if (location.pathname !== "/") {
+      sessionStorage.setItem("scrollTarget", "features");
+      navigate("/");
+      return;
+    }
+
+    document.getElementById("features")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   return (
     <footer ref={ref} className="border-t px-4 sm:px-6 py-12 overflow-hidden" role="contentinfo">
@@ -46,7 +60,11 @@ export const Footer = forwardRef<HTMLElement>(function Footer(_, ref) {
           <div>
             <h3 className="font-semibold text-sm mb-3">{isDE ? "Produkt" : "Product"}</h3>
             <nav className="flex flex-col gap-2 text-sm text-muted-foreground">
-              <Link to="/#features" className="hover:text-foreground transition-colors">
+              <Link
+                to="/"
+                onClick={handleFeaturesClick}
+                className="hover:text-foreground transition-colors"
+              >
                 {t("nav.features")}
               </Link>
               <Link to="/pricing" className="hover:text-foreground transition-colors">
