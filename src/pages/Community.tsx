@@ -39,8 +39,11 @@ export default function Community() {
     { icon: Users, title: "Exklusives Netzwerk", desc: "Vernetze dich mit ambitionierten Gründern im DACH-Raum." },
     { icon: MessageCircle, title: "Direkter Austausch", desc: "Stelle Fragen, teile Erfahrungen und lerne von anderen." },
     { icon: BookOpen, title: "Case Study Sharing", desc: "Teile deinen Fortschritt und lerne aus echten Launches." },
+    { icon: TrendingUp, title: "Market Signals", desc: "Entdecke Trends und Marktchancen von anderen Gründern." },
+    { icon: Search, title: "Supplier Intelligence", desc: "Bewertungen und Erfahrungen zu echten Lieferanten." },
     { icon: Zap, title: "Early Feature Access", desc: "Teste neue Features vor allen anderen und gib Feedback." },
     { icon: Lightbulb, title: "Experten-Sessions", desc: "Regelmäßige Q&A Sessions mit E-Commerce Experten." },
+    { icon: Handshake, title: "Founder Matching", desc: "Finde Co-Founder, Designer oder Marketing-Partner." },
   ];
 
   return (
