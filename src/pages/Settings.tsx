@@ -234,6 +234,9 @@ export default function SettingsPage() {
           </div>
         </AnimatedCard>
 
+        {/* Two-Factor Authentication */}
+        <TwoFactorSetup />
+
         {/* Session Management */}
         <SessionManagement />
 
