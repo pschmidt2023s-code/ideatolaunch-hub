@@ -374,6 +374,11 @@ Deno.serve(async (req) => {
   const code = url.searchParams.get("code") || "";
 
   return new Response(renderPage(code), {
-    headers: { "Content-Type": "text/html; charset=utf-8" },
+    status: 200,
+    headers: {
+      "Content-Type": "text/html; charset=utf-8",
+      "Content-Disposition": "inline",
+      "Cache-Control": "no-cache",
+    },
   });
 });
