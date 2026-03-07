@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { SEO } from "@/components/SEO";
@@ -6,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { trackEvent } from "@/lib/analytics";
-import { Users, Lightbulb, BookOpen, Zap, MessageCircle, CheckCircle2 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { Users, Lightbulb, BookOpen, Zap, MessageCircle, CheckCircle2, TrendingUp, Handshake, Search } from "lucide-react";
 import { toast } from "sonner";
 
 export default function Community() {
