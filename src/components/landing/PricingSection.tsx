@@ -1,4 +1,4 @@
-import { Check, Star, AlertTriangle, TrendingUp, ShieldCheck, Crown, Shield } from "lucide-react";
+import { Check, Star, AlertTriangle, TrendingUp, ShieldCheck, Crown, Shield, Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -22,6 +22,7 @@ export function PricingSection() {
   const [loadingBuilder, setLoadingBuilder] = useState(false);
   const [loadingPro, setLoadingPro] = useState(false);
   const [loadingExecution, setLoadingExecution] = useState(false);
+  const [loadingTrading, setLoadingTrading] = useState(false);
 
   const [billingCycle, setBillingCycle] = useState<"yearly" | "monthly">("yearly");
   const isDE = i18n.language === "de";
@@ -72,14 +73,15 @@ export function PricingSection() {
     }
   };
 
-  const monthlyPrices = { builder: 29, pro: 79, execution: 159 };
+  const monthlyPrices = { builder: 29, pro: 79, execution: 159, trading: 199 };
   const yearlyPrices = {
     builder: Math.round(29 * 0.85),
     pro: Math.round(79 * 0.85),
     execution: Math.round(159 * 0.85),
+    trading: Math.round(199 * 0.85),
   };
 
-  const getPrice = (tier: "builder" | "pro" | "execution") => (isYearly ? yearlyPrices[tier] : monthlyPrices[tier]);
+  const getPrice = (tier: "builder" | "pro" | "execution" | "trading") => (isYearly ? yearlyPrices[tier] : monthlyPrices[tier]);
   const formatPrice = (amount: number) => (isDE ? `${amount} €` : `€${amount}`);
 
   const freePlanFeatures: PlanFeature[] = isDE
@@ -164,6 +166,28 @@ export function PricingSection() {
         { label: "Advanced AI Copilot", desc: "CEO-level recommendations & next-best-action" },
       ];
 
+  const tradingFeatures: PlanFeature[] = isDE
+    ? [
+        { label: "Risk of Ruin Engine", desc: "Monte-Carlo-Simulation deiner Account-Überlebenswahrscheinlichkeit" },
+        { label: "Account Connector", desc: "Binance, Bybit, OKX & Kraken – Read-Only Analyse" },
+        { label: "Liquidation Risk Scanner", desc: "Echtzeit-Abstand zur Liquidation für alle Futures-Positionen" },
+        { label: "AI Edge Detector", desc: "KI erkennt Edge-Stärke, Decline & Entry-Qualität" },
+        { label: "Market Regime AI", desc: "Erkennt Marktphasen: Trend, Sideways, Bear, Bull" },
+        { label: "Emotional Trading Detector", desc: "Erkennt Overtrading, Tilt & Risk Violations" },
+        { label: "Portfolio Exposure Map", desc: "Visualisierung deiner Exposure nach Asset" },
+        { label: "AI Trade Review", desc: "KI analysiert Trade History: FOMO, Early Exits, Risk Management" },
+      ]
+    : [
+        { label: "Risk of Ruin Engine", desc: "Monte Carlo simulation of your account survival probability" },
+        { label: "Account Connector", desc: "Binance, Bybit, OKX & Kraken – read-only analysis" },
+        { label: "Liquidation Risk Scanner", desc: "Real-time distance to liquidation for all futures positions" },
+        { label: "AI Edge Detector", desc: "AI detects edge strength, decline & entry quality" },
+        { label: "Market Regime AI", desc: "Detects market phases: trend, sideways, bear, bull" },
+        { label: "Emotional Trading Detector", desc: "Detects overtrading, tilt & risk violations" },
+        { label: "Portfolio Exposure Map", desc: "Visualize your exposure by asset" },
+        { label: "AI Trade Review", desc: "AI analyzes trade history: FOMO, early exits, risk management" },
+      ];
+
   const plans = [
     {
       name: "Free",
@@ -246,6 +270,29 @@ export function PricingSection() {
       roiText: isDE
         ? "Eine falsche Produktionsentscheidung kann 8.000–20.000 € kosten."
         : "One wrong production decision can cost €8,000–€20,000.",
+    },
+    {
+      name: "Trading Intelligence",
+      price: formatPrice(getPrice("trading")),
+      period: "/ " + (isDE ? "Monat" : "month"),
+      tagline: isDE ? "Für Crypto & Futures Trader." : "For crypto & futures traders.",
+      features: tradingFeatures,
+      cta: loadingTrading
+        ? isDE
+          ? "Weiterleitung zu Stripe..."
+          : "Redirecting to Stripe..."
+        : isDE
+          ? "Trading starten"
+          : "Start Trading",
+      highlighted: false,
+      badge: "NEW",
+      onClick: () => handleCheckout("execution", setLoadingTrading),
+      loading: loadingTrading,
+      tier: "trading" as const,
+      anchor: null as string | null,
+      roiText: isDE
+        ? "Ein vermiedener Liquidation-Hit = 2.000–50.000 € gespart."
+        : "One avoided liquidation hit = €2,000–€50,000 saved.",
     },
   ];
 
@@ -347,10 +394,11 @@ export function PricingSection() {
           </Link>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {plans.map((plan) => {
             const isExecutionTier = plan.tier === "execution";
             const isProTier = plan.tier === "pro";
+            const isTradingTier = plan.tier === "trading";
 
             return (
               <div
@@ -360,6 +408,8 @@ export function PricingSection() {
                     ? "border-accent bg-card shadow-lg ring-1 ring-accent/20 scale-[1.02] border-glow"
                     : isExecutionTier
                       ? "border-amber-500/40 bg-gradient-to-b from-card to-amber-500/5 shadow-lg ring-1 ring-amber-500/20"
+                    : isTradingTier
+                      ? "border-blue-500/40 bg-gradient-to-b from-card to-blue-500/5 shadow-lg ring-1 ring-blue-500/20"
                       : "bg-card shadow-card"
                 }`}
               >
@@ -370,12 +420,15 @@ export function PricingSection() {
                         ? "bg-accent text-accent-foreground"
                         : isExecutionTier
                           ? "bg-gradient-to-r from-amber-600 to-yellow-500 text-white"
-                          : isProTier
-                            ? "bg-gradient-to-r from-amber-600 to-yellow-500 text-white"
-                            : "bg-primary text-primary-foreground"
+                          : isTradingTier
+                            ? "bg-gradient-to-r from-blue-600 to-cyan-500 text-white"
+                            : isProTier
+                              ? "bg-gradient-to-r from-amber-600 to-yellow-500 text-white"
+                              : "bg-primary text-primary-foreground"
                     }`}
                   >
                     {(isExecutionTier || isProTier) && <Crown className="h-3 w-3" />}
+                    {isTradingTier && <Activity className="h-3 w-3" />}
                     {plan.badge}
                   </div>
                 )}
@@ -388,6 +441,14 @@ export function PricingSection() {
                     {isDE
                       ? "Für Gründer, die echtes Kapital und echtes Risiko managen."
                       : "For founders managing real capital and real risk."}
+                  </p>
+                )}
+
+                {isTradingTier && (
+                  <p className="text-xs text-blue-500/80 mt-0.5 italic">
+                    {isDE
+                      ? "Risk Intelligence für professionelle Trader."
+                      : "Risk intelligence for professional traders."}
                   </p>
                 )}
 
@@ -421,7 +482,7 @@ export function PricingSection() {
                 <ul className="mt-6 space-y-2.5">
                   {plan.features.map((f) => (
                     <li key={f.label} className="flex items-start gap-2.5 text-sm">
-                      <Check className={`h-4 w-4 shrink-0 mt-0.5 ${isExecutionTier ? "text-amber-500" : "text-success"}`} />
+                      <Check className={`h-4 w-4 shrink-0 mt-0.5 ${isExecutionTier ? "text-amber-500" : isTradingTier ? "text-blue-500" : "text-success"}`} />
                       <div>
                         <span className="font-medium">{f.label}</span>
                         <p className="text-xs text-muted-foreground mt-0.5">{f.desc}</p>
@@ -436,11 +497,13 @@ export function PricingSection() {
                       ? "bg-accent text-accent-foreground hover:bg-accent/90"
                       : isExecutionTier
                         ? "bg-gradient-to-r from-amber-600 to-yellow-500 text-white hover:from-amber-700 hover:to-yellow-600 shadow-md border-0"
-                        : isProTier
-                          ? "bg-gradient-to-r from-amber-600 to-yellow-500 text-white hover:from-amber-700 hover:to-yellow-600 shadow-md border-0"
-                          : ""
+                        : isTradingTier
+                          ? "bg-gradient-to-r from-blue-600 to-cyan-500 text-white hover:from-blue-700 hover:to-cyan-600 shadow-md border-0"
+                          : isProTier
+                            ? "bg-gradient-to-r from-amber-600 to-yellow-500 text-white hover:from-amber-700 hover:to-yellow-600 shadow-md border-0"
+                            : ""
                   }`}
-                  variant={plan.highlighted || isExecutionTier || isProTier ? "default" : "outline"}
+                  variant={plan.highlighted || isExecutionTier || isProTier || isTradingTier ? "default" : "outline"}
                   onClick={plan.onClick}
                   disabled={plan.loading}
                 >
@@ -473,43 +536,45 @@ export function PricingSection() {
                   <th className="px-4 py-3 text-center font-semibold text-accent">Builder</th>
                   <th className="px-4 py-3 text-center font-semibold">Pro</th>
                   <th className="px-4 py-3 text-center font-semibold text-amber-600">Execution OS</th>
+                  <th className="px-4 py-3 text-center font-semibold text-blue-500">Trading</th>
                 </tr>
               </thead>
               <tbody className="text-muted-foreground">
                 {(isDE
                   ? [
-                      ["Market Reality Engine", "—", "Basis Demand", "Voll + Benchmark", "✓ Voll"],
-                      ["Cashflow Survival Engine", "—", "Timeline", "Voll + Stress-Test", "✓ Voll"],
-                      ["Stress Test Simulation", "—", "—", "✓ + Worst Case", "✓ Voll"],
-                      ["AI Founder Copilot", "—", "3 Empfehlungen", "Voll + Chat", "Advanced CEO-Level"],
-                      ["Business Recovery Mode", "—", "—", "✓ Voll", "✓ Voll"],
-                      ["Kosten-Kalkulator", "Einfach", "Voll", "Voll + Szenarien", "✓ Voll"],
-                      ["Kapitalschutz-Alerts", "—", "—", "—", "✓ Echtzeit"],
-                      ["Benchmark Intelligence", "—", "—", "—", "✓ Anonymer Vergleich"],
-                      ["Execution Planner", "—", "—", "—", "✓ Wöchentlich"],
-                      ["Investor-Ready Reports", "—", "—", "—", "✓ Reports"],
-                      ["Advanced Copilot", "—", "—", "—", "✓ CEO-Level"],
+                      ["Market Reality Engine", "—", "Basis Demand", "Voll + Benchmark", "✓ Voll", "—"],
+                      ["Cashflow Survival Engine", "—", "Timeline", "Voll + Stress-Test", "✓ Voll", "—"],
+                      ["AI Founder Copilot", "—", "3 Empfehlungen", "Voll + Chat", "Advanced CEO-Level", "—"],
+                      ["Kosten-Kalkulator", "Einfach", "Voll", "Voll + Szenarien", "✓ Voll", "—"],
+                      ["Risk of Ruin Engine", "—", "—", "—", "—", "✓ Voll"],
+                      ["Account Connector", "—", "—", "—", "—", "✓ 4 Exchanges"],
+                      ["Liquidation Scanner", "—", "—", "—", "—", "✓ Echtzeit"],
+                      ["AI Edge Detector", "—", "—", "—", "—", "✓ Voll"],
+                      ["Market Regime AI", "—", "—", "—", "—", "✓ Voll"],
+                      ["AI Trade Review", "—", "—", "—", "—", "✓ Voll"],
+                      ["Emotional Trading Detector", "—", "—", "—", "—", "✓ Voll"],
                     ]
                   : [
-                      ["Market Reality Engine", "—", "Basic Demand", "Full + Benchmark", "✓ Full"],
-                      ["Cashflow Survival Engine", "—", "Timeline", "Full + Stress Test", "✓ Full"],
-                      ["Stress Test Simulation", "—", "—", "✓ + Worst Case", "✓ Full"],
-                      ["AI Founder Copilot", "—", "3 Suggestions", "Full + Chat", "Advanced CEO-Level"],
-                      ["Business Recovery Mode", "—", "—", "✓ Full", "✓ Full"],
-                      ["Cost Calculator", "Basic", "Full", "Full + Scenarios", "✓ Full"],
-                      ["Capital Protection Alerts", "—", "—", "—", "✓ Real-time"],
-                      ["Benchmark Intelligence", "—", "—", "—", "✓ Anonymous Comparison"],
-                      ["Execution Planner", "—", "—", "—", "✓ Weekly"],
-                      ["Investor-Ready Reports", "—", "—", "—", "✓ Reports"],
-                      ["Advanced Copilot", "—", "—", "—", "✓ CEO-Level"],
+                      ["Market Reality Engine", "—", "Basic Demand", "Full + Benchmark", "✓ Full", "—"],
+                      ["Cashflow Survival Engine", "—", "Timeline", "Full + Stress Test", "✓ Full", "—"],
+                      ["AI Founder Copilot", "—", "3 Suggestions", "Full + Chat", "Advanced CEO-Level", "—"],
+                      ["Cost Calculator", "Basic", "Full", "Full + Scenarios", "✓ Full", "—"],
+                      ["Risk of Ruin Engine", "—", "—", "—", "—", "✓ Full"],
+                      ["Account Connector", "—", "—", "—", "—", "✓ 4 Exchanges"],
+                      ["Liquidation Scanner", "—", "—", "—", "—", "✓ Real-time"],
+                      ["AI Edge Detector", "—", "—", "—", "—", "✓ Full"],
+                      ["Market Regime AI", "—", "—", "—", "—", "✓ Full"],
+                      ["AI Trade Review", "—", "—", "—", "—", "✓ Full"],
+                      ["Emotional Trading Detector", "—", "—", "—", "—", "✓ Full"],
                     ]
-                ).map(([feature, free, builder, pro, execution]) => (
+                ).map(([feature, free, builder, pro, execution, trading]) => (
                   <tr key={feature} className="border-b last:border-b-0">
                     <td className="px-4 py-2.5 font-medium text-foreground">{feature}</td>
                     <td className="px-4 py-2.5 text-center">{free}</td>
                     <td className="px-4 py-2.5 text-center font-medium text-accent">{builder}</td>
                     <td className="px-4 py-2.5 text-center">{pro}</td>
                     <td className="px-4 py-2.5 text-center font-medium text-amber-600">{execution}</td>
+                    <td className="px-4 py-2.5 text-center font-medium text-blue-500">{trading}</td>
                   </tr>
                 ))}
               </tbody>
