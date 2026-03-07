@@ -338,6 +338,9 @@ export default function TradingDashboard() {
         {/* ── Forecast ── */}
         <TradingForecastPanel forecast={tradingForecast} />
 
+        {/* ── AI Insights ── */}
+        <AIPageInsights pageContext="Trading Dashboard – Winrate, RRR, Risk per Trade, Leverage, Account Management" title="AI Trading Insights" />
+
         {/* ── Legal ── */}
         <FinancialDisclaimer />
       </div>

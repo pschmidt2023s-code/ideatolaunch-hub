@@ -349,6 +349,9 @@ export default function InvestorDashboard() {
           </div>
         </div>
 
+        {/* ── AI Insights ── */}
+        <AIPageInsights pageContext="Investor Dashboard – Portfolio-Allokation, Risikometriken, Diversifikation" title="AI Investor Insights" />
+
         {/* ── Legal ── */}
         <FinancialDisclaimer />
       </div>

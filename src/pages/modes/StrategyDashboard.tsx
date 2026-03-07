@@ -113,6 +113,8 @@ export default function StrategyDashboard() {
             ))}
           </div>
         </div>
+
+        <AIPageInsights pageContext="Strategy Dashboard – Decision Quality, Time Pressure, Opportunity Cost, Reversibility" title="AI Strategy Insights" />
       </div>
     </DashboardLayout>
   );

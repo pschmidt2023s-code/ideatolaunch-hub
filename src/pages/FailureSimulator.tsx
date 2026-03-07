@@ -178,6 +178,7 @@ export default function FailureSimulator() {
           </div>
         </div>
       </div>
+      <AIPageInsights pageContext="Failure Simulator – Simulation von Werbekosten, Retourenquote, Lieferverzögerungen und Conversion-Rate" title="AI Risiko-Insights" />
     </DashboardLayout>
   );
 }
