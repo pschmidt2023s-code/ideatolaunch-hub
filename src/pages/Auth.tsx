@@ -10,7 +10,15 @@ import { toast } from "sonner";
 import { ArrowLeft, Loader2, ShieldCheck } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { SEO } from "@/components/SEO";
-import { validatePasswordStrength, checkRateLimit, logSecurityEvent } from "@/lib/security";
+import {
+  validatePasswordStrength,
+  checkRateLimit,
+  logSecurityEvent,
+  checkAccountLock,
+  recordFailedLogin,
+  resetFailedLogins,
+  isValidEmail,
+} from "@/lib/security";
 import { ForgotPassword } from "@/components/ForgotPassword";
 
 export default function Auth() {
@@ -29,14 +37,34 @@ export default function Auth() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim() || !password.trim()) return;
+    const trimmedEmail = email.trim().toLowerCase();
+    const trimmedPassword = password.trim();
 
-    if (!checkRateLimit(`auth_${email}`, 5, 60_000)) {
+    if (!trimmedEmail || !trimmedPassword) return;
+
+    // Email validation
+    if (!isValidEmail(trimmedEmail)) {
+      toast.error("Bitte gib eine gültige E-Mail-Adresse ein.");
+      return;
+    }
+
+    // Brute force check
+    const lockStatus = checkAccountLock(trimmedEmail);
+    if (lockStatus.locked) {
+      const minutes = Math.ceil(lockStatus.remainingMs / 60_000);
+      toast.error(`Account vorübergehend gesperrt. Versuche es in ${minutes} Minuten erneut.`);
+      logSecurityEvent("account_locked", { email_hint: trimmedEmail.slice(0, 3) + "***", remaining_minutes: minutes });
+      return;
+    }
+
+    // Rate limit check
+    if (!checkRateLimit(`auth_${trimmedEmail}`, 5, 60_000)) {
       toast.error("Zu viele Versuche. Bitte warte eine Minute.");
       return;
     }
 
-    if (isSignUp && !validatePasswordStrength(password).isValid) {
+    // Password policy for signups
+    if (isSignUp && !validatePasswordStrength(trimmedPassword).isValid) {
       toast.error("Passwort erfüllt nicht die Sicherheitsanforderungen.");
       return;
     }
@@ -44,24 +72,46 @@ export default function Auth() {
     setLoading(true);
 
     const { error } = isSignUp
-      ? await signUp(email, password)
-      : await signIn(email, password);
+      ? await signUp(trimmedEmail, trimmedPassword)
+      : await signIn(trimmedEmail, trimmedPassword);
 
     setLoading(false);
 
     if (error) {
+      recordFailedLogin(trimmedEmail);
       logSecurityEvent("failed_login", {
-        email_hint: email.slice(0, 3) + "***",
+        email_hint: trimmedEmail.slice(0, 3) + "***",
         is_signup: isSignUp,
         error: error.message,
       });
+
+      // Log to login_attempts table
+      try {
+        await supabase.from("login_attempts" as any).insert({
+          email_hint: trimmedEmail.slice(0, 3) + "***@" + trimmedEmail.split("@")[1],
+          success: false,
+          user_agent_hint: navigator.userAgent.slice(0, 100),
+        } as any);
+      } catch { /* non-critical */ }
+
       toast.error(error.message);
       return;
     }
 
+    // Successful login – reset brute force counter
+    resetFailedLogins(trimmedEmail);
+
+    // Log successful attempt
+    try {
+      await supabase.from("login_attempts" as any).insert({
+        email_hint: trimmedEmail.slice(0, 3) + "***@" + trimmedEmail.split("@")[1],
+        success: true,
+        user_agent_hint: navigator.userAgent.slice(0, 100),
+      } as any);
+    } catch { /* non-critical */ }
+
     if (isSignUp) {
       trackEvent("signup_completed");
-      // If invite code was provided, redeem it after signup
       if (inviteCode.trim()) {
         toast.success("Account erstellt! Code wird eingelöst…");
         setTimeout(async () => {
@@ -123,13 +173,13 @@ export default function Auth() {
               </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4" autoComplete="on">
               <div className="space-y-2">
                 <Label htmlFor="email">{t("auth.email")}</Label>
                 <Input
                   id="email" type="email" placeholder={t("auth.emailPlaceholder")}
                   value={email} onChange={(e) => setEmail(e.target.value)}
-                  required maxLength={255}
+                  required maxLength={255} autoComplete="email"
                 />
               </div>
               <div className="space-y-2">
@@ -149,6 +199,7 @@ export default function Auth() {
                   id="password" type="password" placeholder={t("auth.passwordPlaceholder")}
                   value={password} onChange={(e) => setPassword(e.target.value)}
                   required minLength={8} maxLength={128}
+                  autoComplete={isSignUp ? "new-password" : "current-password"}
                 />
 
                 {isSignUp && password.length > 0 && pwValidation && (
@@ -178,10 +229,11 @@ export default function Auth() {
                   <Input
                     id="inviteCode"
                     value={inviteCode}
-                    onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
+                    onChange={(e) => setInviteCode(e.target.value.toUpperCase().replace(/[^A-Z0-9\-]/g, ""))}
                     placeholder="z.B. VIP-3F7A"
                     className="font-mono tracking-wider"
                     maxLength={10}
+                    autoComplete="off"
                   />
                 </div>
               )}

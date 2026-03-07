@@ -1,0 +1,16 @@
+/*
+  Cloudflare Pages _headers file
+  Applied to all responses from the production deployment.
+*/
+
+/*
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()
+  X-XSS-Protection: 1; mode=block
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Resource-Policy: same-origin
+  Cross-Origin-Embedder-Policy: credentialless
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev https://*.supabase.co; connect-src 'self' https://jzbruehoejyxqbjqglhm.supabase.co https://ai.gateway.lovable.dev https://raw.githubusercontent.com wss://jzbruehoejyxqbjqglhm.supabase.co; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests
