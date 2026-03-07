@@ -296,7 +296,7 @@ export default function CryptoIntelligence() {
                 />
                 <MetricCard
                   label="Expectancy"
-                  value={`$${edgeResult.expectancy}`}
+                  value={`${edgeResult.expectancy}€`}
                   sub="Expected profit per trade"
                   level={edgeResult.expectancy > 0 ? "low" : "high"}
                 />
