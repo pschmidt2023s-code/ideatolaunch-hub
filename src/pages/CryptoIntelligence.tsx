@@ -10,6 +10,10 @@ import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FinancialDisclaimer } from "@/components/dashboard/FinancialDisclaimer";
+import { PortfolioDashboard } from "@/components/trading/PortfolioDashboard";
+import { AdvancedAnalytics } from "@/components/trading/AdvancedAnalytics";
+import { RiskSuite } from "@/components/trading/RiskSuite";
+import { TradeJournal } from "@/components/trading/TradeJournal";
 import { cn } from "@/lib/utils";
 import {
   calculateStrategySurvival,
