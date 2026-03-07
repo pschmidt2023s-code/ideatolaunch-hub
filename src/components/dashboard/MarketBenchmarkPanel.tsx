@@ -75,9 +75,15 @@ export function MarketBenchmarkPanel() {
       <div className="flex flex-col items-center justify-center py-16 text-center">
         <BarChart3 className="h-10 w-10 text-muted-foreground mb-4" />
         <h3 className="text-lg font-semibold">Benchmark nicht verfügbar</h3>
-        <p className="mt-1 text-sm text-muted-foreground max-w-sm">
+        <p className="mt-1 text-sm text-muted-foreground max-w-sm mb-4">
           Fülle dein Finanzmodell aus, um dich mit dem Markt zu vergleichen.
         </p>
+        <a
+          href="/dashboard/step/2"
+          className="inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-accent-foreground hover:bg-accent/90 transition-colors"
+        >
+          Finanzmodell starten <BarChart3 className="h-3.5 w-3.5" />
+        </a>
       </div>
     );
   }
