@@ -124,13 +124,13 @@ export function AdvancedAnalytics({ winrate, riskPerTrade, rrr, accountSize, tra
                 </defs>
                 <XAxis dataKey="trade" tick={{ fontSize: 10 }} tickLine={false} />
                 <YAxis tick={{ fontSize: 10 }} tickFormatter={v => `${(v / 1000).toFixed(0)}k`} tickLine={false} />
-                <Tooltip formatter={(v: number) => [`$${v.toLocaleString()}`, "Balance"]} />
+                <Tooltip formatter={(v: number) => [`${v.toLocaleString("de-DE")}€`, "Balance"]} />
                 <Area type="monotone" dataKey="balance" stroke="hsl(var(--primary))" fill="url(#eqGrad)" strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
-            <BigNum label="Final" value={`$${simulation.finalBalance.toLocaleString()}`} color={simulation.finalBalance > accountSize ? "text-green-500" : "text-destructive"} />
+            <BigNum label="Final" value={`${simulation.finalBalance.toLocaleString("de-DE")}€`} color={simulation.finalBalance > accountSize ? "text-green-500" : "text-destructive"} />
             <BigNum label="Return" value={`${simulation.avgReturn}%`} color={simulation.avgReturn > 0 ? "text-green-500" : "text-destructive"} />
             <BigNum label="Max DD" value={`${simulation.maxDrawdown}%`} color="text-yellow-500" />
             <BigNum label="Profit Prob." value={`${simulation.profitProbability}%`} />

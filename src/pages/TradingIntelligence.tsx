@@ -348,9 +348,9 @@ export default function TradingIntelligence() {
                 </div>
               </div>
               <div className="grid sm:grid-cols-4 gap-6">
-                <BigNumber label="Liquidation Price" value={`$${liquidation.liquidationPrice}`} color="text-destructive" />
+                <BigNumber label="Liquidation Price" value={`${liquidation.liquidationPrice}€`} color="text-destructive" />
                 <BigNumber label="Distance" value={`${liquidation.liquidationDistance}%`} />
-                <BigNumber label="Margin Used" value={`$${liquidation.marginUsed}`} />
+                <BigNumber label="Margin Used" value={`${liquidation.marginUsed}€`} />
                 <BigNumber label="Safety Buffer" value={`${liquidation.safetyBuffer}%`} color={liquidation.riskLevel === "safe" ? "text-green-500" : "text-destructive"} />
               </div>
               <div className="mt-4 flex justify-center"><StatusPill label={liquidation.riskLevel.toUpperCase()} level={liquidation.riskLevel} /></div>

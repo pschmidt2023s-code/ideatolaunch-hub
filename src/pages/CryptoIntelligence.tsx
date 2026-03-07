@@ -296,7 +296,7 @@ export default function CryptoIntelligence() {
                 />
                 <MetricCard
                   label="Expectancy"
-                  value={`$${edgeResult.expectancy}`}
+                  value={`${edgeResult.expectancy}€`}
                   sub="Expected profit per trade"
                   level={edgeResult.expectancy > 0 ? "low" : "high"}
                 />
@@ -479,7 +479,7 @@ export default function CryptoIntelligence() {
                 </CardContent>
               </Card>
               <div className="grid gap-4 sm:grid-cols-3">
-                <MetricCard label="Liquidation Price" value={`$${liqResult.liquidationPrice.toLocaleString()}`} sub={`Distance: ${liqResult.distancePercent}%`} level={liqResult.riskLevel === "safe" ? "low" : liqResult.riskLevel === "warning" ? "medium" : "high"} />
+                <MetricCard label="Liquidation Price" value={`${liqResult.liquidationPrice.toLocaleString("de-DE")}€`} sub={`Distance: ${liqResult.distancePercent}%`} level={liqResult.riskLevel === "safe" ? "low" : liqResult.riskLevel === "warning" ? "medium" : "high"} />
                 <MetricCard label="Safety Buffer" value={`${liqResult.safetyBuffer}%`} level={liqResult.riskLevel === "safe" ? "low" : liqResult.riskLevel === "warning" ? "medium" : "high"} progress={Math.min(100, liqResult.safetyBuffer)} />
                 <MetricCard label="Risk Level" value={liqResult.riskLevel.toUpperCase()} level={liqResult.riskLevel === "safe" ? "low" : liqResult.riskLevel === "warning" ? "medium" : "high"} />
               </div>
@@ -503,7 +503,7 @@ export default function CryptoIntelligence() {
               </Card>
               <div className="grid gap-4 sm:grid-cols-3">
                 <MetricCard label="Annualized Rate" value={`${fundingResult.annualizedRate}%`} sub={`Sentiment: ${fundingResult.sentiment}`} level={Math.abs(fundingResult.annualizedRate) > 50 ? "high" : Math.abs(fundingResult.annualizedRate) > 20 ? "medium" : "low"} />
-                <MetricCard label="Cost / 24h" value={`$${fundingResult.costPer24h}`} level={fundingResult.costPer24h > 50 ? "high" : fundingResult.costPer24h > 10 ? "medium" : "low"} />
+                <MetricCard label="Cost / 24h" value={`${fundingResult.costPer24h}€`} level={fundingResult.costPer24h > 50 ? "high" : fundingResult.costPer24h > 10 ? "medium" : "low"} />
                 <Card className="p-5"><p className="section-label mb-2">Recommendation</p><p className="text-sm">{fundingResult.recommendation}</p></Card>
               </div>
             </Section>
