@@ -426,6 +426,81 @@ export type Database = {
         }
         Relationships: []
       }
+      community_experiments: {
+        Row: {
+          budget: string | null
+          created_at: string
+          description: string | null
+          experiment_type: string
+          goal: string | null
+          id: string
+          key_insight: string | null
+          platform: string | null
+          result: string | null
+          tags: string[] | null
+          title: string
+          updated_at: string
+          upvote_count: number
+          user_id: string
+        }
+        Insert: {
+          budget?: string | null
+          created_at?: string
+          description?: string | null
+          experiment_type?: string
+          goal?: string | null
+          id?: string
+          key_insight?: string | null
+          platform?: string | null
+          result?: string | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          upvote_count?: number
+          user_id: string
+        }
+        Update: {
+          budget?: string | null
+          created_at?: string
+          description?: string | null
+          experiment_type?: string
+          goal?: string | null
+          id?: string
+          key_insight?: string | null
+          platform?: string | null
+          result?: string | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          upvote_count?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      community_log_followers: {
+        Row: {
+          brand_name: string
+          created_at: string
+          followed_user_id: string
+          follower_id: string
+          id: string
+        }
+        Insert: {
+          brand_name: string
+          created_at?: string
+          followed_user_id: string
+          follower_id: string
+          id?: string
+        }
+        Update: {
+          brand_name?: string
+          created_at?: string
+          followed_user_id?: string
+          follower_id?: string
+          id?: string
+        }
+        Relationships: []
+      }
       community_posts: {
         Row: {
           category: string | null
@@ -547,6 +622,51 @@ export type Database = {
           reply_count?: number
           review_count?: number
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      community_startup_logs: {
+        Row: {
+          brand_name: string
+          content: string
+          created_at: string
+          day_number: number
+          follower_count: number
+          id: string
+          industry: string | null
+          milestone_type: string | null
+          tags: string[] | null
+          title: string
+          upvote_count: number
+          user_id: string
+        }
+        Insert: {
+          brand_name: string
+          content: string
+          created_at?: string
+          day_number?: number
+          follower_count?: number
+          id?: string
+          industry?: string | null
+          milestone_type?: string | null
+          tags?: string[] | null
+          title: string
+          upvote_count?: number
+          user_id: string
+        }
+        Update: {
+          brand_name?: string
+          content?: string
+          created_at?: string
+          day_number?: number
+          follower_count?: number
+          id?: string
+          industry?: string | null
+          milestone_type?: string | null
+          tags?: string[] | null
+          title?: string
+          upvote_count?: number
           user_id?: string
         }
         Relationships: []
