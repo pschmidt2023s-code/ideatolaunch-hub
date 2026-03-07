@@ -1225,6 +1225,63 @@ export type Database = {
           },
         ]
       }
+      trading_accounts: {
+        Row: {
+          account_data: Json | null
+          api_key_hash: string
+          api_secret_encrypted: string
+          balances: Json | null
+          created_at: string
+          exchange: string
+          id: string
+          label: string | null
+          last_synced_at: string | null
+          positions: Json | null
+          read_only: boolean
+          risk_metrics: Json | null
+          status: string
+          trade_history: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_data?: Json | null
+          api_key_hash: string
+          api_secret_encrypted: string
+          balances?: Json | null
+          created_at?: string
+          exchange: string
+          id?: string
+          label?: string | null
+          last_synced_at?: string | null
+          positions?: Json | null
+          read_only?: boolean
+          risk_metrics?: Json | null
+          status?: string
+          trade_history?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_data?: Json | null
+          api_key_hash?: string
+          api_secret_encrypted?: string
+          balances?: Json | null
+          created_at?: string
+          exchange?: string
+          id?: string
+          label?: string | null
+          last_synced_at?: string | null
+          positions?: Json | null
+          read_only?: boolean
+          risk_metrics?: Json | null
+          status?: string
+          trade_history?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       unboxing_profiles: {
         Row: {
           brand_id: string
