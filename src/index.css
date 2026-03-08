@@ -166,11 +166,15 @@
 @layer base {
   * {
     @apply border-border;
+    /* GPU-accelerated compositing on WebKit */
+    -webkit-tap-highlight-color: transparent;
   }
 
   /* Prevent horizontal scroll globally */
   html {
     overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
 
   body {
@@ -178,6 +182,10 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
+    /* Native momentum scrolling on iOS */
+    -webkit-overflow-scrolling: touch;
+    /* Prevent pull-to-refresh on iOS when not needed */
+    overscroll-behavior-y: none;
   }
 
   h1 {
@@ -304,6 +312,9 @@
   .text-gradient {
     @apply bg-clip-text text-transparent;
     background-image: var(--gradient-accent);
+    /* Fix Safari text-gradient rendering */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 
   .shadow-card {
@@ -316,6 +327,14 @@
 
   .shadow-glow-accent {
     box-shadow: var(--shadow-glow-accent);
+  }
+
+  /* Safari GPU acceleration for animations */
+  .gpu-accelerated {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
   }
 
   /* Safe area for mobile */
@@ -366,16 +385,21 @@
   .stagger-4 { animation-delay: 320ms; }
   .stagger-5 { animation-delay: 400ms; }
 
-  /* ── Interactive card hover ── */
+  /* ── Interactive card hover (Safari GPU-optimized) ── */
   .card-interactive {
     @apply transition-all duration-200;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    will-change: transform, box-shadow;
   }
   .card-interactive:hover {
-    transform: translateY(-2px);
+    -webkit-transform: translateY(-2px) translateZ(0);
+    transform: translateY(-2px) translateZ(0);
     box-shadow: var(--shadow-md);
   }
   .card-interactive:active {
-    transform: translateY(0);
+    -webkit-transform: translateY(0) translateZ(0);
+    transform: translateY(0) translateZ(0);
   }
 
   /* ── Focus ring utility ── */
@@ -389,4 +413,23 @@
     background-size: 200% 100%;
     animation: shimmer 2s ease-in-out infinite;
   }
+
+  /* ── iOS Safe Areas ── */
+  .pb-safe {
+    padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+  }
+  .pt-safe {
+    padding-top: max(0px, env(safe-area-inset-top));
+  }
+  .px-safe {
+    padding-left: max(0px, env(safe-area-inset-left));
+    padding-right: max(0px, env(safe-area-inset-right));
+  }
+
+  /* ── iOS scroll containers ── */
+  .scroll-ios {
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
+  }
+}
 }
