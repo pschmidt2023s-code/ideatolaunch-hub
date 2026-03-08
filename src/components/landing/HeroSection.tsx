@@ -2,6 +2,7 @@ import { ArrowRight, Shield, TrendingUp, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { HeroDashboardMockup } from "./HeroDashboardMockup";
 
 export function HeroSection() {
   const navigate = useNavigate();
@@ -11,8 +12,13 @@ export function HeroSection() {
   return (
     <section className="relative overflow-hidden px-4 sm:px-6 pt-40 pb-20 md:pt-52 md:pb-28" aria-label="Hero">
       {/* Multi-layer backdrop */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--primary)/0.04),transparent_50%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,hsl(var(--accent)/0.02),transparent_40%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--primary)/0.06),transparent_50%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,hsl(var(--accent)/0.04),transparent_40%)]" />
+      {/* Animated grid pattern */}
+      <div className="absolute inset-0 opacity-[0.015] dark:opacity-[0.03]" style={{
+        backgroundImage: `linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)`,
+        backgroundSize: "60px 60px",
+      }} />
 
       <div className="container relative mx-auto max-w-3xl text-center">
         {/* Badge */}
@@ -51,11 +57,11 @@ export function HeroSection() {
         <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row animate-fade-in-up" style={{ animationDelay: "500ms" }}>
           <Button
             size="lg"
-            className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90 px-8 text-base shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
+            className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90 px-8 text-base shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 group"
             onClick={() => navigate("/auth?tab=signup")}
           >
             {isDE ? "Kostenlos starten" : "Start free"}
-            <ArrowRight className="h-4 w-4" />
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
           </Button>
           <Button
             variant="outline"
@@ -84,6 +90,9 @@ export function HeroSection() {
             <span>{isDE ? "2.400+ Gründer" : "2,400+ founders"}</span>
           </div>
         </div>
+
+        {/* Animated Dashboard Mockup */}
+        <HeroDashboardMockup />
       </div>
     </section>
   );

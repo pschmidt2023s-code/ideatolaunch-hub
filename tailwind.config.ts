@@ -124,6 +124,14 @@ export default {
           from: { opacity: "0", transform: "translateY(8px)" },
           to: { opacity: "1", transform: "translateY(0)" },
         },
+        "draw-line": {
+          from: { strokeDashoffset: "500", strokeDasharray: "500" },
+          to: { strokeDashoffset: "0", strokeDasharray: "500" },
+        },
+        "float": {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-6px)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -135,6 +143,8 @@ export default {
         "shimmer": "shimmer 2s ease-in-out infinite",
         "pulse-subtle": "pulse-subtle 2s ease-in-out infinite",
         "slide-up-fade": "slide-up-fade 0.3s ease-out both",
+        "draw-line": "draw-line 1.5s ease-out both",
+        "float": "float 4s ease-in-out infinite",
       },
     },
   },
