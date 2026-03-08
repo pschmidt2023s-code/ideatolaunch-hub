@@ -276,9 +276,7 @@ const App = () => {
                    <FeedbackWidget />
                 </HashRouter>
               </TooltipProvider>
-              </ModeProvider>
-            </BrandProvider>
-          </AuthProvider>
+          </AppProvider>
         </QueryClientProvider>
         </ThemeProvider>
       </ErrorBoundary>
