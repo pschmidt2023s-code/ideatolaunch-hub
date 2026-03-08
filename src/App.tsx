@@ -6,8 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HashRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
-import { BrandProvider } from "@/hooks/useBrand";
-import { ModeProvider } from "@/hooks/useMode";
+import { AppProvider } from "@/hooks/useAppContext";
 import { ProtectedRoute, AdminRoute } from "@/components/ProtectedRoute";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
@@ -169,8 +168,7 @@ const App = () => {
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem storageKey="brandos-theme">
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
-            <BrandProvider>
-              <ModeProvider>
+          <AppProvider>
               <AutoDarkMode />
               <TooltipProvider>
                 <Toaster />
@@ -279,8 +277,7 @@ const App = () => {
                    <FeedbackWidget />
                 </HashRouter>
               </TooltipProvider>
-              </ModeProvider>
-            </BrandProvider>
+          </AppProvider>
           </AuthProvider>
         </QueryClientProvider>
         </ThemeProvider>
