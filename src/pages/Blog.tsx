@@ -61,6 +61,7 @@ export default function Blog() {
         title="Blog – Markenaufbau & Workspace Tipps"
         description="Guides, Strategien und Insider-Tipps für Gründer: Markenaufbau, Produktivität, Workspace-Design. Kostenlos lesen."
         path="/blog"
+        jsonLd={[blogJsonLd, breadcrumbJsonLd]}
       />
       <Navbar />
       <main className="px-4 pt-28 pb-20">
