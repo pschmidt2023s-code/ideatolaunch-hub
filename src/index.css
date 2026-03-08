@@ -414,13 +414,7 @@
     animation: shimmer 2s ease-in-out infinite;
   }
 
-  /* ── iOS Safe Areas ── */
-  .pb-safe {
-    padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
-  }
-  .pt-safe {
-    padding-top: max(0px, env(safe-area-inset-top));
-  }
+  /* ── iOS Safe Areas (extended) ── */
   .px-safe {
     padding-left: max(0px, env(safe-area-inset-left));
     padding-right: max(0px, env(safe-area-inset-right));
