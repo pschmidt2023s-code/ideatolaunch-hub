@@ -27,6 +27,31 @@ const articles = [
   },
 ];
 
+const blogJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Blog",
+  "name": "BuildYourBrand Blog",
+  "description": "Guides, Strategien und Insider-Tipps für Gründer: Markenaufbau, Produktivität, Workspace-Design.",
+  "url": "https://brand.aldenairperfumes.de/blog",
+  "blogPost": articles.map(a => ({
+    "@type": "BlogPosting",
+    "headline": a.title,
+    "description": a.description,
+    "datePublished": a.date,
+    "url": `https://brand.aldenairperfumes.de/blog/${a.slug}`,
+    "author": { "@type": "Organization", "name": "BuildYourBrand" },
+  })),
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://brand.aldenairperfumes.de/" },
+    { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://brand.aldenairperfumes.de/blog" },
+  ],
+};
+
 export default function Blog() {
   const navigate = useNavigate();
 
