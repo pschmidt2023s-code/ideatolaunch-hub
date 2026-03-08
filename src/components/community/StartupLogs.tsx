@@ -9,17 +9,17 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { BookMarked, Plus, Calendar, Milestone, Rocket, Package, ShoppingCart, Lightbulb, Users } from "lucide-react";
+import { BookMarked, Plus, Rocket, Package, ShoppingCart, Lightbulb, Milestone } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { de } from "date-fns/locale";
 import { toast } from "sonner";
 
 const MILESTONE_TYPES = [
-  { value: "idea", label: "💡 Idee", icon: Lightbulb, color: "text-blue-500 bg-blue-500/10" },
+  { value: "idea", label: "💡 Idee", icon: Lightbulb, color: "text-info bg-info/10" },
   { value: "supplier", label: "🏭 Supplier", icon: Package, color: "text-accent bg-accent/10" },
   { value: "sample", label: "📦 Sample", icon: Package, color: "text-purple-500 bg-purple-500/10" },
-  { value: "launch", label: "🚀 Launch", icon: Rocket, color: "text-green-500 bg-green-500/10" },
-  { value: "first_sale", label: "💰 First Sale", icon: ShoppingCart, color: "text-amber-500 bg-amber-500/10" },
+  { value: "launch", label: "🚀 Launch", icon: Rocket, color: "text-success bg-success/10" },
+  { value: "first_sale", label: "💰 First Sale", icon: ShoppingCart, color: "text-warning bg-warning/10" },
   { value: "milestone", label: "🎯 Milestone", icon: Milestone, color: "text-destructive bg-destructive/10" },
   { value: "update", label: "📝 Update", icon: BookMarked, color: "text-muted-foreground bg-muted" },
 ];
@@ -47,8 +47,9 @@ function useCreateLog() {
       if (!user) throw new Error("Not authenticated");
       const { error } = await supabase.from("community_startup_logs").insert({ ...log, user_id: user.id, tags: log.tags || [] } as any);
       if (error) throw error;
+      await supabase.rpc("increment_reputation", { p_user_id: user.id, p_points: 3, p_field: "post_count" });
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["startup-logs"] }); toast.success("Log-Eintrag veröffentlicht!"); },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["startup-logs"] }); toast.success("Log veröffentlicht! +3 Punkte 🎉"); },
     onError: () => toast.error("Fehler beim Veröffentlichen"),
   });
 }
@@ -58,17 +59,17 @@ function LogTimelineEntry({ log }: { log: any }) {
   const Icon = milestone.icon;
 
   return (
-    <div className="flex gap-3">
+    <div className="flex gap-3 group">
       <div className="flex flex-col items-center">
-        <div className={`flex h-8 w-8 items-center justify-center rounded-full shrink-0 ${milestone.color}`}>
+        <div className={`flex h-8 w-8 items-center justify-center rounded-full shrink-0 transition-transform duration-200 group-hover:scale-110 ${milestone.color}`}>
           <Icon className="h-4 w-4" />
         </div>
         <div className="w-px flex-1 bg-border mt-1" />
       </div>
-      <Card className="flex-1 border-border/60 mb-3">
+      <Card className="flex-1 border-border/60 mb-3 transition-all duration-200 hover:shadow-sm hover:-translate-y-0.5">
         <CardContent className="p-3">
           <div className="flex items-center gap-2 mb-1 flex-wrap">
-            <Badge variant="outline" className="text-[10px]">Tag {log.day_number}</Badge>
+            <Badge variant="outline" className="text-[10px] font-mono">Tag {log.day_number}</Badge>
             <Badge className={`text-[10px] px-1.5 py-0 border-0 ${milestone.color}`}>{milestone.label}</Badge>
             <span className="text-[10px] text-muted-foreground ml-auto">{formatDistanceToNow(new Date(log.created_at), { addSuffix: true, locale: de })}</span>
           </div>
@@ -92,7 +93,6 @@ export function StartupLogs() {
   const [addOpen, setAddOpen] = useState(false);
   const [form, setForm] = useState({ brand_name: "", industry: "", day_number: "1", title: "", content: "", milestone_type: "update", tags: "" });
 
-  // Group logs by brand_name + user_id
   const grouped = logs?.reduce((acc: Record<string, any[]>, log: any) => {
     const key = `${log.user_id}-${log.brand_name}`;
     if (!acc[key]) acc[key] = [];
@@ -131,10 +131,10 @@ export function StartupLogs() {
       {isLoading && <div className="space-y-3">{[1, 2, 3].map(i => <div key={i} className="h-24 rounded-xl bg-muted animate-pulse" />)}</div>}
 
       {!isLoading && (!logs || logs.length === 0) && (
-        <div className="text-center py-14">
+        <div className="text-center py-14 rounded-2xl border border-dashed border-border bg-muted/20">
           <BookMarked className="h-12 w-12 text-muted-foreground/30 mx-auto mb-3" />
           <h3 className="font-semibold text-sm mb-1">Noch keine Startup Logs</h3>
-          <p className="text-xs text-muted-foreground mb-4">Dokumentiere deine Gründungsreise öffentlich.</p>
+          <p className="text-xs text-muted-foreground mb-4 max-w-xs mx-auto">Dokumentiere deine Gründungsreise öffentlich und inspiriere andere Founder.</p>
           <Button size="sm" className="gap-1.5 bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => setAddOpen(true)}>
             <Plus className="h-3.5 w-3.5" /> Erstes Log starten
           </Button>
@@ -142,7 +142,7 @@ export function StartupLogs() {
       )}
 
       {Object.entries(grouped).map(([key, entries]) => (
-        <div key={key}>
+        <div key={key} className="animate-fade-in">
           <div className="flex items-center gap-2 mb-3">
             <Rocket className="h-4 w-4 text-accent" />
             <h4 className="text-sm font-semibold">{(entries as any[])[0].brand_name}</h4>
