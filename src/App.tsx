@@ -278,6 +278,7 @@ const App = () => {
                 </HashRouter>
               </TooltipProvider>
           </AppProvider>
+          </AuthProvider>
         </QueryClientProvider>
         </ThemeProvider>
       </ErrorBoundary>
