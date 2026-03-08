@@ -449,8 +449,8 @@ export function PricingSection() {
                 {isTradingTier && (
                   <p className="text-xs text-blue-500/80 mt-0.5 italic">
                     {isDE
-                      ? "Risk Intelligence für professionelle Trader."
-                      : "Risk intelligence for professional traders."}
+                      ? "Inkl. alle Execution OS Features + Trading Intelligence."
+                      : "Includes all Execution OS features + Trading Intelligence."}
                   </p>
                 )}
 
