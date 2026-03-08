@@ -168,6 +168,7 @@ export function PricingSection() {
 
   const tradingFeatures: PlanFeature[] = isDE
     ? [
+        { label: "Alles aus Execution OS", desc: "Voller Zugang zu KPI-Kontrolle, Kapitalschutz-Alerts, Benchmark & AI Copilot" },
         { label: "Risk of Ruin Engine", desc: "Monte-Carlo-Simulation deiner Account-Überlebenswahrscheinlichkeit" },
         { label: "Account Connector", desc: "Binance, Bybit, OKX & Kraken – Read-Only Analyse" },
         { label: "Liquidation Risk Scanner", desc: "Echtzeit-Abstand zur Liquidation für alle Futures-Positionen" },
@@ -178,6 +179,7 @@ export function PricingSection() {
         { label: "AI Trade Review", desc: "KI analysiert Trade History: FOMO, Early Exits, Risk Management" },
       ]
     : [
+        { label: "Everything in Execution OS", desc: "Full access to KPI control, capital alerts, benchmarks & AI Copilot" },
         { label: "Risk of Ruin Engine", desc: "Monte Carlo simulation of your account survival probability" },
         { label: "Account Connector", desc: "Binance, Bybit, OKX & Kraken – read-only analysis" },
         { label: "Liquidation Risk Scanner", desc: "Real-time distance to liquidation for all futures positions" },
