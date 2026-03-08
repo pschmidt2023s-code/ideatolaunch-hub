@@ -168,6 +168,7 @@ export function PricingSection() {
 
   const tradingFeatures: PlanFeature[] = isDE
     ? [
+        { label: "Alles aus Execution OS", desc: "Voller Zugang zu KPI-Kontrolle, Kapitalschutz-Alerts, Benchmark & AI Copilot" },
         { label: "Risk of Ruin Engine", desc: "Monte-Carlo-Simulation deiner Account-Überlebenswahrscheinlichkeit" },
         { label: "Account Connector", desc: "Binance, Bybit, OKX & Kraken – Read-Only Analyse" },
         { label: "Liquidation Risk Scanner", desc: "Echtzeit-Abstand zur Liquidation für alle Futures-Positionen" },
@@ -178,6 +179,7 @@ export function PricingSection() {
         { label: "AI Trade Review", desc: "KI analysiert Trade History: FOMO, Early Exits, Risk Management" },
       ]
     : [
+        { label: "Everything in Execution OS", desc: "Full access to KPI control, capital alerts, benchmarks & AI Copilot" },
         { label: "Risk of Ruin Engine", desc: "Monte Carlo simulation of your account survival probability" },
         { label: "Account Connector", desc: "Binance, Bybit, OKX & Kraken – read-only analysis" },
         { label: "Liquidation Risk Scanner", desc: "Real-time distance to liquidation for all futures positions" },
@@ -447,8 +449,8 @@ export function PricingSection() {
                 {isTradingTier && (
                   <p className="text-xs text-blue-500/80 mt-0.5 italic">
                     {isDE
-                      ? "Risk Intelligence für professionelle Trader."
-                      : "Risk intelligence for professional traders."}
+                      ? "Inkl. alle Execution OS Features + Trading Intelligence."
+                      : "Includes all Execution OS features + Trading Intelligence."}
                   </p>
                 )}
 
@@ -542,10 +544,14 @@ export function PricingSection() {
               <tbody className="text-muted-foreground">
                 {(isDE
                   ? [
-                      ["Market Reality Engine", "—", "Basis Demand", "Voll + Benchmark", "✓ Voll", "—"],
-                      ["Cashflow Survival Engine", "—", "Timeline", "Voll + Stress-Test", "✓ Voll", "—"],
-                      ["AI Founder Copilot", "—", "3 Empfehlungen", "Voll + Chat", "Advanced CEO-Level", "—"],
-                      ["Kosten-Kalkulator", "Einfach", "Voll", "Voll + Szenarien", "✓ Voll", "—"],
+                      ["Market Reality Engine", "—", "Basis Demand", "Voll + Benchmark", "✓ Voll", "✓ Voll"],
+                      ["Cashflow Survival Engine", "—", "Timeline", "Voll + Stress-Test", "✓ Voll", "✓ Voll"],
+                      ["AI Founder Copilot", "—", "3 Empfehlungen", "Voll + Chat", "Advanced CEO-Level", "✓ CEO-Level"],
+                      ["Kosten-Kalkulator", "Einfach", "Voll", "Voll + Szenarien", "✓ Voll", "✓ Voll"],
+                      ["Wöchentliche KPI-Kontrolle", "—", "—", "—", "✓ Voll", "✓ Voll"],
+                      ["Kapitalschutz-Alerts", "—", "—", "—", "✓ Voll", "✓ Voll"],
+                      ["Benchmark Intelligence", "—", "—", "—", "✓ Voll", "✓ Voll"],
+                      ["Investor-Ready Übersicht", "—", "—", "—", "✓ Voll", "✓ Voll"],
                       ["Risk of Ruin Engine", "—", "—", "—", "—", "✓ Voll"],
                       ["Account Connector", "—", "—", "—", "—", "✓ 4 Exchanges"],
                       ["Liquidation Scanner", "—", "—", "—", "—", "✓ Echtzeit"],
@@ -555,10 +561,14 @@ export function PricingSection() {
                       ["Emotional Trading Detector", "—", "—", "—", "—", "✓ Voll"],
                     ]
                   : [
-                      ["Market Reality Engine", "—", "Basic Demand", "Full + Benchmark", "✓ Full", "—"],
-                      ["Cashflow Survival Engine", "—", "Timeline", "Full + Stress Test", "✓ Full", "—"],
-                      ["AI Founder Copilot", "—", "3 Suggestions", "Full + Chat", "Advanced CEO-Level", "—"],
-                      ["Cost Calculator", "Basic", "Full", "Full + Scenarios", "✓ Full", "—"],
+                      ["Market Reality Engine", "—", "Basic Demand", "Full + Benchmark", "✓ Full", "✓ Full"],
+                      ["Cashflow Survival Engine", "—", "Timeline", "Full + Stress Test", "✓ Full", "✓ Full"],
+                      ["AI Founder Copilot", "—", "3 Suggestions", "Full + Chat", "Advanced CEO-Level", "✓ CEO-Level"],
+                      ["Cost Calculator", "Basic", "Full", "Full + Scenarios", "✓ Full", "✓ Full"],
+                      ["Weekly KPI Control", "—", "—", "—", "✓ Full", "✓ Full"],
+                      ["Capital Protection Alerts", "—", "—", "—", "✓ Full", "✓ Full"],
+                      ["Benchmark Intelligence", "—", "—", "—", "✓ Full", "✓ Full"],
+                      ["Investor-Ready Overview", "—", "—", "—", "✓ Full", "✓ Full"],
                       ["Risk of Ruin Engine", "—", "—", "—", "—", "✓ Full"],
                       ["Account Connector", "—", "—", "—", "—", "✓ 4 Exchanges"],
                       ["Liquidation Scanner", "—", "—", "—", "—", "✓ Real-time"],
