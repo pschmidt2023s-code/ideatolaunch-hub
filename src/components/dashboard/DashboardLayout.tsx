@@ -67,7 +67,7 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
         </div>
 
         {/* Main content */}
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto scroll-ios">
           <div className="mx-auto max-w-content px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
             <PageTransition>
               {children}

@@ -17,8 +17,8 @@ export function HeroDashboardMockup() {
   }, []);
 
   return (
-    <div className="mx-auto mt-16 max-w-2xl animate-fade-in-up" style={{ animationDelay: "800ms" }}>
-      <div className="relative rounded-2xl border bg-card/80 backdrop-blur-md shadow-xl overflow-hidden">
+    <div className="mx-auto mt-16 max-w-2xl animate-fade-in-up gpu-accelerated" style={{ animationDelay: "800ms" }}>
+      <div className="relative rounded-2xl border bg-card/80 backdrop-blur-md shadow-xl overflow-hidden gpu-accelerated">
         {/* Glow effect */}
         <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-80 h-40 bg-primary/5 blur-3xl rounded-full pointer-events-none" />
 
