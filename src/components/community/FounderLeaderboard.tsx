@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Trophy, Medal, Crown, Star, TrendingUp } from "lucide-react";
+import { Trophy, Medal, Crown, Star } from "lucide-react";
 import { FounderLevelBadge } from "./FounderLevelBadge";
 
 function useLeaderboard() {
@@ -20,10 +20,10 @@ function useLeaderboard() {
   });
 }
 
-const RANK_ICONS = [
-  { icon: Crown, color: "text-amber-500" },
-  { icon: Medal, color: "text-gray-400" },
-  { icon: Medal, color: "text-amber-700" },
+const RANK_CONFIG = [
+  { icon: Crown, color: "text-warning", ring: "ring-warning/20", bg: "bg-warning/5" },
+  { icon: Medal, color: "text-muted-foreground", ring: "ring-border", bg: "bg-muted/30" },
+  { icon: Medal, color: "text-accent", ring: "ring-accent/20", bg: "bg-accent/5" },
 ];
 
 export function FounderLeaderboard() {
@@ -39,27 +39,27 @@ export function FounderLeaderboard() {
       {isLoading && <div className="space-y-2">{[1, 2, 3, 4, 5].map(i => <div key={i} className="h-14 rounded-xl bg-muted animate-pulse" />)}</div>}
 
       {!isLoading && (!leaders || leaders.length === 0) && (
-        <div className="text-center py-14">
+        <div className="text-center py-14 rounded-2xl border border-dashed border-border bg-muted/20">
           <Trophy className="h-12 w-12 text-muted-foreground/30 mx-auto mb-3" />
           <h3 className="font-semibold text-sm mb-1">Noch kein Leaderboard</h3>
-          <p className="text-xs text-muted-foreground">Teile Insights, um Reputation zu sammeln.</p>
+          <p className="text-xs text-muted-foreground max-w-xs mx-auto">Teile Insights, Experimente und Reviews um Reputation zu sammeln.</p>
         </div>
       )}
 
       <div className="space-y-1.5">
         {leaders?.map((user, i) => {
-          const rankConfig = RANK_ICONS[i];
+          const rankConfig = RANK_CONFIG[i];
           const RankIcon = rankConfig?.icon || Star;
           const rankColor = rankConfig?.color || "text-muted-foreground";
 
           return (
-            <Card key={user.id} className={`border-border/60 ${i < 3 ? "ring-1 ring-accent/10" : ""}`}>
+            <Card key={user.id} className={`border-border/60 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm ${i < 3 ? `ring-1 ${rankConfig?.ring || ""} ${rankConfig?.bg || ""}` : ""}`}>
               <CardContent className="p-3 flex items-center gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted shrink-0">
+                <div className={`flex h-8 w-8 items-center justify-center rounded-full shrink-0 ${i < 3 ? rankConfig?.bg || "bg-muted" : "bg-muted"}`}>
                   {i < 3 ? (
                     <RankIcon className={`h-4 w-4 ${rankColor}`} />
                   ) : (
-                    <span className="text-xs font-bold text-muted-foreground">#{i + 1}</span>
+                    <span className="text-xs font-bold text-muted-foreground font-mono">#{i + 1}</span>
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -69,13 +69,20 @@ export function FounderLeaderboard() {
                   </div>
                   <div className="flex items-center gap-3 text-[10px] text-muted-foreground mt-0.5">
                     <span>{user.post_count} Posts</span>
+                    <span className="h-2 w-px bg-border" />
                     <span>{user.reply_count} Replies</span>
+                    <span className="h-2 w-px bg-border" />
                     <span>{user.review_count} Reviews</span>
-                    <span>{user.case_study_count} Case Studies</span>
+                    {user.case_study_count > 0 && (
+                      <>
+                        <span className="h-2 w-px bg-border" />
+                        <span className="text-accent font-medium">{user.case_study_count} Case Studies</span>
+                      </>
+                    )}
                   </div>
                 </div>
                 <div className="text-right shrink-0">
-                  <div className="text-sm font-bold text-accent">{user.points}</div>
+                  <div className="text-sm font-bold tabular-nums text-accent">{user.points.toLocaleString("de-DE")}</div>
                   <div className="text-[10px] text-muted-foreground">Punkte</div>
                 </div>
               </CardContent>
