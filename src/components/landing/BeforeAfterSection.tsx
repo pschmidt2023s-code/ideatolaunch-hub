@@ -1,9 +1,11 @@
 import { X, Check } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 export function BeforeAfterSection() {
   const { i18n } = useTranslation();
   const isDE = i18n.language === "de";
+  const { ref, isVisible } = useScrollReveal();
 
   const before = isDE
     ? [
@@ -35,8 +37,8 @@ export function BeforeAfterSection() {
 
   return (
     <section className="border-t px-4 sm:px-6 section-py md:py-28">
-      <div className="mx-auto max-w-4xl">
-        <div className="text-center mb-12">
+      <div className="mx-auto max-w-4xl" ref={ref}>
+        <div className={`text-center mb-12 transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
           <h2 className="text-3xl font-bold md:text-4xl">
             {isDE ? "Vorher vs. Nachher" : "Before vs. After"}
           </h2>
@@ -49,13 +51,13 @@ export function BeforeAfterSection() {
 
         <div className="grid gap-6 sm:grid-cols-2">
           {/* Before */}
-          <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-6">
+          <div className={`rounded-xl border border-destructive/20 bg-destructive/5 p-6 transition-all duration-600 ${isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8"}`} style={{ transitionDelay: isVisible ? "200ms" : "0ms" }}>
             <h3 className="font-bold text-destructive mb-4">
               {isDE ? "❌ Ohne BuildYourBrand" : "❌ Without BuildYourBrand"}
             </h3>
             <ul className="space-y-3">
-              {before.map((item) => (
-                <li key={item} className="flex items-start gap-3 text-sm text-muted-foreground">
+              {before.map((item, i) => (
+                <li key={item} className={`flex items-start gap-3 text-sm text-muted-foreground transition-all duration-500 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"}`} style={{ transitionDelay: isVisible ? `${300 + i * 80}ms` : "0ms" }}>
                   <X className="h-4 w-4 mt-0.5 shrink-0 text-destructive" />
                   {item}
                 </li>
@@ -64,13 +66,13 @@ export function BeforeAfterSection() {
           </div>
 
           {/* After */}
-          <div className="rounded-xl border border-accent/20 bg-accent/5 p-6">
+          <div className={`rounded-xl border border-accent/20 bg-accent/5 p-6 transition-all duration-600 ${isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8"}`} style={{ transitionDelay: isVisible ? "200ms" : "0ms" }}>
             <h3 className="font-bold text-accent mb-4">
               {isDE ? "✓ Mit BuildYourBrand" : "✓ With BuildYourBrand"}
             </h3>
             <ul className="space-y-3">
-              {after.map((item) => (
-                <li key={item} className="flex items-start gap-3 text-sm text-foreground">
+              {after.map((item, i) => (
+                <li key={item} className={`flex items-start gap-3 text-sm text-foreground transition-all duration-500 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"}`} style={{ transitionDelay: isVisible ? `${300 + i * 80}ms` : "0ms" }}>
                   <Check className="h-4 w-4 mt-0.5 shrink-0 text-accent" />
                   {item}
                 </li>

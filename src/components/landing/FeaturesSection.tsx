@@ -9,11 +9,13 @@ import {
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 export function FeaturesSection() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const isDE = i18n.language === "de";
+  const { ref, isVisible } = useScrollReveal();
 
   const steps = [
     {
@@ -55,8 +57,8 @@ export function FeaturesSection() {
 
   return (
     <section id="features" className="border-t px-4 sm:px-6 section-py md:py-32">
-      <div className="mx-auto max-w-5xl">
-        <div className="mb-16 text-center">
+      <div className="mx-auto max-w-5xl" ref={ref}>
+        <div className={`mb-16 text-center transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
           <div className="inline-flex items-center gap-2 rounded-full border bg-card px-4 py-1.5 text-sm font-medium mb-4">
             <span className="h-1.5 w-1.5 rounded-full bg-primary" />
             {isDE ? "5 Phasen zum Launch" : "5 phases to launch"}
@@ -69,8 +71,8 @@ export function FeaturesSection() {
           {steps.map(({ icon: Icon, step, title, desc, output }, i) => (
             <div
               key={step}
-              className="group relative rounded-2xl border bg-card p-6 card-interactive"
-              style={{ animationDelay: `${i * 80}ms` }}
+              className={`group relative rounded-2xl border bg-card p-6 card-interactive transition-all duration-500 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+              style={{ transitionDelay: isVisible ? `${i * 100 + 200}ms` : "0ms" }}
             >
               <div className="mb-4 flex items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground text-sm font-mono font-medium">
@@ -86,10 +88,10 @@ export function FeaturesSection() {
         </div>
 
         {/* CTA below features */}
-        <div className="mt-12 text-center">
+        <div className={`mt-12 text-center transition-all duration-700 delay-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
           <Button
             size="lg"
-            className="gap-2"
+            className="gap-2 hover:-translate-y-0.5 transition-all duration-300"
             onClick={() => navigate("/auth?tab=signup")}
           >
             {isDE ? "Jetzt kostenlos starten" : "Start free now"}

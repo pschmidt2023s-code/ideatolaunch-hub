@@ -1,11 +1,11 @@
-import { Zap, Shield, BarChart3, Heart, ArrowRight } from "lucide-react";
+import { Zap, Shield, BarChart3, Heart } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 export function WhyUsSection() {
   const { i18n } = useTranslation();
-  const navigate = useNavigate();
   const isDE = i18n.language === "de";
+  const { ref, isVisible } = useScrollReveal();
 
   const reasons = [
     {
@@ -36,8 +36,8 @@ export function WhyUsSection() {
 
   return (
     <section className="border-t px-4 sm:px-6 section-py md:py-28">
-      <div className="mx-auto max-w-5xl">
-        <div className="text-center mb-12">
+      <div className="mx-auto max-w-5xl" ref={ref}>
+        <div className={`text-center mb-12 transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
           <h2 className="text-3xl font-bold font-display md:text-4xl">
             {isDE ? "Warum" : "Why"} <span className="text-gradient">BuildYourBrand</span>?
           </h2>
@@ -47,10 +47,11 @@ export function WhyUsSection() {
         </div>
 
         <div className="grid gap-5 sm:grid-cols-2">
-          {reasons.map(({ icon: Icon, title, desc, metric }) => (
+          {reasons.map(({ icon: Icon, title, desc, metric }, i) => (
             <div
               key={title}
-              className="group flex gap-4 rounded-2xl border bg-card p-6 shadow-card card-interactive"
+              className={`group flex gap-4 rounded-2xl border bg-card p-6 shadow-card card-interactive transition-all duration-500 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+              style={{ transitionDelay: isVisible ? `${i * 120 + 200}ms` : "0ms" }}
             >
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
                 <Icon className="h-5 w-5 text-primary" />
