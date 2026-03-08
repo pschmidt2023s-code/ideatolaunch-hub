@@ -544,10 +544,14 @@ export function PricingSection() {
               <tbody className="text-muted-foreground">
                 {(isDE
                   ? [
-                      ["Market Reality Engine", "—", "Basis Demand", "Voll + Benchmark", "✓ Voll", "—"],
-                      ["Cashflow Survival Engine", "—", "Timeline", "Voll + Stress-Test", "✓ Voll", "—"],
-                      ["AI Founder Copilot", "—", "3 Empfehlungen", "Voll + Chat", "Advanced CEO-Level", "—"],
-                      ["Kosten-Kalkulator", "Einfach", "Voll", "Voll + Szenarien", "✓ Voll", "—"],
+                      ["Market Reality Engine", "—", "Basis Demand", "Voll + Benchmark", "✓ Voll", "✓ Voll"],
+                      ["Cashflow Survival Engine", "—", "Timeline", "Voll + Stress-Test", "✓ Voll", "✓ Voll"],
+                      ["AI Founder Copilot", "—", "3 Empfehlungen", "Voll + Chat", "Advanced CEO-Level", "✓ CEO-Level"],
+                      ["Kosten-Kalkulator", "Einfach", "Voll", "Voll + Szenarien", "✓ Voll", "✓ Voll"],
+                      ["Wöchentliche KPI-Kontrolle", "—", "—", "—", "✓ Voll", "✓ Voll"],
+                      ["Kapitalschutz-Alerts", "—", "—", "—", "✓ Voll", "✓ Voll"],
+                      ["Benchmark Intelligence", "—", "—", "—", "✓ Voll", "✓ Voll"],
+                      ["Investor-Ready Übersicht", "—", "—", "—", "✓ Voll", "✓ Voll"],
                       ["Risk of Ruin Engine", "—", "—", "—", "—", "✓ Voll"],
                       ["Account Connector", "—", "—", "—", "—", "✓ 4 Exchanges"],
                       ["Liquidation Scanner", "—", "—", "—", "—", "✓ Echtzeit"],
@@ -557,10 +561,14 @@ export function PricingSection() {
                       ["Emotional Trading Detector", "—", "—", "—", "—", "✓ Voll"],
                     ]
                   : [
-                      ["Market Reality Engine", "—", "Basic Demand", "Full + Benchmark", "✓ Full", "—"],
-                      ["Cashflow Survival Engine", "—", "Timeline", "Full + Stress Test", "✓ Full", "—"],
-                      ["AI Founder Copilot", "—", "3 Suggestions", "Full + Chat", "Advanced CEO-Level", "—"],
-                      ["Cost Calculator", "Basic", "Full", "Full + Scenarios", "✓ Full", "—"],
+                      ["Market Reality Engine", "—", "Basic Demand", "Full + Benchmark", "✓ Full", "✓ Full"],
+                      ["Cashflow Survival Engine", "—", "Timeline", "Full + Stress Test", "✓ Full", "✓ Full"],
+                      ["AI Founder Copilot", "—", "3 Suggestions", "Full + Chat", "Advanced CEO-Level", "✓ CEO-Level"],
+                      ["Cost Calculator", "Basic", "Full", "Full + Scenarios", "✓ Full", "✓ Full"],
+                      ["Weekly KPI Control", "—", "—", "—", "✓ Full", "✓ Full"],
+                      ["Capital Protection Alerts", "—", "—", "—", "✓ Full", "✓ Full"],
+                      ["Benchmark Intelligence", "—", "—", "—", "✓ Full", "✓ Full"],
+                      ["Investor-Ready Overview", "—", "—", "—", "✓ Full", "✓ Full"],
                       ["Risk of Ruin Engine", "—", "—", "—", "—", "✓ Full"],
                       ["Account Connector", "—", "—", "—", "—", "✓ 4 Exchanges"],
                       ["Liquidation Scanner", "—", "—", "—", "—", "✓ Real-time"],
