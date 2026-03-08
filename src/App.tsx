@@ -121,15 +121,32 @@ const queryClient = new QueryClient({
 function LazyFallback() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="mx-auto w-full max-w-5xl px-4 space-y-6 animate-pulse">
-        <div className="h-8 w-48 rounded-md bg-muted" />
-        <div className="h-4 w-72 rounded-md bg-muted" />
-        <div className="grid gap-4 sm:grid-cols-3">
-          <div className="h-32 rounded-xl bg-muted" />
-          <div className="h-32 rounded-xl bg-muted" />
-          <div className="h-32 rounded-xl bg-muted" />
+      <div className="mx-auto w-full max-w-5xl px-4 space-y-6">
+        {/* Skeleton header */}
+        <div className="flex items-center gap-3">
+          <div className="h-8 w-8 rounded-lg bg-muted shimmer" />
+          <div className="space-y-1.5">
+            <div className="h-5 w-40 rounded-md bg-muted shimmer" />
+            <div className="h-3 w-24 rounded-md bg-muted shimmer" />
+          </div>
         </div>
-        <div className="h-64 rounded-xl bg-muted" />
+        {/* Skeleton metric cards */}
+        <div className="grid gap-4 sm:grid-cols-3">
+          {[0, 1, 2].map(i => (
+            <div key={i} className="rounded-2xl border bg-card p-5 space-y-3" style={{ animationDelay: `${i * 80}ms` }}>
+              <div className="h-3 w-20 rounded bg-muted shimmer" />
+              <div className="h-8 w-24 rounded bg-muted shimmer" />
+              <div className="h-2 w-full rounded-full bg-muted shimmer" />
+            </div>
+          ))}
+        </div>
+        {/* Skeleton content */}
+        <div className="rounded-2xl border bg-card p-6 space-y-3">
+          <div className="h-4 w-48 rounded bg-muted shimmer" />
+          <div className="h-3 w-full rounded bg-muted shimmer" />
+          <div className="h-3 w-3/4 rounded bg-muted shimmer" />
+          <div className="h-32 w-full rounded-xl bg-muted shimmer mt-4" />
+        </div>
       </div>
     </div>
   );
