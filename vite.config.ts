@@ -22,8 +22,12 @@ export default defineConfig(({ mode }) => ({
     include: ["react", "react-dom", "react/jsx-runtime"],
   },
   build: {
-    target: "es2020",
+    target: "esnext",
     cssCodeSplit: true,
+    cssMinify: "lightningcss",
+    sourcemap: mode === "production" ? "hidden" : true,
+    reportCompressedSize: false,
+    chunkSizeWarningLimit: 600,
     rollupOptions: {
       output: {
         manualChunks: {
