@@ -24,7 +24,7 @@ export default defineConfig(({ mode }) => ({
   build: {
     target: "esnext",
     cssCodeSplit: true,
-    cssMinify: "lightningcss",
+    cssMinify: true,
     sourcemap: mode === "production" ? "hidden" : true,
     reportCompressedSize: false,
     chunkSizeWarningLimit: 600,
