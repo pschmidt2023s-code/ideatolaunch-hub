@@ -143,6 +143,8 @@ export default {
         "shimmer": "shimmer 2s ease-in-out infinite",
         "pulse-subtle": "pulse-subtle 2s ease-in-out infinite",
         "slide-up-fade": "slide-up-fade 0.3s ease-out both",
+        "draw-line": "draw-line 1.5s ease-out both",
+        "float": "float 4s ease-in-out infinite",
       },
     },
   },

@@ -50,16 +50,17 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
         </div>
 
         {/* Mobile header */}
-        <div className="sticky top-0 z-30 flex h-12 items-center gap-3 border-b border-border bg-background/80 backdrop-blur-md px-4 lg:hidden">
+        <div className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border bg-background/80 backdrop-blur-md px-4 lg:hidden pt-safe">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="flex items-center justify-center rounded-lg p-1.5 text-muted-foreground hover:text-foreground transition-colors"
+            className="flex items-center justify-center rounded-lg p-2 text-muted-foreground hover:text-foreground active:bg-muted transition-colors min-w-[44px] min-h-[44px]"
+            aria-label="Menü öffnen"
           >
             <Menu className="h-5 w-5" />
           </button>
-          <div className="flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-foreground">
-              <span className="text-[10px] font-bold text-background">B</span>
+          <div className="flex items-center gap-2 flex-1">
+            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-foreground">
+              <span className="text-[11px] font-bold text-background">B</span>
             </div>
             <span className="text-sm font-semibold">BrandOS</span>
           </div>
