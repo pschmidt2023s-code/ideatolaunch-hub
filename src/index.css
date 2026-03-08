@@ -312,6 +312,9 @@
   .text-gradient {
     @apply bg-clip-text text-transparent;
     background-image: var(--gradient-accent);
+    /* Fix Safari text-gradient rendering */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 
   .shadow-card {
@@ -324,6 +327,14 @@
 
   .shadow-glow-accent {
     box-shadow: var(--shadow-glow-accent);
+  }
+
+  /* Safari GPU acceleration for animations */
+  .gpu-accelerated {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
   }
 
   /* Safe area for mobile */
