@@ -167,9 +167,7 @@ const App = () => {
       <ErrorBoundary>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem storageKey="brandos-theme">
         <QueryClientProvider client={queryClient}>
-          <AuthProvider>
-            <BrandProvider>
-              <ModeProvider>
+          <AppProvider>
               <AutoDarkMode />
               <TooltipProvider>
                 <Toaster />
