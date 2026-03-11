@@ -1387,6 +1387,86 @@ export type Database = {
         }
         Relationships: []
       }
+      license_usage_log: {
+        Row: {
+          action: string
+          created_at: string | null
+          id: string
+          ip_address: unknown
+          license_id: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown
+          license_id?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown
+          license_id?: string | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "license_usage_log_license_id_fkey"
+            columns: ["license_id"]
+            isOneToOne: false
+            referencedRelation: "licenses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      licenses: {
+        Row: {
+          activated_at: string | null
+          created_at: string | null
+          email: string | null
+          expires_at: string | null
+          id: string
+          license_key: string
+          max_devices: number | null
+          metadata: Json | null
+          status: string | null
+          tier: string | null
+          user_id: string
+        }
+        Insert: {
+          activated_at?: string | null
+          created_at?: string | null
+          email?: string | null
+          expires_at?: string | null
+          id?: string
+          license_key: string
+          max_devices?: number | null
+          metadata?: Json | null
+          status?: string | null
+          tier?: string | null
+          user_id: string
+        }
+        Update: {
+          activated_at?: string | null
+          created_at?: string | null
+          email?: string | null
+          expires_at?: string | null
+          id?: string
+          license_key?: string
+          max_devices?: number | null
+          metadata?: Json | null
+          status?: string | null
+          tier?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       login_attempts: {
         Row: {
           created_at: string
@@ -2115,6 +2195,11 @@ export type Database = {
       }
     }
     Functions: {
+      create_license: {
+        Args: { days_valid?: number; tier_param?: string }
+        Returns: string
+      }
+      generate_license_key: { Args: { tier_param?: string }; Returns: string }
       increment_referral_count: {
         Args: { _referral_id: string }
         Returns: undefined
