@@ -145,21 +145,44 @@ export function AppProvider({ children }: { children: ReactNode }) {
     staleTime: STALE.STATIC,
   });
 
+  // ── License (new licenses table) ───────────────────────────────────────
+  const { data: license = null } = useQuery({
+    queryKey: ["license", user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase.functions.invoke("validate-license", {
+        body: {},
+      });
+      if (error) return null;
+      return data as { valid: boolean; tier?: string; license_key?: string; source?: string; expires_at?: string } | null;
+    },
+    enabled: !!user,
+    staleTime: STALE.STATIC,
+    retry: 1,
+  });
+
   const plan: Plan = useMemo(() => {
+    // Priority: new licenses table > legacy subscriptions
+    if (license?.valid && license.tier) {
+      const t = license.tier;
+      if (t === "enterprise" || t === "trading") return "trading";
+      if (t === "execution") return "execution";
+      if (t === "pro") return "pro";
+      if (t === "starter" || t === "builder") return "builder";
+    }
     const s = subscription?.status;
     if (s === "trading") return "trading";
     if (s === "execution") return "execution";
     if (s === "pro") return "pro";
     if (s === "builder") return "builder";
     return "free";
-  }, [subscription?.status]);
+  }, [subscription?.status, license]);
 
   const isTrading = plan === "trading";
   const isExecution = plan === "execution" || isTrading;
   const isPro = plan === "pro" || isExecution;
   const isBuilder = plan === "builder" || isPro;
   const isFree = plan === "free";
-  const licenseKey = (subscription?.license_key as string | null) ?? null;
+  const licenseKey = license?.license_key ?? (subscription?.license_key as string | null) ?? null;
 
   // ── Memoised value ──────────────────────────────────────────────────────
   const value = useMemo<AppContextType>(
