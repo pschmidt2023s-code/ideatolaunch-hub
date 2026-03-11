@@ -182,7 +182,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const isPro = plan === "pro" || isExecution;
   const isBuilder = plan === "builder" || isPro;
   const isFree = plan === "free";
-  const licenseKey = (subscription?.license_key as string | null) ?? null;
+  const licenseKey = license?.license_key ?? (subscription?.license_key as string | null) ?? null;
 
   // ── Memoised value ──────────────────────────────────────────────────────
   const value = useMemo<AppContextType>(

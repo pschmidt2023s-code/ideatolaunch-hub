@@ -41,3 +41,6 @@ verify_jwt = false
 
 [functions.community-insights]
 verify_jwt = false
+
+[functions.validate-license]
+verify_jwt = false
