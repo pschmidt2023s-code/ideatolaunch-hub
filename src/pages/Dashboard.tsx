@@ -34,7 +34,6 @@ import {
 } from "lucide-react";
 import { GuidedStarterDialog } from "@/components/GuidedStarterDialog";
 import { EmptyState } from "@/components/dashboard/EmptyState";
-import { AnimatedCard } from "@/components/dashboard/AnimatedCard";
 import { cn } from "@/lib/utils";
 
 const TOTAL_PHASES = 5;
@@ -123,17 +122,17 @@ export default function Dashboard() {
 
   return (
     <DashboardLayout>
-      <div className="animate-fade-in space-y-6">
+      <div className="animate-fade-in space-y-4">
         {isFree && <UpgradeBanner />}
 
         {/* ── Header ── */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold tracking-tight">{t("dashboard.title")}</h1>
-            <p className="mt-0.5 text-sm text-muted-foreground">{t("dashboard.subtitle")}</p>
+            <h1 className="text-lg font-bold tracking-tight font-display">{t("dashboard.title")}</h1>
+            <p className="text-xs text-muted-foreground font-mono">{t("dashboard.subtitle")}</p>
           </div>
-          <Button onClick={createBrand} variant="premium" className="gap-2">
-            <Plus className="h-4 w-4" />
+          <Button onClick={createBrand} size="sm" className="gap-1.5 h-8 text-xs">
+            <Plus className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">{t("dashboard.newBrand")}</span>
           </Button>
         </div>
@@ -141,112 +140,89 @@ export default function Dashboard() {
         {/* ── No brands ── */}
         {!brands?.length ? (
           <EmptyState
-            icon={<Plus className="h-6 w-6 text-accent" />}
+            icon={<Plus className="h-5 w-5 text-accent" />}
             title={t("dashboard.createFirst")}
             description={t("dashboard.createFirstDesc")}
-            action={<Button onClick={createBrand} variant="premium" className="gap-2"><Plus className="h-4 w-4" />{t("dashboard.createBrand")}</Button>}
+            action={<Button onClick={createBrand} size="sm" className="gap-1.5 h-8 text-xs"><Plus className="h-3.5 w-3.5" />{t("dashboard.createBrand")}</Button>}
           />
         ) : (
           <>
             {/* ── Completion banner ── */}
             {currentBrand && isCompleted && (
-              <AnimatedCard index={0}>
-                <div className="rounded-xl border border-success/30 bg-success/5 p-5 flex items-center gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-success/10 shrink-0">
-                    <PartyPopper className="h-6 w-6 text-success" />
-                  </div>
-                  <div>
-                    <h2 className="text-base font-bold text-success">🎉 {t("dashboard.congratulations", "Glückwunsch!")}</h2>
-                    <p className="text-sm text-muted-foreground">
-                      {t("dashboard.brandComplete", "Deine Marke «{{name}}» ist startklar! Alle 5 Phasen abgeschlossen.").replace("{{name}}", currentBrand.name)}
-                    </p>
-                  </div>
+              <div className="rounded-lg border border-accent/30 bg-accent/5 p-3 flex items-center gap-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded bg-accent/10 shrink-0">
+                  <PartyPopper className="h-4 w-4 text-accent" />
                 </div>
-              </AnimatedCard>
+                <div>
+                  <h2 className="text-xs font-bold text-accent font-mono">COMPLETE</h2>
+                  <p className="text-[11px] text-muted-foreground">
+                    {t("dashboard.brandComplete", "Deine Marke «{{name}}» ist startklar!").replace("{{name}}", currentBrand.name)}
+                  </p>
+                </div>
+              </div>
             )}
 
             {/* ── Phase Progress ── */}
-            {currentBrand && (
-              <AnimatedCard index={1}>
-                <PhaseProgressBar />
-              </AnimatedCard>
-            )}
+            {currentBrand && <PhaseProgressBar />}
 
             {/* ── Next Step CTA ── */}
             {currentBrand && !isCompleted && (
-              <AnimatedCard index={2} variant="fade-up">
-                <button
-                  onClick={() => navigate(`/dashboard/step/${clampedStep}`)}
-                  className="w-full flex items-center gap-4 rounded-xl border-2 border-accent/30 bg-accent/5 p-5 text-left hover:border-accent/50 transition-all"
-                >
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent text-accent-foreground">
-                    {(() => { const Icon = stepIcons[clampedStep - 1]; return <Icon className="h-5 w-5" />; })()}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[10px] font-semibold uppercase tracking-wider text-accent mb-0.5">
-                      {isDE ? "Nächster Schritt" : "Next Step"} · Phase {clampedStep}/{TOTAL_PHASES}
-                    </p>
-                    <p className="font-semibold truncate">{t(`steps.s${clampedStep}`)}</p>
-                  </div>
-                  <ArrowRight className="h-5 w-5 text-accent shrink-0" />
-                </button>
-              </AnimatedCard>
-            )}
-
-            {/* ── Quick Links ── */}
-            {currentBrand && (
-              <AnimatedCard index={3}>
-                <div className="grid gap-3 sm:grid-cols-3">
-                  {[
-                    { icon: Crosshair, label: "Command Center", href: "/dashboard/command", desc: "Risiko & Strategie" },
-                    { icon: Brain, label: "Intelligence", href: "/dashboard/intelligence", desc: "KI-Analyse" },
-                    { icon: BarChart3, label: "Simulationen", href: "/dashboard/failure-simulator", desc: "Szenarien testen" },
-                  ].map((link) => (
-                    <button
-                      key={link.href}
-                      onClick={() => navigate(link.href)}
-                      className="flex items-center gap-3 rounded-xl border bg-card p-4 text-left hover:bg-muted/50 transition-colors"
-                    >
-                      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted shrink-0">
-                        <link.icon className="h-4 w-4 text-muted-foreground" />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-sm font-medium">{link.label}</p>
-                        <p className="text-[11px] text-muted-foreground">{link.desc}</p>
-                      </div>
-                    </button>
-                  ))}
+              <button
+                onClick={() => navigate(`/dashboard/step/${clampedStep}`)}
+                className="w-full flex items-center gap-3 rounded-lg border border-accent/20 bg-accent/5 p-3 text-left hover:border-accent/40 transition-all"
+              >
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-accent text-accent-foreground">
+                  {(() => { const Icon = stepIcons[clampedStep - 1]; return <Icon className="h-3.5 w-3.5" />; })()}
                 </div>
-              </AnimatedCard>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-accent font-mono">
+                    NEXT · P{clampedStep}/{TOTAL_PHASES}
+                  </p>
+                  <p className="text-xs font-medium truncate">{t(`steps.s${clampedStep}`)}</p>
+                </div>
+                <ArrowRight className="h-3.5 w-3.5 text-accent shrink-0" />
+              </button>
             )}
 
-            {/* ── Brand Health + Insights ── */}
+            {/* ── Quick Links – Terminal Grid ── */}
             {currentBrand && (
-              <AnimatedCard index={4}>
+              <div className="grid gap-2 sm:grid-cols-3">
+                {[
+                  { icon: Crosshair, label: "Command", href: "/dashboard/command", tag: "CTRL" },
+                  { icon: Brain, label: "Intelligence", href: "/dashboard/intelligence", tag: "AI" },
+                  { icon: BarChart3, label: "Simulator", href: "/dashboard/failure-simulator", tag: "SIM" },
+                ].map((link) => (
+                  <button
+                    key={link.href}
+                    onClick={() => navigate(link.href)}
+                    className="flex items-center gap-2.5 rounded-lg border bg-card p-3 text-left hover:bg-muted/50 transition-colors group"
+                  >
+                    <link.icon className="h-3.5 w-3.5 text-muted-foreground group-hover:text-accent transition-colors" />
+                    <span className="text-xs font-medium flex-1">{link.label}</span>
+                    <span className="text-[9px] font-mono text-muted-foreground/50 bg-muted px-1.5 py-0.5 rounded">{link.tag}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* ── Brand Health + Insights – 2-column on desktop ── */}
+            {currentBrand && (
+              <div className="grid gap-3 lg:grid-cols-2">
                 <BrandHealthCard />
-              </AnimatedCard>
-            )}
-
-            {currentBrand && (
-              <AnimatedCard index={5}>
-                <div className="rounded-xl border bg-card p-5 shadow-card">
+                <div className="rounded-lg border bg-card p-4 shadow-card">
                   <SmartInsightsPanel />
                 </div>
-              </AnimatedCard>
+              </div>
             )}
 
             {/* ── Community Intelligence ── */}
-            {currentBrand && (
-              <AnimatedCard index={5.5}>
-                <CommunityIntelligenceWidget />
-              </AnimatedCard>
-            )}
+            {currentBrand && <CommunityIntelligenceWidget />}
 
-            {/* ── Retention Widgets ── */}
+            {/* ── Retention Grid ── */}
             {currentBrand && (
-              <div className="grid gap-4 sm:grid-cols-2">
-                <AnimatedCard index={6}><WeeklyCEOReviewCard /></AnimatedCard>
-                <AnimatedCard index={7}><MomentumScoreCard /></AnimatedCard>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <WeeklyCEOReviewCard />
+                <MomentumScoreCard />
               </div>
             )}
             {currentBrand && <RetentionUpgradeTrigger />}
@@ -254,111 +230,107 @@ export default function Dashboard() {
 
             {/* ── Quick Tools ── */}
             {currentBrand && (
-              <AnimatedCard index={8}>
-                <div className="rounded-xl border bg-card p-4 shadow-card">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Wrench className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-xs font-medium text-muted-foreground">{t("dashboard.quickAccess", "Schnellzugriff")}</span>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    {[
-                      { label: isDE ? "Produktionskosten" : "Production Costs", href: "/tools/produktionskosten-rechner" },
-                      { label: "Break-Even", href: "/tools/break-even-rechner" },
-                      { label: "MOQ", href: "/tools/moq-rechner" },
-                    ].map((tool) => (
-                      <button
-                        key={tool.href}
-                        onClick={() => navigate(tool.href)}
-                        className="rounded-lg border bg-background px-3 py-2.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors text-center"
-                      >
-                        {tool.label}
-                      </button>
-                    ))}
-                  </div>
+              <div className="rounded-lg border bg-card p-3 shadow-card">
+                <div className="flex items-center gap-1.5 mb-2">
+                  <Wrench className="h-3 w-3 text-muted-foreground" />
+                  <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider font-mono">TOOLS</span>
                 </div>
-              </AnimatedCard>
+                <div className="grid grid-cols-3 gap-1.5">
+                  {[
+                    { label: isDE ? "Prod.Kosten" : "Prod. Cost", href: "/tools/produktionskosten-rechner" },
+                    { label: "Break-Even", href: "/tools/break-even-rechner" },
+                    { label: "MOQ", href: "/tools/moq-rechner" },
+                  ].map((tool) => (
+                    <button
+                      key={tool.href}
+                      onClick={() => navigate(tool.href)}
+                      className="rounded border bg-background px-2.5 py-2 text-[11px] font-mono font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors text-center"
+                    >
+                      {tool.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
             )}
 
             {currentBrand && <BlueprintExport />}
 
             {/* ── Brand Management ── */}
             {currentBrand && (
-              <AnimatedCard index={9}>
-                <div className="rounded-xl border bg-card p-5 shadow-card">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted">
-                        <span className="text-sm font-bold text-muted-foreground">{currentBrand.name.charAt(0).toUpperCase()}</span>
-                      </div>
-                      <div>
-                        <h2 className="text-sm font-semibold">{currentBrand.name}</h2>
-                        <p className="text-[11px] text-muted-foreground">
-                          {isCompleted ? t("dashboard.completed", "✓ Abgeschlossen") : t("dashboard.stepOf", { step: clampedStep })}
-                        </p>
-                      </div>
+              <div className="rounded-lg border bg-card p-4 shadow-card">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2.5">
+                    <div className="flex h-7 w-7 items-center justify-center rounded bg-muted">
+                      <span className="text-[11px] font-bold font-mono text-muted-foreground">{currentBrand.name.charAt(0).toUpperCase()}</span>
                     </div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => { setEditingBrand(currentBrand); setNewName(currentBrand.name); setRenameOpen(true); }}>
-                          <Pencil className="mr-2 h-4 w-4" /> {t("dashboard.renameBrand")}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => { setEditingBrand(currentBrand); setDeleteOpen(true); }}>
-                          <Trash2 className="mr-2 h-4 w-4" /> {t("dashboard.deleteBrand")}
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    <div>
+                      <h2 className="text-xs font-semibold">{currentBrand.name}</h2>
+                      <p className="text-[10px] text-muted-foreground font-mono">
+                        {isCompleted ? "✓ DONE" : `P${clampedStep}/${TOTAL_PHASES}`}
+                      </p>
+                    </div>
                   </div>
-
-                  <div className="grid grid-cols-5 gap-2">
-                    {[1, 2, 3, 4, 5].map((stepNum) => {
-                      const Icon = stepIcons[stepNum - 1];
-                      const done = stepNum < clampedStep || isCompleted;
-                      const active = !isCompleted && stepNum === clampedStep;
-                      return (
-                        <button
-                          key={stepNum}
-                          onClick={() => navigate(`/dashboard/step/${stepNum}`)}
-                          className={cn(
-                            "flex flex-col items-center gap-1.5 rounded-lg border p-2.5 text-center transition-all hover:shadow-sm",
-                            active ? "border-accent bg-accent/5" : done ? "border-success/30 bg-success/5" : "border-border opacity-60 hover:opacity-80"
-                          )}
-                        >
-                          <Icon className={cn("h-4 w-4", active ? "text-accent" : done ? "text-success" : "text-muted-foreground")} />
-                          <span className="text-[10px] font-medium leading-tight hidden sm:block">{t(`steps.p${stepNum}`)}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-7 w-7">
+                        <MoreVertical className="h-3.5 w-3.5" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => { setEditingBrand(currentBrand); setNewName(currentBrand.name); setRenameOpen(true); }}>
+                        <Pencil className="mr-2 h-3.5 w-3.5" /> {t("dashboard.renameBrand")}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => { setEditingBrand(currentBrand); setDeleteOpen(true); }}>
+                        <Trash2 className="mr-2 h-3.5 w-3.5" /> {t("dashboard.deleteBrand")}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
-              </AnimatedCard>
+
+                <div className="grid grid-cols-5 gap-1.5">
+                  {[1, 2, 3, 4, 5].map((stepNum) => {
+                    const Icon = stepIcons[stepNum - 1];
+                    const done = stepNum < clampedStep || isCompleted;
+                    const active = !isCompleted && stepNum === clampedStep;
+                    return (
+                      <button
+                        key={stepNum}
+                        onClick={() => navigate(`/dashboard/step/${stepNum}`)}
+                        className={cn(
+                          "flex flex-col items-center gap-1 rounded border p-2 text-center transition-all hover:shadow-sm",
+                          active ? "border-accent bg-accent/5" : done ? "border-accent/20 bg-accent/5" : "border-border opacity-50 hover:opacity-75"
+                        )}
+                      >
+                        <Icon className={cn("h-3.5 w-3.5", active ? "text-accent" : done ? "text-accent/70" : "text-muted-foreground")} />
+                        <span className="text-[9px] font-mono font-medium leading-tight hidden sm:block">{t(`steps.p${stepNum}`)}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             )}
 
             {/* ── Other brands ── */}
             {brands.length > 1 && (
               <div>
-                <h3 className="mb-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">{t("dashboard.allBrands")}</h3>
-                <div className="grid gap-3 sm:grid-cols-2">
+                <h3 className="mb-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider font-mono">{t("dashboard.allBrands")}</h3>
+                <div className="grid gap-2 sm:grid-cols-2">
                   {brands.filter((b) => b.id !== currentBrand?.id).map((brand) => (
-                    <div key={brand.id} className="flex items-center justify-between rounded-xl border bg-card p-4 hover:bg-muted/30 transition-colors">
+                    <div key={brand.id} className="flex items-center justify-between rounded-lg border bg-card p-3 hover:bg-muted/30 transition-colors">
                       <button className="flex-1 text-left" onClick={() => { setActiveBrandId(brand.id); navigate(`/dashboard/step/${Math.min(brand.current_step, 5)}`); }}>
-                        <p className="text-sm font-medium">{brand.name}</p>
-                        <p className="text-xs text-muted-foreground">{t("dashboard.stepOf", { step: Math.min(brand.current_step, 5) })}</p>
+                        <p className="text-xs font-medium">{brand.name}</p>
+                        <p className="text-[10px] text-muted-foreground font-mono">P{Math.min(brand.current_step, 5)}/{TOTAL_PHASES}</p>
                       </button>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8"><MoreVertical className="h-4 w-4" /></Button>
+                          <Button variant="ghost" size="icon" className="h-7 w-7"><MoreVertical className="h-3.5 w-3.5" /></Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem onClick={() => { setEditingBrand(brand); setNewName(brand.name); setRenameOpen(true); }}>
-                            <Pencil className="mr-2 h-4 w-4" />{t("dashboard.renameBrand")}
+                            <Pencil className="mr-2 h-3.5 w-3.5" />{t("dashboard.renameBrand")}
                           </DropdownMenuItem>
                           <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => { setEditingBrand(brand); setDeleteOpen(true); }}>
-                            <Trash2 className="mr-2 h-4 w-4" />{t("dashboard.deleteBrand")}
+                            <Trash2 className="mr-2 h-3.5 w-3.5" />{t("dashboard.deleteBrand")}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -369,9 +341,9 @@ export default function Dashboard() {
             )}
 
             {currentBrand && showGuidedStarter && (
-              <Button variant="outline" onClick={() => setGuidedOpen(true)} className="gap-2">
-                <HelpCircle className="h-4 w-4" />
-                {t("dashboard.guidedStarter", "Ich brauche Hilfe beim Start")}
+              <Button variant="outline" size="sm" onClick={() => setGuidedOpen(true)} className="gap-1.5 text-xs">
+                <HelpCircle className="h-3.5 w-3.5" />
+                {t("dashboard.guidedStarter", "Hilfe beim Start")}
               </Button>
             )}
           </>
@@ -384,8 +356,8 @@ export default function Dashboard() {
           <DialogHeader><DialogTitle>{t("dashboard.renameBrand")}</DialogTitle></DialogHeader>
           <Input value={newName} onChange={(e) => setNewName(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleRename()} autoFocus />
           <DialogFooter>
-            <Button variant="outline" onClick={() => setRenameOpen(false)}>{t("steps.back")}</Button>
-            <Button onClick={handleRename} disabled={!newName.trim()}>{t("steps.save")}</Button>
+            <Button variant="outline" size="sm" onClick={() => setRenameOpen(false)}>{t("steps.back")}</Button>
+            <Button size="sm" onClick={handleRename} disabled={!newName.trim()}>{t("steps.save")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

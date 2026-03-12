@@ -34,10 +34,10 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
       {sidebarOpen && (
         <div className="fixed inset-0 z-40 lg:hidden">
           <div
-            className="absolute inset-0 bg-foreground/10 backdrop-blur-sm"
+            className="absolute inset-0 bg-foreground/20 backdrop-blur-sm"
             onClick={() => setSidebarOpen(false)}
           />
-          <div className="relative z-50 h-full w-[240px] animate-slide-in-left">
+          <div className="relative z-50 h-full w-[220px] animate-slide-in-left">
             <DashboardSidebar onNavigate={() => setSidebarOpen(false)} />
           </div>
         </div>
@@ -50,25 +50,22 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
         </div>
 
         {/* Mobile header */}
-        <div className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border bg-background/80 backdrop-blur-md px-4 lg:hidden pt-safe">
+        <div className="sticky top-0 z-30 flex h-10 items-center gap-2 border-b border-border bg-background px-3 lg:hidden pt-safe">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="flex items-center justify-center rounded-lg p-2 text-muted-foreground hover:text-foreground active:bg-muted transition-colors min-w-[44px] min-h-[44px]"
+            className="flex items-center justify-center rounded p-1.5 text-muted-foreground hover:text-foreground active:bg-muted transition-colors min-w-[36px] min-h-[36px]"
             aria-label="Menü öffnen"
           >
-            <Menu className="h-5 w-5" />
+            <Menu className="h-4 w-4" />
           </button>
-          <div className="flex items-center gap-2 flex-1">
-            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-foreground">
-              <span className="text-[11px] font-bold text-background">B</span>
-            </div>
-            <span className="text-sm font-semibold">BrandOS</span>
+          <div className="flex items-center gap-1.5 flex-1">
+            <span className="text-xs font-bold font-mono tracking-wide">BRAND<span className="text-accent">OS</span></span>
           </div>
         </div>
 
         {/* Main content */}
         <main className="flex-1 overflow-y-auto scroll-ios">
-          <div className="mx-auto max-w-content px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+          <div className="mx-auto max-w-content px-3 sm:px-5 lg:px-6 py-4 lg:py-6">
             <PageTransition>
               {children}
             </PageTransition>

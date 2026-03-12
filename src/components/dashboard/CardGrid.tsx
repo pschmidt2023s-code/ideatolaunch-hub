@@ -14,7 +14,7 @@ const colMap = {
 
 export function CardGrid({ children, cols = 3, className }: CardGridProps) {
   return (
-    <div className={cn("grid gap-4", colMap[cols], className)}>
+    <div className={cn("grid gap-3", colMap[cols], className)}>
       {children}
     </div>
   );
