@@ -81,18 +81,18 @@ export function AdaptiveWorkflowPanel({ currentStep }: { currentStep: number }) 
   const otherTasks = tasks.filter(t => t.priority !== "critical");
 
   return (
-    <div className="rounded-2xl border bg-card p-5 shadow-card space-y-5">
+    <div className="rounded-lg border bg-card p-4 shadow-card space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Zap className="h-4 w-4 text-accent" />
-          <h3 className="text-sm font-semibold">Adaptive Aufgaben</h3>
+        <div className="flex items-center gap-1.5">
+          <Zap className="h-3.5 w-3.5 text-accent" />
+          <h3 className="text-xs font-semibold font-mono">ADAPTIVE TASKS</h3>
         </div>
-        <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
-          <Clock className="h-3 w-3" />
+        <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-mono">
+          <Clock className="h-2.5 w-2.5" />
           {currentStepConfig.timeEstimate}
-          <span className="text-muted-foreground">·</span>
-          <span>{tasks.length} Aufgaben</span>
+          <span>·</span>
+          <span>{tasks.length}</span>
         </div>
       </div>
 

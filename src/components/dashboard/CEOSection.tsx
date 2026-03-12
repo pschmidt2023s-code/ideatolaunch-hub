@@ -2,8 +2,7 @@ import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * Premium section wrapper – subtle dark container for key metrics.
- * Clean, minimal – Linear/Stripe aesthetic.
+ * Terminal-style premium section wrapper for key metrics.
  */
 export function CEOSection({
   children,
@@ -15,7 +14,7 @@ export function CEOSection({
   return (
     <div
       className={cn(
-        "rounded-xl border border-border bg-muted/30 p-5 sm:p-6 space-y-5",
+        "rounded-lg border border-border bg-muted/20 p-4 space-y-4",
         className
       )}
     >
