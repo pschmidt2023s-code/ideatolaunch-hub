@@ -1841,6 +1841,7 @@ export type Database = {
           current_period_end: string | null
           id: string
           license_key: string | null
+          plan: string
           status: string
           stripe_customer_id: string | null
           stripe_subscription_id: string | null
@@ -1852,6 +1853,7 @@ export type Database = {
           current_period_end?: string | null
           id?: string
           license_key?: string | null
+          plan?: string
           status?: string
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
@@ -1863,6 +1865,7 @@ export type Database = {
           current_period_end?: string | null
           id?: string
           license_key?: string | null
+          plan?: string
           status?: string
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
