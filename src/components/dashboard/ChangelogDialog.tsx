@@ -12,7 +12,7 @@ interface ChangelogEntry {
 
 const CHANGELOG: ChangelogEntry[] = [
   {
-    version: "4.8.0",
+    version: "4.0",
     date: "2026-03-14",
     items: [
       { type: "feature", text: "Website Builder mit Live-Editor & KI-Wünschen" },
@@ -25,21 +25,23 @@ const CHANGELOG: ChangelogEntry[] = [
     ],
   },
   {
-    version: "4.7.0",
+    version: "3.0",
     date: "2026-03-07",
     items: [
+      { type: "feature", text: "Capital Intelligence Release" },
       { type: "feature", text: "Adaptive Workflow Engine" },
       { type: "feature", text: "CEO Briefing Emails" },
-      { type: "improvement", text: "Dashboard Redesign" },
+      { type: "improvement", text: "Dashboard Redesign (Bloomberg Terminal Aesthetic)" },
       { type: "security", text: "Session Management verbessert" },
     ],
   },
   {
-    version: "4.6.0",
+    version: "2.0",
     date: "2026-02-28",
     items: [
       { type: "feature", text: "Community Hub mit Founder Circles" },
       { type: "feature", text: "Competitor Tracker" },
+      { type: "feature", text: "Multi-Mode System (Founder, Trading, Investor, Strategy)" },
       { type: "improvement", text: "Mobile Navigation optimiert" },
     ],
   },
