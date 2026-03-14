@@ -150,13 +150,27 @@ export function resetFailedLogins(email: string): void {
 
 // ── Session Inactivity Monitor ──
 let inactivityTimer: ReturnType<typeof setTimeout> | null = null;
-const INACTIVITY_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+const INACTIVITY_TIMEOUT = 8 * 60 * 60 * 1000; // 8 hours
+const LAST_ACTIVITY_KEY = "bos_last_activity";
 
 export function startInactivityMonitor(onExpire: () => void) {
+  const now = Date.now();
+  const lastActivity = parseInt(localStorage.getItem(LAST_ACTIVITY_KEY) || String(now), 10);
+
+  // Check if session already expired from a previous page load
+  if (now - lastActivity > INACTIVITY_TIMEOUT) {
+    logSecurityEvent("session_expired", { reason: "inactivity" });
+    localStorage.removeItem(LAST_ACTIVITY_KEY);
+    onExpire();
+    return () => {};
+  }
+
   const resetTimer = () => {
+    localStorage.setItem(LAST_ACTIVITY_KEY, String(Date.now()));
     if (inactivityTimer) clearTimeout(inactivityTimer);
     inactivityTimer = setTimeout(() => {
       logSecurityEvent("session_expired", { reason: "inactivity" });
+      localStorage.removeItem(LAST_ACTIVITY_KEY);
       onExpire();
     }, INACTIVITY_TIMEOUT);
   };
