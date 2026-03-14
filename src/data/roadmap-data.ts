@@ -470,8 +470,8 @@ export function getHighlightModule(isDE: boolean): HighlightModule {
   return {
     icon: Boxes,
     title: isDE ? "Founder Operating System" : "Founder Operating System",
-    status: "in-progress",
-    quarter: "Q3 2025",
+    status: "released",
+    quarter: "Q1 2026",
     description: isDE
       ? "Das komplette Betriebssystem für Gründer — alle Tools, Daten und Insights an einem Ort. Vereint Strategie, Execution und Wachstum in einem einzigen, intelligenten Workspace."
       : "The complete operating system for founders — all tools, data, and insights in one place. Unifying strategy, execution, and growth in a single intelligent workspace.",
@@ -483,6 +483,6 @@ export function getHighlightModule(isDE: boolean): HighlightModule {
       { icon: HeartHandshake, label: isDE ? "Mentor-Matching System" : "Mentor matching system" },
       { icon: Search, label: isDE ? "Globale Markt-Suchmaschine" : "Global market search engine" },
     ],
-    cta: isDE ? "Pro & Execution-Mitglieder erhalten Beta-Zugang" : "Pro & Execution Members get beta access",
+    cta: isDE ? "Jetzt verfügbar für alle Pro & Execution-Mitglieder" : "Now available for all Pro & Execution Members",
   };
 }
