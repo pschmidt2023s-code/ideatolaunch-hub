@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Globe, Menu, ChevronDown } from "lucide-react";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { useAuth } from "@/hooks/useAuth";
+
 const navLinks = [
   { labelKey: "product", href: "/product" },
   { labelKey: "pricing", href: "/pricing" },
@@ -21,6 +23,7 @@ const toolLinks = [
 export function Navbar() {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
+  const { user, signOut } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(false);
   const isDE = i18n.language === "de";
@@ -38,6 +41,12 @@ export function Navbar() {
     } else {
       navigate(path);
     }
+    setMenuOpen(false);
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
     setMenuOpen(false);
   };
 
@@ -90,7 +99,10 @@ export function Navbar() {
                       {toolLinks.map((tool) => (
                         <button
                           key={tool.href}
-                          onClick={() => { handleNav(tool.href); setToolsOpen(false); }}
+                          onClick={() => {
+                            handleNav(tool.href);
+                            setToolsOpen(false);
+                          }}
                           className="block w-full text-left rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                         >
                           {isDE ? tool.labelDE : tool.labelEN}
@@ -112,16 +124,30 @@ export function Navbar() {
             <Globe className="h-4 w-4" />
             {isDE ? "EN" : "DE"}
           </button>
-          <Button variant="ghost" size="sm" onClick={() => navigate("/auth")}>
-            {t("nav.login")}
-          </Button>
-          <Button
-            size="sm"
-            className="bg-accent text-accent-foreground hover:bg-accent/90"
-            onClick={() => navigate("/auth?tab=signup")}
-          >
-            {isDE ? "Jetzt starten" : "Get started"}
-          </Button>
+
+          {user ? (
+            <>
+              <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")}>
+                {isDE ? "Dashboard" : "Dashboard"}
+              </Button>
+              <Button variant="outline" size="sm" onClick={handleSignOut}>
+                {isDE ? "Abmelden" : "Sign out"}
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button variant="ghost" size="sm" onClick={() => navigate("/auth")}>
+                {t("nav.login")}
+              </Button>
+              <Button
+                size="sm"
+                className="bg-accent text-accent-foreground hover:bg-accent/90"
+                onClick={() => navigate("/auth?tab=signup")}
+              >
+                {isDE ? "Jetzt starten" : "Get started"}
+              </Button>
+            </>
+          )}
         </div>
 
         {/* Mobile hamburger */}
@@ -174,26 +200,46 @@ export function Navbar() {
 
               <div className="mt-5 flex flex-col gap-1 border-t border-border pt-4">
                 <button
-                  onClick={() => { toggleLang(); setMenuOpen(false); }}
+                  onClick={() => {
+                    toggleLang();
+                    setMenuOpen(false);
+                  }}
                   className="flex items-center gap-2.5 rounded-lg px-3 py-3 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                 >
                   <Globe className="h-4 w-4" />
                   {isDE ? "English" : "Deutsch"}
                 </button>
-                <Button variant="ghost" className="justify-start h-11 text-[15px]" onClick={() => { navigate("/auth"); setMenuOpen(false); }}>
-                  {t("nav.login")}
-                </Button>
+
+                {user ? (
+                  <>
+                    <Button variant="ghost" className="justify-start h-11 text-[15px]" onClick={() => handleNav("/dashboard")}>
+                      {isDE ? "Zum Dashboard" : "Go to Dashboard"}
+                    </Button>
+                    <Button variant="outline" className="justify-start h-11 text-[15px]" onClick={handleSignOut}>
+                      {isDE ? "Abmelden" : "Sign out"}
+                    </Button>
+                  </>
+                ) : (
+                  <Button variant="ghost" className="justify-start h-11 text-[15px]" onClick={() => { navigate("/auth"); setMenuOpen(false); }}>
+                    {t("nav.login")}
+                  </Button>
+                )}
               </div>
             </div>
 
-            <div className="px-4 py-4 border-t border-border pb-safe">
-              <Button
-                className="w-full h-12 text-[15px] bg-primary text-primary-foreground hover:bg-primary/90"
-                onClick={() => { navigate("/auth?tab=signup"); setMenuOpen(false); }}
-              >
-                {isDE ? "Jetzt starten" : "Get started"}
-              </Button>
-            </div>
+            {!user && (
+              <div className="px-4 py-4 border-t border-border pb-safe">
+                <Button
+                  className="w-full h-12 text-[15px] bg-primary text-primary-foreground hover:bg-primary/90"
+                  onClick={() => {
+                    navigate("/auth?tab=signup");
+                    setMenuOpen(false);
+                  }}
+                >
+                  {isDE ? "Jetzt starten" : "Get started"}
+                </Button>
+              </div>
+            )}
           </SheetContent>
         </Sheet>
       </div>
