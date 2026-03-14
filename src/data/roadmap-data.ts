@@ -1,11 +1,9 @@
 import {
   BarChart3,
   Rocket,
-  Zap,
   TrendingUp,
   Target,
   DollarSign,
-  Flame,
   Brain,
   Globe,
   Users,
@@ -19,7 +17,6 @@ import {
   Workflow,
   PieChart,
   RefreshCcw,
-  Megaphone,
   Store,
   BookOpen,
   Puzzle,
@@ -170,103 +167,6 @@ export function getRoadmapSections(isDE: boolean): RoadmapSection[] {
         },
       ],
     },
-          features: [
-            isDE ? "Kontextbezogene Vorschläge" : "Context-aware suggestions",
-            isDE ? "Marktdaten-Integration" : "Market data integration",
-            isDE ? "Automatische Risikoerkennung" : "Auto risk detection",
-            isDE ? "Gründer-spezifische Prompts" : "Founder-specific prompts",
-          ],
-          status: "released",
-        },
-        {
-          icon: Wand2,
-          title: isDE ? "AI Markenname-Generator" : "AI Brand Name Generator",
-          features: [
-            isDE ? "Domainverfügbarkeits-Check" : "Domain availability check",
-            isDE ? "Tonalitäts-Matching" : "Tonality matching",
-            isDE ? "Trademark-Risiko-Bewertung" : "Trademark risk assessment",
-            isDE ? "Multi-Sprach-Scoring" : "Multi-language scoring",
-          ],
-          status: "released",
-        },
-        {
-          icon: Sparkles,
-          title: isDE ? "Smart Insights Panel" : "Smart Insights Panel",
-          features: [
-            isDE ? "KPI-Anomalie-Erkennung" : "KPI anomaly detection",
-            isDE ? "Wöchentliche AI-Zusammenfassung" : "Weekly AI summary",
-            isDE ? "Handlungsempfehlungen" : "Actionable recommendations",
-          ],
-          status: "released",
-        },
-        {
-          icon: MessageSquare,
-          title: isDE ? "CEO Briefing System" : "CEO Briefing System",
-          features: [
-            isDE ? "Tägliche Zusammenfassung" : "Daily summary",
-            isDE ? "Prioritäts-Ranking" : "Priority ranking",
-            isDE ? "Entscheidungshilfen" : "Decision support",
-          ],
-          status: "released",
-        },
-      ],
-    },
-    // Phase 2 — June (updated with new features)
-    {
-      label: { de: "Phase 2", en: "Phase 2" },
-      month: {
-        de: "Juni — Community, Gamification & Netzwerk",
-        en: "June — Community, Gamification & Network",
-      },
-      subtitle: {
-        de: "Gemeinsam wachsen — mit Daten und Accountability",
-        en: "Grow together — with data and accountability",
-      },
-      dotStyle: "border",
-      items: [
-        {
-          icon: Users,
-          title: isDE ? "Gründer-Circles" : "Founder Circles",
-          features: [
-            isDE ? "Branchen-basierte Gruppen" : "Industry-based groups",
-            isDE ? "Wöchentliche Challenges" : "Weekly challenges",
-            isDE ? "Peer-Accountability" : "Peer accountability",
-          ],
-          status: "released",
-        },
-        {
-          icon: Star,
-          title: isDE ? "Gamification & XP-System" : "Gamification & XP System",
-          features: [
-            isDE ? "XP-basiertes Ranking" : "XP-based ranking",
-            isDE ? "8 Achievement-Kategorien" : "8 achievement categories",
-            isDE ? "Gründer-Level (Starter → Legend)" : "Founder levels (Starter → Legend)",
-            isDE ? "Konfetti-Animationen bei Meilensteinen" : "Confetti animations on milestones",
-          ],
-          status: "released",
-        },
-        {
-          icon: BookOpen,
-          title: isDE ? "Startup Logs & Case Studies" : "Startup Logs & Case Studies",
-          features: [
-            isDE ? "Öffentliches Gründer-Tagebuch" : "Public founder diary",
-            isDE ? "Follower-System" : "Follower system",
-            isDE ? "Verifizierte Lieferanten-Reviews" : "Verified supplier reviews",
-          ],
-          status: "released",
-        },
-        {
-          icon: Compass,
-          title: isDE ? "Trend-Radar & Intelligenz-Feed" : "Trend Radar & Intelligence Feed",
-          features: [
-            isDE ? "Markttrend-Erkennung" : "Market trend detection",
-            isDE ? "Nischen-Signale" : "Niche signals",
-            isDE ? "Community-Insights Aggregation" : "Community insights aggregation",
-          ],
-          status: "released",
-        },
-      ],
-    },
     // Phase 3 — July
     {
       label: { de: "Phase 3", en: "Phase 3" },
@@ -289,7 +189,7 @@ export function getRoadmapSections(isDE: boolean): RoadmapSection[] {
             isDE ? "HTML/CSS Export" : "HTML/CSS export",
             isDE ? "Responsive Vorschau" : "Responsive preview",
           ],
-          status: "released",
+          status: "in-progress",
         },
         {
           icon: Layers,
@@ -299,7 +199,7 @@ export function getRoadmapSections(isDE: boolean): RoadmapSection[] {
             isDE ? "One-Click Anpassung" : "One-click customization",
             isDE ? "A/B-Test Varianten" : "A/B test variants",
           ],
-          status: "in-progress",
+          status: "coming-soon",
         },
         {
           icon: FileText,
@@ -309,7 +209,7 @@ export function getRoadmapSections(isDE: boolean): RoadmapSection[] {
             isDE ? "Schema.org Markup" : "Schema.org markup",
             isDE ? "Open Graph Vorschau" : "Open Graph preview",
           ],
-          status: "in-progress",
+          status: "coming-soon",
         },
       ],
     },
@@ -334,7 +234,7 @@ export function getRoadmapSections(isDE: boolean): RoadmapSection[] {
             isDE ? "Saisonale Muster-Erkennung" : "Seasonal pattern detection",
             isDE ? "Konfidenz-Intervalle" : "Confidence intervals",
           ],
-          status: "in-progress",
+          status: "coming-soon",
         },
         {
           icon: PieChart,
@@ -344,7 +244,7 @@ export function getRoadmapSections(isDE: boolean): RoadmapSection[] {
             isDE ? "LTV-Projektion" : "LTV projection",
             isDE ? "Segment-Vergleiche" : "Segment comparisons",
           ],
-          status: "in-progress",
+          status: "coming-soon",
         },
         {
           icon: Gauge,
@@ -355,7 +255,7 @@ export function getRoadmapSections(isDE: boolean): RoadmapSection[] {
             isDE ? "Alert-Schwellenwerte" : "Alert thresholds",
             isDE ? "Export-Automatisierung" : "Export automation",
           ],
-          status: "in-progress",
+          status: "coming-soon",
         },
       ],
     },
