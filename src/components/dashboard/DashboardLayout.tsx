@@ -3,10 +3,12 @@ import { DashboardSidebar } from "./DashboardSidebar";
 import { TopBar } from "./TopBar";
 import { ModeSwitcher } from "@/components/ModeSwitcher";
 import { PageTransition } from "./PageTransition";
+import { ChangelogDialog, useChangelog } from "./ChangelogDialog";
 import { Menu } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useMode } from "@/hooks/useMode";
 import { usePrefetchDashboard } from "@/hooks/useQueryDefaults";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 
 export function DashboardLayout({ children }: { children: ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -14,6 +16,10 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
   const { needsSelection } = useMode();
   const [modeDialogOpen, setModeDialogOpen] = useState(false);
   const prefetch = usePrefetchDashboard(user?.id);
+  const changelog = useChangelog();
+
+  // Global keyboard shortcuts
+  useKeyboardShortcuts();
 
   useEffect(() => {
     prefetch();
@@ -53,7 +59,7 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
         <div className="sticky top-0 z-30 flex h-10 items-center gap-2 border-b border-border bg-background px-3 lg:hidden pt-safe">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="flex items-center justify-center rounded p-1.5 text-muted-foreground hover:text-foreground active:bg-muted transition-colors min-w-[36px] min-h-[36px]"
+            className="flex items-center justify-center rounded p-1.5 text-muted-foreground hover:text-foreground active:bg-muted transition-colors min-w-[36px] min-h-[36px] press-scale"
             aria-label="Menü öffnen"
           >
             <Menu className="h-4 w-4" />
@@ -79,6 +85,9 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
         onOpenChange={setModeDialogOpen}
         isInitial={needsSelection}
       />
+
+      {/* Changelog / What's New */}
+      <ChangelogDialog open={changelog.open} onOpenChange={changelog.setOpen} />
     </div>
   );
 }
