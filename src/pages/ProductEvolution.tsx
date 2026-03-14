@@ -282,7 +282,7 @@ export default function ProductEvolution() {
                     Revenue Activation Mode
                   </CardTitle>
                   <div className="flex items-center gap-2 mt-1">
-                    <StatusBadge status="coming-soon" />
+                    <StatusBadge status="released" />
                     <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">Q2 2025</span>
                   </div>
                 </div>
