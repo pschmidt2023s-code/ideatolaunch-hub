@@ -44,3 +44,6 @@ verify_jwt = false
 
 [functions.validate-license]
 verify_jwt = false
+
+[functions.ai-website-edit]
+verify_jwt = false
