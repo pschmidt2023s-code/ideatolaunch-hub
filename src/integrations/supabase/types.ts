@@ -2061,6 +2061,100 @@ export type Database = {
         }
         Relationships: []
       }
+      website_projects: {
+        Row: {
+          brand_id: string | null
+          color_scheme: string | null
+          created_at: string
+          id: string
+          meta: Json | null
+          name: string
+          selected_pages: string[] | null
+          status: string
+          updated_at: string
+          user_id: string
+          website_data: Json
+        }
+        Insert: {
+          brand_id?: string | null
+          color_scheme?: string | null
+          created_at?: string
+          id?: string
+          meta?: Json | null
+          name?: string
+          selected_pages?: string[] | null
+          status?: string
+          updated_at?: string
+          user_id: string
+          website_data?: Json
+        }
+        Update: {
+          brand_id?: string | null
+          color_scheme?: string | null
+          created_at?: string
+          id?: string
+          meta?: Json | null
+          name?: string
+          selected_pages?: string[] | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+          website_data?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "website_projects_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      website_wishes: {
+        Row: {
+          created_at: string
+          id: string
+          project_id: string
+          result: Json | null
+          status: string
+          target_page: string | null
+          target_section: string | null
+          user_id: string
+          wish_text: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          project_id: string
+          result?: Json | null
+          status?: string
+          target_page?: string | null
+          target_section?: string | null
+          user_id: string
+          wish_text: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          project_id?: string
+          result?: Json | null
+          status?: string
+          target_page?: string | null
+          target_section?: string | null
+          user_id?: string
+          wish_text?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "website_wishes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "website_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       weekly_reviews: {
         Row: {
           brand_id: string
