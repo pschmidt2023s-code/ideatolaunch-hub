@@ -1,12 +1,5 @@
 import {
-  Settings2,
-  CalendarRange,
-  ListChecks,
-  UserCheck,
-  AlertTriangle,
   BarChart3,
-  ShieldCheck,
-  Award,
   Rocket,
   Zap,
   TrendingUp,
@@ -15,7 +8,6 @@ import {
   Flame,
   Brain,
   Globe,
-  Smartphone,
   Users,
   Sparkles,
   LineChart,
@@ -33,8 +25,17 @@ import {
   Puzzle,
   Star,
   Shield,
+  ShieldCheck,
   Cpu,
   Mail,
+  Wand2,
+  Search,
+  Lightbulb,
+  GitBranch,
+  Eye,
+  Compass,
+  HeartHandshake,
+  Boxes,
 } from "lucide-react";
 
 export type Status = "released" | "in-progress" | "coming-soon";
@@ -52,135 +53,20 @@ export interface RoadmapSection {
   subtitle: { de: string; en: string };
   dotStyle: "solid" | "border" | "dashed";
   items: RoadmapItem[];
-  isDE?: boolean;
 }
 
 export function getRoadmapSections(isDE: boolean): RoadmapSection[] {
   return [
-    // Phase 1 — March
+    // Phase 1 — May (updated with new ambitious features)
     {
       label: { de: "Phase 1", en: "Phase 1" },
       month: {
-        de: "März — Monetarisierung & Execution Fundament",
-        en: "March — Monetization & Execution Foundation",
+        de: "Mai — AI Copilot & Entscheidungs-Intelligenz",
+        en: "May — AI Copilot & Decision Intelligence",
       },
       subtitle: {
-        de: "Grundlagen für nachhaltiges Wachstum",
-        en: "Laying the groundwork for sustainable growth",
-      },
-      dotStyle: "solid",
-      items: [
-        {
-          icon: Settings2,
-          title: isDE ? "Admin Monetarisierung" : "Admin Monetization Control",
-          features: [
-            isDE ? "Rabattcodes" : "Discount codes",
-            isDE ? "Abo-Verwaltung" : "Subscription management",
-            isDE ? "Rückerstattungs-Trigger" : "Refund trigger",
-            "Audit Log",
-          ],
-          status: "released",
-        },
-        {
-          icon: CalendarRange,
-          title: isDE ? "Jahres- & Halbjahrespläne" : "Annual & Semi-Annual Plans",
-          features: [
-            isDE ? "Monatlich vs. Jährlich Toggle" : "Monthly vs Yearly toggle",
-            isDE ? "15 % Jahresrabatt" : "15% yearly discount",
-            isDE ? "Cashflow-Stabilisierung" : "Cashflow stabilization",
-          ],
-          status: "released",
-        },
-        {
-          icon: ListChecks,
-          title: isDE ? "Wöchentlicher Execution Check-In" : "Weekly Execution Check-In",
-          features: [
-            isDE ? "KPI-Erinnerung" : "KPI reminder",
-            isDE ? "Fokusauswahl" : "Focus selection",
-            isDE ? "3 Prioritäts-Aufgaben" : "3 priority tasks",
-            "Streak Tracking",
-          ],
-          status: "released",
-        },
-        {
-          icon: UserCheck,
-          title: "Onboarding 2.0",
-          features: [
-            isDE ? "Zielauswahl" : "Goal selection",
-            isDE ? "Budget-Bewusstsein" : "Budget awareness",
-            isDE ? "Erfahrungslevel" : "Experience level",
-            isDE ? "Archetyp-System" : "Archetype system",
-            isDE ? "Fortschrittsbalken mit Restzeit" : "Progress bar with time estimate",
-          ],
-          status: "released",
-        },
-      ],
-    },
-    // Phase 2 — April
-    {
-      label: { de: "Phase 2", en: "Phase 2" },
-      month: {
-        de: "April — Differenzierung & Revenue Intelligence",
-        en: "April — Differentiation & Revenue Intelligence",
-      },
-      subtitle: {
-        de: "Einzigartige Werkzeuge, die kein anderes Tool bietet",
-        en: "Unique tools no other platform offers",
-      },
-      dotStyle: "border",
-      items: [
-        {
-          icon: AlertTriangle,
-          title: isDE ? "Fehler-Simulator (Light)" : "Failure Simulator (Light)",
-          features: [
-            isDE ? "MOQ-Stresstest" : "MOQ stress test",
-            isDE ? "Preissturz-Simulation" : "Price drop simulation",
-            isDE ? "Retourenquote-Simulation" : "Return rate simulation",
-            isDE ? "Verlustberechnung" : "Loss calculation output",
-          ],
-          status: "released",
-        },
-        {
-          icon: BarChart3,
-          title: isDE ? "Benchmark-Story Upgrade" : "Benchmark Story Upgrade",
-          features: [
-            isDE ? "Strategische Interpretationsebene" : "Strategic interpretation layer",
-            isDE ? "Verbesserungsvorschläge" : "Improvement suggestions",
-          ],
-          status: "released",
-        },
-        {
-          icon: ShieldCheck,
-          title: isDE ? "Kapitalwarn-Ebene" : "Capital Warning Layer",
-          features: [
-            isDE ? "Runway-Alerts" : "Runway alerts",
-            isDE ? "Lagerdruckwarnungen" : "Inventory pressure alerts",
-            isDE ? "Margensicherheitsschwellen" : "Margin safety thresholds",
-          ],
-          status: "released",
-        },
-        {
-          icon: Award,
-          title: isDE ? "Vertrauen & Autorität Upgrade" : "Trust & Authority Upgrade",
-          features: [
-            isDE ? "Case-Study-Block" : "Case study block",
-            isDE ? "Gründer-Positionierung" : "Founder positioning",
-            isDE ? "Autoritäts-Badges" : "Authority badges",
-          ],
-          status: "released",
-        },
-      ],
-    },
-    // Phase 3 — May
-    {
-      label: { de: "Phase 3", en: "Phase 3" },
-      month: {
-        de: "Mai — AI Copilot & Smart Automation",
-        en: "May — AI Copilot & Smart Automation",
-      },
-      subtitle: {
-        de: "Intelligente Assistenz für schnellere Entscheidungen",
-        en: "Intelligent assistance for faster decisions",
+        de: "Dein persönlicher Gründer-Assistent auf Steroiden",
+        en: "Your personal founder assistant on steroids",
       },
       dotStyle: "solid",
       items: [
@@ -196,22 +82,23 @@ export function getRoadmapSections(isDE: boolean): RoadmapSection[] {
           status: "released",
         },
         {
+          icon: Wand2,
+          title: isDE ? "AI Markenname-Generator" : "AI Brand Name Generator",
+          features: [
+            isDE ? "Domainverfügbarkeits-Check" : "Domain availability check",
+            isDE ? "Tonalitäts-Matching" : "Tonality matching",
+            isDE ? "Trademark-Risiko-Bewertung" : "Trademark risk assessment",
+            isDE ? "Multi-Sprach-Scoring" : "Multi-language scoring",
+          ],
+          status: "released",
+        },
+        {
           icon: Sparkles,
           title: isDE ? "Smart Insights Panel" : "Smart Insights Panel",
           features: [
             isDE ? "KPI-Anomalie-Erkennung" : "KPI anomaly detection",
             isDE ? "Wöchentliche AI-Zusammenfassung" : "Weekly AI summary",
             isDE ? "Handlungsempfehlungen" : "Actionable recommendations",
-          ],
-          status: "released",
-        },
-        {
-          icon: Workflow,
-          title: isDE ? "Workflow-Automatisierung" : "Workflow Automation",
-          features: [
-            isDE ? "Automatische Task-Erstellung" : "Auto task creation",
-            isDE ? "Phasen-basierte Trigger" : "Phase-based triggers",
-            isDE ? "Benachrichtigungs-Regeln" : "Notification rules",
           ],
           status: "released",
         },
@@ -227,16 +114,16 @@ export function getRoadmapSections(isDE: boolean): RoadmapSection[] {
         },
       ],
     },
-    // Phase 4 — June
+    // Phase 2 — June (updated with new features)
     {
-      label: { de: "Phase 4", en: "Phase 4" },
+      label: { de: "Phase 2", en: "Phase 2" },
       month: {
-        de: "Juni — Community & Netzwerk-Effekte",
-        en: "June — Community & Network Effects",
+        de: "Juni — Community, Gamification & Netzwerk",
+        en: "June — Community, Gamification & Network",
       },
       subtitle: {
-        de: "Von Solo-Gründer zum vernetzten Ökosystem",
-        en: "From solo founder to connected ecosystem",
+        de: "Gemeinsam wachsen — mit Daten und Accountability",
+        en: "Grow together — with data and accountability",
       },
       dotStyle: "border",
       items: [
@@ -252,39 +139,40 @@ export function getRoadmapSections(isDE: boolean): RoadmapSection[] {
         },
         {
           icon: Star,
-          title: isDE ? "Leaderboard & Reputation" : "Leaderboard & Reputation",
+          title: isDE ? "Gamification & XP-System" : "Gamification & XP System",
           features: [
             isDE ? "XP-basiertes Ranking" : "XP-based ranking",
-            isDE ? "Expertise-Badges" : "Expertise badges",
-            isDE ? "Gründer-Level-System" : "Founder level system",
+            isDE ? "8 Achievement-Kategorien" : "8 achievement categories",
+            isDE ? "Gründer-Level (Starter → Legend)" : "Founder levels (Starter → Legend)",
+            isDE ? "Konfetti-Animationen bei Meilensteinen" : "Confetti animations on milestones",
           ],
           status: "released",
         },
         {
           icon: BookOpen,
-          title: isDE ? "Startup Logs" : "Startup Logs",
+          title: isDE ? "Startup Logs & Case Studies" : "Startup Logs & Case Studies",
           features: [
             isDE ? "Öffentliches Gründer-Tagebuch" : "Public founder diary",
             isDE ? "Follower-System" : "Follower system",
-            isDE ? "Meilenstein-Tracking" : "Milestone tracking",
+            isDE ? "Verifizierte Lieferanten-Reviews" : "Verified supplier reviews",
           ],
           status: "released",
         },
         {
-          icon: Megaphone,
-          title: isDE ? "Lieferanten-Reviews" : "Supplier Reviews",
+          icon: Compass,
+          title: isDE ? "Trend-Radar & Intelligenz-Feed" : "Trend Radar & Intelligence Feed",
           features: [
-            isDE ? "Verifizierte Bewertungen" : "Verified reviews",
-            isDE ? "Qualitäts- & Kommunikations-Score" : "Quality & communication score",
-            isDE ? "Community-Intelligence" : "Community intelligence",
+            isDE ? "Markttrend-Erkennung" : "Market trend detection",
+            isDE ? "Nischen-Signale" : "Niche signals",
+            isDE ? "Community-Insights Aggregation" : "Community insights aggregation",
           ],
           status: "released",
         },
       ],
     },
-    // Phase 5 — July
+    // Phase 3 — July
     {
-      label: { de: "Phase 5", en: "Phase 5" },
+      label: { de: "Phase 3", en: "Phase 3" },
       month: {
         de: "Juli — Website Builder & Brand Präsenz",
         en: "July — Website Builder & Brand Presence",
@@ -328,9 +216,9 @@ export function getRoadmapSections(isDE: boolean): RoadmapSection[] {
         },
       ],
     },
-    // Phase 6 — August
+    // Phase 4 — August
     {
-      label: { de: "Phase 6", en: "Phase 6" },
+      label: { de: "Phase 4", en: "Phase 4" },
       month: {
         de: "August — Advanced Analytics & Forecasting",
         en: "August — Advanced Analytics & Forecasting",
@@ -374,9 +262,9 @@ export function getRoadmapSections(isDE: boolean): RoadmapSection[] {
         },
       ],
     },
-    // Phase 7 — September
+    // Phase 5 — September
     {
-      label: { de: "Phase 7", en: "Phase 7" },
+      label: { de: "Phase 5", en: "Phase 5" },
       month: {
         de: "September — Compliance 2.0 & Rechtssicherheit",
         en: "September — Compliance 2.0 & Legal Safety",
@@ -419,9 +307,9 @@ export function getRoadmapSections(isDE: boolean): RoadmapSection[] {
         },
       ],
     },
-    // Phase 8 — October
+    // Phase 6 — October
     {
-      label: { de: "Phase 8", en: "Phase 8" },
+      label: { de: "Phase 6", en: "Phase 6" },
       month: {
         de: "Oktober — Multi-Channel & Marktplatz-Integration",
         en: "October — Multi-Channel & Marketplace Integration",
@@ -464,9 +352,9 @@ export function getRoadmapSections(isDE: boolean): RoadmapSection[] {
         },
       ],
     },
-    // Phase 9 — November
+    // Phase 7 — November
     {
-      label: { de: "Phase 9", en: "Phase 9" },
+      label: { de: "Phase 7", en: "Phase 7" },
       month: {
         de: "November — Investor Readiness & Funding",
         en: "November — Investor Readiness & Funding",
@@ -509,9 +397,9 @@ export function getRoadmapSections(isDE: boolean): RoadmapSection[] {
         },
       ],
     },
-    // Phase 10 — December
+    // Phase 8 — December
     {
-      label: { de: "Phase 10", en: "Phase 10" },
+      label: { de: "Phase 8", en: "Phase 8" },
       month: {
         de: "Dezember — Skalierung & Enterprise Features",
         en: "December — Scaling & Enterprise Features",
@@ -580,21 +468,21 @@ export interface HighlightModule {
 
 export function getHighlightModule(isDE: boolean): HighlightModule {
   return {
-    icon: Zap,
-    title: "Revenue Activation Mode",
-    status: "released",
-    quarter: "Q2 2025",
+    icon: Boxes,
+    title: isDE ? "Founder Operating System" : "Founder Operating System",
+    status: "in-progress",
+    quarter: "Q3 2025",
     description: isDE
-      ? "Ein strukturiertes System, das Gründern beibringt, ihr Produkt in Umsatz zu verwandeln — nicht durch generische Marketing-Theorie, sondern durch kapitalgesteuerte Execution."
-      : "A structured system that teaches founders how to turn their product into revenue — not through generic marketing theory, but through capital-aware execution.",
+      ? "Das komplette Betriebssystem für Gründer — alle Tools, Daten und Insights an einem Ort. Vereint Strategie, Execution und Wachstum in einem einzigen, intelligenten Workspace."
+      : "The complete operating system for founders — all tools, data, and insights in one place. Unifying strategy, execution, and growth in a single intelligent workspace.",
     features: [
-      { icon: Target, label: isDE ? "Break-even Ad-Budgetierung" : "Break-even based ad budgeting" },
-      { icon: TrendingUp, label: isDE ? "Angebots-Positionierungs-Engine" : "Offer positioning engine" },
-      { icon: DollarSign, label: isDE ? "Preispsychologie-Ebene" : "Price psychology layer" },
-      { icon: Rocket, label: isDE ? "Pre-Order Strategie-Framework" : "Pre-order strategy framework" },
-      { icon: BarChart3, label: isDE ? "CAC vs LTV Verständnis" : "CAC vs LTV understanding" },
-      { icon: Flame, label: isDE ? "Launch-Test-Roadmap" : "Launch testing roadmap" },
+      { icon: GitBranch, label: isDE ? "Entscheidungsbaum-Engine" : "Decision tree engine" },
+      { icon: Eye, label: isDE ? "360° Marken-Übersicht" : "360° brand overview" },
+      { icon: Workflow, label: isDE ? "Adaptive Workflow-Automation" : "Adaptive workflow automation" },
+      { icon: Lightbulb, label: isDE ? "Prädiktive Empfehlungen" : "Predictive recommendations" },
+      { icon: HeartHandshake, label: isDE ? "Mentor-Matching System" : "Mentor matching system" },
+      { icon: Search, label: isDE ? "Globale Markt-Suchmaschine" : "Global market search engine" },
     ],
-    cta: isDE ? "Execution-Mitglieder erhalten Early Access" : "Execution Members get early access",
+    cta: isDE ? "Pro & Execution-Mitglieder erhalten Beta-Zugang" : "Pro & Execution Members get beta access",
   };
 }
