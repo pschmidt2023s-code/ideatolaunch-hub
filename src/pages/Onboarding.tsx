@@ -154,7 +154,11 @@ export default function Onboarding() {
             </div>
             <div className="flex items-center justify-between text-xs text-muted-foreground">
               <span>{STEP_LABELS_DE[currentIdx] || `Schritt ${currentIdx}`}</span>
-              <span className="tabular-nums font-medium">{progress}%</span>
+              <div className="flex items-center gap-2">
+                <span className="tabular-nums font-medium">{progress}%</span>
+                <span className="text-muted-foreground/60">·</span>
+                <span className="text-[10px]">~{Math.max(1, Math.ceil((visibleSteps.length - visibleIdx) * 0.3))} min übrig</span>
+              </div>
             </div>
             <Progress value={progress} className="h-1" />
           </div>
