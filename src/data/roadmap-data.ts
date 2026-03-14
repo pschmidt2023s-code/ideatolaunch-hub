@@ -57,22 +57,119 @@ export interface RoadmapSection {
 
 export function getRoadmapSections(isDE: boolean): RoadmapSection[] {
   return [
-    // Phase 1 — May (updated with new ambitious features)
+    // Phase 1 — May
     {
       label: { de: "Phase 1", en: "Phase 1" },
       month: {
-        de: "Mai — AI Copilot & Entscheidungs-Intelligenz",
-        en: "May — AI Copilot & Decision Intelligence",
+        de: "Mai — AI Copilot 3.0 & Entscheidungs-Intelligenz",
+        en: "May — AI Copilot 3.0 & Decision Intelligence",
       },
       subtitle: {
-        de: "Dein persönlicher Gründer-Assistent auf Steroiden",
-        en: "Your personal founder assistant on steroids",
+        de: "Nächste Generation intelligenter Gründer-Assistenz",
+        en: "Next generation intelligent founder assistance",
       },
       dotStyle: "solid",
       items: [
         {
           icon: Brain,
-          title: isDE ? "AI Copilot 2.0" : "AI Copilot 2.0",
+          title: isDE ? "AI Copilot 3.0 — Deep Reasoning" : "AI Copilot 3.0 — Deep Reasoning",
+          features: [
+            isDE ? "Multi-Step Strategieplanung" : "Multi-step strategy planning",
+            isDE ? "Wettbewerbs-Gegenanalyse" : "Competitive counter-analysis",
+            isDE ? "Automatische Szenario-Generierung" : "Auto scenario generation",
+            isDE ? "Kontextgedächtnis über Sessions" : "Context memory across sessions",
+          ],
+          status: "in-progress",
+        },
+        {
+          icon: Wand2,
+          title: isDE ? "Produkt-DNA Analyzer" : "Product DNA Analyzer",
+          features: [
+            isDE ? "Marktfit-Score Berechnung" : "Market-fit score calculation",
+            isDE ? "Preis-Elastizitäts-Modell" : "Price elasticity model",
+            isDE ? "Differenzierungs-Matrix" : "Differentiation matrix",
+            isDE ? "Kategorie-Benchmark" : "Category benchmark",
+          ],
+          status: "in-progress",
+        },
+        {
+          icon: Sparkles,
+          title: isDE ? "Predictive Alerts Engine" : "Predictive Alerts Engine",
+          features: [
+            isDE ? "Cashflow-Vorhersage (30/60/90 Tage)" : "Cashflow prediction (30/60/90 days)",
+            isDE ? "Lieferketten-Risiko-Frühwarnung" : "Supply chain risk early warning",
+            isDE ? "Saisonale Nachfrage-Prognose" : "Seasonal demand forecast",
+          ],
+          status: "in-progress",
+        },
+        {
+          icon: MessageSquare,
+          title: isDE ? "Voice-to-Strategy Modus" : "Voice-to-Strategy Mode",
+          features: [
+            isDE ? "Spracheingabe für Geschäftsideen" : "Voice input for business ideas",
+            isDE ? "AI-generierte Strategiekarten" : "AI-generated strategy maps",
+            isDE ? "Sofortige Machbarkeitsanalyse" : "Instant feasibility analysis",
+          ],
+          status: "in-progress",
+        },
+      ],
+    },
+    // Phase 2 — June
+    {
+      label: { de: "Phase 2", en: "Phase 2" },
+      month: {
+        de: "Juni — Marktplatz-Intelligence & Growth Hacking",
+        en: "June — Marketplace Intelligence & Growth Hacking",
+      },
+      subtitle: {
+        de: "Datengestützte Wachstumsstrategien für jeden Kanal",
+        en: "Data-driven growth strategies for every channel",
+      },
+      dotStyle: "border",
+      items: [
+        {
+          icon: Search,
+          title: isDE ? "Nischen-Scanner 2.0" : "Niche Scanner 2.0",
+          features: [
+            isDE ? "Echtzeit-Nachfrage-Analyse" : "Real-time demand analysis",
+            isDE ? "Gewinnmargen-Heatmap" : "Profit margin heatmap",
+            isDE ? "Sättigungs-Index pro Kategorie" : "Saturation index per category",
+          ],
+          status: "in-progress",
+        },
+        {
+          icon: Star,
+          title: isDE ? "Growth Experiment Lab" : "Growth Experiment Lab",
+          features: [
+            isDE ? "A/B-Test Frameworks" : "A/B test frameworks",
+            isDE ? "Conversion-Funnel Analyse" : "Conversion funnel analysis",
+            isDE ? "ROI-Tracker pro Experiment" : "ROI tracker per experiment",
+            isDE ? "Erfolgs-Playbooks" : "Success playbooks",
+          ],
+          status: "in-progress",
+        },
+        {
+          icon: BookOpen,
+          title: isDE ? "Gründer-Wissensbasis" : "Founder Knowledge Base",
+          features: [
+            isDE ? "Interaktive Lernpfade" : "Interactive learning paths",
+            isDE ? "Branchen-spezifische Guides" : "Industry-specific guides",
+            isDE ? "Experten-Interviews & Podcasts" : "Expert interviews & podcasts",
+          ],
+          status: "in-progress",
+        },
+        {
+          icon: Compass,
+          title: isDE ? "Wettbewerbs-Radar" : "Competitor Radar",
+          features: [
+            isDE ? "Automatische Konkurrenz-Erkennung" : "Auto competitor detection",
+            isDE ? "Preis-Monitoring" : "Price monitoring",
+            isDE ? "Strategie-Vergleichsmatrix" : "Strategy comparison matrix",
+          ],
+          status: "in-progress",
+        },
+      ],
+    },
           features: [
             isDE ? "Kontextbezogene Vorschläge" : "Context-aware suggestions",
             isDE ? "Marktdaten-Integration" : "Market data integration",
