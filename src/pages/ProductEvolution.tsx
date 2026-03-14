@@ -129,7 +129,7 @@ export default function ProductEvolution() {
         isDE ? "15 % Jahresrabatt" : "15% yearly discount",
         isDE ? "Cashflow-Stabilisierung" : "Cashflow stabilization",
       ],
-      status: "in-progress",
+      status: "released",
     },
     {
       icon: ListChecks,
@@ -149,8 +149,10 @@ export default function ProductEvolution() {
         isDE ? "Zielauswahl" : "Goal selection",
         isDE ? "Budget-Bewusstsein" : "Budget awareness",
         isDE ? "Erfahrungslevel" : "Experience level",
+        isDE ? "Archetyp-System" : "Archetype system",
+        isDE ? "Fortschrittsbalken mit Restzeit" : "Progress bar with time estimate",
       ],
-      status: "in-progress",
+      status: "released",
     },
   ];
 
@@ -164,7 +166,7 @@ export default function ProductEvolution() {
         isDE ? "Retourenquote-Simulation" : "Return rate simulation",
         isDE ? "Verlustberechnung" : "Loss calculation output",
       ],
-      status: "coming-soon",
+      status: "released",
     },
     {
       icon: BarChart3,
@@ -173,7 +175,7 @@ export default function ProductEvolution() {
         isDE ? "Strategische Interpretationsebene" : "Strategic interpretation layer",
         isDE ? "Verbesserungsvorschläge" : "Improvement suggestions",
       ],
-      status: "coming-soon",
+      status: "released",
     },
     {
       icon: ShieldCheck,
@@ -183,7 +185,7 @@ export default function ProductEvolution() {
         isDE ? "Lagerdruckwarnungen" : "Inventory pressure alerts",
         isDE ? "Margensicherheitsschwellen" : "Margin safety thresholds",
       ],
-      status: "coming-soon",
+      status: "released",
     },
     {
       icon: Award,
@@ -193,7 +195,7 @@ export default function ProductEvolution() {
         isDE ? "Gründer-Positionierung" : "Founder positioning",
         isDE ? "Autoritäts-Badges" : "Authority badges",
       ],
-      status: "coming-soon",
+      status: "released",
     },
   ];
 
