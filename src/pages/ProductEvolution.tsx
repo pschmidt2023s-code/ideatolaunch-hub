@@ -1,33 +1,9 @@
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
-import {
-  Settings2,
-  CalendarRange,
-  ListChecks,
-  UserCheck,
-  AlertTriangle,
-  BarChart3,
-  ShieldCheck,
-  Award,
-  Rocket,
-  Zap,
-  TrendingUp,
-  Target,
-  DollarSign,
-  Flame,
-} from "lucide-react";
+import { Rocket, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-type Status = "released" | "in-progress" | "coming-soon";
-
-interface RoadmapItem {
-  icon: React.ComponentType<{ className?: string }>;
-  title: string;
-  features: string[];
-  status: Status;
-}
+import { getRoadmapSections, getHighlightModule, type Status, type RoadmapItem } from "@/data/roadmap-data";
 
 function StatusBadge({ status }: { status: Status }) {
   const map: Record<Status, { label: string; classes: string }> = {
@@ -84,15 +60,7 @@ function RoadmapCard({ item, index }: { item: RoadmapItem; index: number }) {
   );
 }
 
-function SectionHeader({
-  month,
-  subtitle,
-  label,
-}: {
-  month: string;
-  subtitle: string;
-  label: string;
-}) {
+function SectionHeader({ month, subtitle, label }: { month: string; subtitle: string; label: string }) {
   return (
     <div className="relative mb-6">
       <div className="flex items-center gap-3 mb-1">
@@ -105,99 +73,21 @@ function SectionHeader({
   );
 }
 
+function TimelineDot({ style }: { style: "solid" | "border" | "dashed" }) {
+  const cls = {
+    solid: "bg-accent ring-4 ring-background",
+    border: "border-2 border-accent bg-background",
+    dashed: "border-2 border-dashed border-accent/50 bg-background",
+  }[style];
+  return <div className={cn("absolute left-2.5 top-1 h-3 w-3 rounded-full hidden sm:block", cls)} />;
+}
+
 export default function ProductEvolution() {
   const { i18n } = useTranslation();
   const isDE = i18n.language === "de";
 
-  const marchItems: RoadmapItem[] = [
-    {
-      icon: Settings2,
-      title: isDE ? "Admin Monetarisierung" : "Admin Monetization Control",
-      features: [
-        isDE ? "Rabattcodes" : "Discount codes",
-        isDE ? "Abo-Verwaltung" : "Subscription management",
-        isDE ? "Rückerstattungs-Trigger" : "Refund trigger",
-        "Audit Log",
-      ],
-      status: "released",
-    },
-    {
-      icon: CalendarRange,
-      title: isDE ? "Jahres- & Halbjahrespläne" : "Annual & Semi-Annual Plans",
-      features: [
-        isDE ? "Monatlich vs. Jährlich Toggle" : "Monthly vs Yearly toggle",
-        isDE ? "15 % Jahresrabatt" : "15% yearly discount",
-        isDE ? "Cashflow-Stabilisierung" : "Cashflow stabilization",
-      ],
-      status: "released",
-    },
-    {
-      icon: ListChecks,
-      title: isDE ? "Wöchentlicher Execution Check-In" : "Weekly Execution Check-In",
-      features: [
-        isDE ? "KPI-Erinnerung" : "KPI reminder",
-        isDE ? "Fokusauswahl" : "Focus selection",
-        isDE ? "3 Prioritäts-Aufgaben" : "3 priority tasks",
-        "Streak Tracking",
-      ],
-      status: "released",
-    },
-    {
-      icon: UserCheck,
-      title: "Onboarding 2.0",
-      features: [
-        isDE ? "Zielauswahl" : "Goal selection",
-        isDE ? "Budget-Bewusstsein" : "Budget awareness",
-        isDE ? "Erfahrungslevel" : "Experience level",
-        isDE ? "Archetyp-System" : "Archetype system",
-        isDE ? "Fortschrittsbalken mit Restzeit" : "Progress bar with time estimate",
-      ],
-      status: "released",
-    },
-  ];
-
-  const aprilItems: RoadmapItem[] = [
-    {
-      icon: AlertTriangle,
-      title: isDE ? "Fehler-Simulator (Light)" : "Failure Simulator (Light)",
-      features: [
-        isDE ? "MOQ-Stresstest" : "MOQ stress test",
-        isDE ? "Preissturz-Simulation" : "Price drop simulation",
-        isDE ? "Retourenquote-Simulation" : "Return rate simulation",
-        isDE ? "Verlustberechnung" : "Loss calculation output",
-      ],
-      status: "released",
-    },
-    {
-      icon: BarChart3,
-      title: isDE ? "Benchmark-Story Upgrade" : "Benchmark Story Upgrade",
-      features: [
-        isDE ? "Strategische Interpretationsebene" : "Strategic interpretation layer",
-        isDE ? "Verbesserungsvorschläge" : "Improvement suggestions",
-      ],
-      status: "released",
-    },
-    {
-      icon: ShieldCheck,
-      title: isDE ? "Kapitalwarn-Ebene" : "Capital Warning Layer",
-      features: [
-        isDE ? "Runway-Alerts" : "Runway alerts",
-        isDE ? "Lagerdruckwarnungen" : "Inventory pressure alerts",
-        isDE ? "Margensicherheitsschwellen" : "Margin safety thresholds",
-      ],
-      status: "released",
-    },
-    {
-      icon: Award,
-      title: isDE ? "Vertrauen & Autorität Upgrade" : "Trust & Authority Upgrade",
-      features: [
-        isDE ? "Case-Study-Block" : "Case study block",
-        isDE ? "Gründer-Positionierung" : "Founder positioning",
-        isDE ? "Autoritäts-Badges" : "Authority badges",
-      ],
-      status: "released",
-    },
-  ];
+  const sections = getRoadmapSections(isDE);
+  const highlight = getHighlightModule(isDE);
 
   return (
     <DashboardLayout>
@@ -210,9 +100,7 @@ export default function ProductEvolution() {
           </span>
         </div>
         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-          {isDE
-            ? "Roadmap — März & April 2025"
-            : "Roadmap — March & April 2025"}
+          {isDE ? "Roadmap — 2025" : "Roadmap — 2025"}
         </h1>
         <p className="mt-2 max-w-2xl text-muted-foreground">
           {isDE
@@ -221,110 +109,77 @@ export default function ProductEvolution() {
         </p>
       </div>
 
-      {/* Timeline connector */}
+      {/* Timeline */}
       <div className="relative space-y-12">
-        {/* Vertical timeline line */}
         <div className="absolute left-4 top-0 bottom-0 w-px bg-gradient-to-b from-accent/60 via-border/40 to-transparent hidden sm:block" />
 
-        {/* March */}
-        <section className="relative sm:pl-12">
-          <div className="absolute left-2.5 top-1 h-3 w-3 rounded-full bg-accent ring-4 ring-background hidden sm:block" />
-          <SectionHeader
-            label={isDE ? "Phase 1" : "Phase 1"}
-            month={isDE ? "März — Monetarisierung & Execution Fundament" : "March — Monetization & Execution Foundation"}
-            subtitle={isDE ? "Grundlagen für nachhaltiges Wachstum" : "Laying the groundwork for sustainable growth"}
-          />
-          <div className="grid gap-4 sm:grid-cols-2">
-            {marchItems.map((item, i) => (
-              <RoadmapCard key={item.title} item={item} index={i} />
-            ))}
-          </div>
-        </section>
+        {/* Render all phase sections */}
+        {sections.map((section, si) => (
+          <section key={si} className="relative sm:pl-12">
+            <TimelineDot style={section.dotStyle} />
+            <SectionHeader
+              label={isDE ? section.label.de : section.label.en}
+              month={isDE ? section.month.de : section.month.en}
+              subtitle={isDE ? section.subtitle.de : section.subtitle.en}
+            />
+            <div className="grid gap-4 sm:grid-cols-2">
+              {section.items.map((item, i) => (
+                <RoadmapCard key={item.title} item={item} index={i} />
+              ))}
+            </div>
+          </section>
+        ))}
 
-        {/* April */}
+        {/* Revenue Activation Mode highlight */}
         <section className="relative sm:pl-12">
-          <div className="absolute left-2.5 top-1 h-3 w-3 rounded-full border-2 border-accent bg-background hidden sm:block" />
-          <SectionHeader
-            label={isDE ? "Phase 2" : "Phase 2"}
-            month={isDE ? "April — Differenzierung & Revenue Intelligence" : "April — Differentiation & Revenue Intelligence"}
-            subtitle={isDE ? "Einzigartige Werkzeuge, die kein anderes Tool bietet" : "Unique tools no other platform offers"}
-          />
-          <div className="grid gap-4 sm:grid-cols-2">
-            {aprilItems.map((item, i) => (
-              <RoadmapCard key={item.title} item={item} index={i} />
-            ))}
-          </div>
-        </section>
-
-        {/* Revenue Activation Mode */}
-        <section className="relative sm:pl-12">
-          <div className="absolute left-2.5 top-1 h-3 w-3 rounded-full border-2 border-dashed border-accent/50 bg-background hidden sm:block" />
+          <TimelineDot style="dashed" />
           <div className="mb-6">
             <div className="flex items-center gap-3 mb-1">
               <span className="text-xs font-bold uppercase tracking-widest text-accent">
-                {isDE ? "Neues Modul" : "New Mode"}
+                {isDE ? "Highlight Modul" : "Highlight Module"}
               </span>
               <div className="h-px flex-1 bg-border/50" />
             </div>
           </div>
 
           <Card className="relative overflow-hidden border-accent/20 bg-gradient-to-br from-card/80 via-card/60 to-accent/[0.04] backdrop-blur-sm">
-            {/* Glow effect */}
             <div className="absolute -top-24 -right-24 h-48 w-48 rounded-full bg-accent/5 blur-3xl" />
-
             <CardHeader>
               <div className="flex flex-wrap items-center gap-3 mb-2">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/15 text-accent">
-                  <Zap className="h-5 w-5" />
+                  <highlight.icon className="h-5 w-5" />
                 </div>
                 <div>
-                  <CardTitle className="text-lg sm:text-xl">
-                    Revenue Activation Mode
-                  </CardTitle>
+                  <CardTitle className="text-lg sm:text-xl">{highlight.title}</CardTitle>
                   <div className="flex items-center gap-2 mt-1">
-                    <StatusBadge status="released" />
-                    <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">Q2 2025</span>
+                    <StatusBadge status={highlight.status} />
+                    <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">{highlight.quarter}</span>
                   </div>
                 </div>
               </div>
               <CardDescription className="text-sm leading-relaxed max-w-xl">
-                {isDE
-                  ? "Ein strukturiertes System, das Gründern beibringt, ihr Produkt in Umsatz zu verwandeln — nicht durch generische Marketing-Theorie, sondern durch kapitalgesteuerte Execution."
-                  : "A structured system that teaches founders how to turn their product into revenue — not through generic marketing theory, but through capital-aware execution."}
+                {highlight.description}
               </CardDescription>
             </CardHeader>
-
             <CardContent>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {[
-                  { icon: Target, label: isDE ? "Break-even Ad-Budgetierung" : "Break-even based ad budgeting" },
-                  { icon: TrendingUp, label: isDE ? "Angebots-Positionierungs-Engine" : "Offer positioning engine" },
-                  { icon: DollarSign, label: isDE ? "Preispsychologie-Ebene" : "Price psychology layer" },
-                  { icon: Rocket, label: isDE ? "Pre-Order Strategie-Framework" : "Pre-order strategy framework" },
-                  { icon: BarChart3, label: isDE ? "CAC vs LTV Verständnis" : "CAC vs LTV understanding" },
-                  { icon: Flame, label: isDE ? "Launch-Test-Roadmap" : "Launch testing roadmap" },
-                ].map(({ icon: FIcon, label }) => (
+                {highlight.features.map(({ icon: FIcon, label }) => (
                   <div key={label} className="flex items-center gap-2.5 rounded-lg border border-border/30 bg-background/50 px-3 py-2.5 text-sm">
                     <FIcon className="h-4 w-4 shrink-0 text-accent/70" />
                     <span className="text-muted-foreground">{label}</span>
                   </div>
                 ))}
               </div>
-
               <div className="mt-6 flex items-center gap-2 rounded-lg border border-accent/20 bg-accent/5 px-4 py-3">
                 <Zap className="h-4 w-4 text-accent" />
-                <p className="text-sm font-medium">
-                  {isDE
-                    ? "Execution-Mitglieder erhalten Early Access"
-                    : "Execution Members get early access"}
-                </p>
+                <p className="text-sm font-medium">{highlight.cta}</p>
               </div>
             </CardContent>
           </Card>
         </section>
       </div>
 
-      {/* Footer commitment */}
+      {/* Footer */}
       <div className="mt-16 text-center">
         <p className="text-xs text-muted-foreground/60 uppercase tracking-widest">
           {isDE
