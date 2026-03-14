@@ -50,3 +50,48 @@ export function fireCompletionConfetti(brandId: string) {
   };
   frame();
 }
+
+/**
+ * Fire a subtle celebration for smaller milestones (first brand, first export, etc.)
+ */
+export function fireMilestoneConfetti() {
+  confetti({
+    particleCount: 40,
+    spread: 50,
+    origin: { y: 0.7, x: 0.5 },
+    colors: ["#10b981", "#3b82f6"],
+    scalar: 0.8,
+    gravity: 1.2,
+    zIndex: 9999,
+  });
+}
+
+/**
+ * Fire emoji-style confetti (stars)
+ */
+export function fireStarConfetti() {
+  const defaults = { spread: 360, ticks: 60, gravity: 0, decay: 0.94, startVelocity: 20, zIndex: 9999 };
+  confetti({ ...defaults, particleCount: 30, shapes: ["star"], scalar: 1.2, colors: ["#f59e0b", "#fbbf24"] });
+  setTimeout(() => {
+    confetti({ ...defaults, particleCount: 15, shapes: ["circle"], scalar: 0.8, colors: ["#10b981", "#34d399"] });
+  }, 150);
+}
+
+/**
+ * Level-up celebration
+ */
+export function fireLevelUpConfetti() {
+  const end = Date.now() + 1000;
+  const frame = () => {
+    confetti({
+      particleCount: 2,
+      angle: Math.random() * 360,
+      spread: 60,
+      origin: { x: Math.random(), y: Math.random() * 0.3 },
+      colors: ["#8b5cf6", "#6366f1", "#ec4899", "#f59e0b"],
+      zIndex: 9999,
+    });
+    if (Date.now() < end) requestAnimationFrame(frame);
+  };
+  frame();
+}
