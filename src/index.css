@@ -335,6 +335,9 @@
   .stagger-3 { animation-delay: 150ms; }
   .stagger-4 { animation-delay: 200ms; }
   .stagger-5 { animation-delay: 250ms; }
+  .stagger-6 { animation-delay: 300ms; }
+  .stagger-7 { animation-delay: 350ms; }
+  .stagger-8 { animation-delay: 400ms; }
 
   .card-interactive {
     @apply transition-all duration-150;
@@ -372,4 +375,50 @@
   /* Terminal-style positive/negative coloring */
   .text-positive { color: hsl(var(--success)); }
   .text-negative { color: hsl(var(--destructive)); }
+
+  /* Micro-interaction: hover-lift */
+  .hover-lift {
+    @apply transition-all duration-200;
+  }
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  /* Micro-interaction: press feedback */
+  .press-scale {
+    @apply transition-transform duration-100;
+  }
+  .press-scale:active {
+    transform: scale(0.97);
+  }
+
+  /* Celebration pulse ring */
+  .celebration-ring {
+    @apply relative;
+  }
+  .celebration-ring::after {
+    content: "";
+    @apply absolute inset-0 rounded-full;
+    animation: glow-pulse 2s ease-in-out infinite;
+  }
+  @keyframes glow-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 hsl(var(--accent) / 0); }
+    50% { box-shadow: 0 0 12px 4px hsl(var(--accent) / 0.15); }
+  }
+
+  /* Dark mode polish: better separator visibility */
+  .dark .separator-enhanced {
+    border-color: hsl(224 18% 16%);
+  }
+
+  /* Dark mode: card hover glow */
+  .dark .card-interactive:hover {
+    box-shadow: var(--shadow-md), 0 0 0 1px hsl(var(--border));
+  }
+
+  /* Dark mode: input focus enhancement */
+  .dark input:focus, .dark textarea:focus, .dark select:focus {
+    box-shadow: 0 0 0 1px hsl(var(--accent) / 0.3);
+  }
 }

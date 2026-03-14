@@ -69,6 +69,7 @@ export function CommandPalette() {
             <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
             <input
               autoFocus
+              data-command-input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Seite, Tool oder Phase suchen…"

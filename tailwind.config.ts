@@ -139,6 +139,25 @@ export default {
           from: { transform: "translateX(0)" },
           to: { transform: "translateX(-50%)" },
         },
+        "bounce-in": {
+          "0%": { transform: "scale(0.3)", opacity: "0" },
+          "50%": { transform: "scale(1.05)" },
+          "70%": { transform: "scale(0.95)" },
+          "100%": { transform: "scale(1)", opacity: "1" },
+        },
+        "slide-up-spring": {
+          "0%": { transform: "translateY(20px)", opacity: "0" },
+          "60%": { transform: "translateY(-3px)" },
+          "100%": { transform: "translateY(0)", opacity: "1" },
+        },
+        "glow-pulse": {
+          "0%, 100%": { boxShadow: "0 0 0 0 hsl(var(--accent) / 0)" },
+          "50%": { boxShadow: "0 0 12px 4px hsl(var(--accent) / 0.15)" },
+        },
+        "count-up": {
+          from: { opacity: "0", transform: "translateY(8px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -153,6 +172,10 @@ export default {
         "draw-line": "draw-line 1.2s ease-out both",
         "float": "float 3s ease-in-out infinite",
         "ticker": "ticker 30s linear infinite",
+        "bounce-in": "bounce-in 0.5s ease-out",
+        "slide-up-spring": "slide-up-spring 0.4s ease-out both",
+        "glow-pulse": "glow-pulse 2s ease-in-out infinite",
+        "count-up": "count-up 0.3s ease-out both",
       },
     },
   },

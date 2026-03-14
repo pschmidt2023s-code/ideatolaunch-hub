@@ -5,7 +5,9 @@ import { ModeSwitcher } from "@/components/ModeSwitcher";
 import { MODE_CONFIGS } from "@/lib/mode-types";
 import { CommandPalette } from "./CommandPalette";
 import { NotificationBell } from "./NotificationBell";
-import { ChevronDown, Settings, LogOut, Activity } from "lucide-react";
+import { ExportCenter } from "./ExportCenter";
+import { useChangelog } from "./ChangelogDialog";
+import { ChevronDown, Settings, LogOut, Activity, Download, Sparkles } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -15,8 +17,10 @@ export function TopBar() {
   const { user, signOut } = useAuth();
   const { mode } = useMode();
   const [modeOpen, setModeOpen] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
   const navigate = useNavigate();
   const cfg = MODE_CONFIGS[mode];
+  const changelog = useChangelog();
 
   const email = user?.email ?? "";
   const initials = email.slice(0, 2).toUpperCase();
@@ -32,7 +36,7 @@ export function TopBar() {
             <span className="mx-1 text-border">|</span>
             <button
               onClick={() => setModeOpen(true)}
-              className="flex items-center gap-1 hover:text-foreground transition-colors"
+              className="flex items-center gap-1 hover:text-foreground transition-colors press-scale"
             >
               {cfg.label.toUpperCase()}
               <ChevronDown className="h-2.5 w-2.5 opacity-50" />
@@ -44,13 +48,33 @@ export function TopBar() {
           </div>
         </div>
 
-        {/* Right: Notifications + User */}
+        {/* Right: Export + What's New + Notifications + User */}
         <div className="flex items-center gap-1">
+          {/* What's New indicator */}
+          {changelog.hasNew && (
+            <button
+              onClick={() => changelog.setOpen(true)}
+              className="flex items-center gap-1 rounded-md px-2 py-1 text-[10px] font-medium text-accent bg-accent/10 hover:bg-accent/15 transition-colors animate-fade-in"
+            >
+              <Sparkles className="h-3 w-3" />
+              <span className="hidden sm:inline">Neu</span>
+            </button>
+          )}
+
+          {/* Export Center */}
+          <button
+            onClick={() => setExportOpen(true)}
+            className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors press-scale"
+            title="Export Center"
+          >
+            <Download className="h-3.5 w-3.5" />
+          </button>
+
           <NotificationBell />
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="flex h-6 w-6 items-center justify-center rounded bg-accent/15 text-[10px] font-bold font-mono text-accent hover:bg-accent/25 transition-colors">
+              <button className="flex h-6 w-6 items-center justify-center rounded bg-accent/15 text-[10px] font-bold font-mono text-accent hover:bg-accent/25 transition-colors press-scale">
                 {initials}
               </button>
             </DropdownMenuTrigger>
@@ -68,6 +92,10 @@ export function TopBar() {
                 <ChevronDown className="h-3 w-3" />
                 Switch Mode
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => changelog.setOpen(true)} className="rounded-md gap-2 text-xs">
+                <Sparkles className="h-3 w-3" />
+                What&apos;s New
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={signOut} className="rounded-md gap-2 text-xs text-destructive focus:text-destructive">
                 <LogOut className="h-3 w-3" />
@@ -79,6 +107,7 @@ export function TopBar() {
       </header>
 
       <ModeSwitcher open={modeOpen} onOpenChange={setModeOpen} />
+      <ExportCenter open={exportOpen} onOpenChange={setExportOpen} />
     </>
   );
 }
