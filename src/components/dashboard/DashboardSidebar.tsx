@@ -8,7 +8,9 @@ import {
   LayoutDashboard, Map, Brain, Users, Settings, LogOut,
   ChevronDown, ChevronRight, Globe as GlobeIcon, Terminal,
   Folder, Check, TrendingUp, PieChart, Rocket, Shield,
-  BarChart3, Zap, Target, Crosshair, Activity,
+  BarChart3, Zap, Target, Crosshair, Activity, Lightbulb,
+  DollarSign, Package, RefreshCw, Layers, Globe, Wallet,
+  LineChart, AlertTriangle,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { ModeBadge } from "@/components/ModeSwitcher";
@@ -20,32 +22,47 @@ interface DashboardSidebarProps {
   onNavigate?: () => void;
 }
 
-// Mode-specific navigation items
+// Mode-specific navigation items – ALL available modules per mode
 const MODE_NAV: Record<AppMode, { icon: React.ElementType; label: string; path: string }[]> = {
   founder: [
     { icon: Rocket, label: "Founder Intelligence", path: "/dashboard/founder-intelligence" },
-    { icon: Shield, label: "Compliance", path: "/dashboard/compliance" },
     { icon: Crosshair, label: "Strategic Intelligence", path: "/dashboard/strategic" },
+    { icon: Shield, label: "Compliance", path: "/dashboard/compliance" },
     { icon: Zap, label: "Execution OS", path: "/dashboard/execution" },
     { icon: Target, label: "Failure Simulator", path: "/dashboard/failure-simulator" },
     { icon: BarChart3, label: "Wettbewerber", path: "/dashboard/competitors" },
+    { icon: Activity, label: "Market Benchmark", path: "/dashboard/benchmark" },
+    { icon: Lightbulb, label: "Insights", path: "/dashboard/insights" },
+    { icon: DollarSign, label: "Revenue Activation", path: "/dashboard/revenue" },
+    { icon: Package, label: "Product Evolution", path: "/dashboard/evolution" },
+    { icon: RefreshCw, label: "Recovery Mode", path: "/dashboard/recovery" },
+    { icon: Globe, label: "Website Builder", path: "/dashboard/website-builder" },
   ],
   trading: [
     { icon: TrendingUp, label: "Trading Dashboard", path: "/dashboard/trading" },
     { icon: Activity, label: "Trading Intelligence", path: "/trading" },
     { icon: Shield, label: "Risikoanalyse", path: "/risk-analysis" },
-    { icon: BarChart3, label: "Crypto Intelligence", path: "/trading-intelligence" },
+    { icon: LineChart, label: "Crypto Intelligence", path: "/trading-intelligence" },
+    { icon: BarChart3, label: "Market Benchmark", path: "/dashboard/benchmark" },
+    { icon: Lightbulb, label: "Insights", path: "/dashboard/insights" },
   ],
   investor: [
     { icon: PieChart, label: "Investor Dashboard", path: "/dashboard/investor" },
-    { icon: BarChart3, label: "Accounts", path: "/dashboard/accounts" },
+    { icon: Wallet, label: "Accounts", path: "/dashboard/accounts" },
     { icon: Activity, label: "Market Benchmark", path: "/dashboard/benchmark" },
+    { icon: LineChart, label: "Crypto Intelligence", path: "/trading-intelligence" },
+    { icon: Lightbulb, label: "Insights", path: "/dashboard/insights" },
+    { icon: Shield, label: "Risikoanalyse", path: "/risk-analysis" },
   ],
   strategy: [
     { icon: Brain, label: "Strategy Dashboard", path: "/dashboard/strategy" },
     { icon: Crosshair, label: "Strategic Intelligence", path: "/dashboard/strategic" },
     { icon: Zap, label: "Execution OS", path: "/dashboard/execution" },
     { icon: Target, label: "Failure Simulator", path: "/dashboard/failure-simulator" },
+    { icon: Activity, label: "Market Benchmark", path: "/dashboard/benchmark" },
+    { icon: Lightbulb, label: "Insights", path: "/dashboard/insights" },
+    { icon: DollarSign, label: "Revenue Activation", path: "/dashboard/revenue" },
+    { icon: AlertTriangle, label: "Recovery Mode", path: "/dashboard/recovery" },
   ],
 };
 
