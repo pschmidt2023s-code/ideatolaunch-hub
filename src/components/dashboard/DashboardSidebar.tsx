@@ -1,14 +1,12 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { useMode } from "@/hooks/useMode";
+import { useBrand } from "@/hooks/useBrand";
 import { useTranslation } from "react-i18next";
-import type { AppMode } from "@/lib/mode-types";
+import { JOURNEY_PHASES } from "@/lib/journey-phases";
 import {
-  Crosshair, Brain, BarChart3, Wrench, Globe as GlobeIcon, Rocket, Settings, LogOut,
-  ChevronDown, ChevronRight, TrendingUp, PieChart, Sparkles, Gift, HeartPulse, Crown,
-  Zap, Map, Target, Shield, Wallet, Activity, Scale, Users, Telescope, Terminal,
+  LayoutDashboard, Map, Brain, Users, Settings, LogOut,
+  ChevronDown, ChevronRight, Globe as GlobeIcon, Terminal,
 } from "lucide-react";
-import { ModeBadge } from "@/components/ModeSwitcher";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -17,57 +15,14 @@ interface DashboardSidebarProps {
   onNavigate?: () => void;
 }
 
-const MODE_NAV: Record<AppMode, { icon: React.ElementType; label: string; path: string }[]> = {
-  founder: [
-    { icon: Crosshair, label: "Command Center", path: "/dashboard/command" },
-    { icon: Brain, label: "Intelligence", path: "/dashboard/intelligence" },
-    { icon: BarChart3, label: "Simulations", path: "/dashboard/failure-simulator" },
-    { icon: Sparkles, label: "Website Builder", path: "/dashboard/website-builder" },
-    { icon: Wrench, label: "Builder Tools", path: "/dashboard" },
-  ],
-  trading: [
-    { icon: Crosshair, label: "Command Center", path: "/dashboard/command" },
-    { icon: Wallet, label: "Accounts", path: "/dashboard/accounts" },
-    { icon: TrendingUp, label: "Trading Dashboard", path: "/dashboard/trading" },
-    { icon: Activity, label: "Trading Intelligence", path: "/trading-intelligence" },
-    { icon: Shield, label: "Risk Analysis", path: "/risk-analysis" },
-    { icon: BarChart3, label: "Risk Simulator", path: "/dashboard/failure-simulator" },
-    { icon: Brain, label: "Intelligence", path: "/dashboard/intelligence" },
-  ],
-  investor: [
-    { icon: Crosshair, label: "Command Center", path: "/dashboard/command" },
-    { icon: PieChart, label: "Portfolio Dashboard", path: "/dashboard/investor" },
-    { icon: BarChart3, label: "Risk Simulator", path: "/dashboard/failure-simulator" },
-    { icon: Brain, label: "Intelligence", path: "/dashboard/intelligence" },
-  ],
-  strategy: [
-    { icon: Crosshair, label: "Command Center", path: "/dashboard/command" },
-    { icon: Brain, label: "Strategy Dashboard", path: "/dashboard/strategy" },
-    { icon: BarChart3, label: "Simulations", path: "/dashboard/failure-simulator" },
-    { icon: Scale, label: "Intelligence", path: "/dashboard/intelligence" },
-  ],
-};
-
-const FOUNDER_JOURNEY = [1, 2, 3, 4, 5];
-
-const EXTRAS = [
-  { icon: Users, label: "Community", path: "/dashboard/community" },
-  { icon: Telescope, label: "Wettbewerber", path: "/dashboard/competitors" },
-  { icon: Gift, label: "Empfehlungen", path: "/dashboard/referrals" },
-  { icon: HeartPulse, label: "Recovery Mode", path: "/dashboard/recovery" },
-  { icon: Crown, label: "Execution OS", path: "/dashboard/execution" },
-  { icon: Zap, label: "Revenue", path: "/dashboard/revenue" },
-  { icon: Map, label: "Evolution", path: "/dashboard/evolution" },
-  { icon: Target, label: "Benchmark", path: "/dashboard/benchmark" },
-];
-
 export function DashboardSidebar({ onNavigate }: DashboardSidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { signOut } = useAuth();
-  const { mode } = useMode();
+  const { activeBrand } = useBrand();
   const { t, i18n } = useTranslation();
-  const [extrasOpen, setExtrasOpen] = useState(false);
+  const [journeyOpen, setJourneyOpen] = useState(true);
+  const currentStep = activeBrand?.current_step ?? 1;
 
   const toggleLang = () => {
     const next = i18n.language === "de" ? "en" : "de";
@@ -81,12 +36,11 @@ export function DashboardSidebar({ onNavigate }: DashboardSidebarProps) {
   };
 
   const isActive = (path: string) => location.pathname === path;
-  const navItems = MODE_NAV[mode] ?? MODE_NAV.founder;
-  const isFounder = mode === "founder";
+  const isJourneyActive = location.pathname.startsWith("/dashboard/journey");
 
   return (
     <aside className="flex h-screen w-[220px] flex-col bg-sidebar text-sidebar-foreground border-r border-sidebar-border">
-      {/* Logo – system style */}
+      {/* Logo */}
       <div className="flex h-11 items-center justify-between px-3 border-b border-sidebar-border shrink-0">
         <button onClick={() => handleNav("/dashboard")} className="flex items-center gap-2 group">
           <div className="flex h-6 w-6 items-center justify-center rounded bg-accent/90">
@@ -97,62 +51,67 @@ export function DashboardSidebar({ onNavigate }: DashboardSidebarProps) {
         <ThemeToggle />
       </div>
 
-      {/* Mode Badge */}
-      <div className="px-2.5 pt-2.5 pb-1">
-        <ModeBadge />
-      </div>
+      <nav className="flex-1 overflow-y-auto px-2 py-3 space-y-4 scrollbar-thin">
+        {/* Dashboard */}
+        <div className="space-y-0.5">
+          <NavItem icon={LayoutDashboard} label="Dashboard" path="/dashboard" active={isActive("/dashboard")} onClick={handleNav} />
+        </div>
 
-      <nav className="flex-1 overflow-y-auto px-2 py-1.5 space-y-3 scrollbar-thin">
-        {/* Mode-specific main nav */}
-        <NavGroup label={mode === "founder" ? "FOUNDER" : mode === "trading" ? "TRADING" : mode === "investor" ? "INVESTOR" : "STRATEGY"}>
-          {navItems.map(({ icon, label, path }) => (
-            <NavItem key={path} icon={icon} label={label} path={path} active={isActive(path)} onClick={handleNav} />
-          ))}
-        </NavGroup>
-
-        {/* Founder Journey */}
-        {isFounder && (
-          <NavGroup label="JOURNEY">
-            {FOUNDER_JOURNEY.map((n) => (
-              <NavItem
-                key={n}
-                icon={Rocket}
-                label={t(`steps.p${n}`)}
-                path={`/dashboard/step/${n}`}
-                active={isActive(`/dashboard/step/${n}`)}
-                onClick={handleNav}
-                compact
-              />
-            ))}
-          </NavGroup>
-        )}
-
-        {/* Cross-mode */}
-        {!isFounder && (
-          <NavGroup label="SWITCH">
-            {mode !== "trading" && <NavItem icon={TrendingUp} label="Trading" path="/dashboard/trading" active={isActive("/dashboard/trading")} onClick={handleNav} />}
-            {mode !== "investor" && <NavItem icon={PieChart} label="Investor" path="/dashboard/investor" active={isActive("/dashboard/investor")} onClick={handleNav} />}
-            {mode !== "strategy" && <NavItem icon={Brain} label="Strategy" path="/dashboard/strategy" active={isActive("/dashboard/strategy")} onClick={handleNav} />}
-            <NavItem icon={Rocket} label="Founder" path="/dashboard" active={isActive("/dashboard")} onClick={handleNav} />
-          </NavGroup>
-        )}
-
-        {/* More */}
+        {/* Journey */}
         <div>
           <button
-            onClick={() => setExtrasOpen(!extrasOpen)}
-            className="flex w-full items-center gap-1.5 px-2 py-1 text-[10px] font-semibold text-muted-foreground/50 uppercase tracking-[0.12em] hover:text-muted-foreground transition-colors"
+            onClick={() => setJourneyOpen(!journeyOpen)}
+            className={cn(
+              "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-[12px] font-medium transition-colors",
+              isJourneyActive ? "text-accent" : "text-sidebar-foreground hover:text-sidebar-accent-foreground hover:bg-sidebar-accent"
+            )}
           >
-            {extrasOpen ? <ChevronDown className="h-2.5 w-2.5" /> : <ChevronRight className="h-2.5 w-2.5" />}
-            MORE
+            <Map className="h-3.5 w-3.5 shrink-0" />
+            <span className="flex-1 text-left">Journey</span>
+            {journeyOpen ? <ChevronDown className="h-3 w-3 opacity-50" /> : <ChevronRight className="h-3 w-3 opacity-50" />}
           </button>
-          {extrasOpen && (
-            <div className="space-y-0.5 mt-0.5">
-              {EXTRAS.map(({ icon, label, path }) => (
-                <NavItem key={path} icon={icon} label={label} path={path} active={isActive(path)} onClick={handleNav} />
-              ))}
+          {journeyOpen && (
+            <div className="mt-0.5 ml-2 space-y-0.5 border-l border-sidebar-border pl-2">
+              {JOURNEY_PHASES.map((phase) => {
+                const isDone = phase.phase < currentStep;
+                const isActivePhase = phase.phase === Math.min(currentStep, 5);
+                const phasePath = `/dashboard/journey/${phase.phase}`;
+                const PhaseIcon = phase.icon;
+
+                return (
+                  <button
+                    key={phase.phase}
+                    onClick={() => handleNav(phasePath)}
+                    className={cn(
+                      "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-[11px] transition-colors",
+                      isActive(phasePath)
+                        ? "bg-accent/10 text-accent font-medium"
+                        : isDone
+                        ? "text-success/70 hover:text-success hover:bg-sidebar-accent"
+                        : isActivePhase
+                        ? "text-sidebar-foreground font-medium hover:bg-sidebar-accent"
+                        : "text-muted-foreground/50 hover:text-muted-foreground hover:bg-sidebar-accent"
+                    )}
+                  >
+                    <PhaseIcon className="h-3 w-3 shrink-0" />
+                    <span className="truncate">{phase.title}</span>
+                    {isDone && <div className="ml-auto h-1.5 w-1.5 rounded-full bg-success shrink-0" />}
+                    {isActivePhase && !isDone && <div className="ml-auto h-1.5 w-1.5 rounded-full bg-accent animate-pulse shrink-0" />}
+                  </button>
+                );
+              })}
             </div>
           )}
+        </div>
+
+        {/* Intelligence */}
+        <div className="space-y-0.5">
+          <NavItem icon={Brain} label="Intelligence" path="/dashboard/intelligence" active={isActive("/dashboard/intelligence")} onClick={handleNav} />
+        </div>
+
+        {/* Community */}
+        <div className="space-y-0.5">
+          <NavItem icon={Users} label="Community" path="/dashboard/community" active={isActive("/dashboard/community")} onClick={handleNav} />
         </div>
       </nav>
 
@@ -178,30 +137,20 @@ export function DashboardSidebar({ onNavigate }: DashboardSidebarProps) {
   );
 }
 
-function NavGroup({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="space-y-0.5">
-      <p className="px-2 pb-0.5 text-[10px] font-semibold text-muted-foreground/50 uppercase tracking-[0.12em]">{label}</p>
-      {children}
-    </div>
-  );
-}
-
-function NavItem({ icon: Icon, label, path, active, onClick, compact }: {
-  icon: React.ElementType; label: string; path: string; active: boolean; onClick: (path: string) => void; compact?: boolean;
+function NavItem({ icon: Icon, label, path, active, onClick }: {
+  icon: React.ElementType; label: string; path: string; active: boolean; onClick: (path: string) => void;
 }) {
   return (
     <button
       onClick={() => onClick(path)}
       className={cn(
-        "flex w-full items-center gap-2 rounded-md px-2 transition-all duration-75",
-        compact ? "py-1 text-[11px]" : "py-1.5 text-[12px]",
+        "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-[12px] transition-all duration-75",
         active
           ? "bg-accent/10 text-accent font-medium"
           : "text-sidebar-foreground hover:text-sidebar-accent-foreground hover:bg-sidebar-accent"
       )}
     >
-      <Icon className={cn("shrink-0", compact ? "h-3 w-3" : "h-3.5 w-3.5")} />
+      <Icon className="h-3.5 w-3.5 shrink-0" />
       <span className="truncate">{label}</span>
       {active && <div className="ml-auto h-1 w-1 rounded-full bg-accent" />}
     </button>
