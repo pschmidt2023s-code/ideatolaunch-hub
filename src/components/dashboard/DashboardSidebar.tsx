@@ -264,9 +264,6 @@ function NavItem({ icon: Icon, label, path, active, onClick }: {
     </button>
   );
 }
-
-function NavItem({ icon: Icon, label, path, active, onClick }: {
-  icon: React.ElementType; label: string; path: string; active: boolean; onClick: (path: string) => void;
 }) {
   return (
     <button
