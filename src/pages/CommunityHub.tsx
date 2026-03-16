@@ -20,6 +20,7 @@ import { WeeklyDigest } from "@/components/community/WeeklyDigest";
 import { IntelligenceFeed } from "@/components/community/IntelligenceFeed";
 import { useCommunityPosts, useToggleUpvote, PostType } from "@/hooks/useCommunity";
 import { Plus, Rocket, MessageCircle, TrendingUp, BookOpen, Handshake, Lock, Search, Factory, Radar, FlaskConical, MessageSquare, BookMarked, Trophy, Newspaper, Activity } from "lucide-react";
+import { BackButton } from "@/components/dashboard/BackButton";
 
 const CATEGORIES = [
   { key: "all", label: "Alle", icon: MessageCircle },
