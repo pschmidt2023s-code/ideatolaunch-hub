@@ -14,6 +14,7 @@ import {
   Trash2, Save, FolderOpen, Wand2, MousePointerClick, PenLine,
   LayoutGrid, Terminal, Folder,
 } from "lucide-react";
+import { BackButton } from "@/components/dashboard/BackButton";
 import { useBrand } from "@/hooks/useBrand";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useWebsiteProjects } from "@/hooks/useWebsiteProjects";
