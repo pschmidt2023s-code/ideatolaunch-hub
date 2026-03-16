@@ -9,6 +9,7 @@ import { FounderCopilot } from "@/components/FounderCopilot";
 import { BrandNameEngine } from "@/components/BrandNameEngine";
 import { SEO } from "@/components/SEO";
 import { Sparkles, BarChart3, Brain, Crown, Compass, Activity } from "lucide-react";
+import { BackButton } from "@/components/dashboard/BackButton";
 
 export default function IntelligencePage() {
   return (
@@ -18,6 +19,7 @@ export default function IntelligencePage() {
         description="Live KPIs, KI-Strategieberater, Market Benchmarks und Brand Intelligence."
         path="/dashboard/intelligence"
       />
+      <BackButton />
       <div className="animate-fade-in space-y-8">
         <PageHeader
           title="Intelligence Suite"
