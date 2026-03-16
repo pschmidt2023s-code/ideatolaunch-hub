@@ -48,6 +48,7 @@ export default function InsightsPage() {
 
   const insightsContent = (
     <div className="animate-fade-in space-y-6">
+      <BackButton />
       <div>
         <h1 className="text-2xl font-bold">{t("insights.title")}</h1>
         <p className="mt-1 text-muted-foreground">{t("insights.subtitle")}</p>

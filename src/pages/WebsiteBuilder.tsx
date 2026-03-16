@@ -171,6 +171,7 @@ export default function WebsiteBuilder() {
 
   const content = (
     <div className="animate-fade-in space-y-6">
+      <BackButton />
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
