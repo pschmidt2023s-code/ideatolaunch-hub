@@ -74,16 +74,16 @@ export default function JourneyPhase() {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2.5 mb-1.5">
                 <span className="text-[10px] font-bold uppercase tracking-[0.15em] font-mono text-muted-foreground">
-                  Phase {num} of 5
+                  Phase {num} von 5
                 </span>
                 {isCompleted && (
                   <span className="inline-flex items-center gap-1 rounded-full bg-success/20 px-2.5 py-0.5 text-[10px] font-bold text-success">
-                    <Check className="h-3 w-3" /> Completed
+                    <Check className="h-3 w-3" /> Abgeschlossen
                   </span>
                 )}
                 {isActive && (
                   <span className="inline-flex items-center gap-1 rounded-full bg-accent/20 px-2.5 py-0.5 text-[10px] font-bold text-accent">
-                    Current Phase
+                    Aktuelle Phase
                   </span>
                 )}
               </div>
@@ -96,7 +96,7 @@ export default function JourneyPhase() {
           <div className="mt-5 flex items-center gap-2.5 rounded-xl bg-background/60 backdrop-blur-sm px-4 py-3 border border-border/50">
             <Target className="h-4 w-4 text-accent shrink-0" />
             <p className="text-xs font-medium">
-              <span className="text-muted-foreground">Goal:</span> {phase.goal}
+              <span className="text-muted-foreground">Ziel:</span> {phase.goal}
             </p>
           </div>
         </div>
@@ -104,8 +104,8 @@ export default function JourneyPhase() {
         {/* Modules */}
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-bold">Tools & Modules</h2>
-            <span className="text-[10px] font-mono text-muted-foreground">{phase.modules.length} modules</span>
+            <h2 className="text-sm font-bold">Tools & Module</h2>
+            <span className="text-[10px] font-mono text-muted-foreground">{phase.modules.length} Module</span>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             {phase.modules.map((mod, idx) => {

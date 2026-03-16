@@ -136,7 +136,7 @@ export function DashboardSidebar({ onNavigate }: DashboardSidebarProps) {
 
         {/* Projects */}
         <div className="pt-1">
-          <NavItem icon={Folder} label="Projects" path="/dashboard/command" active={isActive("/dashboard/command")} onClick={handleNav} />
+          <NavItem icon={Folder} label="Projekte" path="/dashboard/command" active={isActive("/dashboard/command")} onClick={handleNav} />
         </div>
 
         {/* Intelligence */}

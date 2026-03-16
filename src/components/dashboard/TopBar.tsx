@@ -85,21 +85,21 @@ export function TopBar() {
               </div>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => navigate("/dashboard/settings")} className="rounded-md gap-2 text-xs">
-                <Settings className="h-3 w-3" />
-                Settings
+              <Settings className="h-3 w-3" />
+                Einstellungen
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setModeOpen(true)} className="rounded-md gap-2 text-xs">
                 <ChevronDown className="h-3 w-3" />
-                Switch Mode
+                Modus wechseln
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => changelog.setOpen(true)} className="rounded-md gap-2 text-xs">
                 <Sparkles className="h-3 w-3" />
-                What&apos;s New
+                Neuigkeiten
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={signOut} className="rounded-md gap-2 text-xs text-destructive focus:text-destructive">
                 <LogOut className="h-3 w-3" />
-                Sign out
+                Abmelden
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
