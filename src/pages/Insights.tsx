@@ -14,6 +14,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
+import { BackButton } from "@/components/dashboard/BackButton";
 
 export default function InsightsPage() {
   const { health } = useBrandHealth();
