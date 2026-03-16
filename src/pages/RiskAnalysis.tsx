@@ -52,6 +52,7 @@ export default function RiskAnalysis() {
 
   return (
     <DashboardLayout>
+      <BackButton />
       <div className="animate-fade-in space-y-6 pb-16">
         <PageHeader title="Risk of Ruin Analysis" description="Capital & Risk Intelligence for Traders" badge="RISK" badgeVariant="destructive" />
 

@@ -77,6 +77,7 @@ export default function FailureSimulator() {
   return (
     <DashboardLayout>
       <SEO title="Failure Simulator – BrandOS" description="Simuliere Worst-Case-Szenarien und prüfe deine Überlebenswahrscheinlichkeit." path="/dashboard/failure-simulator" />
+      <BackButton />
       <div className="animate-fade-in space-y-6">
         <PageHeader title="Failure Simulator" description="Simuliere Worst-Case-Szenarien und erkenne Risiken, bevor sie eintreten." badge="SIMULATOR" badgeVariant="destructive" />
 

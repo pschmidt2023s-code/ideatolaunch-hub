@@ -92,6 +92,7 @@ export default function SettingsPage() {
 
   return (
     <DashboardLayout>
+      <BackButton />
       <div className="animate-fade-in max-w-2xl space-y-6">
         <div>
           <h1 className="text-xl font-bold tracking-tight">{t("dashboard.settings")}</h1>

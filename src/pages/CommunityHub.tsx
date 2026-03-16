@@ -53,6 +53,7 @@ export default function CommunityHub() {
         description="Das Gründer-Netzwerk für Marktdaten, Supplier Reviews, Case Studies und Founder Matching."
         path="/dashboard/community"
       />
+      <BackButton />
       <PageHeader
         title="Founder Intelligence Network"
         description="Echte Insights von echten Gründern – Experimente, Supplier Reviews, Trend Radar und strategischer Austausch."
