@@ -264,20 +264,5 @@ function NavItem({ icon: Icon, label, path, active, onClick }: {
     </button>
   );
 }
-}) {
-  return (
-    <button
-      onClick={() => onClick(path)}
-      className={cn(
-        "flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-[12px] transition-all duration-100",
-        active
-          ? "bg-accent/10 text-accent font-medium"
-          : "text-sidebar-foreground hover:text-sidebar-accent-foreground hover:bg-sidebar-accent"
-      )}
-    >
-      <Icon className="h-4 w-4 shrink-0" />
-      <span className="truncate">{label}</span>
-      {active && <div className="ml-auto h-1.5 w-1.5 rounded-full bg-accent" />}
-    </button>
-  );
-}
+
+
