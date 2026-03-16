@@ -21,6 +21,7 @@ import {
   Percent, Shield, Sparkles, Target, TrendingDown, TrendingUp, Zap,
 } from "lucide-react";
 import { generateBenchmarkAnalysis, type BenchmarkResult } from "@/lib/benchmark-story-engine";
+import { BackButton } from "@/components/dashboard/BackButton";
 
 // ─── KPI Types ──────────────────────────────────────────────────
 
