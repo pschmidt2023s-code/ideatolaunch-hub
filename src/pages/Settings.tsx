@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Save, Loader2, User, CreditCard, FlaskConical, KeyRound, Copy, Check, Shield, Globe, ArrowRight, Sparkles } from "lucide-react";
+import { BackButton } from "@/components/dashboard/BackButton";
 import { toast } from "sonner";
 import { getClientMode, setClientMode } from "@/lib/beta-client";
 import { cn } from "@/lib/utils";
@@ -91,6 +92,7 @@ export default function SettingsPage() {
 
   return (
     <DashboardLayout>
+      <BackButton />
       <div className="animate-fade-in max-w-2xl space-y-6">
         <div>
           <h1 className="text-xl font-bold tracking-tight">{t("dashboard.settings")}</h1>

@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/dashboard/PageHeader";
 import { SEO } from "@/components/SEO";
 import { Slider } from "@/components/ui/slider";
 import { AlertTriangle, Shield, TrendingDown, Lightbulb, Zap, BarChart3 } from "lucide-react";
+import { BackButton } from "@/components/dashboard/BackButton";
 import { cn } from "@/lib/utils";
 import { AIPageInsights } from "@/components/AIPageInsights";
 import { AnimatedCard } from "@/components/dashboard/AnimatedCard";
@@ -76,6 +77,7 @@ export default function FailureSimulator() {
   return (
     <DashboardLayout>
       <SEO title="Failure Simulator – BrandOS" description="Simuliere Worst-Case-Szenarien und prüfe deine Überlebenswahrscheinlichkeit." path="/dashboard/failure-simulator" />
+      <BackButton />
       <div className="animate-fade-in space-y-6">
         <PageHeader title="Failure Simulator" description="Simuliere Worst-Case-Szenarien und erkenne Risiken, bevor sie eintreten." badge="SIMULATOR" badgeVariant="destructive" />
 

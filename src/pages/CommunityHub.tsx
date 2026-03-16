@@ -20,6 +20,7 @@ import { WeeklyDigest } from "@/components/community/WeeklyDigest";
 import { IntelligenceFeed } from "@/components/community/IntelligenceFeed";
 import { useCommunityPosts, useToggleUpvote, PostType } from "@/hooks/useCommunity";
 import { Plus, Rocket, MessageCircle, TrendingUp, BookOpen, Handshake, Lock, Search, Factory, Radar, FlaskConical, MessageSquare, BookMarked, Trophy, Newspaper, Activity } from "lucide-react";
+import { BackButton } from "@/components/dashboard/BackButton";
 
 const CATEGORIES = [
   { key: "all", label: "Alle", icon: MessageCircle },
@@ -52,6 +53,7 @@ export default function CommunityHub() {
         description="Das Gründer-Netzwerk für Marktdaten, Supplier Reviews, Case Studies und Founder Matching."
         path="/dashboard/community"
       />
+      <BackButton />
       <PageHeader
         title="Founder Intelligence Network"
         description="Echte Insights von echten Gründern – Experimente, Supplier Reviews, Trend Radar und strategischer Austausch."

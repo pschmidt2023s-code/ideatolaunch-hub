@@ -14,6 +14,7 @@ import {
   Trash2, Save, FolderOpen, Wand2, MousePointerClick, PenLine,
   LayoutGrid, Terminal, Folder,
 } from "lucide-react";
+import { BackButton } from "@/components/dashboard/BackButton";
 import { useBrand } from "@/hooks/useBrand";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useWebsiteProjects } from "@/hooks/useWebsiteProjects";
@@ -170,6 +171,7 @@ export default function WebsiteBuilder() {
 
   const content = (
     <div className="animate-fade-in space-y-6">
+      <BackButton />
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>

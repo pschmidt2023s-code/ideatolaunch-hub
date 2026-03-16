@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { AIPageInsights } from "@/components/AIPageInsights";
 import { FinancialDisclaimer } from "@/components/dashboard/FinancialDisclaimer";
 import { AnimatedCard } from "@/components/dashboard/AnimatedCard";
+import { BackButton } from "@/components/dashboard/BackButton";
 import {
   calculateRoRMetrics,
   runMonteCarloSimulation,
@@ -51,6 +52,7 @@ export default function RiskAnalysis() {
 
   return (
     <DashboardLayout>
+      <BackButton />
       <div className="animate-fade-in space-y-6 pb-16">
         <PageHeader title="Risk of Ruin Analysis" description="Capital & Risk Intelligence for Traders" badge="RISK" badgeVariant="destructive" />
 

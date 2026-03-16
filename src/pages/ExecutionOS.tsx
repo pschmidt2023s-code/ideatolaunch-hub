@@ -21,6 +21,7 @@ import {
   Percent, Shield, Sparkles, Target, TrendingDown, TrendingUp, Zap,
 } from "lucide-react";
 import { generateBenchmarkAnalysis, type BenchmarkResult } from "@/lib/benchmark-story-engine";
+import { BackButton } from "@/components/dashboard/BackButton";
 
 // ─── KPI Types ──────────────────────────────────────────────────
 
@@ -405,6 +406,7 @@ export default function ExecutionOSDashboard() {
 
   return (
     <DashboardLayout>
+      <BackButton />
       <div className="animate-fade-in space-y-6">
 
         {/* ═══ PART 1: HEADER — CEO MODE ═══ */}

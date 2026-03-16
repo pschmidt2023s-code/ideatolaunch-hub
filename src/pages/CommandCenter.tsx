@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import type { ScenarioMode } from "@/lib/command-center-types";
 import { cn } from "@/lib/utils";
 import { AlertTriangle, Activity, ArrowRight, Crosshair, TrendingUp, PieChart, Brain, Zap, Shield, DollarSign, Clock } from "lucide-react";
+import { BackButton } from "@/components/dashboard/BackButton";
 import { AIPageInsights } from "@/components/AIPageInsights";
 import { AnimatedCard } from "@/components/dashboard/AnimatedCard";
 import { Button } from "@/components/ui/button";
@@ -181,6 +182,7 @@ export default function CommandCenter() {
   return (
     <DashboardLayout>
       <SEO title="Command Center – BrandOS" description="Dein strategisches Cockpit." path="/dashboard/command" />
+      <BackButton />
       <div className="animate-fade-in space-y-6">
 
         {/* ── Header ── */}
