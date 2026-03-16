@@ -25,17 +25,17 @@ export function JourneyOverview() {
       <div className="rounded-2xl border bg-card p-5 shadow-card">
         <div className="flex items-center justify-between mb-3">
           <div>
-            <h2 className="text-sm font-bold tracking-tight">Founder Journey</h2>
+            <h2 className="text-sm font-bold tracking-tight">Gründer-Journey</h2>
             {!completed && (
               <p className="text-xs text-muted-foreground mt-0.5">
-                Phase {Math.min(currentStep, 5)} of 5 · <span className="font-medium text-foreground">{JOURNEY_PHASES[Math.min(currentStep, 5) - 1]?.title}</span>
+                Phase {Math.min(currentStep, 5)} von 5 · <span className="font-medium text-foreground">{JOURNEY_PHASES[Math.min(currentStep, 5) - 1]?.title}</span>
               </p>
             )}
           </div>
           <div className="flex items-center gap-3">
             {completed && (
               <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-3 py-1 text-[11px] font-bold text-success">
-                <Check className="h-3 w-3" /> Complete
+                <Check className="h-3 w-3" /> Abgeschlossen
               </span>
             )}
             <div className="text-right">
@@ -124,17 +124,17 @@ export function JourneyOverview() {
                   </span>
                   {isActive && (
                     <span className="inline-flex h-4 items-center rounded-full bg-accent/20 px-1.5 text-[9px] font-bold text-accent animate-pulse">
-                      IN PROGRESS
+                      AKTIV
                     </span>
                   )}
                   {isDone && (
                     <span className="inline-flex h-4 items-center rounded-full bg-success/20 px-1.5 text-[9px] font-bold text-success">
-                      DONE
+                      FERTIG
                     </span>
                   )}
                 </div>
                 <p className="text-sm font-semibold">{phase.title}</p>
-                <p className="text-[11px] text-muted-foreground mt-0.5">{phase.subtitle} · {phase.modules.length} tools</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">{phase.subtitle} · {phase.modules.length} Tools</p>
               </div>
 
               {!isLocked && (
