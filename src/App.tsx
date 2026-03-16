@@ -104,6 +104,7 @@ const StrategyDashboard = lazy(() => import("./pages/modes/StrategyDashboard"));
 const Accounts = lazy(() => import("./pages/Accounts"));
 const CompetitorPage = lazy(() => import("./pages/CompetitorPage"));
 const AuditTrail = lazy(() => import("./pages/admin/AuditTrail"));
+const JourneyPhase = lazy(() => import("./pages/JourneyPhase"));
 // ── Optimized QueryClient with smart defaults ───────────────
 const queryClient = new QueryClient({
   defaultOptions: {
