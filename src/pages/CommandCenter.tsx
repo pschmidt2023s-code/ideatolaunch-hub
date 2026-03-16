@@ -182,6 +182,7 @@ export default function CommandCenter() {
   return (
     <DashboardLayout>
       <SEO title="Command Center – BrandOS" description="Dein strategisches Cockpit." path="/dashboard/command" />
+      <BackButton />
       <div className="animate-fade-in space-y-6">
 
         {/* ── Header ── */}
