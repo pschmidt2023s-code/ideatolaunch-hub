@@ -231,6 +231,7 @@ const App = () => {
                       <Route path="/dashboard/command" element={<ProtectedRoute><CommandCenter /></ProtectedRoute>} />
                       <Route path="/dashboard/intelligence" element={<ProtectedRoute><IntelligencePage /></ProtectedRoute>} />
                       <Route path="/dashboard/insights" element={<ProtectedRoute><InsightsPage /></ProtectedRoute>} />
+                      <Route path="/dashboard/journey/:phaseNumber" element={<ProtectedRoute><JourneyPhase /></ProtectedRoute>} />
                       <Route path="/dashboard/step/:stepNumber" element={<ProtectedRoute><StepPage /></ProtectedRoute>} />
                       <Route path="/dashboard/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
                       <Route path="/dashboard/pricing" element={<ProtectedRoute><DashboardPricing /></ProtectedRoute>} />
