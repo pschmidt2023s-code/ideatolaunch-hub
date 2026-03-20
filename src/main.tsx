@@ -27,6 +27,8 @@ if (typeof window !== "undefined") {
 
 installGlobalErrorHandler();
 trackPageLoad();
+observeLongTasks();
+observeSlowResources();
 
 // Register Service Worker for offline support
 if ("serviceWorker" in navigator && import.meta.env.PROD) {
