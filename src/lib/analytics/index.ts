@@ -13,4 +13,6 @@ export {
   clearStepTimer,
   trackPageLoad,
   installGlobalErrorHandler,
+  observeLongTasks,
+  observeSlowResources,
 } from "./performance";
