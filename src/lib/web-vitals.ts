@@ -6,9 +6,10 @@ interface WebVitals {
   inp: number | null;
   fcp: number | null;
   ttfb: number | null;
+  fid: number | null;
 }
 
-let vitalsCache: WebVitals = { lcp: null, cls: null, inp: null, fcp: null, ttfb: null };
+let vitalsCache: WebVitals = { lcp: null, cls: null, inp: null, fcp: null, ttfb: null, fid: null };
 
 function observeWebVitals() {
   if (typeof window === "undefined" || !("PerformanceObserver" in window)) return;
@@ -26,19 +27,53 @@ function observeWebVitals() {
   // CLS
   try {
     let clsValue = 0;
+    let sessionValue = 0;
+    let sessionEntries: any[] = [];
     const clsObserver = new PerformanceObserver((list) => {
       for (const entry of list.getEntries() as any[]) {
-        if (!entry.hadRecentInput) clsValue += entry.value;
+        if (!entry.hadRecentInput) {
+          const firstEntry = sessionEntries[0];
+          const lastEntry = sessionEntries[sessionEntries.length - 1];
+          // Session window: gap < 1s, max 5s
+          if (
+            sessionEntries.length &&
+            entry.startTime - lastEntry.startTime < 1000 &&
+            entry.startTime - firstEntry.startTime < 5000
+          ) {
+            sessionValue += entry.value;
+            sessionEntries.push(entry);
+          } else {
+            sessionValue = entry.value;
+            sessionEntries = [entry];
+          }
+          if (sessionValue > clsValue) {
+            clsValue = sessionValue;
+          }
+        }
       }
       vitalsCache.cls = Math.round(clsValue * 1000) / 1000;
     });
     clsObserver.observe({ type: "layout-shift", buffered: true });
   } catch {}
 
+  // INP (Interaction to Next Paint)
+  try {
+    let maxINP = 0;
+    const inpObserver = new PerformanceObserver((list) => {
+      for (const entry of list.getEntries() as any[]) {
+        if (entry.duration > maxINP) {
+          maxINP = entry.duration;
+          vitalsCache.inp = Math.round(maxINP);
+        }
+      }
+    });
+    inpObserver.observe({ type: "event", buffered: true, durationThreshold: 16 } as any);
+  } catch {}
+
   // FCP
   try {
     const fcpObserver = new PerformanceObserver((list) => {
-      const entry = list.getEntries().find(e => e.name === "first-contentful-paint");
+      const entry = list.getEntries().find((e) => e.name === "first-contentful-paint");
       if (entry) vitalsCache.fcp = Math.round(entry.startTime);
     });
     fcpObserver.observe({ type: "paint", buffered: true });
@@ -51,7 +86,6 @@ function observeWebVitals() {
   } catch {}
 }
 
-// Initialize on first import
 observeWebVitals();
 
 export function getWebVitals(): WebVitals {
@@ -60,11 +94,9 @@ export function getWebVitals(): WebVitals {
 
 export function useWebVitals() {
   const getVitals = useCallback(() => getWebVitals(), []);
-  
+
   useEffect(() => {
-    // Re-check after page settles
     const timer = setTimeout(() => {
-      // TTFB might be available now
       try {
         const nav = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined;
         if (nav && !vitalsCache.ttfb) {
