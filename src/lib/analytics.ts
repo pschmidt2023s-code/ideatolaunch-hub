@@ -14,4 +14,6 @@ export {
   clearStepTimer,
   trackPageLoad,
   installGlobalErrorHandler,
+  observeLongTasks,
+  observeSlowResources,
 } from "./analytics/index";
