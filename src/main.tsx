@@ -2,7 +2,7 @@ import { createRoot } from "react-dom/client";
 import { HelmetProvider } from "react-helmet-async";
 import App from "./App.tsx";
 import "./index.css";
-import { installGlobalErrorHandler, trackPageLoad } from "./lib/analytics";
+import { installGlobalErrorHandler, trackPageLoad, observeLongTasks, observeSlowResources } from "./lib/analytics";
 
 // HashRouter compat: normalize direct deep links like /admin/dashboard -> /#/admin/dashboard
 // while preserving preview token query params (e.g. ?__lovable_token=...).
