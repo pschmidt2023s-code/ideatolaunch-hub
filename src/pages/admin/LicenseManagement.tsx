@@ -344,7 +344,8 @@ export default function LicenseManagement() {
 
         <Tabs defaultValue="licenses">
           <TabsList>
-            <TabsTrigger value="licenses">Lizenzen</TabsTrigger>
+            <TabsTrigger value="licenses">Abonnements</TabsTrigger>
+            <TabsTrigger value="direct-keys">Lizenzschlüssel ({directLicenses.length})</TabsTrigger>
             <TabsTrigger value="invitations">Einladungslinks ({invitations.length})</TabsTrigger>
           </TabsList>
 
