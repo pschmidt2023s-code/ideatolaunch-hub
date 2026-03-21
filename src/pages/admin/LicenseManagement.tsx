@@ -129,15 +129,17 @@ export default function LicenseManagement() {
 
   const loadData = async () => {
     setLoading(true);
-    const [subRes, profRes, invRes] = await Promise.all([
+    const [subRes, profRes, invRes, licRes] = await Promise.all([
       supabase.from("subscriptions").select("*").order("created_at", { ascending: false }),
       supabase.from("profiles").select("user_id, first_name, last_name, company_name"),
       supabase.from("license_invitations").select("*").order("created_at", { ascending: false }),
+      supabase.from("licenses").select("*").order("created_at", { ascending: false }),
     ]);
 
     const subsData = (subRes.data ?? []) as SubscriptionRow[];
     const profsData = (profRes.data ?? []) as ProfileRow[];
     setInvitations((invRes.data ?? []) as InvitationRow[]);
+    setDirectLicenses((licRes.data ?? []) as LicenseRow[]);
 
     const merged: SubWithProfile[] = subsData.map((s) => ({
       ...s,
