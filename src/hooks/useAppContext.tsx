@@ -156,9 +156,33 @@ export function AppProvider({ children }: { children: ReactNode }) {
       return data as { valid: boolean; tier?: string; license_key?: string; source?: string; expires_at?: string } | null;
     },
     enabled: !!user,
-    staleTime: STALE.STATIC,
+    staleTime: 30_000, // 30s – keep fresh for cross-device sync
     retry: 1,
   });
+
+  // ── Realtime: auto-refresh license & subscription on DB changes ────────
+  useEffect(() => {
+    if (!user) return;
+    const channel = supabase
+      .channel("license-sync")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "licenses", filter: `user_id=eq.${user.id}` },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["license", user.id] });
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "subscriptions", filter: `user_id=eq.${user.id}` },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["subscription", user.id] });
+          queryClient.invalidateQueries({ queryKey: ["license", user.id] });
+        }
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [user, queryClient]);
 
   const plan: Plan = useMemo(() => {
     // Priority: new licenses table > legacy subscriptions
