@@ -308,6 +308,9 @@ export default function LicenseManagement() {
             </p>
           </div>
           <div className="flex items-center gap-2">
+            <Button onClick={() => { setLicenseTier("pro"); setLicenseEmail(""); setLicenseDays("365"); setCreatedLicenseKey(null); setLicenseDialogOpen(true); }} size="sm" className="gap-1.5">
+              <KeyRound className="h-4 w-4" /> Lizenzschlüssel
+            </Button>
             <Button onClick={() => { setInvitePlan("builder"); setInviteDialogOpen(true); }} size="sm" variant="outline" className="gap-1.5">
               <Link2 className="h-4 w-4" /> Einladungslink
             </Button>
