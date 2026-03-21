@@ -496,6 +496,39 @@ export default function LicenseManagement() {
               </Table>
             </div>
           </TabsContent>
+
+          {/* ── Direct License Keys Tab ── */}
+          <TabsContent value="direct-keys">
+            <div className="rounded-xl border bg-card overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-xs">Schlüssel</TableHead>
+                    <TableHead className="text-xs">Tier</TableHead>
+                    <TableHead className="text-xs">E-Mail</TableHead>
+                    <TableHead className="text-xs">Status</TableHead>
+                    <TableHead className="text-xs">Erstellt</TableHead>
+                    <TableHead className="text-xs">Gültig bis</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {directLicenses.length === 0 && (
+                    <TableRow><TableCell colSpan={6} className="text-center text-sm text-muted-foreground py-8">Keine Lizenzschlüssel erstellt</TableCell></TableRow>
+                  )}
+                  {directLicenses.map((lic) => (
+                    <TableRow key={lic.id}>
+                      <TableCell><LicenseKeyCell value={lic.license_key} /></TableCell>
+                      <TableCell><PlanBadge plan={lic.tier ?? "pro"} /></TableCell>
+                      <TableCell><span className="text-xs text-muted-foreground">{lic.email || "—"}</span></TableCell>
+                      <TableCell><InviteStatusBadge status={lic.status ?? "active"} /></TableCell>
+                      <TableCell><span className="text-xs text-muted-foreground">{lic.created_at ? new Date(lic.created_at).toLocaleDateString("de-DE") : "—"}</span></TableCell>
+                      <TableCell><span className="text-xs text-muted-foreground">{lic.expires_at ? new Date(lic.expires_at).toLocaleDateString("de-DE") : "∞"}</span></TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </TabsContent>
         </Tabs>
       </div>
 
