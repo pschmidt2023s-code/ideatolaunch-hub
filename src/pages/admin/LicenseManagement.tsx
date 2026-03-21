@@ -62,6 +62,14 @@ export default function LicenseManagement() {
   const [inviteLabel, setInviteLabel] = useState("");
   const [inviteExpiry, setInviteExpiry] = useState("");
   const [inviteSaving, setInviteSaving] = useState(false);
+
+  // Direct license key dialog
+  const [licenseDialogOpen, setLicenseDialogOpen] = useState(false);
+  const [licenseTier, setLicenseTier] = useState<string>("pro");
+  const [licenseEmail, setLicenseEmail] = useState("");
+  const [licenseDays, setLicenseDays] = useState("365");
+  const [licenseSaving, setLicenseSaving] = useState(false);
+  const [createdLicenseKey, setCreatedLicenseKey] = useState<string | null>(null);
   const [createdInviteUrl, setCreatedInviteUrl] = useState<string | null>(null);
 
   // QR Code dialog
