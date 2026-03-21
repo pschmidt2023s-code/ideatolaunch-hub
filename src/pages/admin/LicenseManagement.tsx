@@ -55,6 +55,7 @@ export default function LicenseManagement() {
   const [loading, setLoading] = useState(true);
   const [subs, setSubs] = useState<SubWithProfile[]>([]);
   const [invitations, setInvitations] = useState<InvitationRow[]>([]);
+  const [directLicenses, setDirectLicenses] = useState<LicenseRow[]>([]);
 
   // Dialog state
   const [dialogOpen, setDialogOpen] = useState(false);
