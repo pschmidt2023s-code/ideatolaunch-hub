@@ -644,6 +644,70 @@ export default function LicenseManagement() {
           </div>
         </DialogContent>
       </Dialog>
+      {/* Direct License Key Dialog */}
+      <Dialog open={licenseDialogOpen} onOpenChange={(open) => { setLicenseDialogOpen(open); if (!open) setCreatedLicenseKey(null); }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader><DialogTitle>{createdLicenseKey ? "Lizenzschlüssel erstellt ✅" : "Lizenzschlüssel erstellen"}</DialogTitle></DialogHeader>
+          <div className="space-y-4 mt-2">
+            {createdLicenseKey ? (
+              <>
+                <p className="text-sm text-muted-foreground">
+                  Der Schlüssel wurde in der Datenbank gespeichert. Teile ihn mit dem Nutzer.
+                </p>
+                <div className="rounded-xl border-2 border-primary/30 bg-primary/5 p-6 text-center">
+                  <p className="text-[11px] text-muted-foreground mb-2">Lizenzschlüssel</p>
+                  <code className="text-2xl font-mono font-black tracking-widest text-primary">{createdLicenseKey}</code>
+                </div>
+                <div className="flex gap-2">
+                  <Button className="flex-1 gap-2" onClick={async () => {
+                    await navigator.clipboard.writeText(createdLicenseKey);
+                    toast.success("Schlüssel kopiert!");
+                  }}>
+                    <Copy className="h-4 w-4" /> Kopieren
+                  </Button>
+                  <Button variant="outline" className="flex-1 gap-2" onClick={() => {
+                    const text = `🔑 Dein BrandOS Lizenzschlüssel:\n\n*${createdLicenseKey}*\n\nGib ihn unter Einstellungen → Lizenz ein.`;
+                    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+                  }}>
+                    <Send className="h-4 w-4" /> WhatsApp
+                  </Button>
+                </div>
+                <Button variant="ghost" size="sm" className="w-full" onClick={() => { setCreatedLicenseKey(null); setLicenseDialogOpen(false); }}>
+                  Fertig
+                </Button>
+              </>
+            ) : (
+              <>
+                <p className="text-sm text-muted-foreground">
+                  Erstelle einen Lizenzschlüssel direkt. Der Nutzer kann ihn unter Einstellungen aktivieren.
+                </p>
+                <div className="space-y-2">
+                  <Label>Tier / Plan</Label>
+                  <Select value={licenseTier} onValueChange={setLicenseTier}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {PLANS.filter(p => p !== "free").map((p) => <SelectItem key={p} value={p}>{PLAN_LABELS[p]}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>E-Mail des Empfängers (optional)</Label>
+                  <Input value={licenseEmail} onChange={(e) => setLicenseEmail(e.target.value)} placeholder="nutzer@email.de" type="email" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Gültigkeit (Tage)</Label>
+                  <Input value={licenseDays} onChange={(e) => setLicenseDays(e.target.value)} placeholder="365" type="number" min="0" />
+                  <p className="text-[11px] text-muted-foreground">0 = unbegrenzt</p>
+                </div>
+                <Button onClick={handleCreateLicense} disabled={licenseSaving} className="w-full gap-2">
+                  {licenseSaving && <Loader2 className="h-4 w-4 animate-spin" />}
+                  <KeyRound className="h-4 w-4" /> Schlüssel generieren
+                </Button>
+              </>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
