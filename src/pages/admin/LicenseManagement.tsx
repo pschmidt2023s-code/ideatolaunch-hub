@@ -32,6 +32,10 @@ interface InvitationRow {
   used_by: string | null; created_at: string; used_at: string | null; expires_at: string | null;
   short_code: string | null;
 }
+interface LicenseRow {
+  id: string; license_key: string; tier: string | null; status: string | null;
+  email: string | null; user_id: string; expires_at: string | null; created_at: string | null;
+}
 type SubWithProfile = SubscriptionRow & { profile?: ProfileRow };
 
 const PLANS = ["free", "builder", "pro", "execution", "trading"] as const;
@@ -51,6 +55,7 @@ export default function LicenseManagement() {
   const [loading, setLoading] = useState(true);
   const [subs, setSubs] = useState<SubWithProfile[]>([]);
   const [invitations, setInvitations] = useState<InvitationRow[]>([]);
+  const [directLicenses, setDirectLicenses] = useState<LicenseRow[]>([]);
 
   // Dialog state
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -124,15 +129,17 @@ export default function LicenseManagement() {
 
   const loadData = async () => {
     setLoading(true);
-    const [subRes, profRes, invRes] = await Promise.all([
+    const [subRes, profRes, invRes, licRes] = await Promise.all([
       supabase.from("subscriptions").select("*").order("created_at", { ascending: false }),
       supabase.from("profiles").select("user_id, first_name, last_name, company_name"),
       supabase.from("license_invitations").select("*").order("created_at", { ascending: false }),
+      supabase.from("licenses").select("*").order("created_at", { ascending: false }),
     ]);
 
     const subsData = (subRes.data ?? []) as SubscriptionRow[];
     const profsData = (profRes.data ?? []) as ProfileRow[];
     setInvitations((invRes.data ?? []) as InvitationRow[]);
+    setDirectLicenses((licRes.data ?? []) as LicenseRow[]);
 
     const merged: SubWithProfile[] = subsData.map((s) => ({
       ...s,
@@ -279,6 +286,7 @@ export default function LicenseManagement() {
         details: { tier: licenseTier, license_key: key, email: licenseEmail, days: licenseDays },
       });
       toast.success("Lizenzschlüssel erstellt!");
+      loadData();
     }
     setLicenseSaving(false);
   };
@@ -336,7 +344,8 @@ export default function LicenseManagement() {
 
         <Tabs defaultValue="licenses">
           <TabsList>
-            <TabsTrigger value="licenses">Lizenzen</TabsTrigger>
+            <TabsTrigger value="licenses">Abonnements</TabsTrigger>
+            <TabsTrigger value="direct-keys">Lizenzschlüssel ({directLicenses.length})</TabsTrigger>
             <TabsTrigger value="invitations">Einladungslinks ({invitations.length})</TabsTrigger>
           </TabsList>
 
@@ -481,6 +490,39 @@ export default function LicenseManagement() {
                           )}
                         </div>
                       </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </TabsContent>
+
+          {/* ── Direct License Keys Tab ── */}
+          <TabsContent value="direct-keys">
+            <div className="rounded-xl border bg-card overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-xs">Schlüssel</TableHead>
+                    <TableHead className="text-xs">Tier</TableHead>
+                    <TableHead className="text-xs">E-Mail</TableHead>
+                    <TableHead className="text-xs">Status</TableHead>
+                    <TableHead className="text-xs">Erstellt</TableHead>
+                    <TableHead className="text-xs">Gültig bis</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {directLicenses.length === 0 && (
+                    <TableRow><TableCell colSpan={6} className="text-center text-sm text-muted-foreground py-8">Keine Lizenzschlüssel erstellt</TableCell></TableRow>
+                  )}
+                  {directLicenses.map((lic) => (
+                    <TableRow key={lic.id}>
+                      <TableCell><LicenseKeyCell value={lic.license_key} /></TableCell>
+                      <TableCell><PlanBadge plan={lic.tier ?? "pro"} /></TableCell>
+                      <TableCell><span className="text-xs text-muted-foreground">{lic.email || "—"}</span></TableCell>
+                      <TableCell><InviteStatusBadge status={lic.status ?? "active"} /></TableCell>
+                      <TableCell><span className="text-xs text-muted-foreground">{lic.created_at ? new Date(lic.created_at).toLocaleDateString("de-DE") : "—"}</span></TableCell>
+                      <TableCell><span className="text-xs text-muted-foreground">{lic.expires_at ? new Date(lic.expires_at).toLocaleDateString("de-DE") : "∞"}</span></TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
