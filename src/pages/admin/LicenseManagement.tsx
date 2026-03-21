@@ -32,6 +32,10 @@ interface InvitationRow {
   used_by: string | null; created_at: string; used_at: string | null; expires_at: string | null;
   short_code: string | null;
 }
+interface LicenseRow {
+  id: string; license_key: string; tier: string | null; status: string | null;
+  email: string | null; user_id: string; expires_at: string | null; created_at: string | null;
+}
 type SubWithProfile = SubscriptionRow & { profile?: ProfileRow };
 
 const PLANS = ["free", "builder", "pro", "execution", "trading"] as const;
