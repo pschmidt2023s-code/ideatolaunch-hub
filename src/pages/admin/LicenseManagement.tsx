@@ -252,6 +252,37 @@ export default function LicenseManagement() {
     else { toast.success("Einladung reaktiviert"); loadData(); }
   };
 
+  // ── Create Direct License Key ──
+  const handleCreateLicense = async () => {
+    setLicenseSaving(true);
+    const key = generateLicenseKey();
+    const expiresAt = parseInt(licenseDays) > 0
+      ? new Date(Date.now() + parseInt(licenseDays) * 86400000).toISOString()
+      : null;
+
+    const { error } = await supabase.from("licenses").insert({
+      license_key: key,
+      tier: licenseTier,
+      user_id: user!.id,
+      email: licenseEmail || null,
+      expires_at: expiresAt,
+      status: "active",
+    });
+
+    if (error) {
+      toast.error("Fehler: " + error.message);
+    } else {
+      setCreatedLicenseKey(key);
+      await supabase.from("admin_audit_log").insert({
+        admin_id: user!.id,
+        action_type: "license_created",
+        details: { tier: licenseTier, license_key: key, email: licenseEmail, days: licenseDays },
+      });
+      toast.success("Lizenzschlüssel erstellt!");
+    }
+    setLicenseSaving(false);
+  };
+
   if (authLoading || authorized === null || loading) {
     return (
       <div className="flex h-screen items-center justify-center bg-background">
