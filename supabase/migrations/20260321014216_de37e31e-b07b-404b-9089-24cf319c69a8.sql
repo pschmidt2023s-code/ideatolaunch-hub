@@ -1,0 +1,2 @@
+ALTER TABLE public.licenses DROP CONSTRAINT licenses_tier_check;
+ALTER TABLE public.licenses ADD CONSTRAINT licenses_tier_check CHECK (tier::text = ANY (ARRAY['free', 'starter', 'builder', 'pro', 'execution', 'trading', 'enterprise']::text[]));
