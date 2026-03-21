@@ -286,6 +286,7 @@ export default function LicenseManagement() {
         details: { tier: licenseTier, license_key: key, email: licenseEmail, days: licenseDays },
       });
       toast.success("Lizenzschlüssel erstellt!");
+      loadData();
     }
     setLicenseSaving(false);
   };
