@@ -63,8 +63,8 @@ Deno.serve(async (req) => {
         .maybeSingle();
       keyLicense = data;
 
-      // If key exists and unassigned or belongs to this user, assign it
-      if (keyLicense && (!keyLicense.user_id || keyLicense.user_id === user.id)) {
+      // If key exists and is unassigned, unclaimed (no activated_at), or belongs to this user — assign it
+      if (keyLicense && (!keyLicense.user_id || keyLicense.user_id === user.id || !keyLicense.activated_at)) {
         await supabaseAdmin
           .from("licenses")
           .update({
