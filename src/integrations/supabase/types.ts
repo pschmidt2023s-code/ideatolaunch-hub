@@ -1785,6 +1785,134 @@ export type Database = {
         }
         Relationships: []
       }
+      seo_audit_findings: {
+        Row: {
+          auto_fixable: boolean
+          category: string
+          code: string
+          created_at: string
+          current_value: string | null
+          description: string | null
+          expected_value: string | null
+          fix_notes: string | null
+          fix_status: string
+          id: string
+          metadata: Json
+          recommendation: string | null
+          run_id: string
+          severity: string
+          title: string
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          auto_fixable?: boolean
+          category: string
+          code: string
+          created_at?: string
+          current_value?: string | null
+          description?: string | null
+          expected_value?: string | null
+          fix_notes?: string | null
+          fix_status?: string
+          id?: string
+          metadata?: Json
+          recommendation?: string | null
+          run_id: string
+          severity: string
+          title: string
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          auto_fixable?: boolean
+          category?: string
+          code?: string
+          created_at?: string
+          current_value?: string | null
+          description?: string | null
+          expected_value?: string | null
+          fix_notes?: string | null
+          fix_status?: string
+          id?: string
+          metadata?: Json
+          recommendation?: string | null
+          run_id?: string
+          severity?: string
+          title?: string
+          updated_at?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seo_audit_findings_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "seo_audit_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      seo_audit_runs: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          critical_count: number
+          duration_ms: number | null
+          error_message: string | null
+          findings_count: number
+          id: string
+          info_count: number
+          metadata: Json
+          overall_score: number | null
+          scan_type: string
+          started_at: string
+          status: string
+          target_urls: Json
+          triggered_by: string
+          urls_scanned: number
+          warning_count: number
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          critical_count?: number
+          duration_ms?: number | null
+          error_message?: string | null
+          findings_count?: number
+          id?: string
+          info_count?: number
+          metadata?: Json
+          overall_score?: number | null
+          scan_type?: string
+          started_at?: string
+          status?: string
+          target_urls?: Json
+          triggered_by: string
+          urls_scanned?: number
+          warning_count?: number
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          critical_count?: number
+          duration_ms?: number | null
+          error_message?: string | null
+          findings_count?: number
+          id?: string
+          info_count?: number
+          metadata?: Json
+          overall_score?: number | null
+          scan_type?: string
+          started_at?: string
+          status?: string
+          target_urls?: Json
+          triggered_by?: string
+          urls_scanned?: number
+          warning_count?: number
+        }
+        Relationships: []
+      }
       strategic_scores: {
         Row: {
           ai_recommendations: Json | null
