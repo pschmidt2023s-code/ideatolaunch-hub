@@ -196,7 +196,8 @@ export default function SeoAudit() {
           )}
           {selectedRunId && findingsQ.isLoading && <Loader2 className="h-6 w-6 animate-spin" />}
           {selectedRunId && findingsQ.data && (
-            <Tabs defaultValue="critical">
+            <Tabs value={defaultTab} key={selectedRunId ?? ""}>
+              {/* key forces re-mount when run changes so the active tab updates */}
               <TabsList>
                 <TabsTrigger value="critical">Kritisch ({findingsQ.data.filter((f) => f.severity === "critical").length})</TabsTrigger>
                 <TabsTrigger value="warning">Warnung ({findingsQ.data.filter((f) => f.severity === "warning").length})</TabsTrigger>
