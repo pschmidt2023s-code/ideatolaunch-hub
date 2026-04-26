@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -73,6 +73,13 @@ export default function SeoAudit() {
     },
   });
 
+  // Auto-select most recent run when none selected
+  useEffect(() => {
+    if (!selectedRunId && runsQ.data && runsQ.data.length > 0) {
+      setSelectedRunId(runsQ.data[0].id);
+    }
+  }, [runsQ.data, selectedRunId]);
+
   const findingsQ = useQuery({
     queryKey: ["seo-findings", selectedRunId],
     enabled: !!selectedRunId,
@@ -81,11 +88,19 @@ export default function SeoAudit() {
         .from("seo_audit_findings")
         .select("*")
         .eq("run_id", selectedRunId!)
-        .order("severity", { ascending: true });
+        .order("severity", { ascending: true })
+        .limit(2000);
       if (error) throw error;
       return data as Finding[];
     },
   });
+
+  const defaultTab = useMemo(() => {
+    if (!findingsQ.data) return "critical";
+    if (findingsQ.data.some((f) => f.severity === "critical")) return "critical";
+    if (findingsQ.data.some((f) => f.severity === "warning")) return "warning";
+    return "info";
+  }, [findingsQ.data]);
 
   const startScan = useMutation({
     mutationFn: async () => {
@@ -181,7 +196,7 @@ export default function SeoAudit() {
           )}
           {selectedRunId && findingsQ.isLoading && <Loader2 className="h-6 w-6 animate-spin" />}
           {selectedRunId && findingsQ.data && (
-            <Tabs defaultValue="critical">
+            <Tabs defaultValue={defaultTab} key={`${selectedRunId}-${defaultTab}`}>
               <TabsList>
                 <TabsTrigger value="critical">Kritisch ({findingsQ.data.filter((f) => f.severity === "critical").length})</TabsTrigger>
                 <TabsTrigger value="warning">Warnung ({findingsQ.data.filter((f) => f.severity === "warning").length})</TabsTrigger>
