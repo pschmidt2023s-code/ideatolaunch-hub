@@ -182,28 +182,101 @@ async function runScan(runId: string, supabase: ReturnType<typeof createClient>,
   // 1. Technical: robots + sitemap
   findings.push(...(await checkRobotsAndSitemap(origin)));
 
-  // 2. URLs
+  // 2. URLs (limit raised: 150 URLs)
   let urls = await getSitemapUrls(origin);
   if (urls.length === 0) urls = [origin];
   if (scanType === "single") urls = urls.slice(0, 1);
-  // Limit to 30 URLs per run for stability
-  urls = urls.slice(0, 30);
+  const MAX_URLS = 150;
+  const PSI_LIMIT = 15;
+  urls = urls.slice(0, MAX_URLS);
 
-  // 3. Per-URL analysis (sequential w/ small concurrency)
+  // 3. Parallel per-URL analysis with concurrency=6
+  const pageData: Array<{ url: string; html: string; title: string; bodyText: string }> = [];
   let scanned = 0;
-  for (const url of urls) {
+  const CONCURRENCY = 6;
+
+  async function processUrl(url: string, index: number) {
     const r = await fetchText(url);
     if (!r) {
       findings.push({ url, category: "technical", severity: "critical", code: "FETCH_FAIL", title: "Seite nicht erreichbar" });
-      continue;
+      return;
     }
     findings.push(...analyzeTechnical(url, r.status, r.headers, r.html));
     findings.push(...analyzeOnPage(url, r.html));
-    if (PSI_KEY && scanned < 5) {
-      // PSI is slow + quota-limited → max 5 PSI runs per scan
+
+    // Module 2: collect for content/duplicate analysis
+    const title = (r.html.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1] ?? "").trim();
+    const bodyText = r.html.replace(/<script[\s\S]*?<\/script>/gi, "").replace(/<style[\s\S]*?<\/style>/gi, "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+    pageData.push({ url, html: r.html, title, bodyText });
+
+    // Thin content check
+    const wordCount = bodyText.split(/\s+/).filter(Boolean).length;
+    if (wordCount < 200) {
+      findings.push({ url, category: "onpage", severity: wordCount < 80 ? "warning" : "info", code: "THIN_CONTENT", title: `Wenig Inhalt: ${wordCount} Wörter`, current_value: `${wordCount}`, expected_value: "≥ 300", recommendation: "Erweitere den Inhalt mit relevanten Sub-Topics, FAQ, Beispielen." });
+    }
+
+    // PSI for first PSI_LIMIT URLs
+    if (PSI_KEY && index < PSI_LIMIT) {
       findings.push(...(await pageSpeed(url)));
     }
     scanned++;
+  }
+
+  for (let i = 0; i < urls.length; i += CONCURRENCY) {
+    const batch = urls.slice(i, i + CONCURRENCY).map((u, j) => processUrl(u, i + j));
+    await Promise.all(batch);
+  }
+
+  // Module 2: Duplicate Title/Description + Index Bloat detection
+  const titleMap = new Map<string, string[]>();
+  for (const p of pageData) {
+    if (!p.title) continue;
+    const arr = titleMap.get(p.title) ?? [];
+    arr.push(p.url);
+    titleMap.set(p.title, arr);
+  }
+  for (const [title, urls] of titleMap) {
+    if (urls.length > 1) {
+      for (const u of urls) {
+        findings.push({ url: u, category: "onpage", severity: "warning", code: "DUPLICATE_TITLE", title: "Duplizierter Title-Tag", description: `${urls.length} Seiten mit gleichem Title: "${title.slice(0, 60)}"`, recommendation: "Eindeutige Titles pro Seite verwenden — gleiche Titles verwirren Google." });
+      }
+    }
+  }
+
+  // Index Bloat: zu viele Seiten mit dünnem/ähnlichem Inhalt
+  if (pageData.length > 50) {
+    const thinPages = pageData.filter((p) => p.bodyText.split(/\s+/).length < 300).length;
+    const ratio = thinPages / pageData.length;
+    if (ratio > 0.3) {
+      findings.push({ url: origin, category: "technical", severity: "warning", code: "INDEX_BLOAT", title: `Index Bloat Risiko: ${Math.round(ratio * 100)}% dünne Seiten`, current_value: `${thinPages}/${pageData.length}`, expected_value: "< 30%", recommendation: "Konsolidiere ähnliche Seiten, setze noindex auf Tags/Filter, reduziere Crawl-Budget-Verschwendung." });
+    }
+  }
+
+  // Module 2: Near-duplicate content (Jaccard auf Wort-Shingles)
+  if (pageData.length >= 2 && pageData.length <= 100) {
+    const shingles = pageData.map((p) => {
+      const words = p.bodyText.toLowerCase().split(/\s+/).slice(0, 500);
+      const set = new Set<string>();
+      for (let i = 0; i < words.length - 2; i++) set.add(`${words[i]} ${words[i+1]} ${words[i+2]}`);
+      return { url: p.url, set };
+    });
+    const seen = new Set<string>();
+    for (let i = 0; i < shingles.length; i++) {
+      for (let j = i + 1; j < shingles.length; j++) {
+        const a = shingles[i], b = shingles[j];
+        if (a.set.size === 0 || b.set.size === 0) continue;
+        let inter = 0;
+        for (const s of a.set) if (b.set.has(s)) inter++;
+        const union = a.set.size + b.set.size - inter;
+        const sim = inter / Math.max(1, union);
+        if (sim > 0.7) {
+          const key = `${a.url}|${b.url}`;
+          if (seen.has(key)) continue;
+          seen.add(key);
+          findings.push({ url: a.url, category: "onpage", severity: "warning", code: "NEAR_DUPLICATE", title: `Inhalt fast identisch (${Math.round(sim*100)}%) zu anderer Seite`, description: `Ähnlich zu: ${b.url}`, recommendation: "Kanonisiere oder konsolidiere die Duplikate — Google straft Cannibalization ab." });
+        }
+      }
+    }
   }
 
   // 4. Score
