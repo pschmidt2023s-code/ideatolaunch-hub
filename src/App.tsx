@@ -104,6 +104,7 @@ const StrategyDashboard = lazy(() => import("./pages/modes/StrategyDashboard"));
 const Accounts = lazy(() => import("./pages/Accounts"));
 const CompetitorPage = lazy(() => import("./pages/CompetitorPage"));
 const AuditTrail = lazy(() => import("./pages/admin/AuditTrail"));
+const SeoAudit = lazy(() => import("./pages/admin/SeoAudit"));
 const JourneyPhase = lazy(() => import("./pages/JourneyPhase"));
 // ── Optimized QueryClient with smart defaults ───────────────
 const queryClient = new QueryClient({
@@ -268,6 +269,7 @@ const App = () => {
                       <Route path="/admin/system" element={<AdminRoute><SystemStatus /></AdminRoute>} />
                       <Route path="/admin/licenses" element={<AdminRoute><LicenseManagement /></AdminRoute>} />
                       <Route path="/admin/audit" element={<AdminRoute><AuditTrail /></AdminRoute>} />
+                      <Route path="/admin/seo" element={<AdminRoute><SeoAudit /></AdminRoute>} />
                       <Route path="/debug/gating" element={<DebugGating />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
