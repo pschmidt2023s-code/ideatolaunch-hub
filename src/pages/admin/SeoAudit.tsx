@@ -236,11 +236,17 @@ export default function SeoAudit() {
           {selectedRunId && findingsQ.isLoading && <Loader2 className="h-6 w-6 animate-spin" />}
           {selectedRunId && findingsQ.data && (
             <Tabs defaultValue={defaultTab} key={`${selectedRunId}-${defaultTab}`}>
-              <TabsList>
-                <TabsTrigger value="critical">Kritisch ({findingsQ.data.filter((f) => f.severity === "critical").length})</TabsTrigger>
-                <TabsTrigger value="warning">Warnung ({findingsQ.data.filter((f) => f.severity === "warning").length})</TabsTrigger>
-                <TabsTrigger value="info">Info ({findingsQ.data.filter((f) => f.severity === "info").length})</TabsTrigger>
-              </TabsList>
+              <div className="flex items-center justify-between mb-2 gap-2 flex-wrap">
+                <TabsList>
+                  <TabsTrigger value="critical">Kritisch ({findingsQ.data.filter((f) => f.severity === "critical").length})</TabsTrigger>
+                  <TabsTrigger value="warning">Warnung ({findingsQ.data.filter((f) => f.severity === "warning").length})</TabsTrigger>
+                  <TabsTrigger value="info">Info ({findingsQ.data.filter((f) => f.severity === "info").length})</TabsTrigger>
+                </TabsList>
+                <Button onClick={() => runBulkFix("all")} disabled={bulkDialog.loading} size="sm">
+                  {bulkDialog.loading ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Sparkles className="h-4 w-4 mr-1" />}
+                  Alle Fixes generieren ({findingsQ.data.filter((f) => f.fix_status !== "fixed").length})
+                </Button>
+              </div>
               {(["critical", "warning", "info"] as const).map((sev) => (
                 <TabsContent key={sev} value={sev} className="space-y-3">
                   {findingsQ.data.filter((f) => f.severity === sev).map((f) => (
