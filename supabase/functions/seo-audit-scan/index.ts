@@ -260,6 +260,190 @@ async function getSitemapUrls(origin: string): Promise<string[]> {
   return urls;
 }
 
+// ===== Modul 5: Internal Linking Graph =====
+function analyzeLinkGraph(
+  pages: Array<{ url: string; outLinks: Array<{ href: string; anchor: string }>; status: number }>,
+  originHost: string,
+  origin: string,
+): Finding[] {
+  const findings: Finding[] = [];
+  if (pages.length === 0) return findings;
+
+  const pageUrls = new Set(pages.map((p) => p.url));
+  const inDegree = new Map<string, number>();
+  const inboundAnchors = new Map<string, string[]>();
+  const allInternalEdges: Array<{ from: string; to: string; anchor: string }> = [];
+  const externalDomains = new Map<string, number>();
+
+  for (const p of pages) {
+    inDegree.set(p.url, inDegree.get(p.url) ?? 0);
+    const seenOnPage = new Set<string>();
+    for (const link of p.outLinks) {
+      let host = "";
+      try { host = new URL(link.href).host; } catch { continue; }
+      const norm = link.href.replace(/\/$/, "");
+
+      if (host === originHost) {
+        if (norm === p.url) continue; // self link
+        if (seenOnPage.has(norm)) continue;
+        seenOnPage.add(norm);
+        inDegree.set(norm, (inDegree.get(norm) ?? 0) + 1);
+        const arr = inboundAnchors.get(norm) ?? [];
+        arr.push(link.anchor);
+        inboundAnchors.set(norm, arr);
+        allInternalEdges.push({ from: p.url, to: norm, anchor: link.anchor });
+      } else {
+        externalDomains.set(host, (externalDomains.get(host) ?? 0) + 1);
+      }
+    }
+  }
+
+  // 1. Orphan pages (in sitemap aber 0 interne Links)
+  for (const p of pages) {
+    if (p.url === origin || p.url === origin.replace(/\/$/, "")) continue;
+    const inDeg = inDegree.get(p.url) ?? 0;
+    if (inDeg === 0) {
+      findings.push({
+        url: p.url, category: "links", severity: "warning", code: "ORPHAN_PAGE",
+        title: "Orphan-Seite: keine internen Verlinkungen",
+        recommendation: "Verlinke diese Seite aus relevantem Content (Hub-Pages, Footer, Navigation). Ohne interne Links bekommt Google kaum Crawl-Signal.",
+      });
+    } else if (inDeg === 1) {
+      findings.push({
+        url: p.url, category: "links", severity: "info", code: "WEAK_INBOUND",
+        title: "Nur 1 interner Link auf diese Seite",
+        current_value: "1", expected_value: "≥ 3",
+        recommendation: "Wichtige Seiten brauchen mind. 3 interne Links für PageRank-Fluss.",
+      });
+    }
+  }
+
+  // 2. Broken internal links (Linkziel ist 4xx/5xx)
+  const failedUrls = new Set(pages.filter((p) => p.status >= 400).map((p) => p.url));
+  const brokenLinkMap = new Map<string, Set<string>>();
+  for (const e of allInternalEdges) {
+    if (failedUrls.has(e.to)) {
+      const set = brokenLinkMap.get(e.from) ?? new Set();
+      set.add(e.to);
+      brokenLinkMap.set(e.from, set);
+    }
+  }
+  for (const [from, targets] of brokenLinkMap) {
+    findings.push({
+      url: from, category: "links", severity: "critical", code: "BROKEN_INTERNAL_LINK",
+      title: `${targets.size} interne(r) Link(s) führen zu 4xx/5xx`,
+      current_value: [...targets].slice(0, 3).join(", "),
+      recommendation: "Korrigiere oder entferne defekte Links — sie verschwenden Crawl-Budget und schaden UX.",
+      auto_fixable: false,
+    });
+  }
+
+  // 3. Generic Anchor Text (z. B. "hier", "klick", "mehr")
+  const GENERIC = new Set(["hier", "klick", "klicken", "click", "more", "mehr", "weiter", "lesen", "read more", "learn more", "this", "link", "go"]);
+  for (const [target, anchors] of inboundAnchors) {
+    const generic = anchors.filter((a) => a && GENERIC.has(a.toLowerCase().trim()));
+    if (generic.length > 0 && generic.length / anchors.length > 0.5) {
+      findings.push({
+        url: target, category: "links", severity: "info", code: "GENERIC_ANCHOR",
+        title: `${generic.length} interne Links nutzen generische Anker`,
+        current_value: [...new Set(generic)].slice(0, 3).join(", "),
+        recommendation: "Nutze beschreibende Ankertexte mit Keywords statt 'hier' oder 'mehr lesen'. Google wertet Anchor-Text als Ranking-Signal.",
+      });
+    }
+  }
+
+  // 4. Empty / image-only anchors
+  for (const p of pages) {
+    let emptyCount = 0;
+    for (const l of p.outLinks) {
+      try { if (new URL(l.href).host !== originHost) continue; } catch { continue; }
+      if (!l.anchor || l.anchor.length < 2) emptyCount++;
+    }
+    if (emptyCount >= 3) {
+      findings.push({
+        url: p.url, category: "links", severity: "info", code: "EMPTY_ANCHORS",
+        title: `${emptyCount} Links ohne Anker-Text`,
+        recommendation: "Setze aria-label oder Text in <a>-Elementen für SEO + Accessibility.",
+      });
+    }
+  }
+
+  // 5. Excessive external links (Spam-Signal)
+  for (const p of pages) {
+    const ext = p.outLinks.filter((l) => { try { return new URL(l.href).host !== originHost; } catch { return false; } }).length;
+    if (ext > 100) {
+      findings.push({
+        url: p.url, category: "links", severity: "warning", code: "EXCESSIVE_EXTERNAL",
+        title: `${ext} externe Links auf einer Seite`,
+        current_value: `${ext}`, expected_value: "< 100",
+        recommendation: "Zu viele externe Links wirken spammy & verlieren Link-Equity. Setze rel='nofollow' wo nötig.",
+      });
+    }
+  }
+
+  // 6. Pseudo-PageRank: 8 Iterationen, einfache Approximation
+  const N = pages.length;
+  if (N >= 5) {
+    const damp = 0.85;
+    const rank = new Map<string, number>();
+    for (const p of pages) rank.set(p.url, 1 / N);
+    const outCount = new Map<string, number>();
+    const inboundEdges = new Map<string, string[]>();
+    for (const e of allInternalEdges) {
+      outCount.set(e.from, (outCount.get(e.from) ?? 0) + 1);
+      const arr = inboundEdges.get(e.to) ?? [];
+      arr.push(e.from);
+      inboundEdges.set(e.to, arr);
+    }
+    for (let iter = 0; iter < 8; iter++) {
+      const next = new Map<string, number>();
+      for (const p of pages) {
+        const incoming = inboundEdges.get(p.url) ?? [];
+        let sum = 0;
+        for (const src of incoming) {
+          const oc = outCount.get(src) ?? 1;
+          sum += (rank.get(src) ?? 0) / oc;
+        }
+        next.set(p.url, (1 - damp) / N + damp * sum);
+      }
+      for (const [k, v] of next) rank.set(k, v);
+    }
+
+    // Findings: Wichtige Seiten (homepage, root) mit niedrigem Rank → schlechte Link-Architektur
+    const sorted = [...rank.entries()].sort((a, b) => b[1] - a[1]);
+    const median = sorted[Math.floor(sorted.length / 2)][1];
+    const homepage = pages.find((p) => p.url === origin || p.url === origin.replace(/\/$/, ""));
+    if (homepage) {
+      const homeRank = rank.get(homepage.url) ?? 0;
+      const topRank = sorted[0][1];
+      if (homeRank < topRank * 0.5) {
+        findings.push({
+          url: homepage.url, category: "links", severity: "warning", code: "WEAK_HOMEPAGE_AUTHORITY",
+          title: "Homepage hat niedrigeren Pseudo-PageRank als andere Seiten",
+          current_value: homeRank.toFixed(4), expected_value: `≈ ${topRank.toFixed(4)}`,
+          recommendation: "Verlinke die Homepage stärker aus Footer/Navigation. Sie sollte die höchste interne Autorität haben.",
+        });
+      }
+    }
+
+    // Top 5% Seiten mit überdurchschnittlich vielen Outbound-Links und niedrigem Rank
+    for (const [url, r] of sorted.slice(-Math.ceil(sorted.length * 0.1))) {
+      if (r < median * 0.3 && (outCount.get(url) ?? 0) > 10) {
+        findings.push({
+          url, category: "links", severity: "info", code: "LINK_SINK",
+          title: "Link-Sink: viele ausgehende, kaum eingehende Links",
+          current_value: `Rank ${r.toFixed(4)} / ${outCount.get(url)} outgoing`,
+          recommendation: "Diese Seite verteilt Link-Equity ohne welche zu erhalten. Erhöhe interne Verlinkung auf sie.",
+        });
+      }
+    }
+  }
+
+  return findings;
+}
+
+
+
 async function pageSpeed(url: string): Promise<Finding[]> {
   if (!PSI_KEY) return [];
   const findings: Finding[] = [];
