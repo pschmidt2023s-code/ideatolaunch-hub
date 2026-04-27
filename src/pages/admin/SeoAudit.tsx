@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, Play, AlertTriangle, AlertCircle, Info, CheckCircle2, ExternalLink } from "lucide-react";
+import { Loader2, Play, AlertTriangle, AlertCircle, Info, CheckCircle2, ExternalLink, Wand2, Copy } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import { de } from "date-fns/locale";
@@ -126,6 +127,28 @@ export default function SeoAudit() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["seo-findings", selectedRunId] }),
   });
 
+  const [fixDialog, setFixDialog] = useState<{ open: boolean; fix: any | null; loading: boolean }>({
+    open: false,
+    fix: null,
+    loading: false,
+  });
+
+  const generateFix = async (findingId: string) => {
+    setFixDialog({ open: true, fix: null, loading: true });
+    try {
+      const { data, error } = await supabase.functions.invoke("seo-audit-fix", {
+        body: { finding_id: findingId },
+      });
+      if (error) throw error;
+      setFixDialog({ open: true, fix: data.fix, loading: false });
+      toast.success("Fix generiert");
+    } catch (e: any) {
+      setFixDialog({ open: false, fix: null, loading: false });
+      toast.error("Fix-Generierung fehlgeschlagen", { description: e.message });
+    }
+  };
+
+
   return (
     <div className="container mx-auto p-6 space-y-6 max-w-7xl">
       <div>
@@ -231,11 +254,14 @@ export default function SeoAudit() {
                             {f.auto_fixable && <Badge variant="secondary" className="ml-2 text-xs">Auto-Fix möglich</Badge>}
                           </div>
                         )}
-                        <div className="flex items-center gap-2 pl-6">
+                        <div className="flex items-center gap-2 pl-6 flex-wrap">
                           <Badge variant={severityVariant(f.fix_status === "fixed" ? "info" : "warning")} className="text-xs">
                             {f.fix_status === "fixed" ? <CheckCircle2 className="h-3 w-3 mr-1" /> : null}
                             {f.fix_status}
                           </Badge>
+                          <Button size="sm" variant="outline" onClick={() => generateFix(f.id)} className="h-7">
+                            <Wand2 className="h-3 w-3 mr-1" /> Auto-Fix generieren
+                          </Button>
                           {f.fix_status !== "fixed" && (
                             <Button size="sm" variant="ghost" onClick={() => updateFix.mutate({ id: f.id, fix_status: "fixed" })}>
                               Als behoben markieren
@@ -254,6 +280,55 @@ export default function SeoAudit() {
           )}
         </div>
       </div>
+
+      <Dialog open={fixDialog.open} onOpenChange={(o) => setFixDialog({ ...fixDialog, open: o })}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Wand2 className="h-5 w-5" /> Auto-Fix Vorschlag
+            </DialogTitle>
+            <DialogDescription>
+              KI-generierter Patch für das gewählte SEO-Problem. Prüfe & übernimm manuell oder per One-Click.
+            </DialogDescription>
+          </DialogHeader>
+          {fixDialog.loading && (
+            <div className="flex items-center gap-2 p-8 justify-center">
+              <Loader2 className="h-5 w-5 animate-spin" /> Generiere Fix...
+            </div>
+          )}
+          {fixDialog.fix && (
+            <div className="space-y-4">
+              <div className="flex gap-2 flex-wrap">
+                <Badge variant="outline">{fixDialog.fix.fix_type}</Badge>
+                {fixDialog.fix.target_file && <Badge variant="secondary">{fixDialog.fix.target_file}</Badge>}
+              </div>
+              <div className="text-sm bg-muted/50 p-3 rounded">
+                <strong>Erklärung:</strong> {fixDialog.fix.ai_explanation}
+              </div>
+              <div className="relative">
+                <pre className="text-xs bg-card border rounded p-3 overflow-x-auto max-h-80">
+                  <code>{fixDialog.fix.patch_content}</code>
+                </pre>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="absolute top-2 right-2"
+                  onClick={() => {
+                    navigator.clipboard.writeText(fixDialog.fix.patch_content);
+                    toast.success("In Zwischenablage kopiert");
+                  }}
+                >
+                  <Copy className="h-3 w-3 mr-1" /> Kopieren
+                </Button>
+              </div>
+              <div className="text-xs text-muted-foreground">
+                💡 <strong>One-Click-Fix per Lovable:</strong> Kopiere den Patch und sage in Lovable Chat: <em>„Wende diesen Fix auf {fixDialog.fix.target_file ?? "die betroffene Datei"} an"</em>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
+
