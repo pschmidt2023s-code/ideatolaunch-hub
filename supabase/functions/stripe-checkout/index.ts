@@ -85,7 +85,7 @@ serve(async (req) => {
 
     // Find or create product
     const products = await stripe.products.list({ active: true, limit: 100 });
-    let product = products.data.find((p) => p.metadata?.plan === planConfig.metaPlan);
+    let product = products.data.find((p: any) => p.metadata?.plan === planConfig.metaPlan);
     if (!product) {
       product = await stripe.products.create({
         name: planConfig.name,
