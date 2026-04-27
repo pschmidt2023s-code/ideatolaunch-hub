@@ -127,6 +127,28 @@ export default function SeoAudit() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["seo-findings", selectedRunId] }),
   });
 
+  const [fixDialog, setFixDialog] = useState<{ open: boolean; fix: any | null; loading: boolean }>({
+    open: false,
+    fix: null,
+    loading: false,
+  });
+
+  const generateFix = async (findingId: string) => {
+    setFixDialog({ open: true, fix: null, loading: true });
+    try {
+      const { data, error } = await supabase.functions.invoke("seo-audit-fix", {
+        body: { finding_id: findingId },
+      });
+      if (error) throw error;
+      setFixDialog({ open: true, fix: data.fix, loading: false });
+      toast.success("Fix generiert");
+    } catch (e: any) {
+      setFixDialog({ open: false, fix: null, loading: false });
+      toast.error("Fix-Generierung fehlgeschlagen", { description: e.message });
+    }
+  };
+
+
   return (
     <div className="container mx-auto p-6 space-y-6 max-w-7xl">
       <div>
