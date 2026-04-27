@@ -254,11 +254,14 @@ export default function SeoAudit() {
                             {f.auto_fixable && <Badge variant="secondary" className="ml-2 text-xs">Auto-Fix möglich</Badge>}
                           </div>
                         )}
-                        <div className="flex items-center gap-2 pl-6">
+                        <div className="flex items-center gap-2 pl-6 flex-wrap">
                           <Badge variant={severityVariant(f.fix_status === "fixed" ? "info" : "warning")} className="text-xs">
                             {f.fix_status === "fixed" ? <CheckCircle2 className="h-3 w-3 mr-1" /> : null}
                             {f.fix_status}
                           </Badge>
+                          <Button size="sm" variant="outline" onClick={() => generateFix(f.id)} className="h-7">
+                            <Wand2 className="h-3 w-3 mr-1" /> Auto-Fix generieren
+                          </Button>
                           {f.fix_status !== "fixed" && (
                             <Button size="sm" variant="ghost" onClick={() => updateFix.mutate({ id: f.id, fix_status: "fixed" })}>
                               Als behoben markieren
