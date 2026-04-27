@@ -97,7 +97,7 @@ serve(async (req) => {
     // Find or create price
     const prices = await stripe.prices.list({ product: product.id, active: true, limit: 10 });
     let price = prices.data.find(
-      (p) => p.unit_amount === planConfig.amount && p.currency === "eur" && p.recurring?.interval === "month"
+      (p: any) => p.unit_amount === planConfig.amount && p.currency === "eur" && p.recurring?.interval === "month"
     );
     if (!price) {
       price = await stripe.prices.create({
