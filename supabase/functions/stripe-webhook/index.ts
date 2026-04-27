@@ -270,6 +270,6 @@ serve(async (req) => {
     return jsonResponse({ received: true });
   } catch (error) {
     console.error("Webhook error:", error);
-    return jsonResponse({ error: error.message || "Internal server error" }, 400);
+    return jsonResponse({ error: error instanceof Error ? error.message : "Internal server error" }, 400);
   }
 });
