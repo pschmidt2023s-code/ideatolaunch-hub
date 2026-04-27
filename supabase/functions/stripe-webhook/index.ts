@@ -36,7 +36,7 @@ const PLAN_RANK: Record<string, number> = { free: 0, builder: 1, pro: 2 };
 
 /** Resolve user locale from profile, default to "de" */
 async function getUserLocaleAndName(
-  supabase: ReturnType<typeof createClient>,
+  supabase: any,
   userId: string
 ): Promise<{ locale: Locale; firstName?: string }> {
   try {
@@ -47,7 +47,7 @@ async function getUserLocaleAndName(
       .maybeSingle();
 
     // For now locale defaults to "de" – extend profiles table with locale column if needed
-    return { locale: "de", firstName: data?.first_name || undefined };
+    return { locale: "de", firstName: (data?.first_name as string | undefined) || undefined };
   } catch {
     return { locale: "de" };
   }
@@ -84,7 +84,7 @@ serve(async (req) => {
       try {
         event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
       } catch (err) {
-        console.error("Webhook signature verification failed:", err.message);
+        console.error("Webhook signature verification failed:", (err instanceof Error ? err.message : String(err)));
         return jsonResponse({ error: "Invalid signature" }, 400);
       }
     } else {
@@ -270,6 +270,6 @@ serve(async (req) => {
     return jsonResponse({ received: true });
   } catch (error) {
     console.error("Webhook error:", error);
-    return jsonResponse({ error: error.message || "Internal server error" }, 400);
+    return jsonResponse({ error: error instanceof Error ? error.message : "Internal server error" }, 400);
   }
 });

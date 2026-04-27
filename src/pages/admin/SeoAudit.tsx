@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, Play, AlertTriangle, AlertCircle, Info, CheckCircle2, ExternalLink, Wand2, Copy } from "lucide-react";
+import { Loader2, Play, AlertTriangle, AlertCircle, Info, CheckCircle2, ExternalLink, Wand2, Copy, Sparkles, Link2 } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -127,26 +127,42 @@ export default function SeoAudit() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["seo-findings", selectedRunId] }),
   });
 
-  const [fixDialog, setFixDialog] = useState<{ open: boolean; fix: any | null; loading: boolean }>({
+  const [bulkDialog, setBulkDialog] = useState<{ open: boolean; loading: boolean; result: any | null }>({
     open: false,
-    fix: null,
     loading: false,
+    result: null,
   });
 
-  const generateFix = async (findingId: string) => {
-    setFixDialog({ open: true, fix: null, loading: true });
+  const runBulkFix = async (severity: "all" | "critical" | "warning" | "info" = "all") => {
+    if (!selectedRunId) return;
+    setBulkDialog({ open: true, loading: true, result: null });
     try {
-      const { data, error } = await supabase.functions.invoke("seo-audit-fix", {
-        body: { finding_id: findingId },
+      const { data, error } = await supabase.functions.invoke("seo-audit-fix-bulk", {
+        body: { run_id: selectedRunId, severity },
       });
       if (error) throw error;
-      setFixDialog({ open: true, fix: data.fix, loading: false });
-      toast.success("Fix generiert");
+      setBulkDialog({ open: true, loading: false, result: data });
+      qc.invalidateQueries({ queryKey: ["seo-fixes", selectedRunId] });
+      toast.success(`${data.fixes_generated} Fixes generiert`, { description: `${data.deterministic} deterministisch · ${data.ai_calls} AI` });
     } catch (e: any) {
-      setFixDialog({ open: false, fix: null, loading: false });
-      toast.error("Fix-Generierung fehlgeschlagen", { description: e.message });
+      setBulkDialog({ open: false, loading: false, result: null });
+      toast.error("Bulk-Fix fehlgeschlagen", { description: e.message });
     }
   };
+
+  // Existing fixes per run (für Status-Indicator)
+  const fixesQ = useQuery({
+    queryKey: ["seo-fixes", selectedRunId],
+    enabled: !!selectedRunId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("seo_audit_fixes")
+        .select("finding_id")
+        .eq("run_id", selectedRunId!);
+      if (error) throw error;
+      return new Set((data ?? []).map((f: any) => f.finding_id));
+    },
+  });
 
 
   return (
@@ -220,11 +236,17 @@ export default function SeoAudit() {
           {selectedRunId && findingsQ.isLoading && <Loader2 className="h-6 w-6 animate-spin" />}
           {selectedRunId && findingsQ.data && (
             <Tabs defaultValue={defaultTab} key={`${selectedRunId}-${defaultTab}`}>
-              <TabsList>
-                <TabsTrigger value="critical">Kritisch ({findingsQ.data.filter((f) => f.severity === "critical").length})</TabsTrigger>
-                <TabsTrigger value="warning">Warnung ({findingsQ.data.filter((f) => f.severity === "warning").length})</TabsTrigger>
-                <TabsTrigger value="info">Info ({findingsQ.data.filter((f) => f.severity === "info").length})</TabsTrigger>
-              </TabsList>
+              <div className="flex items-center justify-between mb-2 gap-2 flex-wrap">
+                <TabsList>
+                  <TabsTrigger value="critical">Kritisch ({findingsQ.data.filter((f) => f.severity === "critical").length})</TabsTrigger>
+                  <TabsTrigger value="warning">Warnung ({findingsQ.data.filter((f) => f.severity === "warning").length})</TabsTrigger>
+                  <TabsTrigger value="info">Info ({findingsQ.data.filter((f) => f.severity === "info").length})</TabsTrigger>
+                </TabsList>
+                <Button onClick={() => runBulkFix("all")} disabled={bulkDialog.loading} size="sm">
+                  {bulkDialog.loading ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Sparkles className="h-4 w-4 mr-1" />}
+                  Alle Fixes generieren ({findingsQ.data.filter((f) => f.fix_status !== "fixed").length})
+                </Button>
+              </div>
               {(["critical", "warning", "info"] as const).map((sev) => (
                 <TabsContent key={sev} value={sev} className="space-y-3">
                   {findingsQ.data.filter((f) => f.severity === sev).map((f) => (
@@ -259,9 +281,9 @@ export default function SeoAudit() {
                             {f.fix_status === "fixed" ? <CheckCircle2 className="h-3 w-3 mr-1" /> : null}
                             {f.fix_status}
                           </Badge>
-                          <Button size="sm" variant="outline" onClick={() => generateFix(f.id)} className="h-7">
-                            <Wand2 className="h-3 w-3 mr-1" /> Auto-Fix generieren
-                          </Button>
+                          {fixesQ.data?.has(f.id) && (
+                            <Badge variant="secondary" className="text-xs"><Sparkles className="h-3 w-3 mr-1" />Fix verfügbar</Badge>
+                          )}
                           {f.fix_status !== "fixed" && (
                             <Button size="sm" variant="ghost" onClick={() => updateFix.mutate({ id: f.id, fix_status: "fixed" })}>
                               Als behoben markieren
@@ -281,48 +303,53 @@ export default function SeoAudit() {
         </div>
       </div>
 
-      <Dialog open={fixDialog.open} onOpenChange={(o) => setFixDialog({ ...fixDialog, open: o })}>
-        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+      <Dialog open={bulkDialog.open} onOpenChange={(o) => setBulkDialog({ ...bulkDialog, open: o })}>
+        <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Wand2 className="h-5 w-5" /> Auto-Fix Vorschlag
+              <Sparkles className="h-5 w-5" /> Bulk Auto-Fix
             </DialogTitle>
             <DialogDescription>
-              KI-generierter Patch für das gewählte SEO-Problem. Prüfe & übernimm manuell oder per One-Click.
+              Generiert Fixes für alle offenen Findings dieses Scans in einem Rutsch.
             </DialogDescription>
           </DialogHeader>
-          {fixDialog.loading && (
+          {bulkDialog.loading && (
             <div className="flex items-center gap-2 p-8 justify-center">
-              <Loader2 className="h-5 w-5 animate-spin" /> Generiere Fix...
+              <Loader2 className="h-5 w-5 animate-spin" /> Generiere alle Fixes... (kann 30-90s dauern)
             </div>
           )}
-          {fixDialog.fix && (
+          {bulkDialog.result && (
             <div className="space-y-4">
-              <div className="flex gap-2 flex-wrap">
-                <Badge variant="outline">{fixDialog.fix.fix_type}</Badge>
-                {fixDialog.fix.target_file && <Badge variant="secondary">{fixDialog.fix.target_file}</Badge>}
+              <div className="grid grid-cols-4 gap-2 text-center">
+                <div className="bg-muted/50 p-3 rounded"><div className="text-2xl font-bold">{bulkDialog.result.fixes_generated}</div><div className="text-xs text-muted-foreground">Fixes erstellt</div></div>
+                <div className="bg-muted/50 p-3 rounded"><div className="text-2xl font-bold">{bulkDialog.result.unique_codes}</div><div className="text-xs text-muted-foreground">Unique Codes</div></div>
+                <div className="bg-muted/50 p-3 rounded"><div className="text-2xl font-bold">{bulkDialog.result.deterministic}</div><div className="text-xs text-muted-foreground">Deterministisch</div></div>
+                <div className="bg-muted/50 p-3 rounded"><div className="text-2xl font-bold">{bulkDialog.result.ai_calls}</div><div className="text-xs text-muted-foreground">AI-Patches</div></div>
               </div>
-              <div className="text-sm bg-muted/50 p-3 rounded">
-                <strong>Erklärung:</strong> {fixDialog.fix.ai_explanation}
+              <div className="space-y-3">
+                {(bulkDialog.result.fixes ?? []).map((fix: any, idx: number) => (
+                  <Card key={idx}>
+                    <CardContent className="p-3 space-y-2">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <Badge variant="outline">{fix.code}</Badge>
+                        <Badge variant="secondary">{fix.fix_type}</Badge>
+                        {fix.target_file && <Badge variant="outline" className="font-mono text-xs">{fix.target_file}</Badge>}
+                        <Badge className="ml-auto">{fix.applied_to}× angewendet</Badge>
+                      </div>
+                      <div className="text-xs text-muted-foreground">{fix.ai_explanation}</div>
+                      <div className="relative">
+                        <pre className="text-xs bg-card border rounded p-2 overflow-x-auto max-h-40"><code>{fix.patch_content}</code></pre>
+                        <Button size="sm" variant="outline" className="absolute top-1 right-1 h-6"
+                          onClick={() => { navigator.clipboard.writeText(fix.patch_content); toast.success("Kopiert"); }}>
+                          <Copy className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
-              <div className="relative">
-                <pre className="text-xs bg-card border rounded p-3 overflow-x-auto max-h-80">
-                  <code>{fixDialog.fix.patch_content}</code>
-                </pre>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="absolute top-2 right-2"
-                  onClick={() => {
-                    navigator.clipboard.writeText(fixDialog.fix.patch_content);
-                    toast.success("In Zwischenablage kopiert");
-                  }}
-                >
-                  <Copy className="h-3 w-3 mr-1" /> Kopieren
-                </Button>
-              </div>
-              <div className="text-xs text-muted-foreground">
-                💡 <strong>One-Click-Fix per Lovable:</strong> Kopiere den Patch und sage in Lovable Chat: <em>„Wende diesen Fix auf {fixDialog.fix.target_file ?? "die betroffene Datei"} an"</em>
+              <div className="text-xs text-muted-foreground bg-muted/30 p-3 rounded">
+                💡 <strong>One-Click in Lovable:</strong> Sage im Chat: <em>„Wende alle SEO-Fixes aus dem letzten Scan an"</em> – die Patches sind in der DB gespeichert und können programmatisch übernommen werden.
               </div>
             </div>
           )}
