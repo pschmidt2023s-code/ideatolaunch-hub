@@ -309,9 +309,26 @@ async function runScan(runId: string, supabase: ReturnType<typeof createClient>,
   urls = urls.slice(0, MAX_URLS);
 
   // 3. Parallel per-URL analysis with concurrency=6
-  const pageData: Array<{ url: string; html: string; title: string; bodyText: string }> = [];
+  const pageData: Array<{ url: string; html: string; title: string; bodyText: string; outLinks: Array<{ href: string; anchor: string }>; status: number }> = [];
   let scanned = 0;
   const CONCURRENCY = 6;
+
+  const originHost = new URL(origin).host;
+
+  function extractLinks(html: string, baseUrl: string): Array<{ href: string; anchor: string }> {
+    const out: Array<{ href: string; anchor: string }> = [];
+    const re = /<a\s[^>]*href=["']([^"'#]+)["'][^>]*>([\s\S]*?)<\/a>/gi;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(html)) !== null) {
+      try {
+        const abs = new URL(m[1], baseUrl).toString().replace(/#.*$/, "").replace(/\/$/, "");
+        if (!abs.startsWith("http")) continue;
+        const anchor = m[2].replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+        out.push({ href: abs, anchor });
+      } catch { /* invalid url */ }
+    }
+    return out;
+  }
 
   async function processUrl(url: string, index: number) {
     const r = await fetchText(url);
@@ -325,7 +342,8 @@ async function runScan(runId: string, supabase: ReturnType<typeof createClient>,
     // Module 2: collect for content/duplicate analysis
     const title = (r.html.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1] ?? "").trim();
     const bodyText = r.html.replace(/<script[\s\S]*?<\/script>/gi, "").replace(/<style[\s\S]*?<\/style>/gi, "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
-    pageData.push({ url, html: r.html, title, bodyText });
+    const outLinks = extractLinks(r.html, url);
+    pageData.push({ url: url.replace(/\/$/, ""), html: r.html, title, bodyText, outLinks, status: r.status });
 
     // Thin content check
     const wordCount = bodyText.split(/\s+/).filter(Boolean).length;
@@ -344,6 +362,10 @@ async function runScan(runId: string, supabase: ReturnType<typeof createClient>,
     const batch = urls.slice(i, i + CONCURRENCY).map((u, j) => processUrl(u, i + j));
     await Promise.all(batch);
   }
+
+  // ===== Modul 5: Internal Linking Graph =====
+  findings.push(...analyzeLinkGraph(pageData, originHost, origin));
+
 
   // Module 2: Duplicate Title/Description + Index Bloat detection
   const titleMap = new Map<string, string[]>();
