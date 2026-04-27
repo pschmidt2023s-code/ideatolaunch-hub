@@ -1853,6 +1853,63 @@ export type Database = {
           },
         ]
       }
+      seo_audit_fixes: {
+        Row: {
+          ai_explanation: string | null
+          applied_at: string | null
+          applied_by: string | null
+          created_at: string
+          finding_id: string | null
+          fix_type: string
+          id: string
+          patch_content: string | null
+          run_id: string | null
+          status: string
+          target_file: string | null
+        }
+        Insert: {
+          ai_explanation?: string | null
+          applied_at?: string | null
+          applied_by?: string | null
+          created_at?: string
+          finding_id?: string | null
+          fix_type: string
+          id?: string
+          patch_content?: string | null
+          run_id?: string | null
+          status?: string
+          target_file?: string | null
+        }
+        Update: {
+          ai_explanation?: string | null
+          applied_at?: string | null
+          applied_by?: string | null
+          created_at?: string
+          finding_id?: string | null
+          fix_type?: string
+          id?: string
+          patch_content?: string | null
+          run_id?: string | null
+          status?: string
+          target_file?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seo_audit_fixes_finding_id_fkey"
+            columns: ["finding_id"]
+            isOneToOne: false
+            referencedRelation: "seo_audit_findings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "seo_audit_fixes_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "seo_audit_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       seo_audit_runs: {
         Row: {
           completed_at: string | null
