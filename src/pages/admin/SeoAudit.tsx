@@ -297,48 +297,53 @@ export default function SeoAudit() {
         </div>
       </div>
 
-      <Dialog open={fixDialog.open} onOpenChange={(o) => setFixDialog({ ...fixDialog, open: o })}>
-        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+      <Dialog open={bulkDialog.open} onOpenChange={(o) => setBulkDialog({ ...bulkDialog, open: o })}>
+        <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Wand2 className="h-5 w-5" /> Auto-Fix Vorschlag
+              <Sparkles className="h-5 w-5" /> Bulk Auto-Fix
             </DialogTitle>
             <DialogDescription>
-              KI-generierter Patch für das gewählte SEO-Problem. Prüfe & übernimm manuell oder per One-Click.
+              Generiert Fixes für alle offenen Findings dieses Scans in einem Rutsch.
             </DialogDescription>
           </DialogHeader>
-          {fixDialog.loading && (
+          {bulkDialog.loading && (
             <div className="flex items-center gap-2 p-8 justify-center">
-              <Loader2 className="h-5 w-5 animate-spin" /> Generiere Fix...
+              <Loader2 className="h-5 w-5 animate-spin" /> Generiere alle Fixes... (kann 30-90s dauern)
             </div>
           )}
-          {fixDialog.fix && (
+          {bulkDialog.result && (
             <div className="space-y-4">
-              <div className="flex gap-2 flex-wrap">
-                <Badge variant="outline">{fixDialog.fix.fix_type}</Badge>
-                {fixDialog.fix.target_file && <Badge variant="secondary">{fixDialog.fix.target_file}</Badge>}
+              <div className="grid grid-cols-4 gap-2 text-center">
+                <div className="bg-muted/50 p-3 rounded"><div className="text-2xl font-bold">{bulkDialog.result.fixes_generated}</div><div className="text-xs text-muted-foreground">Fixes erstellt</div></div>
+                <div className="bg-muted/50 p-3 rounded"><div className="text-2xl font-bold">{bulkDialog.result.unique_codes}</div><div className="text-xs text-muted-foreground">Unique Codes</div></div>
+                <div className="bg-muted/50 p-3 rounded"><div className="text-2xl font-bold">{bulkDialog.result.deterministic}</div><div className="text-xs text-muted-foreground">Deterministisch</div></div>
+                <div className="bg-muted/50 p-3 rounded"><div className="text-2xl font-bold">{bulkDialog.result.ai_calls}</div><div className="text-xs text-muted-foreground">AI-Patches</div></div>
               </div>
-              <div className="text-sm bg-muted/50 p-3 rounded">
-                <strong>Erklärung:</strong> {fixDialog.fix.ai_explanation}
+              <div className="space-y-3">
+                {(bulkDialog.result.fixes ?? []).map((fix: any, idx: number) => (
+                  <Card key={idx}>
+                    <CardContent className="p-3 space-y-2">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <Badge variant="outline">{fix.code}</Badge>
+                        <Badge variant="secondary">{fix.fix_type}</Badge>
+                        {fix.target_file && <Badge variant="outline" className="font-mono text-xs">{fix.target_file}</Badge>}
+                        <Badge className="ml-auto">{fix.applied_to}× angewendet</Badge>
+                      </div>
+                      <div className="text-xs text-muted-foreground">{fix.ai_explanation}</div>
+                      <div className="relative">
+                        <pre className="text-xs bg-card border rounded p-2 overflow-x-auto max-h-40"><code>{fix.patch_content}</code></pre>
+                        <Button size="sm" variant="outline" className="absolute top-1 right-1 h-6"
+                          onClick={() => { navigator.clipboard.writeText(fix.patch_content); toast.success("Kopiert"); }}>
+                          <Copy className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
-              <div className="relative">
-                <pre className="text-xs bg-card border rounded p-3 overflow-x-auto max-h-80">
-                  <code>{fixDialog.fix.patch_content}</code>
-                </pre>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="absolute top-2 right-2"
-                  onClick={() => {
-                    navigator.clipboard.writeText(fixDialog.fix.patch_content);
-                    toast.success("In Zwischenablage kopiert");
-                  }}
-                >
-                  <Copy className="h-3 w-3 mr-1" /> Kopieren
-                </Button>
-              </div>
-              <div className="text-xs text-muted-foreground">
-                💡 <strong>One-Click-Fix per Lovable:</strong> Kopiere den Patch und sage in Lovable Chat: <em>„Wende diesen Fix auf {fixDialog.fix.target_file ?? "die betroffene Datei"} an"</em>
+              <div className="text-xs text-muted-foreground bg-muted/30 p-3 rounded">
+                💡 <strong>One-Click in Lovable:</strong> Sage im Chat: <em>„Wende alle SEO-Fixes aus dem letzten Scan an"</em> – die Patches sind in der DB gespeichert und können programmatisch übernommen werden.
               </div>
             </div>
           )}
