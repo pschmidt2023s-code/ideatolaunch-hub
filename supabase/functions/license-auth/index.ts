@@ -122,7 +122,8 @@ Deno.serve(async (req) => {
       license_key: key,
     });
   } catch (e) {
-    console.error("[license-auth] Error:", e.message);
-    return jsonResponse({ error: e.message || "Interner Fehler" }, 500);
+    const msg = e instanceof Error ? e.message : "Interner Fehler";
+    console.error("[license-auth] Error:", msg);
+    return jsonResponse({ error: msg }, 500);
   }
 });

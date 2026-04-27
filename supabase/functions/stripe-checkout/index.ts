@@ -85,7 +85,7 @@ serve(async (req) => {
 
     // Find or create product
     const products = await stripe.products.list({ active: true, limit: 100 });
-    let product = products.data.find((p) => p.metadata?.plan === planConfig.metaPlan);
+    let product = products.data.find((p: any) => p.metadata?.plan === planConfig.metaPlan);
     if (!product) {
       product = await stripe.products.create({
         name: planConfig.name,
@@ -97,7 +97,7 @@ serve(async (req) => {
     // Find or create price
     const prices = await stripe.prices.list({ product: product.id, active: true, limit: 10 });
     let price = prices.data.find(
-      (p) => p.unit_amount === planConfig.amount && p.currency === "eur" && p.recurring?.interval === "month"
+      (p: any) => p.unit_amount === planConfig.amount && p.currency === "eur" && p.recurring?.interval === "month"
     );
     if (!price) {
       price = await stripe.prices.create({
@@ -134,6 +134,6 @@ serve(async (req) => {
     return jsonResponse({ url: session.url });
   } catch (error) {
     console.error("Stripe checkout error:", error);
-    return jsonResponse({ error: error.message || "Internal server error" }, 500);
+    return jsonResponse({ error: error instanceof Error ? error.message : "Internal server error" }, 500);
   }
 });
