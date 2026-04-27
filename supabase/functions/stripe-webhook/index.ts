@@ -36,7 +36,7 @@ const PLAN_RANK: Record<string, number> = { free: 0, builder: 1, pro: 2 };
 
 /** Resolve user locale from profile, default to "de" */
 async function getUserLocaleAndName(
-  supabase: ReturnType<typeof createClient>,
+  supabase: any,
   userId: string
 ): Promise<{ locale: Locale; firstName?: string }> {
   try {
