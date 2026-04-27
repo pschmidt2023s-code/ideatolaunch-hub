@@ -275,9 +275,9 @@ export default function SeoAudit() {
                             {f.fix_status === "fixed" ? <CheckCircle2 className="h-3 w-3 mr-1" /> : null}
                             {f.fix_status}
                           </Badge>
-                          <Button size="sm" variant="outline" onClick={() => generateFix(f.id)} className="h-7">
-                            <Wand2 className="h-3 w-3 mr-1" /> Auto-Fix generieren
-                          </Button>
+                          {fixesQ.data?.has(f.id) && (
+                            <Badge variant="secondary" className="text-xs"><Sparkles className="h-3 w-3 mr-1" />Fix verfügbar</Badge>
+                          )}
                           {f.fix_status !== "fixed" && (
                             <Button size="sm" variant="ghost" onClick={() => updateFix.mutate({ id: f.id, fix_status: "fixed" })}>
                               Als behoben markieren
