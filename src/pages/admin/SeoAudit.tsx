@@ -280,6 +280,55 @@ export default function SeoAudit() {
           )}
         </div>
       </div>
+
+      <Dialog open={fixDialog.open} onOpenChange={(o) => setFixDialog({ ...fixDialog, open: o })}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Wand2 className="h-5 w-5" /> Auto-Fix Vorschlag
+            </DialogTitle>
+            <DialogDescription>
+              KI-generierter Patch für das gewählte SEO-Problem. Prüfe & übernimm manuell oder per One-Click.
+            </DialogDescription>
+          </DialogHeader>
+          {fixDialog.loading && (
+            <div className="flex items-center gap-2 p-8 justify-center">
+              <Loader2 className="h-5 w-5 animate-spin" /> Generiere Fix...
+            </div>
+          )}
+          {fixDialog.fix && (
+            <div className="space-y-4">
+              <div className="flex gap-2 flex-wrap">
+                <Badge variant="outline">{fixDialog.fix.fix_type}</Badge>
+                {fixDialog.fix.target_file && <Badge variant="secondary">{fixDialog.fix.target_file}</Badge>}
+              </div>
+              <div className="text-sm bg-muted/50 p-3 rounded">
+                <strong>Erklärung:</strong> {fixDialog.fix.ai_explanation}
+              </div>
+              <div className="relative">
+                <pre className="text-xs bg-card border rounded p-3 overflow-x-auto max-h-80">
+                  <code>{fixDialog.fix.patch_content}</code>
+                </pre>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="absolute top-2 right-2"
+                  onClick={() => {
+                    navigator.clipboard.writeText(fixDialog.fix.patch_content);
+                    toast.success("In Zwischenablage kopiert");
+                  }}
+                >
+                  <Copy className="h-3 w-3 mr-1" /> Kopieren
+                </Button>
+              </div>
+              <div className="text-xs text-muted-foreground">
+                💡 <strong>One-Click-Fix per Lovable:</strong> Kopiere den Patch und sage in Lovable Chat: <em>„Wende diesen Fix auf {fixDialog.fix.target_file ?? "die betroffene Datei"} an"</em>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
+
