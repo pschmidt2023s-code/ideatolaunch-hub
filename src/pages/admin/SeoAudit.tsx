@@ -127,26 +127,42 @@ export default function SeoAudit() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["seo-findings", selectedRunId] }),
   });
 
-  const [fixDialog, setFixDialog] = useState<{ open: boolean; fix: any | null; loading: boolean }>({
+  const [bulkDialog, setBulkDialog] = useState<{ open: boolean; loading: boolean; result: any | null }>({
     open: false,
-    fix: null,
     loading: false,
+    result: null,
   });
 
-  const generateFix = async (findingId: string) => {
-    setFixDialog({ open: true, fix: null, loading: true });
+  const runBulkFix = async (severity: "all" | "critical" | "warning" | "info" = "all") => {
+    if (!selectedRunId) return;
+    setBulkDialog({ open: true, loading: true, result: null });
     try {
-      const { data, error } = await supabase.functions.invoke("seo-audit-fix", {
-        body: { finding_id: findingId },
+      const { data, error } = await supabase.functions.invoke("seo-audit-fix-bulk", {
+        body: { run_id: selectedRunId, severity },
       });
       if (error) throw error;
-      setFixDialog({ open: true, fix: data.fix, loading: false });
-      toast.success("Fix generiert");
+      setBulkDialog({ open: true, loading: false, result: data });
+      qc.invalidateQueries({ queryKey: ["seo-fixes", selectedRunId] });
+      toast.success(`${data.fixes_generated} Fixes generiert`, { description: `${data.deterministic} deterministisch · ${data.ai_calls} AI` });
     } catch (e: any) {
-      setFixDialog({ open: false, fix: null, loading: false });
-      toast.error("Fix-Generierung fehlgeschlagen", { description: e.message });
+      setBulkDialog({ open: false, loading: false, result: null });
+      toast.error("Bulk-Fix fehlgeschlagen", { description: e.message });
     }
   };
+
+  // Existing fixes per run (für Status-Indicator)
+  const fixesQ = useQuery({
+    queryKey: ["seo-fixes", selectedRunId],
+    enabled: !!selectedRunId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("seo_audit_fixes")
+        .select("finding_id")
+        .eq("run_id", selectedRunId!);
+      if (error) throw error;
+      return new Set((data ?? []).map((f: any) => f.finding_id));
+    },
+  });
 
 
   return (
