@@ -92,8 +92,126 @@ function analyzeOnPage(url: string, html: string): Finding[] {
   // OpenGraph / Twitter
   if (!extractMeta(html, "og:title")) findings.push({ url, category: "onpage", severity: "info", code: "MISSING_OG", title: "OpenGraph-Tags fehlen", recommendation: "Füge og:title, og:description, og:image für Social Sharing hinzu." });
 
-  // JSON-LD
-  if (!/application\/ld\+json/i.test(html)) findings.push({ url, category: "schema", severity: "info", code: "NO_SCHEMA", title: "Kein Schema.org JSON-LD gefunden", recommendation: "Implementiere strukturierte Daten (Organization, WebSite, BreadcrumbList)." });
+  // ===== Modul 4: JSON-LD / Schema.org Validator =====
+  findings.push(...analyzeSchema(url, html));
+
+  return findings;
+}
+
+// Required properties per schema type for Rich-Snippet-Eligibility (Google Search Central)
+const RICH_SNIPPET_REQUIREMENTS: Record<string, { required: string[]; recommended: string[] }> = {
+  Product: { required: ["name", "image", "offers"], recommended: ["description", "brand", "aggregateRating", "review", "sku", "gtin"] },
+  Article: { required: ["headline", "image", "datePublished", "author"], recommended: ["dateModified", "publisher"] },
+  NewsArticle: { required: ["headline", "image", "datePublished", "author"], recommended: ["dateModified", "publisher"] },
+  BlogPosting: { required: ["headline", "image", "datePublished", "author"], recommended: ["dateModified", "publisher"] },
+  Recipe: { required: ["name", "image", "recipeIngredient", "recipeInstructions"], recommended: ["author", "datePublished", "description", "nutrition", "aggregateRating"] },
+  Event: { required: ["name", "startDate", "location"], recommended: ["endDate", "image", "description", "offers", "performer"] },
+  FAQPage: { required: ["mainEntity"], recommended: [] },
+  HowTo: { required: ["name", "step"], recommended: ["image", "totalTime", "estimatedCost", "supply", "tool"] },
+  Organization: { required: ["name"], recommended: ["url", "logo", "sameAs", "contactPoint"] },
+  LocalBusiness: { required: ["name", "address"], recommended: ["telephone", "openingHours", "image", "priceRange", "geo"] },
+  Person: { required: ["name"], recommended: ["jobTitle", "image", "url", "sameAs"] },
+  WebSite: { required: ["name", "url"], recommended: ["potentialAction"] },
+  BreadcrumbList: { required: ["itemListElement"], recommended: [] },
+  VideoObject: { required: ["name", "description", "thumbnailUrl", "uploadDate"], recommended: ["duration", "contentUrl", "embedUrl"] },
+  Review: { required: ["reviewRating", "author"], recommended: ["itemReviewed", "datePublished"] },
+  Course: { required: ["name", "description", "provider"], recommended: ["offers", "hasCourseInstance"] },
+  JobPosting: { required: ["title", "description", "datePosted", "hiringOrganization", "jobLocation"], recommended: ["baseSalary", "employmentType", "validThrough"] },
+};
+
+function flattenJsonLd(node: any, out: any[] = []): any[] {
+  if (!node) return out;
+  if (Array.isArray(node)) { for (const n of node) flattenJsonLd(n, out); return out; }
+  if (typeof node !== "object") return out;
+  if (node["@graph"] && Array.isArray(node["@graph"])) { for (const n of node["@graph"]) flattenJsonLd(n, out); }
+  if (node["@type"]) out.push(node);
+  return out;
+}
+
+function analyzeSchema(url: string, html: string): Finding[] {
+  const findings: Finding[] = [];
+  const blocks = [...html.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)].map((m) => m[1].trim());
+
+  if (blocks.length === 0) {
+    findings.push({ url, category: "schema", severity: "warning", code: "SCHEMA_MISSING", title: "Kein Schema.org JSON-LD gefunden", recommendation: "Implementiere strukturierte Daten (Organization, WebSite, BreadcrumbList) für Rich Snippets.", auto_fixable: true });
+    return findings;
+  }
+
+  const allTypes: string[] = [];
+  let parseErrors = 0;
+
+  for (const raw of blocks) {
+    let parsed: any;
+    try { parsed = JSON.parse(raw); }
+    catch (e) {
+      parseErrors++;
+      findings.push({ url, category: "schema", severity: "critical", code: "SCHEMA_INVALID_JSON", title: "JSON-LD Block enthält ungültiges JSON", current_value: (e instanceof Error ? e.message : "parse error").slice(0, 120), recommendation: "Validiere JSON-Syntax (Trailing-Commas, Quotes). Block wird von Google ignoriert." });
+      continue;
+    }
+
+    const nodes = flattenJsonLd(parsed);
+    for (const node of nodes) {
+      const ctx = node["@context"] ?? parsed["@context"];
+      if (ctx && !/schema\.org/i.test(typeof ctx === "string" ? ctx : JSON.stringify(ctx))) {
+        findings.push({ url, category: "schema", severity: "warning", code: "SCHEMA_BAD_CONTEXT", title: "Ungültiger @context", current_value: String(ctx).slice(0, 80), expected_value: "https://schema.org", recommendation: "Setze @context auf 'https://schema.org'." });
+      }
+
+      const typeRaw = node["@type"];
+      const types = Array.isArray(typeRaw) ? typeRaw : [typeRaw];
+      for (const t of types) {
+        if (!t) continue;
+        allTypes.push(t);
+        const spec = RICH_SNIPPET_REQUIREMENTS[t];
+        if (!spec) continue;
+
+        const missingRequired = spec.required.filter((p) => node[p] === undefined || node[p] === null || node[p] === "");
+        if (missingRequired.length > 0) {
+          findings.push({
+            url, category: "schema", severity: "critical",
+            code: `SCHEMA_${t.toUpperCase()}_INCOMPLETE`,
+            title: `${t}-Schema unvollständig (Rich Snippet blockiert)`,
+            current_value: `Fehlend: ${missingRequired.join(", ")}`,
+            expected_value: spec.required.join(", "),
+            recommendation: `Google verweigert Rich Snippets ohne: ${missingRequired.join(", ")}.`,
+            auto_fixable: true,
+          });
+        }
+
+        const missingRecommended = spec.recommended.filter((p) => node[p] === undefined || node[p] === null || node[p] === "");
+        if (missingRecommended.length > 0 && missingRequired.length === 0) {
+          findings.push({
+            url, category: "schema", severity: "info",
+            code: `SCHEMA_${t.toUpperCase()}_OPTIMIZE`,
+            title: `${t}-Schema kann erweitert werden`,
+            current_value: `Optional fehlt: ${missingRecommended.slice(0, 5).join(", ")}`,
+            recommendation: "Optionale Felder erhöhen Rich-Snippet-Qualität & CTR.",
+          });
+        }
+
+        // Special: Product needs Offers with price
+        if (t === "Product" && node.offers) {
+          const offers = Array.isArray(node.offers) ? node.offers[0] : node.offers;
+          if (!offers.price && !offers.lowPrice) {
+            findings.push({ url, category: "schema", severity: "critical", code: "SCHEMA_PRODUCT_NO_PRICE", title: "Product-Offer ohne Preis", recommendation: "Setze offers.price + offers.priceCurrency für Rich Snippets." });
+          }
+          if (!offers.priceCurrency) {
+            findings.push({ url, category: "schema", severity: "warning", code: "SCHEMA_PRODUCT_NO_CURRENCY", title: "Product-Offer ohne priceCurrency", recommendation: "Setze offers.priceCurrency (z. B. 'EUR')." });
+          }
+        }
+
+        // FAQPage: at least 2 questions
+        if (t === "FAQPage" && Array.isArray(node.mainEntity) && node.mainEntity.length < 2) {
+          findings.push({ url, category: "schema", severity: "warning", code: "SCHEMA_FAQ_TOO_FEW", title: "FAQPage mit weniger als 2 Fragen", recommendation: "Google empfiehlt mindestens 2 Q&A-Paare." });
+        }
+      }
+    }
+  }
+
+  // Eligibility hint: page has schema but none of the rich-snippet types
+  const hasRichType = allTypes.some((t) => RICH_SNIPPET_REQUIREMENTS[t]);
+  if (parseErrors === 0 && !hasRichType && allTypes.length > 0) {
+    findings.push({ url, category: "schema", severity: "info", code: "SCHEMA_NO_RICH_TYPE", title: "Schema vorhanden, aber kein Rich-Snippet-Typ", current_value: allTypes.join(", "), recommendation: "Ergänze Product, Article, FAQPage o. ä. für sichtbare SERP-Features." });
+  }
 
   return findings;
 }
