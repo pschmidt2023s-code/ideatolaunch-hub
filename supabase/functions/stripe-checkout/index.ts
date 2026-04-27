@@ -134,6 +134,6 @@ serve(async (req) => {
     return jsonResponse({ url: session.url });
   } catch (error) {
     console.error("Stripe checkout error:", error);
-    return jsonResponse({ error: error.message || "Internal server error" }, 500);
+    return jsonResponse({ error: error instanceof Error ? error.message : "Internal server error" }, 500);
   }
 });
