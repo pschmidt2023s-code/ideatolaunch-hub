@@ -47,7 +47,7 @@ async function getUserLocaleAndName(
       .maybeSingle();
 
     // For now locale defaults to "de" – extend profiles table with locale column if needed
-    return { locale: "de", firstName: data?.first_name || undefined };
+    return { locale: "de", firstName: (data?.first_name as string | undefined) || undefined };
   } catch {
     return { locale: "de" };
   }
