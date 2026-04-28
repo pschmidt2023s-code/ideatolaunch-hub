@@ -477,6 +477,265 @@ async function pageSpeed(url: string): Promise<Finding[]> {
   return findings;
 }
 
+// ===== Modul 6: AI Content Detection =====
+// Heuristik basiert auf typischen LLM-Mustern: Phrasen, Satzlängen-Varianz, Filler-Wörter.
+const AI_PHRASES = [
+  "in the realm of", "in der welt von", "it's important to note", "es ist wichtig zu beachten",
+  "delve into", "tauchen wir ein", "navigating the", "navigieren durch",
+  "as an ai", "als ki", "as a language model", "als sprachmodell",
+  "in conclusion", "zusammenfassend lässt sich sagen", "in today's fast-paced",
+  "in der heutigen schnelllebigen", "let's explore", "lassen sie uns erkunden",
+  "furthermore", "darüber hinaus", "moreover", "des weiteren",
+  "it's worth noting", "es lohnt sich zu erwähnen", "a testament to", "ein zeugnis für",
+  "tapestry of", "geflecht aus", "landscape of", "landschaft der",
+  "embark on a journey", "begeben sie sich auf eine reise",
+];
+
+function analyzeAIContent(url: string, bodyText: string): Finding[] {
+  const findings: Finding[] = [];
+  if (!bodyText || bodyText.length < 500) return findings;
+  const text = bodyText.toLowerCase();
+  const words = text.split(/\s+/).filter(Boolean);
+  if (words.length < 100) return findings;
+
+  // 1. Phrase-Matching
+  let phraseHits = 0;
+  const matchedPhrases: string[] = [];
+  for (const p of AI_PHRASES) {
+    if (text.includes(p)) { phraseHits++; matchedPhrases.push(p); }
+  }
+
+  // 2. Sentence-Length-Varianz (LLMs schreiben sehr gleichmäßig)
+  const sentences = bodyText.split(/[.!?]+/).map((s) => s.trim()).filter((s) => s.length > 10);
+  let varianceScore = 0;
+  if (sentences.length >= 5) {
+    const lens = sentences.map((s) => s.split(/\s+/).length);
+    const mean = lens.reduce((a, b) => a + b, 0) / lens.length;
+    const variance = lens.reduce((a, b) => a + (b - mean) ** 2, 0) / lens.length;
+    const stdDev = Math.sqrt(variance);
+    const cv = mean > 0 ? stdDev / mean : 0; // Variationskoeffizient
+    if (cv < 0.35) varianceScore = 2; // sehr uniform = LLM-Indikator
+    else if (cv < 0.5) varianceScore = 1;
+  }
+
+  // 3. Filler/Hedging-Density
+  const fillers = ["however", "additionally", "essentially", "basically", "fundamentally", "jedoch", "zusätzlich", "grundsätzlich", "letztendlich", "im wesentlichen"];
+  let fillerCount = 0;
+  for (const f of fillers) {
+    const re = new RegExp(`\\b${f}\\b`, "gi");
+    fillerCount += (text.match(re) ?? []).length;
+  }
+  const fillerDensity = (fillerCount / words.length) * 1000; // pro 1000 Wörter
+
+  // Score
+  const aiScore = phraseHits * 15 + varianceScore * 20 + Math.min(30, fillerDensity * 3);
+
+  if (aiScore >= 60) {
+    findings.push({
+      url, category: "onpage", severity: "warning", code: "AI_CONTENT_LIKELY",
+      title: `AI-generierter Content wahrscheinlich (Score ${Math.round(aiScore)}/100)`,
+      description: `${phraseHits} LLM-Phrasen, Varianz=${varianceScore}/2, Filler-Dichte=${fillerDensity.toFixed(1)}/1k${matchedPhrases.length ? ` – z.B. "${matchedPhrases.slice(0,3).join('", "')}"` : ""}`,
+      current_value: `${Math.round(aiScore)}/100`,
+      expected_value: "< 40",
+      recommendation: "Editiere Inhalte mit persönlichen Beispielen, variiere Satzlängen, entferne generische LLM-Floskeln. Google's E-E-A-T bevorzugt menschliche Erfahrung.",
+    });
+  } else if (aiScore >= 35) {
+    findings.push({
+      url, category: "onpage", severity: "info", code: "AI_CONTENT_POSSIBLE",
+      title: `AI-Spuren möglich (Score ${Math.round(aiScore)}/100)`,
+      description: `${phraseHits} LLM-Phrasen, Varianz=${varianceScore}/2, Filler-Dichte=${fillerDensity.toFixed(1)}/1k`,
+      recommendation: "Optional: Inhalt menschlicher gestalten (Anekdoten, Meinungen, Branchen-Insights).",
+    });
+  }
+  return findings;
+}
+
+// ===== Modul 7: Live Index Status =====
+// Vergleicht Sitemap-URLs mit Google-Index (Approximation via search.brave.com / DuckDuckGo HTML).
+async function checkIndexStatus(origin: string, sitemapUrls: string[]): Promise<Finding[]> {
+  const findings: Finding[] = [];
+  if (sitemapUrls.length === 0) return findings;
+  const host = (() => { try { return new URL(origin).host; } catch { return ""; } })();
+  if (!host) return findings;
+
+  // Verwende DuckDuckGo HTML-Endpoint (kein API-Key nötig, mild rate-limited)
+  let indexedApprox = 0;
+  let querySucceeded = false;
+  try {
+    const q = encodeURIComponent(`site:${host}`);
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 8000);
+    const res = await fetch(`https://html.duckduckgo.com/html/?q=${q}`, { signal: ctrl.signal, headers: { "User-Agent": "Mozilla/5.0 (compatible; BrandOS-SEOBot/1.0)" } });
+    clearTimeout(t);
+    if (res.ok) {
+      const html = await res.text();
+      // Zähle eindeutige result-Links
+      const re = /<a[^>]+class=["'][^"']*result__url[^"']*["'][^>]*>([\s\S]*?)<\/a>/gi;
+      const set = new Set<string>();
+      let m: RegExpExecArray | null;
+      while ((m = re.exec(html)) !== null) {
+        const t2 = m[1].replace(/<[^>]+>/g, "").replace(/\s+/g, "").toLowerCase();
+        if (t2) set.add(t2);
+      }
+      indexedApprox = set.size;
+      querySucceeded = true;
+    }
+  } catch (_e) { /* silent */ }
+
+  if (!querySucceeded) {
+    findings.push({
+      url: origin, category: "technical", severity: "info", code: "INDEX_CHECK_UNAVAILABLE",
+      title: "Index-Status konnte nicht geprüft werden",
+      recommendation: "Prüfe manuell via Google Search Console > Abdeckung.",
+    });
+    return findings;
+  }
+
+  const sitemapCount = sitemapUrls.length;
+  // DuckDuckGo HTML zeigt nur ~10-30 Ergebnisse pro Page → Approximation
+  // Wenn > 5 indiziert, gilt Domain als generell indiziert
+  if (indexedApprox === 0) {
+    findings.push({
+      url: origin, category: "technical", severity: "critical", code: "NOT_INDEXED",
+      title: "Domain scheint nicht indiziert",
+      current_value: "0 Treffer",
+      expected_value: `~${sitemapCount} Seiten`,
+      recommendation: "Reiche Sitemap in Google Search Console ein. Prüfe robots.txt und 'noindex'-Tags.",
+    });
+  } else if (indexedApprox < Math.min(sitemapCount * 0.3, 5)) {
+    findings.push({
+      url: origin, category: "technical", severity: "warning", code: "LOW_INDEX_COVERAGE",
+      title: `Nur ~${indexedApprox} von ${sitemapCount} Seiten indiziert`,
+      current_value: `${indexedApprox}`,
+      expected_value: `≥ ${Math.round(sitemapCount * 0.7)}`,
+      recommendation: "Beschleunige Indexierung: Sitemap pingen, interne Links zu unindizierten Seiten setzen, Crawl-Errors fixen.",
+    });
+  } else {
+    findings.push({
+      url: origin, category: "technical", severity: "info", code: "INDEX_OK",
+      title: `~${indexedApprox} Seiten indiziert (Approximation)`,
+      description: `Sitemap enthält ${sitemapCount} URLs. DuckDuckGo zeigt ${indexedApprox} eindeutige Treffer.`,
+    });
+  }
+  return findings;
+}
+
+// ===== Modul 8: Core Web Vitals Deep-Dive =====
+// Detaillierte Aufschlüsselung von LCP/CLS/INP/FCP/TTFB pro URL inkl. spezifischer Empfehlungen.
+async function pageSpeedDeepDive(url: string): Promise<Finding[]> {
+  const findings: Finding[] = [];
+  if (!PSI_KEY) return findings;
+  try {
+    const api = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(url)}&strategy=mobile&category=performance`
+      + `&key=${PSI_KEY}`;
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 30000);
+    const res = await fetch(api, { signal: ctrl.signal });
+    clearTimeout(t);
+    if (!res.ok) return [];
+    const data = await res.json();
+    const lh = data?.lighthouseResult;
+    if (!lh) return [];
+
+    // FCP
+    const fcp = lh.audits?.["first-contentful-paint"];
+    const fcpVal = fcp?.numericValue ?? 0;
+    if (fcpVal > 1800) {
+      findings.push({
+        url, category: "performance", severity: fcpVal > 3000 ? "warning" : "info",
+        code: "POOR_FCP", title: `FCP zu hoch: ${fcp?.displayValue}`,
+        current_value: fcp?.displayValue, expected_value: "≤ 1.8s",
+        recommendation: "Render-blocking CSS/JS reduzieren, Server-Antwortzeit verbessern (TTFB).",
+      });
+    }
+
+    // TTFB
+    const ttfb = lh.audits?.["server-response-time"];
+    const ttfbVal = ttfb?.numericValue ?? 0;
+    if (ttfbVal > 600) {
+      findings.push({
+        url, category: "performance", severity: ttfbVal > 1500 ? "warning" : "info",
+        code: "POOR_TTFB", title: `TTFB zu hoch: ${Math.round(ttfbVal)}ms`,
+        current_value: `${Math.round(ttfbVal)}ms`, expected_value: "≤ 600ms",
+        recommendation: "CDN aktivieren, Edge-Caching, DB-Queries optimieren, statisches Pre-Rendering.",
+      });
+    }
+
+    // INP (Interaction to Next Paint) - replaces FID
+    const inp = lh.audits?.["interaction-to-next-paint"] ?? lh.audits?.["max-potential-fid"];
+    const inpVal = inp?.numericValue ?? 0;
+    if (inpVal > 200) {
+      findings.push({
+        url, category: "performance", severity: inpVal > 500 ? "critical" : "warning",
+        code: "POOR_INP", title: `INP/Responsiveness schwach: ${Math.round(inpVal)}ms`,
+        current_value: `${Math.round(inpVal)}ms`, expected_value: "≤ 200ms",
+        recommendation: "Long Tasks (>50ms) splitten, debounce Event-Handler, vermeide synchrones JS bei Klick/Tap.",
+      });
+    }
+
+    // Speed Index
+    const si = lh.audits?.["speed-index"];
+    const siVal = si?.numericValue ?? 0;
+    if (siVal > 3400) {
+      findings.push({
+        url, category: "performance", severity: siVal > 5800 ? "warning" : "info",
+        code: "POOR_SI", title: `Speed Index hoch: ${si?.displayValue}`,
+        current_value: si?.displayValue, expected_value: "≤ 3.4s",
+        recommendation: "Above-the-fold zuerst rendern, kritische Bilder priorisieren (fetchpriority='high').",
+      });
+    }
+
+    // LCP-Element-Detail
+    const lcpEl = lh.audits?.["largest-contentful-paint-element"];
+    if (lcpEl?.details?.items?.[0]?.node?.snippet) {
+      const snippet = String(lcpEl.details.items[0].node.snippet).slice(0, 120);
+      const lcpVal2 = lh.audits?.["largest-contentful-paint"]?.numericValue ?? 0;
+      if (lcpVal2 > 2500) {
+        findings.push({
+          url, category: "performance", severity: "info", code: "LCP_ELEMENT_INFO",
+          title: "LCP-Element identifiziert",
+          description: `Element: ${snippet}`,
+          recommendation: snippet.toLowerCase().includes("img") ? "Preload dieses Bild mit <link rel='preload' as='image' fetchpriority='high'>." : "Reduziere Render-Zeit dieses Elements (kritisches CSS inline).",
+        });
+      }
+    }
+
+    // Unused JS / CSS
+    const unusedJs = lh.audits?.["unused-javascript"];
+    const unusedJsBytes = unusedJs?.details?.overallSavingsBytes ?? 0;
+    if (unusedJsBytes > 50000) {
+      findings.push({
+        url, category: "performance", severity: unusedJsBytes > 200000 ? "warning" : "info",
+        code: "UNUSED_JS", title: `${Math.round(unusedJsBytes / 1024)}KB ungenutztes JavaScript`,
+        current_value: `${Math.round(unusedJsBytes / 1024)}KB`, expected_value: "< 50KB",
+        recommendation: "Code-Splitting via React.lazy(), Tree-Shaking, entferne ungenutzte Dependencies.",
+      });
+    }
+    const unusedCss = lh.audits?.["unused-css-rules"];
+    const unusedCssBytes = unusedCss?.details?.overallSavingsBytes ?? 0;
+    if (unusedCssBytes > 30000) {
+      findings.push({
+        url, category: "performance", severity: "info", code: "UNUSED_CSS",
+        title: `${Math.round(unusedCssBytes / 1024)}KB ungenutztes CSS`,
+        current_value: `${Math.round(unusedCssBytes / 1024)}KB`, expected_value: "< 30KB",
+        recommendation: "PurgeCSS/Tailwind-JIT nutzen, kritisches CSS extrahieren.",
+      });
+    }
+
+    // Modern image formats
+    const modernImg = lh.audits?.["modern-image-formats"];
+    const imgSavings = modernImg?.details?.overallSavingsBytes ?? 0;
+    if (imgSavings > 20000) {
+      findings.push({
+        url, category: "performance", severity: "info", code: "LEGACY_IMAGES",
+        title: `Bilder nicht in WebP/AVIF: ${Math.round(imgSavings / 1024)}KB Einsparung möglich`,
+        recommendation: "Konvertiere PNG/JPG zu WebP oder AVIF (50-80% kleiner).",
+      });
+    }
+  } catch (_e) { /* silent */ }
+  return findings;
+}
+
 async function runScan(runId: string, supabase: ReturnType<typeof createClient>, origin: string, scanType: string) {
   const startTs = Date.now();
   const findings: Finding[] = [];
