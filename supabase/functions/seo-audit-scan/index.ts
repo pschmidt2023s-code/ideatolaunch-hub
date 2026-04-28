@@ -736,6 +736,291 @@ async function pageSpeedDeepDive(url: string): Promise<Finding[]> {
   return findings;
 }
 
+// ===== Modul 9a: Outbound Link Hygiene =====
+const TOXIC_TLDS = [".xyz", ".top", ".loan", ".click", ".gq", ".tk", ".ml", ".cf", ".work", ".bid"];
+const AFFILIATE_PATTERNS = [/[?&](ref|aff|affiliate|partner|tag|utm_source=affiliate)=/i, /\/aff\//i, /amzn\.to\//i, /\/go\//i];
+
+function analyzeOutboundHygiene(url: string, html: string, originHost: string): Finding[] {
+  const findings: Finding[] = [];
+  const aTags = [...html.matchAll(/<a\s[^>]*href=["']([^"'#]+)["'][^>]*>([\s\S]*?)<\/a>/gi)];
+  let externalCount = 0;
+  let nofollowCount = 0;
+  let sponsoredMissing = 0;
+  let toxicCount = 0;
+  const toxicSamples: string[] = [];
+
+  for (const m of aTags) {
+    const href = m[1];
+    const fullTag = m[0];
+    let host = "";
+    try { host = new URL(href, `https://${originHost}`).host; } catch { continue; }
+    if (!host || host === originHost) continue;
+    externalCount++;
+    const relAttr = fullTag.match(/\brel=["']([^"']+)["']/i)?.[1]?.toLowerCase() ?? "";
+    const hasNofollow = /\bnofollow\b/.test(relAttr);
+    const hasSponsored = /\bsponsored\b/.test(relAttr);
+    const hasUgc = /\bugc\b/.test(relAttr);
+    if (hasNofollow) nofollowCount++;
+
+    // Affiliate ohne sponsored?
+    if (AFFILIATE_PATTERNS.some((p) => p.test(href)) && !hasSponsored) sponsoredMissing++;
+
+    // Toxic TLD
+    const tld = "." + host.split(".").slice(-1)[0];
+    if (TOXIC_TLDS.includes(tld)) {
+      toxicCount++;
+      if (toxicSamples.length < 3) toxicSamples.push(host);
+    }
+
+    // Externe Links sollten target=_blank + rel="noopener noreferrer" haben (Security)
+    const hasBlank = /\btarget=["']_blank["']/i.test(fullTag);
+    const hasNoopener = /\bnoopener\b/.test(relAttr) || /\bnoreferrer\b/.test(relAttr);
+    if (hasBlank && !hasNoopener) {
+      // einmal pro Seite reichts
+    }
+    void hasUgc;
+  }
+
+  if (externalCount > 0) {
+    const nofollowRatio = nofollowCount / externalCount;
+    if (externalCount >= 5 && nofollowRatio > 0.8) {
+      findings.push({
+        url, category: "links", severity: "info", code: "EXCESSIVE_NOFOLLOW",
+        title: `${Math.round(nofollowRatio * 100)}% externe Links sind nofollow`,
+        current_value: `${nofollowCount}/${externalCount}`,
+        recommendation: "Vertrauenswürdige Quellen sollten dofollow sein – signalisiert Google Themen-Relevanz.",
+      });
+    }
+  }
+  if (sponsoredMissing > 0) {
+    findings.push({
+      url, category: "links", severity: "warning", code: "MISSING_SPONSORED_REL",
+      title: `${sponsoredMissing} Affiliate-Link(s) ohne rel="sponsored"`,
+      current_value: `${sponsoredMissing}`,
+      recommendation: 'Setze rel="sponsored nofollow" auf bezahlte/Affiliate-Links – Google-Richtlinie seit 2019.',
+    });
+  }
+  if (toxicCount > 0) {
+    findings.push({
+      url, category: "links", severity: "warning", code: "TOXIC_OUTBOUND",
+      title: `${toxicCount} Link(s) zu Spam-TLDs`,
+      description: `Beispiele: ${toxicSamples.join(", ")}`,
+      recommendation: "Entferne oder setze nofollow – Links zu Low-Quality-Domains schaden dem eigenen Trust.",
+    });
+  }
+  return findings;
+}
+
+async function checkBrokenExternalLinks(url: string, html: string, originHost: string): Promise<Finding[]> {
+  const findings: Finding[] = [];
+  const externalUrls = new Set<string>();
+  const aTags = [...html.matchAll(/<a\s[^>]*href=["']([^"'#]+)["']/gi)];
+  for (const m of aTags) {
+    try {
+      const u = new URL(m[1], `https://${originHost}`);
+      if (u.host !== originHost && /^https?:/.test(u.protocol)) externalUrls.add(u.toString());
+    } catch { /* skip */ }
+  }
+  // Limit auf 10 externe Links pro Seite (Performance)
+  const sample = [...externalUrls].slice(0, 10);
+  const broken: string[] = [];
+  await Promise.all(sample.map(async (u) => {
+    try {
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), 5000);
+      const r = await fetch(u, { method: "HEAD", signal: ctrl.signal, redirect: "follow", headers: { "User-Agent": "BrandOS-SEOBot/1.0" } });
+      clearTimeout(t);
+      if (r.status >= 400) broken.push(`${u} (${r.status})`);
+    } catch { broken.push(`${u} (timeout/unreachable)`); }
+  }));
+  if (broken.length > 0) {
+    findings.push({
+      url, category: "links", severity: "warning", code: "BROKEN_EXTERNAL_LINK",
+      title: `${broken.length} defekte(r) externe(r) Link(s)`,
+      description: broken.slice(0, 3).join(" | "),
+      recommendation: "Aktualisiere oder entferne defekte externe Links – sie schaden UX und Vertrauen.",
+    });
+  }
+  return findings;
+}
+
+// ===== Modul 9b: Mobile-Friendliness Deep-Dive =====
+function analyzeMobileFriendliness(url: string, html: string): Finding[] {
+  const findings: Finding[] = [];
+  const viewport = extractMeta(html, "viewport") ?? "";
+
+  // 1. Viewport korrekt?
+  if (viewport && !/width=device-width/i.test(viewport)) {
+    findings.push({
+      url, category: "performance", severity: "critical", code: "BAD_VIEWPORT",
+      title: "Viewport ohne width=device-width",
+      current_value: viewport.slice(0, 60), expected_value: "width=device-width, initial-scale=1",
+      recommendation: 'Setze <meta name="viewport" content="width=device-width, initial-scale=1">.',
+    });
+  }
+  // 2. user-scalable=no = Accessibility-Verstoß
+  if (/user-scalable=no/i.test(viewport) || /maximum-scale=1\b/i.test(viewport)) {
+    findings.push({
+      url, category: "onpage", severity: "warning", code: "VIEWPORT_NO_ZOOM",
+      title: "Viewport blockiert Pinch-Zoom",
+      recommendation: "Entferne user-scalable=no / maximum-scale=1 – verstößt gegen WCAG 2.1 (1.4.4).",
+    });
+  }
+  // 3. Feste Pixel-Breite Indikator (inline width="900" o.ä.)
+  const fixedWidthHits = (html.match(/style=["'][^"']*width:\s*\d{3,4}px/gi) ?? []).length;
+  if (fixedWidthHits > 5) {
+    findings.push({
+      url, category: "onpage", severity: "info", code: "FIXED_PIXEL_WIDTHS",
+      title: `${fixedWidthHits} Inline-Styles mit fester Pixelbreite`,
+      recommendation: "Bevorzuge max-width / Prozent / rem für responsive Layouts.",
+    });
+  }
+  // 4. Tap Targets: Buttons/Links zu klein? (Indikator: viele Inline-Schriftgrößen < 12px)
+  const smallText = (html.match(/font-size:\s*([0-9]{1,2})px/gi) ?? [])
+    .map((s) => parseInt(s.match(/(\d+)/)?.[1] ?? "0", 10))
+    .filter((n) => n > 0 && n < 12);
+  if (smallText.length > 5) {
+    findings.push({
+      url, category: "onpage", severity: "info", code: "SMALL_TAP_TEXT",
+      title: `${smallText.length}× Schriftgröße < 12px`,
+      recommendation: "Mobile Min-Schriftgröße 16px für Body-Text – verhindert auto-zoom auf iOS.",
+    });
+  }
+  // 5. Horizontales Scrollen: overflow-x:hidden + breite Tables
+  if (/<table[^>]*>/i.test(html) && !/overflow[-_]?x:\s*auto/i.test(html)) {
+    findings.push({
+      url, category: "onpage", severity: "info", code: "TABLE_NO_SCROLL_WRAPPER",
+      title: "Table ohne horizontalen Scroll-Wrapper",
+      recommendation: "Wickle <table> in <div style='overflow-x:auto'> für Mobile.",
+    });
+  }
+  return findings;
+}
+
+// ===== Modul 9c: International SEO (hreflang) =====
+function analyzeHreflang(url: string, html: string): Finding[] {
+  const findings: Finding[] = [];
+  const tags = [...html.matchAll(/<link[^>]+rel=["']alternate["'][^>]+hreflang=["']([^"']+)["'][^>]+href=["']([^"']+)["']/gi)];
+  const tagsAlt = [...html.matchAll(/<link[^>]+hreflang=["']([^"']+)["'][^>]+rel=["']alternate["'][^>]+href=["']([^"']+)["']/gi)];
+  const all = [...tags, ...tagsAlt];
+
+  if (all.length === 0) return findings; // hreflang ist optional
+
+  const seen = new Map<string, string>();
+  let hasXDefault = false;
+  const invalidCodes: string[] = [];
+  // ISO 639-1 (lower) + optional region ISO 3166-1 (UPPER) oder x-default
+  const codeRe = /^(x-default|[a-z]{2,3}(-[A-Z]{2})?)$/;
+
+  for (const m of all) {
+    const code = m[1].trim();
+    const href = m[2].trim();
+    if (code === "x-default") hasXDefault = true;
+    if (!codeRe.test(code)) invalidCodes.push(code);
+    if (seen.has(code) && seen.get(code) !== href) {
+      findings.push({
+        url, category: "technical", severity: "warning", code: "HREFLANG_DUPLICATE",
+        title: `hreflang "${code}" mehrfach mit unterschiedlichen URLs`,
+        recommendation: "Pro hreflang-Code darf nur eine href existieren.",
+      });
+    }
+    seen.set(code, href);
+    // Self-Reference Check: href muss absolut sein
+    if (!/^https?:\/\//.test(href)) {
+      findings.push({
+        url, category: "technical", severity: "warning", code: "HREFLANG_RELATIVE",
+        title: `hreflang "${code}" mit relativer URL`,
+        current_value: href,
+        recommendation: "Verwende absolute URLs (https://...) für hreflang.",
+      });
+    }
+  }
+
+  if (invalidCodes.length > 0) {
+    findings.push({
+      url, category: "technical", severity: "warning", code: "HREFLANG_INVALID_CODE",
+      title: `Ungültige hreflang-Codes: ${invalidCodes.slice(0, 3).join(", ")}`,
+      recommendation: "Format: ISO 639-1 (z.B. 'de') oder mit Region 'de-DE', oder 'x-default'.",
+    });
+  }
+  if (all.length >= 2 && !hasXDefault) {
+    findings.push({
+      url, category: "technical", severity: "info", code: "HREFLANG_NO_X_DEFAULT",
+      title: "hreflang ohne x-default",
+      recommendation: 'Füge <link rel="alternate" hreflang="x-default" href="..."> als Fallback hinzu.',
+    });
+  }
+  // Self-Reference Pflicht: aktuelle URL muss in hreflang-Set sein
+  const urlNorm = url.replace(/\/$/, "");
+  const hasSelf = [...seen.values()].some((h) => h.replace(/\/$/, "") === urlNorm);
+  if (!hasSelf) {
+    findings.push({
+      url, category: "technical", severity: "warning", code: "HREFLANG_NO_SELF",
+      title: "hreflang ohne Self-Reference",
+      recommendation: "Jede hreflang-Gruppe muss die aktuelle URL selbst referenzieren (Google-Anforderung).",
+    });
+  }
+  return findings;
+}
+
+// ===== Modul 9d: Backlink-Approximation =====
+async function checkBacklinks(origin: string): Promise<Finding[]> {
+  const findings: Finding[] = [];
+  const host = (() => { try { return new URL(origin).host; } catch { return ""; } })();
+  if (!host) return findings;
+
+  let externalRefCount = 0;
+  let querySucceeded = false;
+  const referringDomains = new Set<string>();
+
+  try {
+    // DuckDuckGo: Suche nach Erwähnungen ohne site:host (= externe Quellen)
+    const q = encodeURIComponent(`"${host}" -site:${host}`);
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 8000);
+    const res = await fetch(`https://html.duckduckgo.com/html/?q=${q}`, { signal: ctrl.signal, headers: { "User-Agent": "Mozilla/5.0 (compatible; BrandOS-SEOBot/1.0)" } });
+    clearTimeout(t);
+    if (res.ok) {
+      const html = await res.text();
+      const re = /<a[^>]+class=["'][^"']*result__url[^"']*["'][^>]*>([\s\S]*?)<\/a>/gi;
+      let m: RegExpExecArray | null;
+      while ((m = re.exec(html)) !== null) {
+        const t2 = m[1].replace(/<[^>]+>/g, "").replace(/\s+/g, "").toLowerCase().replace(/^https?:\/\//, "").split("/")[0];
+        if (t2 && t2 !== host) referringDomains.add(t2);
+      }
+      externalRefCount = referringDomains.size;
+      querySucceeded = true;
+    }
+  } catch { /* silent */ }
+
+  if (!querySucceeded) {
+    return findings; // silently skip
+  }
+
+  if (externalRefCount === 0) {
+    findings.push({
+      url: origin, category: "links", severity: "warning", code: "NO_BACKLINKS_FOUND",
+      title: "Keine externen Verweise gefunden",
+      recommendation: "Backlink-Strategie: Gastartikel, Branchenverzeichnisse, PR, Tool-Listings (Product Hunt, AlternativeTo, G2).",
+    });
+  } else if (externalRefCount < 5) {
+    findings.push({
+      url: origin, category: "links", severity: "info", code: "LOW_BACKLINK_DIVERSITY",
+      title: `Nur ~${externalRefCount} verweisende Domain(s) gefunden`,
+      current_value: `${externalRefCount}`, expected_value: "≥ 10",
+      description: `Beispiele: ${[...referringDomains].slice(0, 5).join(", ")}`,
+      recommendation: "Erhöhe Backlink-Diversität: Branchen-Directories, Partner-Links, Content-Marketing.",
+    });
+  } else {
+    findings.push({
+      url: origin, category: "links", severity: "info", code: "BACKLINKS_OK",
+      title: `~${externalRefCount} verweisende Domains (Approximation)`,
+      description: `Top-Referrer: ${[...referringDomains].slice(0, 5).join(", ")}`,
+    });
+  }
+  return findings;
+}
+
 async function runScan(runId: string, supabase: ReturnType<typeof createClient>, origin: string, scanType: string) {
   const startTs = Date.now();
   const findings: Finding[] = [];
