@@ -794,6 +794,15 @@ async function runScan(runId: string, supabase: ReturnType<typeof createClient>,
       findings.push({ url, category: "onpage", severity: wordCount < 80 ? "warning" : "info", code: "THIN_CONTENT", title: `Wenig Inhalt: ${wordCount} Wörter`, current_value: `${wordCount}`, expected_value: "≥ 300", recommendation: "Erweitere den Inhalt mit relevanten Sub-Topics, FAQ, Beispielen." });
     }
 
+    // Modul 6: AI Content Detection
+    findings.push(...analyzeAIContent(url, bodyText));
+
+    // PSI for first PSI_LIMIT URLs (klassisch + Modul 8 Deep-Dive)
+    if (PSI_KEY && index < PSI_LIMIT) {
+      findings.push(...(await pageSpeed(url)));
+      findings.push(...(await pageSpeedDeepDive(url)));
+    }
+
     // PSI for first PSI_LIMIT URLs
     if (PSI_KEY && index < PSI_LIMIT) {
       findings.push(...(await pageSpeed(url)));
