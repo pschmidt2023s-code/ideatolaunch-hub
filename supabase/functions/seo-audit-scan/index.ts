@@ -1082,6 +1082,16 @@ async function runScan(runId: string, supabase: ReturnType<typeof createClient>,
     // Modul 6: AI Content Detection
     findings.push(...analyzeAIContent(url, bodyText));
 
+    // Modul 9: Outbound-Hygiene + Mobile + i18n (HTML-basiert, schnell)
+    findings.push(...analyzeOutboundHygiene(url, r.html, originHost));
+    findings.push(...analyzeMobileFriendliness(url, r.html));
+    findings.push(...analyzeHreflang(url, r.html));
+
+    // Modul 9a: Broken external links – nur für die ersten 10 URLs (Performance)
+    if (index < 10) {
+      findings.push(...(await checkBrokenExternalLinks(url, r.html, originHost)));
+    }
+
     // PSI for first PSI_LIMIT URLs (klassisch + Modul 8 Deep-Dive)
     if (PSI_KEY && index < PSI_LIMIT) {
       findings.push(...(await pageSpeed(url)));
@@ -1101,6 +1111,9 @@ async function runScan(runId: string, supabase: ReturnType<typeof createClient>,
 
   // ===== Modul 7: Live Index Status (einmal pro Run) =====
   findings.push(...(await checkIndexStatus(origin, urls)));
+
+  // ===== Modul 9d: Backlink-Approximation (einmal pro Run) =====
+  findings.push(...(await checkBacklinks(origin)));
 
 
   // Module 2: Duplicate Title/Description + Index Bloat detection
