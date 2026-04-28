@@ -181,6 +181,7 @@ const App = () => {
                   <Suspense fallback={<LazyFallback />}>
                     <Routes>
                       <Route path="/" element={<Index />} />
+                      <Route path="/index" element={<Index />} />
                       <Route path="/auth" element={<Auth />} />
                       <Route path="/reset-password" element={<ResetPassword />} />
                       <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
