@@ -803,10 +803,6 @@ async function runScan(runId: string, supabase: ReturnType<typeof createClient>,
       findings.push(...(await pageSpeedDeepDive(url)));
     }
 
-    // PSI for first PSI_LIMIT URLs
-    if (PSI_KEY && index < PSI_LIMIT) {
-      findings.push(...(await pageSpeed(url)));
-    }
     scanned++;
   }
 
@@ -817,6 +813,9 @@ async function runScan(runId: string, supabase: ReturnType<typeof createClient>,
 
   // ===== Modul 5: Internal Linking Graph =====
   findings.push(...analyzeLinkGraph(pageData, originHost, origin));
+
+  // ===== Modul 7: Live Index Status (einmal pro Run) =====
+  findings.push(...(await checkIndexStatus(origin, urls)));
 
 
   // Module 2: Duplicate Title/Description + Index Bloat detection
